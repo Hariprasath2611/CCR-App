@@ -1,4 +1,7 @@
 {
-  "name": "CCMS",
-  "displayName": "CCMS"
+  "expo": {
+    "name": "CCMS",
+    "slug": "cc-app",
+    "version": "1.0.0"
+  }
 }
