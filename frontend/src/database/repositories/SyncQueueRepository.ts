@@ -8,76 +8,33 @@ export class SyncQueueRepository extends BaseRepository {
     const createdAt = Date.now();
     const payloadStr = JSON.stringify(payload);
 
-    return new Promise((resolve, reject) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `INSERT INTO sync_queue (id, action_type, payload, created_at, retry_count, status) 
-           VALUES (?, ?, ?, ?, 0, 'PENDING');`,
-          [id, actionType, payloadStr, createdAt],
-          () => resolve(),
-          (_, err) => {
-            reject(err);
-            return false;
-          }
-        );
-      });
-    });
+    await db.runAsync(
+      `INSERT INTO sync_queue (id, action_type, payload, created_at, retry_count, status) 
+       VALUES (?, ?, ?, ?, 0, 'PENDING');`,
+      [id, actionType, payloadStr, createdAt]
+    );
   }
 
   public async getPendingItems(): Promise<SQLiteSyncQueueItem[]> {
     const db = await this.getDB();
-    return new Promise((resolve, reject) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `SELECT * FROM sync_queue WHERE status = 'PENDING' OR status = 'FAILED' ORDER BY created_at ASC;`,
-          [],
-          (_, results) => {
-            const items: SQLiteSyncQueueItem[] = [];
-            for (let i = 0; i < results.rows.length; i++) {
-              items.push(results.rows.item(i));
-            }
-            resolve(items);
-          },
-          (_, err) => {
-            reject(err);
-            return false;
-          }
-        );
-      });
-    });
+    return db.getAllAsync<SQLiteSyncQueueItem>(
+      `SELECT * FROM sync_queue WHERE status = 'PENDING' OR status = 'FAILED' ORDER BY created_at ASC;`
+    );
   }
 
   public async updateStatus(id: string, status: string, retryCount: number): Promise<void> {
     const db = await this.getDB();
-    return new Promise((resolve, reject) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `UPDATE sync_queue SET status = ?, retry_count = ? WHERE id = ?;`,
-          [status, retryCount, id],
-          () => resolve(),
-          (_, err) => {
-            reject(err);
-            return false;
-          }
-        );
-      });
-    });
+    await db.runAsync(
+      `UPDATE sync_queue SET status = ?, retry_count = ? WHERE id = ?;`,
+      [status, retryCount, id]
+    );
   }
 
   public async remove(id: string): Promise<void> {
     const db = await this.getDB();
-    return new Promise((resolve, reject) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `DELETE FROM sync_queue WHERE id = ?;`,
-          [id],
-          () => resolve(),
-          (_, err) => {
-            reject(err);
-            return false;
-          }
-        );
-      });
-    });
+    await db.runAsync(
+      `DELETE FROM sync_queue WHERE id = ?;`,
+      [id]
+    );
   }
 }
