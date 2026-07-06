@@ -77,7 +77,7 @@ export const RequestDetailsScreen = () => {
     try {
       // TODO: replace with real API call — services/api/endpoints/hod.ts → submitHODDecision()
       console.log('HOD Decision:', { requestId, decision, remarks });
-      await new Promise((r) => setTimeout(r, 800)); // mock network delay
+      await new Promise<void>((resolve) => setTimeout(resolve, 800)); // mock network delay
 
       Alert.alert(
         'Decision Submitted',

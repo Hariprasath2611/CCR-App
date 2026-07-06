@@ -133,7 +133,7 @@ export const HodDashboardScreen = () => {
         buttonLabel="Open Analytics"
         accentColor={Palette.success}
         buttonMode="outlined"
-        onPress={() => navigation.navigate('AnalyticsDashboard')}
+        onPress={() => navigation.navigate('DeptAnalytics')}
       />
 
       <Button

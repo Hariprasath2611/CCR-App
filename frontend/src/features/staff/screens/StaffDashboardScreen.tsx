@@ -43,7 +43,7 @@ export const StaffDashboardScreen = () => {
           mode="contained" 
           compact 
           style={styles.btn} 
-          onPress={() => navigation.navigate('ProgressLog', { subjectCode: 'CS8502' })}
+          onPress={() => navigation.navigate('WeeklyProgress', { subjectCode: 'CS8502', weekNumber: 1 })}
         >
           Update Progress
         </Button>
