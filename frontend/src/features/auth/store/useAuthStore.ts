@@ -1,0 +1,50 @@
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { createMMKV } from 'react-native-mmkv';
+
+const storage = createMMKV();
+
+const mmkvStorage = {
+  setItem: (name: string, value: string) => storage.set(name, value),
+  getItem: (name: string) => storage.getString(name) ?? null,
+  removeItem: (name: string) => storage.remove(name),
+};
+
+export interface UserSession {
+  id: string;
+  name: string;
+  email: string;
+  role: 'STAFF' | 'HOD' | 'ADMIN';
+  isClassCoordinator: boolean;
+  department: string;
+  assignedClassId?: string; // e.g. 'CSE-B' — set for staff/CC users
+}
+
+interface AuthState {
+  user: UserSession | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  setTokens: (accessToken: string, refreshToken: string) => void;
+  login: (user: UserSession, accessToken: string, refreshToken: string) => void;
+  logout: () => void;
+}
+
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      accessToken: null,
+      refreshToken: null,
+      setTokens: (accessToken, refreshToken) =>
+        set({ accessToken, refreshToken }),
+      login: (user, accessToken, refreshToken) =>
+        set({ user, accessToken, refreshToken }),
+      logout: () =>
+        set({ user: null, accessToken: null, refreshToken: null }),
+    }),
+    {
+      name: 'ccms-auth-storage',
+      storage: createJSONStorage(() => mmkvStorage),
+    }
+  )
+);
