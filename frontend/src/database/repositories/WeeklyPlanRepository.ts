@@ -22,59 +22,27 @@ export class WeeklyPlanRepository extends BaseRepository {
     const targetTopicsStr = targetTopicIds.join(',');
     const draftVal = isDraft ? 1 : 0;
 
-    return new Promise((resolve, reject) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `INSERT OR REPLACE INTO weekly_plans (id, academic_week_number, subject_code, target_topic_ids, status, is_draft)
-           VALUES (?, ?, ?, ?, ?, ?);`,
-          [id, weekNo, subjectCode, targetTopicsStr, status, draftVal],
-          () => resolve(),
-          (_, err) => {
-            reject(err);
-            return false;
-          }
-        );
-      });
-    });
+    await db.runAsync(
+      `INSERT OR REPLACE INTO weekly_plans (id, academic_week_number, subject_code, target_topic_ids, status, is_draft)
+       VALUES (?, ?, ?, ?, ?, ?);`,
+      [id, weekNo, subjectCode, targetTopicsStr, status, draftVal]
+    );
   }
 
   public async getPlanDraft(subjectCode: string, weekNo: number): Promise<SQLiteWeeklyPlan | null> {
     const db = await this.getDB();
-    return new Promise((resolve, reject) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `SELECT * FROM weekly_plans WHERE subject_code = ? AND academic_week_number = ? LIMIT 1;`,
-          [subjectCode, weekNo],
-          (_, results) => {
-            if (results.rows.length > 0) {
-              resolve(results.rows.item(0));
-            } else {
-              resolve(null);
-            }
-          },
-          (_, err) => {
-            reject(err);
-            return false;
-          }
-        );
-      });
-    });
+    const result = await db.getFirstAsync<SQLiteWeeklyPlan>(
+      `SELECT * FROM weekly_plans WHERE subject_code = ? AND academic_week_number = ? LIMIT 1;`,
+      [subjectCode, weekNo]
+    );
+    return result;
   }
 
   public async deletePlan(id: string): Promise<void> {
     const db = await this.getDB();
-    return new Promise((resolve, reject) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `DELETE FROM weekly_plans WHERE id = ?;`,
-          [id],
-          () => resolve(),
-          (_, err) => {
-            reject(err);
-            return false;
-          }
-        );
-      });
-    });
+    await db.runAsync(
+      `DELETE FROM weekly_plans WHERE id = ?;`,
+      [id]
+    );
   }
 }
