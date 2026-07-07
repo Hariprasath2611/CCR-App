@@ -111,3 +111,121 @@
 {"_e":"metro:bundling:progress","_t":1783413814258,"id":"4","progress":0.7361537756065043,"total":1007,"current":864}
 {"_e":"metro:bundling:progress","_t":1783413814358,"id":"4","progress":0.788397183305067,"total":1258,"current":1117}
 {"_e":"metro:bundling:failed","_t":1783413814450,"id":"4","message":"node_modules\\zod\\v4\\classic\\external.js: C:\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\node_modules\\zod\\v4\\classic\\external.js: Export namespace should be first transformed by `@babel/plugin-transform-export-namespace-from`.\n> 1 | export * as core from \"../core/index.js\";\n    |        ^^^^^^^^^\n  2 | export * from \"./schemas.js\";\n  3 | export * from \"./checks.js\";\n  4 | export * from \"./errors.js\";","importStack":null,"filename":null,"targetModuleName":null,"originModulePath":null}
+{"_e":"root:init","_t":1783414269241,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1783414269289,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1783414270294,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1783414280182,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1783414295949,"id":"1","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783414295949,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783414295952,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:failed","_t":1783414295954,"id":"1","message":"Cannot read properties of undefined (reading 'transformFile')","importStack":null,"filename":null,"targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:started","_t":1783414308812,"id":"2","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783414308812,"id":"2","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783414308813,"id":"2","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:failed","_t":1783414308814,"id":"2","message":"Cannot read properties of undefined (reading 'transformFile')","importStack":null,"filename":null,"targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:started","_t":1783414351540,"id":"3","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783414351540,"id":"3","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783414351541,"id":"3","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:failed","_t":1783414351542,"id":"3","message":"Cannot read properties of undefined (reading 'transformFile')","importStack":null,"filename":null,"targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:started","_t":1783414359595,"id":"4","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783414359600,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783414359601,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:failed","_t":1783414359602,"id":"4","message":"Cannot read properties of undefined (reading 'transformFile')","importStack":null,"filename":null,"targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:started","_t":1783414378606,"id":"5","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783414378606,"id":"5","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783414378608,"id":"5","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:failed","_t":1783414378609,"id":"5","message":"Cannot read properties of undefined (reading 'transformFile')","importStack":null,"filename":null,"targetModuleName":null,"originModulePath":null}
+{"_e":"root:init","_t":1783414673476,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1783414673496,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1783414673836,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1783414681871,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1783414691484,"id":"1","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783414691484,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783414691487,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:failed","_t":1783414691489,"id":"1","message":"Cannot read properties of undefined (reading 'transformFile')","importStack":null,"filename":null,"targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:started","_t":1783414708942,"id":"2","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783414708942,"id":"2","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783414708944,"id":"2","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:failed","_t":1783414708945,"id":"2","message":"Cannot read properties of undefined (reading 'transformFile')","importStack":null,"filename":null,"targetModuleName":null,"originModulePath":null}
+{"_e":"root:init","_t":1783414789389,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"env:mode","_t":1783414789390,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1783414789392,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1783414789601,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1783414789868,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1783414799104,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1783414809337,"id":"1","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783414809337,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783414809339,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783414809812,"id":"1","progress":0.010000000000000002,"total":1,"current":1}
+{"_e":"metro:bundling:progress","_t":1783414809912,"id":"1","progress":0.010000000000000002,"total":3,"current":1}
+{"_e":"metro:bundling:progress","_t":1783414809949,"id":"1","progress":0.04000000000000001,"total":3,"current":2}
+{"_e":"metro:bundling:progress","_t":1783414810053,"id":"1","progress":0.0625,"total":16,"current":4}
+{"_e":"metro:bundling:progress","_t":1783414810156,"id":"1","progress":0.0625,"total":29,"current":7}
+{"_e":"metro:bundling:progress","_t":1783414810256,"id":"1","progress":0.09972299168975068,"total":38,"current":12}
+{"_e":"metro:bundling:progress","_t":1783414810375,"id":"1","progress":0.14271604938271604,"total":45,"current":17}
+{"_e":"metro:bundling:progress","_t":1783414810476,"id":"1","progress":0.14271604938271604,"total":76,"current":22}
+{"_e":"metro:bundling:progress","_t":1783414810578,"id":"1","progress":0.14271604938271604,"total":81,"current":24}
+{"_e":"metro:bundling:progress","_t":1783414810816,"id":"1","progress":0.14271604938271604,"total":81,"current":25}
+{"_e":"metro:bundling:progress","_t":1783414810916,"id":"1","progress":0.14271604938271604,"total":109,"current":31}
+{"_e":"metro:bundling:progress","_t":1783414811017,"id":"1","progress":0.14271604938271604,"total":159,"current":42}
+{"_e":"metro:bundling:progress","_t":1783414811135,"id":"1","progress":0.14271604938271604,"total":178,"current":51}
+{"_e":"metro:bundling:progress","_t":1783414811238,"id":"1","progress":0.14271604938271604,"total":294,"current":66}
+{"_e":"metro:bundling:progress","_t":1783414811338,"id":"1","progress":0.14271604938271604,"total":301,"current":85}
+{"_e":"metro:bundling:progress","_t":1783414811441,"id":"1","progress":0.14271604938271604,"total":376,"current":111}
+{"_e":"metro:bundling:progress","_t":1783414811544,"id":"1","progress":0.14271604938271604,"total":409,"current":128}
+{"_e":"metro:bundling:progress","_t":1783414811645,"id":"1","progress":0.14271604938271604,"total":439,"current":142}
+{"_e":"metro:bundling:progress","_t":1783414811746,"id":"1","progress":0.14271604938271604,"total":463,"current":165}
+{"_e":"metro:bundling:progress","_t":1783414811855,"id":"1","progress":0.14271604938271604,"total":531,"current":184}
+{"_e":"metro:bundling:progress","_t":1783414811958,"id":"1","progress":0.14271604938271604,"total":557,"current":198}
+{"_e":"metro:bundling:progress","_t":1783414812058,"id":"1","progress":0.14271604938271604,"total":576,"current":215}
+{"_e":"metro:bundling:progress","_t":1783414812158,"id":"1","progress":0.16182930322868147,"total":614,"current":247}
+{"_e":"metro:bundling:progress","_t":1783414812261,"id":"1","progress":0.1916647033294067,"total":635,"current":278}
+{"_e":"metro:bundling:progress","_t":1783414812361,"id":"1","progress":0.22606232827731565,"total":652,"current":310}
+{"_e":"metro:bundling:progress","_t":1783414812465,"id":"1","progress":0.2567717026282451,"total":669,"current":339}
+{"_e":"metro:bundling:progress","_t":1783414812566,"id":"1","progress":0.27509571543655376,"total":694,"current":364}
+{"_e":"metro:bundling:progress","_t":1783414812680,"id":"1","progress":0.2958373793225209,"total":706,"current":384}
+{"_e":"metro:bundling:progress","_t":1783414812792,"id":"1","progress":0.30508124065599646,"total":726,"current":401}
+{"_e":"metro:bundling:progress","_t":1783414812896,"id":"1","progress":0.34241788431348874,"total":728,"current":426}
+{"_e":"metro:bundling:progress","_t":1783414812995,"id":"1","progress":0.3853140488638331,"total":733,"current":455}
+{"_e":"metro:bundling:progress","_t":1783414813098,"id":"1","progress":0.414852321568088,"total":753,"current":485}
+{"_e":"metro:bundling:progress","_t":1783414813198,"id":"1","progress":0.45309943980396483,"total":774,"current":521}
+{"_e":"metro:bundling:progress","_t":1783414813298,"id":"1","progress":0.4707389984545191,"total":806,"current":553}
+{"_e":"metro:bundling:progress","_t":1783414813398,"id":"1","progress":0.47204982698961934,"total":850,"current":584}
+{"_e":"metro:bundling:progress","_t":1783414813498,"id":"1","progress":0.4814660558100791,"total":882,"current":612}
+{"_e":"metro:bundling:progress","_t":1783414813600,"id":"1","progress":0.4895380627171628,"total":909,"current":636}
+{"_e":"metro:bundling:progress","_t":1783414813702,"id":"1","progress":0.4895380627171628,"total":958,"current":664}
+{"_e":"metro:bundling:progress","_t":1783414813803,"id":"1","progress":0.5267217654817268,"total":959,"current":696}
+{"_e":"metro:bundling:progress","_t":1783414813904,"id":"1","progress":0.5483592373438527,"total":975,"current":722}
+{"_e":"metro:bundling:progress","_t":1783414814006,"id":"1","progress":0.5871546367902704,"total":984,"current":754}
+{"_e":"metro:bundling:progress","_t":1783414814106,"id":"1","progress":0.6176854119845459,"total":995,"current":782}
+{"_e":"metro:bundling:progress","_t":1783414814206,"id":"1","progress":0.6321037153220274,"total":1010,"current":803}
+{"_e":"metro:bundling:progress","_t":1783414814306,"id":"1","progress":0.6611503862194155,"total":1022,"current":831}
+{"_e":"metro:bundling:progress","_t":1783414814407,"id":"1","progress":0.6813809957326277,"total":1037,"current":856}
+{"_e":"metro:bundling:progress","_t":1783414814512,"id":"1","progress":0.7375007283957812,"total":1048,"current":900}
+{"_e":"metro:bundling:progress","_t":1783414814622,"id":"1","progress":0.7375007283957812,"total":1113,"current":911}
+{"_e":"metro:bundling:progress","_t":1783414814723,"id":"1","progress":0.7375007283957812,"total":1113,"current":917}
+{"_e":"metro:bundling:progress","_t":1783414814823,"id":"1","progress":0.7375007283957812,"total":1173,"current":938}
+{"_e":"metro:bundling:progress","_t":1783414814923,"id":"1","progress":0.7375007283957812,"total":1183,"current":976}
+{"_e":"metro:bundling:progress","_t":1783414815023,"id":"1","progress":0.7375007283957812,"total":1196,"current":1002}
+{"_e":"metro:bundling:progress","_t":1783414815132,"id":"1","progress":0.7375007283957812,"total":1209,"current":1030}
+{"_e":"metro:bundling:progress","_t":1783414815238,"id":"1","progress":0.7439415409259056,"total":1222,"current":1054}
+{"_e":"metro:bundling:progress","_t":1783414815339,"id":"1","progress":0.7666994356063548,"total":1222,"current":1070}
+{"_e":"metro:bundling:progress","_t":1783414815441,"id":"1","progress":0.8029450526490607,"total":1222,"current":1095}
+{"_e":"metro:bundling:progress","_t":1783414815543,"id":"1","progress":0.8355336292359657,"total":1222,"current":1117}
+{"_e":"metro:bundling:progress","_t":1783414815647,"id":"1","progress":0.8702966080129433,"total":1222,"current":1140}
+{"_e":"metro:bundling:progress","_t":1783414815748,"id":"1","progress":0.9106612244897959,"total":1225,"current":1169}
+{"_e":"metro:bundling:progress","_t":1783414815852,"id":"1","progress":0.9106612244897959,"total":1263,"current":1198}
+{"_e":"metro:bundling:progress","_t":1783414815952,"id":"1","progress":0.9173415998254109,"total":1279,"current":1225}
+{"_e":"metro:bundling:progress","_t":1783414816053,"id":"1","progress":0.9173415998254109,"total":1325,"current":1261}
+{"_e":"metro:bundling:progress","_t":1783414816153,"id":"1","progress":0.9173415998254109,"total":1341,"current":1277}
+{"_e":"metro:bundling:progress","_t":1783414816252,"id":"1","progress":0.9173415998254109,"total":1362,"current":1301}
+{"_e":"metro:bundling:progress","_t":1783414816358,"id":"1","progress":0.9328527455719308,"total":1376,"current":1329}
+{"_e":"metro:bundling:progress","_t":1783414816457,"id":"1","progress":0.9556406432926127,"total":1382,"current":1351}
+{"_e":"metro:bundling:progress","_t":1783414816557,"id":"1","progress":0.980043267296656,"total":1396,"current":1382}
+{"_e":"metro:bundling:progress","_t":1783414816662,"id":"1","progress":0.9971428586026678,"total":1399,"current":1397}
+{"_e":"metro:bundling:progress","_t":1783414816795,"id":"1","progress":0.9985709183676076,"total":1399,"current":1398}
+{"_e":"metro:bundling:progress","_t":1783414816897,"id":"1","progress":0.9985739752259357,"total":1402,"current":1401}
+{"_e":"metro:bundling:progress","_t":1783414817279,"id":"1","progress":0.999,"total":1402,"current":1402}
+{"_e":"metro:bundling:progress","_t":1783414817381,"id":"1","progress":0.999,"total":1412,"current":1412}
+{"_e":"metro:bundling:done","_t":1783414817607,"id":"1","total":1412,"ms":8269.7617}
+{"_e":"metro:client_log","_t":1783414919997,"level":"warn","data":["Tried to show an alert while not attached to an Activity"]}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // Screens
 import { AdminDashboardScreen } from '@features/admin/screens/AdminDashboardScreen';
@@ -80,7 +80,7 @@ export const AdminTabNavigator = () => {
           } else if (route.name === 'Profile') {
             iconName = 'account';
           }
-          return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
+          return <MaterialCommunityIcons name={iconName as any} size={size} color={color} />;
         },
       })}
     >
