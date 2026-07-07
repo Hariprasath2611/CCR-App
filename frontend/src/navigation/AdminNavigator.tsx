@@ -22,6 +22,7 @@ const Tab = createBottomTabNavigator();
 const AdminStackNavigator = () => {
   return (
     <Stack.Navigator
+      id="admin-stack"
       screenOptions={{
         headerStyle: { backgroundColor: Palette.primary },
         headerTintColor: Palette.surface,
@@ -60,6 +61,7 @@ const AdminStackNavigator = () => {
 export const AdminTabNavigator = () => {
   return (
     <Tab.Navigator
+      id="admin-tab"
       screenOptions={({ route }) => ({
         headerStyle: { backgroundColor: Palette.primary },
         headerTintColor: Palette.surface,

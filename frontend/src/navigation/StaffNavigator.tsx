@@ -30,6 +30,7 @@ const Tab = createBottomTabNavigator();
 const StaffStackNavigator = () => {
   return (
     <Stack.Navigator
+      id="staff-stack"
       screenOptions={{
         headerStyle: { backgroundColor: Palette.primary },
         headerTintColor: Palette.surface,
@@ -95,6 +96,7 @@ export const StaffTabNavigator = () => {
 
   return (
     <Tab.Navigator
+      id="staff-tab"
       screenOptions={({ route }) => ({
         headerStyle: { backgroundColor: Palette.primary },
         headerTintColor: Palette.surface,

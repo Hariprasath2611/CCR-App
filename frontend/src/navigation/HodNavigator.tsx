@@ -26,6 +26,7 @@ const Tab = createBottomTabNavigator();
 const HodStackNavigator = () => {
   return (
     <Stack.Navigator
+      id="hod-stack"
       screenOptions={{
         headerStyle: { backgroundColor: Palette.primary },
         headerTintColor: Palette.surface,
@@ -89,6 +90,7 @@ const HodStackNavigator = () => {
 export const HodTabNavigator = () => {
   return (
     <Tab.Navigator
+      id="hod-tab"
       screenOptions={({ route }) => ({
         headerStyle: { backgroundColor: Palette.primary },
         headerTintColor: Palette.surface,

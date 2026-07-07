@@ -15,6 +15,7 @@ const Stack = createNativeStackNavigator<CCStackParamList>();
 export const CCNavigator = () => {
   return (
     <Stack.Navigator
+      id="cc-stack"
       screenOptions={{
         headerStyle: { backgroundColor: Palette.primary },
         headerTintColor: Palette.surface,
