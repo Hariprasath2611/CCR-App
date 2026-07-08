@@ -58,6 +58,8 @@ const coverageColor = (pct: string) => {
 
 import { useReportStore, SubjectProgress } from '@features/cc/store/useReportStore';
 
+import { WeeklyCourseCoverageReportCard } from '../../cc/components/WeeklyCourseCoverageReportCard';
+
 export const RequestDetailsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteParams>();
@@ -158,8 +160,10 @@ export const RequestDetailsScreen = () => {
         </Chip>
       </View>
 
-      {/* ── Plan Report Details ── */}
-      {!isExtraHour && planData && (
+      {/* ── Plan Report Details (Spreadsheet document card) ── */}
+      {!isExtraHour && (reportData ? (
+        <WeeklyCourseCoverageReportCard report={reportData} showDownloadButton={true} />
+      ) : (
         <Card style={styles.card}>
           <Card.Content>
             <Text style={styles.sectionLabel}>Submission Info</Text>
@@ -202,7 +206,7 @@ export const RequestDetailsScreen = () => {
             <Text style={styles.remarksText}>{planData.ccRemarks}</Text>
           </Card.Content>
         </Card>
-      )}
+      ))}
 
       {/* ── Extra Hour Request Details ── */}
       {isExtraHour && (

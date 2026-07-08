@@ -3,10 +3,11 @@ import { StyleSheet, View, ScrollView } from 'react-native';
 import { Text, Card, List, Button, Divider, ProgressBar } from 'react-native-paper';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useReportStore } from '../store/useReportStore';
+import { useReportStore, ConsolidatedReport } from '../store/useReportStore';
 import { CCStackParamList } from '@navigation/types';
 import { Palette } from '@theme/colors';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { WeeklyCourseCoverageReportCard } from '../components/WeeklyCourseCoverageReportCard';
 
 type RouteParams = RouteProp<CCStackParamList, 'ConsolidatedReport'>;
 type CCNav = NativeStackNavigationProp<CCStackParamList>;
@@ -28,6 +29,19 @@ export const ConsolidatedReportScreen = () => {
     ? Math.round(subjects.reduce((sum, s) => sum + s.coverage, 0) / totalSubjects) 
     : 0;
 
+  // Build a draft ConsolidatedReport representation for pre-submission review
+  const draftReport: ConsolidatedReport = {
+    id: `${classId}_W${weekNumber}`,
+    classId,
+    weekNumber,
+    overallCoverage: averageCoverage,
+    submittedBy: 'Class Coordinator',
+    submittedAt: new Date().toLocaleDateString(),
+    ccRemarks: 'Consolidated class coverage reports compiled. Ready for HOD audit.',
+    status: 'PENDING_CC',
+    subjects: subjects,
+  };
+
   const getProgressColor = (pct: number) => {
     if (pct >= 75) return Palette.success;
     if (pct >= 50) return Palette.warning;
@@ -36,85 +50,7 @@ export const ConsolidatedReportScreen = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Card style={styles.summaryCard}>
-        <Card.Content>
-          <Text style={styles.summaryTitle}>{classId} · Week {weekNumber}</Text>
-          <Text style={styles.summarySubtitle}>Report Consolidation Board</Text>
-
-          <View style={styles.statsContainer}>
-            <View style={styles.statBox}>
-              <Text style={[styles.statValue, { color: Palette.primary }]}>
-                {completedSubmissions}/{totalSubjects}
-              </Text>
-              <Text style={styles.statLabel}>Submissions</Text>
-            </View>
-            <Divider style={styles.dividerVertical} />
-            <View style={styles.statBox}>
-              <Text style={[styles.statValue, { color: getProgressColor(averageCoverage) }]}>
-                {averageCoverage}%
-              </Text>
-              <Text style={styles.statLabel}>Avg Coverage</Text>
-            </View>
-          </View>
-        </Card.Content>
-      </Card>
-
-      <Text style={styles.sectionTitle}>Course Syllabus Coverage</Text>
-
-      {subjects.map((subj) => (
-        <Card key={subj.code} style={styles.subjectCard}>
-          <Card.Content>
-            <View style={styles.subjectHeader}>
-              <View style={styles.subjectLeft}>
-                <Text style={styles.subjectCode}>{subj.code}</Text>
-                <Text style={styles.subjectName}>{subj.name}</Text>
-                <Text style={styles.facultyName}>Faculty: {subj.faculty}</Text>
-              </View>
-              <View style={styles.subjectRight}>
-                <Text style={[styles.coverageText, { color: getProgressColor(subj.coverage) }]}>
-                  {subj.coverage}%
-                </Text>
-                <View style={[
-                  styles.statusBadge, 
-                  { backgroundColor: subj.status === 'Submitted' ? '#E6F4EA' : '#FCE8E6' }
-                ]}>
-                  <Text style={[
-                    styles.statusText, 
-                    { color: subj.status === 'Submitted' ? Palette.success : Palette.error }
-                  ]}>
-                    {subj.status}
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            {subj.status === 'Submitted' ? (
-              <View style={styles.progressSection}>
-                <View style={styles.progressRow}>
-                  <Text style={styles.topicsCount}>
-                    Topics: {subj.completedTopicsCount} of {subj.totalTopicsCount} completed
-                  </Text>
-                </View>
-                <ProgressBar 
-                  progress={subj.totalTopicsCount > 0 ? (subj.completedTopicsCount / subj.totalTopicsCount) : 0} 
-                  color={getProgressColor(subj.coverage)}
-                  style={styles.progressBar}
-                />
-                {subj.reasonsForPending ? (
-                  <View style={styles.pendingContainer}>
-                    <Text style={styles.pendingLabel}>Pending Reason:</Text>
-                    <Text style={styles.pendingValue}>{subj.reasonsForPending}</Text>
-                  </View>
-                ) : null}
-              </View>
-            ) : (
-              <View style={styles.progressSection}>
-                <Text style={styles.warningText}>Awaiting progress input from faculty.</Text>
-              </View>
-            )}
-          </Card.Content>
-        </Card>
-      ))}
+      <WeeklyCourseCoverageReportCard report={draftReport} showDownloadButton={false} />
 
       <Button
         mode="contained"

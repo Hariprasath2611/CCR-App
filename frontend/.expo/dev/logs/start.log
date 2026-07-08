@@ -513,3 +513,13 @@
 {"_e":"metro:bundling:done","_t":1783483117712,"id":"f","total":1,"ms":95.3899}
 {"_e":"metro:client_log","_t":1783483121372,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
 {"_e":"metro:client_log","_t":1783483635427,"level":"warn","data":["Tried to show an alert while not attached to an Activity"]}
+{"_e":"metro:bundling:started","_t":1783484124409,"id":"j","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783484124409,"id":"j","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1783484124448,"id":"j","total":1,"ms":38.4425}
+{"_e":"metro:client_log","_t":1783484128606,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
+{"_e":"metro:bundling:started","_t":1783484292695,"id":"n","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783484292695,"id":"n","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1783484292729,"id":"n","total":1,"ms":33.6811}
+{"_e":"metro:client_log","_t":1783484296383,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
+{"_e":"metro:bundling:failed","_t":1783484559344,"id":"e","message":"SyntaxError: C:\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\src\\features\\auth\\screens\\LandingScreen.tsx: Identifier 'React' has already been declared. (64:7)\n\n  62 | };\n  63 |\n> 64 | import React from 'react';\n     |        ^\n  65 | import { StyleSheet, View, Image, TouchableOpacity, Dimensions } from 'react-native';\n  66 | import { Text } from 'react-native-paper';\n  67 | import { useNavigation } from '@react-navigation/native';","importStack":null,"filename":"src\\features\\auth\\screens\\LandingScreen.tsx","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:client_log","_t":1783484850046,"level":"error","data":["[ReferenceError: Property 'height' doesn't exist]"]}
