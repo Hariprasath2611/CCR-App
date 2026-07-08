@@ -10,10 +10,13 @@ import {
   Platform,
   ScrollView,
   StatusBar,
+  Dimensions,
 } from 'react-native';
 import { useAuthStore, UserSession } from '../store/useAuthStore';
 import { Palette } from '@theme/colors';
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+
+const { height } = Dimensions.get('window');
 
 type RoleType = 'STAFF' | 'HOD' | 'ADMIN';
 type SubRoleType = 'TEACHER' | 'CC';
@@ -103,11 +106,11 @@ export const LoginScreen = () => {
     >
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       
-      {/* Background Decorative Shapes */}
-      <View style={styles.bgCircleTopLeft1} />
-      <View style={styles.bgCircleTopLeft2} />
-      <View style={styles.bgCircleBottomRight} />
-      <View style={styles.bgCircleBottomLeft} />
+      {/* Abstract Background Designs & Orbs */}
+      <View style={styles.topOrb} />
+      <View style={styles.centerLeftOrb} />
+      <View style={styles.bottomRightOrb} />
+      <View style={styles.bottomLeftOrb} />
 
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
@@ -115,8 +118,8 @@ export const LoginScreen = () => {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.cardContainer}>
-          {/* Logo Section */}
-          <View style={styles.logoWrapper}>
+          {/* Premium Rounded Logo Frame */}
+          <View style={styles.logoFrame}>
             <Image
               source={require('../../../assets/logo.jpeg')}
               style={styles.logo}
@@ -126,14 +129,15 @@ export const LoginScreen = () => {
 
           {/* College and App Title */}
           <Text style={styles.collegeTitle}>JAYA ENGINEERING COLLEGE</Text>
-          <Text style={styles.appTitle}>COURSE COVERAGE REPORT GENERATOR</Text>
+          <Text style={styles.appTitle}>CCR Generator</Text>
+          <Text style={styles.appSubtitle}>Course Coverage Report Management System</Text>
 
           {/* Login Indicator Divider */}
           <View style={styles.loginDividerWrapper}>
             <View style={styles.dividerLine} />
             <View style={styles.loginLabelContainer}>
               <View style={styles.dot} />
-              <Text style={styles.loginText}>LOGIN</Text>
+              <Text style={styles.loginText}>SECURE LOGIN</Text>
               <View style={styles.dot} />
             </View>
             <View style={styles.dividerLine} />
@@ -145,12 +149,12 @@ export const LoginScreen = () => {
             {/* Email ID Field */}
             <View style={styles.fieldGroup}>
               <View style={styles.fieldLabelRow}>
-                <Feather name="mail" size={16} color="#0D2E5C" style={styles.labelIcon} />
+                <Feather name="mail" size={14} color="#0F52BA" style={styles.labelIcon} />
                 <Text style={styles.fieldLabel}>Email ID</Text>
               </View>
               <View style={styles.inputContainer}>
                 <View style={styles.inputLeftIconBox}>
-                  <Feather name="mail" size={20} color="#0B5ED7" />
+                  <Feather name="mail" size={18} color="#0F52BA" />
                 </View>
                 <TextInput
                   style={styles.textInput}
@@ -167,12 +171,12 @@ export const LoginScreen = () => {
             {/* Password Field */}
             <View style={styles.fieldGroup}>
               <View style={styles.fieldLabelRow}>
-                <Feather name="lock" size={16} color="#0D2E5C" style={styles.labelIcon} />
+                <Feather name="lock" size={14} color="#0F52BA" style={styles.labelIcon} />
                 <Text style={styles.fieldLabel}>Password</Text>
               </View>
               <View style={styles.inputContainer}>
                 <View style={styles.inputLeftIconBox}>
-                  <Feather name="lock" size={20} color="#0B5ED7" />
+                  <Feather name="lock" size={18} color="#0F52BA" />
                 </View>
                 <TextInput
                   style={styles.textInput}
@@ -190,7 +194,7 @@ export const LoginScreen = () => {
                 >
                   <Feather
                     name={secureText ? 'eye-off' : 'eye'}
-                    size={20}
+                    size={18}
                     color="#64748B"
                   />
                 </TouchableOpacity>
@@ -200,7 +204,7 @@ export const LoginScreen = () => {
             {/* Role Picker Field */}
             <View style={styles.fieldGroup}>
               <View style={styles.fieldLabelRow}>
-                <Feather name="user" size={16} color="#0D2E5C" style={styles.labelIcon} />
+                <Feather name="user" size={14} color="#0F52BA" style={styles.labelIcon} />
                 <Text style={styles.fieldLabel}>Role</Text>
               </View>
               
@@ -215,7 +219,7 @@ export const LoginScreen = () => {
                 <View style={styles.inputLeftIconBox}>
                   <MaterialCommunityIcons
                     name={getRoleIcon(selectedRole).name as any}
-                    size={22}
+                    size={20}
                     color={getRoleIcon(selectedRole).color}
                   />
                 </View>
@@ -229,7 +233,7 @@ export const LoginScreen = () => {
                 </Text>
                 <Feather
                   name={showDropdown ? 'chevron-up' : 'chevron-down'}
-                  size={20}
+                  size={18}
                   color="#64748B"
                   style={styles.chevronIcon}
                 />
@@ -293,7 +297,7 @@ export const LoginScreen = () => {
             {selectedRole === 'STAFF' && (
               <View style={styles.subRoleContainer}>
                 <View style={styles.fieldLabelRow}>
-                  <Feather name="shield" size={16} color="#0D2E5C" style={styles.labelIcon} />
+                  <Feather name="shield" size={14} color="#0F52BA" style={styles.labelIcon} />
                   <Text style={styles.fieldLabel}>Staff Function</Text>
                 </View>
                 <View style={styles.subRoleCardRow}>
@@ -308,8 +312,8 @@ export const LoginScreen = () => {
                   >
                     <MaterialCommunityIcons
                       name="book-open-page-variant"
-                      size={24}
-                      color={selectedSubRole === 'TEACHER' ? '#0B5ED7' : '#64748B'}
+                      size={22}
+                      color={selectedSubRole === 'TEACHER' ? '#0F52BA' : '#64748B'}
                     />
                     <Text
                       style={[
@@ -332,8 +336,8 @@ export const LoginScreen = () => {
                   >
                     <MaterialCommunityIcons
                       name="shield-star"
-                      size={24}
-                      color={selectedSubRole === 'CC' ? '#0B5ED7' : '#64748B'}
+                      size={22}
+                      color={selectedSubRole === 'CC' ? '#0F52BA' : '#64748B'}
                     />
                     <Text
                       style={[
@@ -351,7 +355,7 @@ export const LoginScreen = () => {
             {/* Department Picker Field */}
             <View style={styles.fieldGroup}>
               <View style={styles.fieldLabelRow}>
-                <Feather name="book-open" size={16} color="#0D2E5C" style={styles.labelIcon} />
+                <Feather name="book-open" size={14} color="#0F52BA" style={styles.labelIcon} />
                 <Text style={styles.fieldLabel}>Department</Text>
               </View>
               
@@ -367,7 +371,7 @@ export const LoginScreen = () => {
                   <MaterialCommunityIcons
                     name="domain"
                     size={22}
-                    color={selectedDept ? '#0B5ED7' : '#94A3B8'}
+                    color={selectedDept ? '#0F52BA' : '#94A3B8'}
                   />
                 </View>
                 <Text
@@ -380,7 +384,7 @@ export const LoginScreen = () => {
                 </Text>
                 <Feather
                   name={showDeptDropdown ? 'chevron-up' : 'chevron-down'}
-                  size={20}
+                  size={18}
                   color="#64748B"
                   style={styles.chevronIcon}
                 />
@@ -401,7 +405,7 @@ export const LoginScreen = () => {
                         activeOpacity={0.7}
                       >
                         <View style={styles.dropdownItemIconBox}>
-                          <MaterialCommunityIcons name="office-building" size={20} color="#0B5ED7" />
+                          <MaterialCommunityIcons name="office-building" size={20} color="#0F52BA" />
                         </View>
                         <Text style={styles.dropdownItemText}>{dept.label}</Text>
                       </TouchableOpacity>
@@ -419,8 +423,8 @@ export const LoginScreen = () => {
             onPress={handleLogin}
             activeOpacity={0.85}
           >
-            <MaterialCommunityIcons name="login" size={22} color="#FFFFFF" />
-            <Text style={styles.loginButtonText}>ENTER</Text>
+            <MaterialCommunityIcons name="login" size={20} color="#FFFFFF" />
+            <Text style={styles.loginButtonText}>SECURE SIGN IN</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -431,108 +435,124 @@ export const LoginScreen = () => {
 const styles = StyleSheet.create({
   keyboardContainer: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FAF9F6', // Off-white premium workspace canvas
   },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 24,
-    paddingVertical: 40,
+    paddingVertical: 32,
   },
   cardContainer: {
     width: '100%',
     alignItems: 'center',
   },
   
-  // Background abstract wave shapes
-  bgCircleTopLeft1: {
-    position: 'absolute',
-    top: -120,
-    left: -120,
-    width: 320,
-    height: 320,
-    borderRadius: 160,
-    backgroundColor: '#E6F0FA',
-    opacity: 0.8,
-    zIndex: -1,
-  },
-  bgCircleTopLeft2: {
+  // Abstract Background Orbs
+  topOrb: {
     position: 'absolute',
     top: -50,
-    left: -150,
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: '#EDF5FC',
+    right: -40,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: '#E0E7FF',
     opacity: 0.6,
     zIndex: -1,
   },
-  bgCircleBottomRight: {
+  centerLeftOrb: {
     position: 'absolute',
-    bottom: -100,
-    right: -100,
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    backgroundColor: '#E1EDFC',
+    top: height * 0.35,
+    left: -80,
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: '#EFF6FF',
     opacity: 0.7,
     zIndex: -1,
   },
-  bgCircleBottomLeft: {
+  bottomRightOrb: {
     position: 'absolute',
-    bottom: -60,
-    left: -120,
-    width: 260,
-    height: 260,
-    borderRadius: 130,
-    backgroundColor: '#EBF3FE',
+    bottom: -80,
+    right: -60,
+    width: 240,
+    height: 240,
+    borderRadius: 120,
+    backgroundColor: '#EEF2FF',
     opacity: 0.8,
+    zIndex: -1,
+  },
+  bottomLeftOrb: {
+    position: 'absolute',
+    bottom: height * 0.15,
+    left: -40,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#ECFDF5',
+    opacity: 0.5,
     zIndex: -1,
   },
 
   // Logo styles
-  logoWrapper: {
-    width: 140,
-    height: 140,
+  logoFrame: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
     marginBottom: 16,
   },
   logo: {
-    width: '100%',
-    height: '100%',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
   },
 
   // Text titles
   collegeTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#B31A1A',
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#475569',
     textAlign: 'center',
-    letterSpacing: 0.5,
+    letterSpacing: 1.5,
     marginBottom: 6,
   },
   appTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#0D2E5C',
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#0F172A',
     textAlign: 'center',
-    letterSpacing: 0.5,
-    marginBottom: 20,
+    letterSpacing: -0.5,
+  },
+  appSubtitle: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#64748B',
+    textAlign: 'center',
+    marginTop: 4,
+    marginBottom: 14,
   },
 
   // Divider Styles
   loginDividerWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '85%',
-    marginVertical: 15,
+    width: '90%',
+    marginVertical: 14,
   },
   dividerLine: {
     flex: 1,
-    height: 1.2,
-    backgroundColor: '#94A3B8',
-    opacity: 0.4,
+    height: 1,
+    backgroundColor: '#E2E8F0',
   },
   loginLabelContainer: {
     flexDirection: 'row',
@@ -540,26 +560,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#0B5ED7',
-    marginHorizontal: 8,
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#0F52BA',
+    marginHorizontal: 6,
   },
   loginText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#0D2E5C',
-    letterSpacing: 1,
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#475569',
+    letterSpacing: 1.5,
   },
 
   // Form styles
   formContainer: {
     width: '100%',
-    marginTop: 10,
+    marginTop: 8,
   },
   fieldGroup: {
-    marginBottom: 18,
+    marginBottom: 16,
     width: '100%',
   },
   fieldLabelRow: {
@@ -570,55 +590,56 @@ const styles = StyleSheet.create({
   },
   labelIcon: {
     marginRight: 6,
-    color: '#0B5ED7',
   },
   fieldLabel: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '700',
-    color: '#0D2E5C',
+    color: '#334155',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1.2,
-    borderColor: '#D2E0F5',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
     borderRadius: 12,
-    height: 54,
+    height: 52,
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 1.5,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 1,
   },
   inputContainerActive: {
-    borderColor: '#0B5ED7',
+    borderColor: '#0F52BA',
   },
   inputLeftIconBox: {
-    width: 42,
-    height: 42,
-    borderRadius: 10,
-    backgroundColor: '#EDF5FD',
+    width: 38,
+    height: 38,
+    borderRadius: 8,
+    backgroundColor: '#F8FAFC',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
   },
   textInput: {
     flex: 1,
     height: '100%',
-    fontSize: 15,
+    fontSize: 14,
     color: '#1E293B',
-    paddingHorizontal: 6,
+    paddingHorizontal: 4,
   },
   passwordToggle: {
     padding: 8,
   },
   roleTextValue: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 14,
     color: '#1E293B',
-    paddingHorizontal: 6,
+    paddingHorizontal: 4,
   },
   roleTextPlaceholder: {
     color: '#94A3B8',
@@ -629,44 +650,44 @@ const styles = StyleSheet.create({
 
   // Dropdown list styles
   dropdownCard: {
-    marginTop: 6,
+    marginTop: 4,
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    padding: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 4,
+    padding: 4,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 3,
     width: '100%',
   },
   dropdownItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 10,
     paddingHorizontal: 8,
     borderBottomWidth: 0.5,
     borderBottomColor: '#F1F5F9',
   },
   dropdownItemIconBox: {
-    marginRight: 12,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    marginRight: 10,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
   dropdownItemText: {
-    fontSize: 15,
+    fontSize: 14,
     color: '#1E293B',
-    fontWeight: '500',
+    fontWeight: '600',
   },
 
   // Staff sub-role styles
   subRoleContainer: {
-    marginTop: 4,
+    marginTop: 2,
     marginBottom: 8,
     width: '100%',
   },
@@ -682,54 +703,54 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.2,
-    borderColor: '#D2E0F5',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
     borderRadius: 12,
     paddingVertical: 12,
     backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 1.5,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 1,
   },
   subRoleCardSelected: {
-    borderColor: '#0B5ED7',
-    backgroundColor: '#EDF5FD',
+    borderColor: '#0F52BA',
+    backgroundColor: '#EFF6FF',
   },
   subRoleCardText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
     color: '#64748B',
     marginTop: 6,
     textAlign: 'center',
   },
   subRoleCardTextSelected: {
-    color: '#0B5ED7',
+    color: '#0F52BA',
   },
 
   // Button styles
   loginButton: {
     flexDirection: 'row',
-    backgroundColor: '#0B5ED7',
+    backgroundColor: '#0F52BA',
     width: '100%',
-    height: 54,
+    height: 52,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 15,
-    shadowColor: '#0B5ED7',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 4,
+    marginTop: 18,
+    shadowColor: '#0F52BA',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3,
   },
   loginButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: '800',
     letterSpacing: 1.5,
-    marginLeft: 8,
+    marginLeft: 6,
   },
 });
 

@@ -159,7 +159,7 @@ export const HodDashboardScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Palette.background,
+    backgroundColor: '#FAF9F6', // Off-white premium workspace canvas
   },
   content: {
     padding: 16,
@@ -172,29 +172,35 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   avatar: {
-    backgroundColor: Palette.primary,
+    backgroundColor: '#0F52BA',
   },
   headerText: {
     marginLeft: 14,
   },
   welcomeLabel: {
     fontSize: 13,
-    color: Palette.textLight,
+    color: '#64748B',
   },
   deptName: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: Palette.textDark,
+    color: '#1E293B',
   },
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: Palette.surface,
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     paddingVertical: 16,
     paddingHorizontal: 12,
     marginBottom: 28,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
     elevation: 2,
   },
   summaryChip: {
@@ -204,34 +210,40 @@ const styles = StyleSheet.create({
   summaryCount: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: Palette.primary,
+    color: '#0F52BA',
   },
   summaryLabel: {
     fontSize: 11,
-    color: Palette.textLight,
+    color: '#64748B',
     textAlign: 'center',
     marginTop: 4,
   },
   summaryDivider: {
     height: 40,
     width: 1,
-    backgroundColor: Palette.border,
+    backgroundColor: '#F1F5F9',
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: Palette.textLight,
-    letterSpacing: 0.8,
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#64748B',
+    letterSpacing: 1.2,
     textTransform: 'uppercase',
     marginBottom: 12,
     marginTop: 4,
   },
   card: {
-    backgroundColor: Palette.surface,
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     marginBottom: 14,
     borderLeftWidth: 4,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 6,
+    elevation: 1,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -240,9 +252,9 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
-    color: Palette.textDark,
+    color: '#1E293B',
     flex: 1,
   },
   badge: {
@@ -251,14 +263,14 @@ const styles = StyleSheet.create({
   },
   cardSubtitle: {
     fontSize: 13,
-    color: Palette.textLight,
+    color: '#64748B',
     lineHeight: 18,
     marginBottom: 4,
   },
   cardBtn: {
     marginTop: 12,
     alignSelf: 'flex-start',
-    borderRadius: 6,
+    borderRadius: 8,
   },
   cardBtnLabel: {
     fontSize: 13,
@@ -270,5 +282,6 @@ const styles = StyleSheet.create({
   },
   logoutLabel: {
     fontSize: 14,
+    fontWeight: '600',
   },
 });

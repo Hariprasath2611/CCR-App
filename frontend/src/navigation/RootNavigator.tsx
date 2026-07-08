@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 
 // Screens
+import { LandingScreen } from '@features/auth/screens/LandingScreen';
 import { LoginScreen } from '@features/auth/screens/LoginScreen';
 import { ForgotPasswordScreen } from '@features/auth/screens/ForgotPasswordScreen';
 
@@ -20,6 +21,7 @@ const Stack = createNativeStackNavigator<AuthStackParamList>();
 const AuthNavigator = () => {
   return (
     <Stack.Navigator id="auth-stack" screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Landing" component={LandingScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
     </Stack.Navigator>

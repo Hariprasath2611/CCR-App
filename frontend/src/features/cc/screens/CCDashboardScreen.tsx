@@ -40,176 +40,317 @@ export const CCDashboardScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Header Banner */}
+    <View style={styles.container}>
+      {/* ── Abstract Background Designs & Orbs ── */}
+      <View style={styles.topOrb} />
+      <View style={styles.centerLeftOrb} />
+      <View style={styles.bottomRightOrb} />
+      <View style={styles.bottomLeftOrb} />
+
+      {/* ── Header Banner ── */}
       <View style={styles.header}>
-        <Avatar.Icon size={50} icon="shield-star" style={styles.avatar} color="#FFFFFF" />
-        <View style={styles.headerText}>
-          <Text style={styles.welcome}>Class Coordinator Board</Text>
-          <Text style={styles.className}>Section: {classId}</Text>
+        <View style={styles.headerTopRow}>
+          <View style={styles.headerTextCol}>
+            <Text style={styles.welcomeText}>Welcome,</Text>
+            <Text style={styles.ccName}>
+              {user?.name ? user.name.split(' ')[0] : 'Coordinator'} 👋
+            </Text>
+            <Text style={styles.roleText}>{classId} · Class Coordinator</Text>
+          </View>
+          <Avatar.Text
+            size={44}
+            label={user?.name ? user.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : 'CC'}
+            style={styles.avatar}
+            color="#0F52BA"
+          />
         </View>
       </View>
 
-      {/* Week consolidation status card */}
-      <Card style={styles.actionCard}>
-        <Card.Content>
-          <Text style={styles.actionCardTitle}>Week {currentWeek} Consolidated Report</Text>
-          {pendingFacultyCount > 0 ? (
-            <View style={styles.alertRow}>
-              <Feather name="alert-circle" size={18} color={Palette.warning} />
-              <Text style={styles.alertText}>
-                {pendingFacultyCount} faculty member progress logs are pending for Week {currentWeek}.
-              </Text>
-            </View>
+      {/* ── Content Card overlapping Header ── */}
+      <View style={styles.contentWrapper}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {/* Week consolidation status card */}
+          <Card style={styles.actionCard}>
+            <Card.Content>
+              <Text style={styles.actionCardTitle}>Week {currentWeek} Consolidated Report</Text>
+              
+              {pendingFacultyCount > 0 ? (
+                <View style={styles.alertRow}>
+                  <View style={[styles.iconIndicator, { backgroundColor: '#FEF3C7' }]}>
+                    <Feather name="alert-circle" size={18} color="#D97706" />
+                  </View>
+                  <Text style={styles.alertText}>
+                    {pendingFacultyCount} faculty member progress logs are pending for Week {currentWeek}.
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.alertRow}>
+                  <View style={[styles.iconIndicator, { backgroundColor: '#D1FAE5' }]}>
+                    <Feather name="check-circle" size={18} color="#10B981" />
+                  </View>
+                  <Text style={[styles.alertText, { color: '#10B981', fontWeight: '600' }]}>
+                    All faculty have logged progress for Week {currentWeek}!
+                  </Text>
+                </View>
+              )}
+
+              <Button
+                mode="contained"
+                style={styles.compileBtn}
+                labelStyle={styles.compileBtnLabel}
+                onPress={() => navigation.navigate('ConsolidatedReport', { classId, weekNumber: currentWeek })}
+                icon="clipboard-text-outline"
+              >
+                Compile & Submit Report
+              </Button>
+            </Card.Content>
+          </Card>
+
+          {/* Previously Submitted Reports Section */}
+          <Text style={styles.sectionTitle}>Submission History</Text>
+          
+          {reports.filter(r => r.classId === classId).length === 0 ? (
+            <Text style={styles.emptyText}>No reports submitted yet.</Text>
           ) : (
-            <View style={styles.alertRow}>
-              <Feather name="check-circle" size={18} color={Palette.success} />
-              <Text style={[styles.alertText, { color: Palette.success }]}>
-                All faculty have logged progress for Week {currentWeek}!
-              </Text>
-            </View>
+            reports
+              .filter(r => r.classId === classId)
+              .map((report) => {
+                const statusConfig = getStatusChip(report.status);
+                return (
+                  <Card key={report.id} style={styles.reportCard}>
+                    <Card.Content>
+                      <View style={styles.reportHeader}>
+                        <Text style={styles.reportTitle}>Week {report.weekNumber} Report</Text>
+                        <Chip
+                          compact
+                          style={{ backgroundColor: statusConfig.color }}
+                          textStyle={{ fontSize: 10, color: statusConfig.textColor, fontWeight: '800' }}
+                        >
+                          {statusConfig.label}
+                        </Chip>
+                      </View>
+
+                      <View style={styles.reportStatsRow}>
+                        <Text style={styles.reportStatLabel}>Overall Coverage: </Text>
+                        <Text style={styles.reportStatVal}>{report.overallCoverage}%</Text>
+                        <Text style={styles.reportDate}> · Submitted: {report.submittedAt}</Text>
+                      </View>
+
+                      {report.ccRemarks && (
+                        <Text style={styles.reportRemarks} numberOfLines={2}>
+                          CC Remarks: <Text style={{ fontWeight: 'normal', color: '#64748B' }}>{report.ccRemarks}</Text>
+                        </Text>
+                      )}
+
+                      {report.hodRemarks && (
+                        <View style={styles.hodRemarksContainer}>
+                          <Text style={styles.hodRemarksTitle}>HOD Feedback Remarks:</Text>
+                          <Text style={styles.hodRemarksText}>"{report.hodRemarks}"</Text>
+                        </View>
+                      )}
+                    </Card.Content>
+                  </Card>
+                );
+              })
           )}
-
-          <Button
-            mode="contained"
-            style={styles.compileBtn}
-            onPress={() => navigation.navigate('ConsolidatedReport', { classId, weekNumber: currentWeek })}
-            icon="clipboard-text-outline"
-          >
-            Compile & Submit Report
-          </Button>
-        </Card.Content>
-      </Card>
-
-      {/* Previously Submitted Reports Section */}
-      <Text style={styles.sectionTitle}>Submission History</Text>
-      
-      {reports.filter(r => r.classId === classId).length === 0 ? (
-        <Text style={styles.emptyText}>No reports submitted yet.</Text>
-      ) : (
-        reports
-          .filter(r => r.classId === classId)
-          .map((report) => {
-            const statusConfig = getStatusChip(report.status);
-            return (
-              <Card key={report.id} style={styles.reportCard}>
-                <Card.Content>
-                  <View style={styles.reportHeader}>
-                    <Text style={styles.reportTitle}>Week {report.weekNumber} Report</Text>
-                    <Chip
-                      compact
-                      style={{ backgroundColor: statusConfig.color }}
-                      textStyle={{ fontSize: 11, color: statusConfig.textColor, fontWeight: '700' }}
-                    >
-                      {statusConfig.label}
-                    </Chip>
-                  </View>
-
-                  <View style={styles.reportStatsRow}>
-                    <Text style={styles.reportStatLabel}>Overall Coverage: </Text>
-                    <Text style={styles.reportStatVal}>{report.overallCoverage}%</Text>
-                    <Text style={styles.reportDate}> · Submitted: {report.submittedAt}</Text>
-                  </View>
-
-                  {report.ccRemarks && (
-                    <Text style={styles.reportRemarks} numberOfLines={2}>
-                      CC Remarks: <Text style={{ fontWeight: 'normal', color: Palette.textLight }}>{report.ccRemarks}</Text>
-                    </Text>
-                  )}
-
-                  {report.hodRemarks && (
-                    <View style={styles.hodRemarksContainer}>
-                      <Text style={styles.hodRemarksTitle}>HOD Remarks:</Text>
-                      <Text style={styles.hodRemarksText}>{report.hodRemarks}</Text>
-                    </View>
-                  )}
-                </Card.Content>
-              </Card>
-            );
-          })
-      )}
-    </ScrollView>
+        </ScrollView>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Palette.background,
+    backgroundColor: '#0F52BA', // Royal/Sapphire Blue matching design
   },
-  content: {
-    padding: 16,
-    paddingBottom: 32,
+  // Abstract BG Shapes
+  topOrb: {
+    position: 'absolute',
+    top: -50,
+    right: -40,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: '#3B82F6',
+    opacity: 0.25,
+    zIndex: 0,
   },
+  centerLeftOrb: {
+    position: 'absolute',
+    top: 250,
+    left: -80,
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: '#60A5FA',
+    opacity: 0.15,
+    zIndex: 0,
+  },
+  bottomRightOrb: {
+    position: 'absolute',
+    bottom: -80,
+    right: -60,
+    width: 240,
+    height: 240,
+    borderRadius: 120,
+    backgroundColor: '#EEF2FF',
+    opacity: 0.9,
+    zIndex: 0,
+  },
+  bottomLeftOrb: {
+    position: 'absolute',
+    bottom: 120,
+    left: -40,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#ECFDF5',
+    opacity: 0.6,
+    zIndex: 0,
+  },
+
   header: {
+    paddingTop: 50,
+    paddingHorizontal: 24,
+    paddingBottom: 40,
+    zIndex: 1,
+  },
+  headerTopRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 8,
-    marginBottom: 20,
   },
-  avatar: {
-    backgroundColor: Palette.primary,
+  headerTextCol: {
+    flex: 1,
+    paddingRight: 8,
   },
-  headerText: {
-    marginLeft: 14,
-  },
-  welcome: {
+  welcomeText: {
+    color: '#C8D8F5',
     fontSize: 14,
-    color: Palette.textLight,
+    fontWeight: '500',
   },
-  className: {
+  ccName: {
+    color: '#FFFFFF',
     fontSize: 22,
     fontWeight: 'bold',
-    color: Palette.textDark,
+    marginTop: 2,
   },
+  roleText: {
+    color: '#C8D8F5',
+    fontSize: 14,
+    marginTop: 2,
+  },
+  avatar: {
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+
+  contentWrapper: {
+    flex: 1,
+    backgroundColor: '#FAF9F6', // Premium off-white workspace canvas
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    marginTop: -15,
+    zIndex: 2,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 32,
+  },
+
   actionCard: {
-    backgroundColor: Palette.surface,
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
     elevation: 2,
   },
   actionCardTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: Palette.textDark,
-    marginBottom: 10,
+    color: '#1E293B',
+    marginBottom: 12,
   },
   alertRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
-    paddingRight: 10,
+    backgroundColor: '#FAF9F6',
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 0.5,
+    borderColor: '#F1F5F9',
+  },
+  iconIndicator: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
   },
   alertText: {
     fontSize: 13,
     color: '#D97706',
-    marginLeft: 8,
     lineHeight: 18,
     flex: 1,
   },
   compileBtn: {
-    backgroundColor: Palette.primary,
-    borderRadius: 8,
+    backgroundColor: '#0F52BA',
+    borderRadius: 12,
+    paddingVertical: 4,
+    shadowColor: '#0F52BA',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 3,
   },
-  sectionTitle: {
+  compileBtnLabel: {
     fontSize: 14,
-    fontWeight: '700',
-    color: Palette.textLight,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+  },
+
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#64748B',
     textTransform: 'uppercase',
-    letterSpacing: 0.8,
+    letterSpacing: 1.2,
     marginBottom: 12,
+    marginTop: 8,
   },
   emptyText: {
-    color: Palette.textLight,
+    color: '#94A3B8',
     fontStyle: 'italic',
     textAlign: 'center',
     marginTop: 20,
   },
   reportCard: {
-    backgroundColor: Palette.surface,
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     marginBottom: 12,
-    elevation: 1.5,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 6,
+    elevation: 1,
   },
   reportHeader: {
     flexDirection: 'row',
@@ -218,50 +359,51 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   reportTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 'bold',
-    color: Palette.textDark,
+    color: '#1E293B',
   },
   reportStatsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   reportStatLabel: {
-    fontSize: 13,
-    color: Palette.textLight,
+    fontSize: 12,
+    color: '#64748B',
   },
   reportStatVal: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: 'bold',
-    color: Palette.primary,
+    color: '#0F52BA',
   },
   reportDate: {
     fontSize: 12,
-    color: Palette.textLight,
+    color: '#94A3B8',
   },
   reportRemarks: {
     fontSize: 12,
-    fontWeight: 'bold',
-    color: Palette.textDark,
+    fontWeight: '700',
+    color: '#1E293B',
     lineHeight: 16,
   },
   hodRemarksContainer: {
     marginTop: 10,
     paddingTop: 8,
     borderTopWidth: 0.5,
-    borderTopColor: Palette.border,
+    borderTopColor: '#F1F5F9',
   },
   hodRemarksTitle: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: Palette.error,
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#EF4444',
     textTransform: 'uppercase',
+    letterSpacing: 0.8,
   },
   hodRemarksText: {
     fontSize: 12,
-    color: Palette.textDark,
+    color: '#DC2626',
     fontStyle: 'italic',
-    marginTop: 2,
+    marginTop: 4,
   },
 });
