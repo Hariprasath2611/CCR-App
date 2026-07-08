@@ -1,23 +1,290 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { StyleSheet, View, ScrollView } from 'react-native';
+import { Text, Card, List, Button, Divider, ProgressBar } from 'react-native-paper';
+import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useReportStore } from '../store/useReportStore';
+import { CCStackParamList } from '@navigation/types';
 import { Palette } from '@theme/colors';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+
+type RouteParams = RouteProp<CCStackParamList, 'ConsolidatedReport'>;
+type CCNav = NativeStackNavigationProp<CCStackParamList>;
 
 export const ConsolidatedReportScreen = () => {
+  const route = useRoute<RouteParams>();
+  const navigation = useNavigation<CCNav>();
+  
+  const classId = route.params?.classId || 'CSE-B';
+  const weekNumber = route.params?.weekNumber || 13;
+
+  const subjectProgressList = useReportStore((state) => state.subjectProgressList);
+  const subjects = subjectProgressList[`${classId}_${weekNumber}`] || [];
+
+  const completedSubmissions = subjects.filter((s) => s.status === 'Submitted').length;
+  const totalSubjects = subjects.length;
+
+  const averageCoverage = totalSubjects > 0 
+    ? Math.round(subjects.reduce((sum, s) => sum + s.coverage, 0) / totalSubjects) 
+    : 0;
+
+  const getProgressColor = (pct: number) => {
+    if (pct >= 75) return Palette.success;
+    if (pct >= 50) return Palette.warning;
+    return Palette.error;
+  };
+
   return (
-    <View style={styles.container}>
-      <Text variant="headlineMedium">Consolidated Weekly Report</Text>
-      <Text variant="bodyMedium">Review and compile the class weekly progress summary.</Text>
-    </View>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <Card style={styles.summaryCard}>
+        <Card.Content>
+          <Text style={styles.summaryTitle}>{classId} · Week {weekNumber}</Text>
+          <Text style={styles.summarySubtitle}>Report Consolidation Board</Text>
+
+          <View style={styles.statsContainer}>
+            <View style={styles.statBox}>
+              <Text style={[styles.statValue, { color: Palette.primary }]}>
+                {completedSubmissions}/{totalSubjects}
+              </Text>
+              <Text style={styles.statLabel}>Submissions</Text>
+            </View>
+            <Divider style={styles.dividerVertical} />
+            <View style={styles.statBox}>
+              <Text style={[styles.statValue, { color: getProgressColor(averageCoverage) }]}>
+                {averageCoverage}%
+              </Text>
+              <Text style={styles.statLabel}>Avg Coverage</Text>
+            </View>
+          </View>
+        </Card.Content>
+      </Card>
+
+      <Text style={styles.sectionTitle}>Course Syllabus Coverage</Text>
+
+      {subjects.map((subj) => (
+        <Card key={subj.code} style={styles.subjectCard}>
+          <Card.Content>
+            <View style={styles.subjectHeader}>
+              <View style={styles.subjectLeft}>
+                <Text style={styles.subjectCode}>{subj.code}</Text>
+                <Text style={styles.subjectName}>{subj.name}</Text>
+                <Text style={styles.facultyName}>Faculty: {subj.faculty}</Text>
+              </View>
+              <View style={styles.subjectRight}>
+                <Text style={[styles.coverageText, { color: getProgressColor(subj.coverage) }]}>
+                  {subj.coverage}%
+                </Text>
+                <View style={[
+                  styles.statusBadge, 
+                  { backgroundColor: subj.status === 'Submitted' ? '#E6F4EA' : '#FCE8E6' }
+                ]}>
+                  <Text style={[
+                    styles.statusText, 
+                    { color: subj.status === 'Submitted' ? Palette.success : Palette.error }
+                  ]}>
+                    {subj.status}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {subj.status === 'Submitted' ? (
+              <View style={styles.progressSection}>
+                <View style={styles.progressRow}>
+                  <Text style={styles.topicsCount}>
+                    Topics: {subj.completedTopicsCount} of {subj.totalTopicsCount} completed
+                  </Text>
+                </View>
+                <ProgressBar 
+                  progress={subj.totalTopicsCount > 0 ? (subj.completedTopicsCount / subj.totalTopicsCount) : 0} 
+                  color={getProgressColor(subj.coverage)}
+                  style={styles.progressBar}
+                />
+                {subj.reasonsForPending ? (
+                  <View style={styles.pendingContainer}>
+                    <Text style={styles.pendingLabel}>Pending Reason:</Text>
+                    <Text style={styles.pendingValue}>{subj.reasonsForPending}</Text>
+                  </View>
+                ) : null}
+              </View>
+            ) : (
+              <View style={styles.progressSection}>
+                <Text style={styles.warningText}>Awaiting progress input from faculty.</Text>
+              </View>
+            )}
+          </Card.Content>
+        </Card>
+      ))}
+
+      <Button
+        mode="contained"
+        icon="send"
+        style={styles.actionBtn}
+        onPress={() => navigation.navigate('SubmitToHOD', { reportId: `${classId}_W${weekNumber}` })}
+        disabled={totalSubjects === 0}
+      >
+        Proceed to Submit to HOD
+      </Button>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: Palette.background,
+  },
+  content: {
+    padding: 16,
+    paddingBottom: 32,
+  },
+  summaryCard: {
+    backgroundColor: Palette.surface,
+    borderRadius: 12,
+    marginBottom: 20,
+    elevation: 2,
+  },
+  summaryTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: Palette.textDark,
+  },
+  summarySubtitle: {
+    fontSize: 13,
+    color: Palette.textLight,
+    marginBottom: 16,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderTopWidth: 0.5,
+    borderTopColor: Palette.border,
+  },
+  statBox: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 22,
+    fontWeight: 'bold',
+  },
+  statLabel: {
+    fontSize: 11,
+    color: Palette.textLight,
+    textTransform: 'uppercase',
+    marginTop: 2,
+  },
+  dividerVertical: {
+    width: 1,
+    height: 40,
+    backgroundColor: Palette.border,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Palette.textLight,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 12,
+  },
+  subjectCard: {
+    backgroundColor: Palette.surface,
+    borderRadius: 12,
+    marginBottom: 12,
+    elevation: 1.5,
+  },
+  subjectHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  subjectLeft: {
+    flex: 1,
+    paddingRight: 8,
+  },
+  subjectCode: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: Palette.primary,
+  },
+  subjectName: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: Palette.textDark,
+    marginTop: 2,
+  },
+  facultyName: {
+    fontSize: 12,
+    color: Palette.textLight,
+    marginTop: 2,
+  },
+  subjectRight: {
+    alignItems: 'flex-end',
+  },
+  coverageText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  statusBadge: {
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    marginTop: 4,
+  },
+  statusText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+  },
+  progressSection: {
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: 0.5,
+    borderTopColor: Palette.border,
+  },
+  progressRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  topicsCount: {
+    fontSize: 12,
+    color: Palette.textDark,
+    fontWeight: '500',
+  },
+  progressBar: {
+    height: 6,
+    borderRadius: 3,
+  },
+  pendingContainer: {
+    marginTop: 8,
+    backgroundColor: '#FFFBEB',
+    borderRadius: 6,
+    padding: 8,
+    borderWidth: 0.5,
+    borderColor: '#FEF3C7',
+  },
+  pendingLabel: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#B45309',
+    textTransform: 'uppercase',
+  },
+  pendingValue: {
+    fontSize: 12,
+    color: '#78350F',
+    marginTop: 2,
+  },
+  warningText: {
+    fontSize: 12,
+    color: Palette.error,
+    fontStyle: 'italic',
+  },
+  actionBtn: {
+    marginTop: 20,
+    backgroundColor: Palette.primary,
+    borderRadius: 8,
+    paddingVertical: 4,
   },
 });

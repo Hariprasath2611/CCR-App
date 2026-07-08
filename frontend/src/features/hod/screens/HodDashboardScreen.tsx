@@ -8,10 +8,7 @@ import { Palette } from '@theme/colors';
 import { HodStackParamList } from '@navigation/types';
 
 type HodNav = NativeStackNavigationProp<HodStackParamList>;
-
-// ─── Mock summary data (replace with API/store in Phase 7) ──────────────────
-const PENDING_REPORTS = 5;
-const PENDING_EXTRA_HOURS = 3;
+import { useReportStore } from '@features/cc/store/useReportStore';
 
 interface ActionCardProps {
   title: string;
@@ -59,6 +56,12 @@ const ActionCard: React.FC<ActionCardProps> = ({
 export const HodDashboardScreen = () => {
   const { user, logout } = useAuthStore();
   const navigation = useNavigation<HodNav>();
+  const reports = useReportStore((state) => state.reports);
+
+  // Filter pending reports that are submitted to the HOD
+  const pendingReportsList = reports.filter((r) => r.status === 'SUBMITTED_TO_HOD');
+  const PENDING_REPORTS = pendingReportsList.length;
+  const PENDING_EXTRA_HOURS = 3; // Mock other requests
 
   const initials = user?.name
     ? user.name.split(' ').map((w) => w[0]).join('').substring(0, 2).toUpperCase()
@@ -98,16 +101,20 @@ export const HodDashboardScreen = () => {
 
       <ActionCard
         title="CC Consolidated Reports"
-        subtitle={`${PENDING_REPORTS} class reports awaiting approval from Class Coordinators.`}
+        subtitle={`${PENDING_REPORTS} class reports awaiting HOD approval and remarks.`}
         badgeCount={PENDING_REPORTS}
         buttonLabel="Review Reports"
         accentColor={Palette.primary}
-        onPress={() =>
-          navigation.navigate('RequestDetails', {
-            requestId: 'sample-report-001',
-            requestType: 'PLAN',
-          })
-        }
+        onPress={() => {
+          if (PENDING_REPORTS > 0) {
+            navigation.navigate('RequestDetails', {
+              requestId: pendingReportsList[0].id,
+              requestType: 'CC_REPORT',
+            });
+          } else {
+            alert('No pending CC reports to review.');
+          }
+        }}
       />
 
       <ActionCard

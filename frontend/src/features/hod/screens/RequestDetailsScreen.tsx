@@ -56,14 +56,44 @@ const coverageColor = (pct: string) => {
   return Palette.error;
 };
 
+import { useReportStore, SubjectProgress } from '@features/cc/store/useReportStore';
+
 export const RequestDetailsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteParams>();
   const { requestId, requestType } = route.params;
 
+  const getReportById = useReportStore((state) => state.getReportById);
+  const submitHODDecision = useReportStore((state) => state.submitHODDecision);
+
   const isExtraHour = requestType === 'EXTRA_HOURS';
-  const data = isExtraHour ? MOCK_EXTRA_HOUR : MOCK_PLAN_REPORT;
-  const planData = isExtraHour ? null : (data as typeof MOCK_PLAN_REPORT);
+
+  // Fetch report dynamically from the store
+  const reportData = isExtraHour ? null : getReportById(requestId);
+
+  const data = isExtraHour 
+    ? MOCK_EXTRA_HOUR 
+    : (reportData 
+        ? {
+            id: reportData.id,
+            type: 'CC Consolidated Report',
+            week: `Week ${reportData.weekNumber}`,
+            section: reportData.classId,
+            submittedBy: reportData.submittedBy,
+            submittedAt: reportData.submittedAt,
+            overallCoverage: `${reportData.overallCoverage}%`,
+            ccRemarks: reportData.ccRemarks,
+            subjects: reportData.subjects.map((s: SubjectProgress) => ({
+              code: s.code,
+              name: s.name,
+              coverage: `${s.coverage}%`,
+              status: s.status,
+            })),
+          }
+        : MOCK_PLAN_REPORT
+      );
+
+  const planData = isExtraHour ? null : (data as any);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -75,13 +105,16 @@ export const RequestDetailsScreen = () => {
   const submitDecision = async (decision: 'APPROVED' | 'REJECTED' | 'RETURNED', remarks: string) => {
     setIsSubmitting(true);
     try {
-      // TODO: replace with real API call — services/api/endpoints/hod.ts → submitHODDecision()
-      console.log('HOD Decision:', { requestId, decision, remarks });
+      if (!isExtraHour) {
+        submitHODDecision(requestId, decision, remarks);
+      }
+      
+      console.log('HOD Decision Submitted:', { requestId, decision, remarks });
       await new Promise<void>((resolve) => setTimeout(resolve, 800)); // mock network delay
 
       Alert.alert(
         'Decision Submitted',
-        `You have ${decision === 'APPROVED' ? 'approved' : decision === 'REJECTED' ? 'rejected' : 'returned'} this ${isExtraHour ? 'request' : 'report'}.`,
+        `You have ${decision === 'APPROVED' ? 'approved and sent this report to the Admin' : decision === 'REJECTED' ? 'rejected' : 'returned'} this ${isExtraHour ? 'request' : 'report'}.`,
         [{ text: 'OK', onPress: () => navigation.goBack() }]
       );
       reset();
@@ -137,7 +170,7 @@ export const RequestDetailsScreen = () => {
             <Divider style={styles.divider} />
             <Text style={styles.sectionLabel}>Subject-wise Coverage</Text>
 
-            {planData.subjects.map((s) => (
+            {planData.subjects.map((s: any) => (
               <View key={s.code} style={styles.subjectRow}>
                 <View style={styles.subjectInfo}>
                   <Text style={styles.subjectCode}>{s.code}</Text>

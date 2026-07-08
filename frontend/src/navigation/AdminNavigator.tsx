@@ -72,13 +72,13 @@ export const AdminTabNavigator = () => {
         tabBarIcon: ({ color, size }) => {
           let iconName = 'help-circle';
           if (route.name === 'AdminHome') {
-            iconName = 'bank';
+            iconName = 'home';
+          } else if (route.name === 'Reports') {
+            iconName = 'file-document-outline';
           } else if (route.name === 'Analytics') {
             iconName = 'chart-line';
-          } else if (route.name === 'Faculty') {
-            iconName = 'account-group';
           } else if (route.name === 'Profile') {
-            iconName = 'account';
+            iconName = 'account-outline';
           }
           return <MaterialCommunityIcons name={iconName as any} size={size} color={color} />;
         },
@@ -87,17 +87,17 @@ export const AdminTabNavigator = () => {
       <Tab.Screen
         name="AdminHome"
         component={AdminStackNavigator}
-        options={{ title: 'Admin Console', headerShown: false }}
+        options={{ title: 'Dashboard', headerShown: false }}
+      />
+      <Tab.Screen
+        name="Reports"
+        component={WeeklyReportsScreen}
+        options={{ title: 'Reports' }}
       />
       <Tab.Screen
         name="Analytics"
         component={InstitutionAnalyticsScreen}
-        options={{ title: 'Institution Analytics' }}
-      />
-      <Tab.Screen
-        name="Faculty"
-        component={FacultyAnalyticsScreen}
-        options={{ title: 'Faculty Performance' }}
+        options={{ title: 'Analytics' }}
       />
       <Tab.Screen
         name="Profile"
