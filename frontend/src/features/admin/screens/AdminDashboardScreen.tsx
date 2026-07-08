@@ -1,208 +1,355 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, Card, Chip, Divider, Button } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { Text, Avatar, Badge } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../../auth/store/useAuthStore';
 import { useReportStore } from '@features/cc/store/useReportStore';
 import { Palette } from '@theme/colors';
-import { cardStyles } from '@theme/styles/cards';
+import { Feather, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 
 export const AdminDashboardScreen = () => {
-  const { logout } = useAuthStore();
+  const { logout, user } = useAuthStore();
+  const navigation = useNavigation<any>();
   const reports = useReportStore((state) => state.reports);
 
-  // Filter reports that have been approved and sent to the admin by the HOD
-  const adminReports = reports.filter((r) => r.status === 'SENT_TO_ADMIN');
-
-  const getProgressColor = (pct: number) => {
-    if (pct >= 75) return Palette.success;
-    if (pct >= 50) return Palette.warning;
-    return Palette.error;
-  };
+  // Dynamic statistics calculations
+  const totalDepartments = 12; // Seeding departments list
+  const totalClasses = 48; // Standard mockup
+  const reportsSubmitted = reports.length;
+  const pendingApproval = reports.filter((r) => r.status === 'SUBMITTED_TO_HOD').length;
+  const approvedReports = reports.filter((r) => r.status === 'SENT_TO_ADMIN').length;
+  const rejectedReports = reports.filter(
+    (r) => r.status === 'REJECTED_BY_HOD' || r.status === 'RETURNED_BY_HOD'
+  ).length;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text variant="headlineMedium" style={styles.title}>Institution Audit Panel</Text>
-      <Text style={styles.subtitle}>Super Administrator Console</Text>
+    <View style={styles.container}>
+      {/* ── Header Banner ── */}
+      <View style={styles.header}>
+        <View style={styles.headerTopRow}>
+          <View>
+            <Text style={styles.welcomeText}>Welcome,</Text>
+            <Text style={styles.principalName}>Dr. Ramesh 👋</Text>
+            <Text style={styles.roleText}>Principal</Text>
+          </View>
+          
+          <TouchableOpacity style={styles.bellButton} activeOpacity={0.7}>
+            <Ionicons name="notifications-outline" size={28} color="#FFFFFF" />
+            <Badge style={styles.bellBadge} size={8} />
+          </TouchableOpacity>
+        </View>
+      </View>
 
-      {/* Syllabus Completion Summary Card */}
-      <Card style={cardStyles.dashboardCard}>
-        <Card.Content>
-          <Text style={cardStyles.cardTitle}>Syllabus Completion Index</Text>
-          <Text style={cardStyles.cardSubtitle}>
-            Current institution average completion rate: 74.2% (Target: 80%).
-          </Text>
-        </Card.Content>
-      </Card>
-
-      {/* CC/HOD Reports Auditing List */}
-      <Text style={styles.sectionTitle}>HOD Approved Weekly Reports</Text>
-
-      {adminReports.length === 0 ? (
-        <Text style={styles.emptyText}>No reports approved by HODs yet.</Text>
-      ) : (
-        adminReports.map((report) => (
-          <Card key={report.id} style={styles.auditCard}>
-            <Card.Content>
-              <View style={styles.auditHeader}>
-                <View>
-                  <Text style={styles.classTitle}>{report.classId} · Week {report.weekNumber}</Text>
-                  <Text style={styles.submittedBy}>CC: {report.submittedBy}</Text>
-                </View>
-                <Chip
-                  compact
-                  style={[styles.coverageChip, { backgroundColor: getProgressColor(report.overallCoverage) + '15' }]}
-                  textStyle={{ color: getProgressColor(report.overallCoverage), fontWeight: 'bold' }}
-                >
-                  {report.overallCoverage}% Avg
-                </Chip>
+      {/* ── Content Card overlapping Header ── */}
+      <View style={styles.contentWrapper}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {/* ── 2x3 Statistics Grid ── */}
+          <View style={styles.statsGrid}>
+            
+            {/* Stat 1: Departments */}
+            <View style={styles.statCell}>
+              <View style={[styles.statIconBox, { backgroundColor: '#EEF2FF' }]}>
+                <MaterialCommunityIcons name="office-building" size={24} color="#3B82F6" />
               </View>
-
-              <Divider style={styles.divider} />
-
-              <View style={styles.remarkBox}>
-                <Text style={styles.remarkTitle}>HOD Remarks & Approval:</Text>
-                <Text style={styles.remarkContent}>
-                  "{report.hodRemarks || 'Approved with no remarks.'}"
-                </Text>
-                <Text style={styles.approvalDate}>Approved Date: {report.approvedAt}</Text>
+              <View style={styles.statTextBox}>
+                <Text style={styles.statLabel}>Departments</Text>
+                <Text style={styles.statValue}>{totalDepartments}</Text>
               </View>
+            </View>
 
-              <Divider style={styles.divider} />
+            {/* Stat 2: Total Classes */}
+            <View style={styles.statCell}>
+              <View style={[styles.statIconBox, { backgroundColor: '#ECFDF5' }]}>
+                <MaterialCommunityIcons name="google-classroom" size={24} color="#10B981" />
+              </View>
+              <View style={styles.statTextBox}>
+                <Text style={styles.statLabel}>Total Classes</Text>
+                <Text style={styles.statValue}>{totalClasses}</Text>
+              </View>
+            </View>
 
-              <Text style={styles.subjectsTitle}>Subject Details:</Text>
-              {report.subjects.map((subj) => (
-                <View key={subj.code} style={styles.subjectRow}>
-                  <Text style={styles.subjectText}>
-                    {subj.code} - {subj.name}
-                  </Text>
-                  <Text style={[styles.subjectCoverage, { color: getProgressColor(subj.coverage) }]}>
-                    {subj.coverage}%
-                  </Text>
-                </View>
-              ))}
-            </Card.Content>
-          </Card>
-        ))
-      )}
+            {/* Stat 3: Reports Submitted */}
+            <View style={styles.statCell}>
+              <View style={[styles.statIconBox, { backgroundColor: '#EFF6FF' }]}>
+                <MaterialCommunityIcons name="file-document-outline" size={24} color="#2563EB" />
+              </View>
+              <View style={styles.statTextBox}>
+                <Text style={styles.statLabel}>Reports Submitted</Text>
+                <Text style={styles.statValue}>{reportsSubmitted}</Text>
+              </View>
+            </View>
 
-      <Button mode="text" onPress={logout} style={styles.logoutBtn} textColor={Palette.error}>
-        Sign Out
-      </Button>
-    </ScrollView>
+            {/* Stat 4: Pending Approval */}
+            <View style={styles.statCell}>
+              <View style={[styles.statIconBox, { backgroundColor: '#FFF7ED' }]}>
+                <MaterialCommunityIcons name="folder-outline" size={24} color="#F97316" />
+              </View>
+              <View style={styles.statTextBox}>
+                <Text style={styles.statLabel}>Pending Approval</Text>
+                <Text style={styles.statValue}>{pendingApproval}</Text>
+              </View>
+            </View>
+
+            {/* Stat 5: Approved Reports */}
+            <View style={styles.statCell}>
+              <View style={[styles.statIconBox, { backgroundColor: '#ECFDF5' }]}>
+                <MaterialCommunityIcons name="file-check-outline" size={24} color="#10B981" />
+              </View>
+              <View style={styles.statTextBox}>
+                <Text style={styles.statLabel}>Approved Reports</Text>
+                <Text style={styles.statValue}>{approvedReports}</Text>
+              </View>
+            </View>
+
+            {/* Stat 6: Rejected Reports */}
+            <View style={styles.statCell}>
+              <View style={[styles.statIconBox, { backgroundColor: '#FEF2F2' }]}>
+                <MaterialCommunityIcons name="file-cancel-outline" size={24} color="#EF4444" />
+              </View>
+              <View style={styles.statTextBox}>
+                <Text style={styles.statLabel}>Rejected Reports</Text>
+                <Text style={styles.statValue}>{rejectedReports}</Text>
+              </View>
+            </View>
+
+          </View>
+
+          {/* ── Quick Actions ── */}
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+
+          {/* Action 1: View Departments */}
+          <TouchableOpacity
+            style={styles.actionRow}
+            onPress={() => navigation.navigate('Reports')}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.actionIconBox, { backgroundColor: '#F5F3FF' }]}>
+              <MaterialCommunityIcons name="account-group-outline" size={24} color="#8B5CF6" />
+            </View>
+            <View style={styles.actionTextBox}>
+              <Text style={styles.actionTitle}>View Departments</Text>
+              <Text style={styles.actionSubtitle}>View all department classes</Text>
+            </View>
+            <Feather name="chevron-right" size={20} color="#94A3B8" />
+          </TouchableOpacity>
+
+          {/* Action 2: Pending Approvals */}
+          <TouchableOpacity
+            style={styles.actionRow}
+            onPress={() => navigation.navigate('Reports')}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.actionIconBox, { backgroundColor: '#FFF7ED' }]}>
+              <MaterialCommunityIcons name="folder-clock-outline" size={24} color="#F97316" />
+            </View>
+            <View style={styles.actionTextBox}>
+              <Text style={styles.actionTitle}>Pending Approvals</Text>
+              <Text style={styles.actionSubtitle}>Approve or reject reports</Text>
+            </View>
+            <Feather name="chevron-right" size={20} color="#94A3B8" />
+          </TouchableOpacity>
+
+          {/* Action 3: Report Analytics */}
+          <TouchableOpacity
+            style={styles.actionRow}
+            onPress={() => navigation.navigate('Analytics')}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.actionIconBox, { backgroundColor: '#ECFDF5' }]}>
+              <MaterialCommunityIcons name="chart-bar" size={24} color="#10B981" />
+            </View>
+            <View style={styles.actionTextBox}>
+              <Text style={styles.actionTitle}>Report Analytics</Text>
+              <Text style={styles.actionSubtitle}>View overall report analytics</Text>
+            </View>
+            <Feather name="chevron-right" size={20} color="#94A3B8" />
+          </TouchableOpacity>
+
+          {/* Sign Out Button */}
+          <TouchableOpacity
+            style={styles.signOutBtn}
+            onPress={logout}
+            activeOpacity={0.8}
+          >
+            <Feather name="log-out" size={18} color={Palette.error} />
+            <Text style={styles.signOutText}>Sign Out</Text>
+          </TouchableOpacity>
+
+        </ScrollView>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Palette.background,
+    backgroundColor: '#0F52BA', // Sapphire/Royal Blue
   },
-  content: {
-    padding: 16,
-    paddingBottom: 32,
+  header: {
+    paddingTop: 50,
+    paddingHorizontal: 24,
+    paddingBottom: 40,
   },
-  title: {
-    fontWeight: 'bold',
-    color: Palette.primary,
-    marginTop: 16,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: Palette.textLight,
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: Palette.textLight,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 12,
-    marginTop: 16,
-  },
-  emptyText: {
-    color: Palette.textLight,
-    fontStyle: 'italic',
-    textAlign: 'center',
-    marginTop: 16,
-    marginBottom: 20,
-  },
-  auditCard: {
-    backgroundColor: Palette.surface,
-    borderRadius: 12,
-    marginBottom: 16,
-    elevation: 2,
-  },
-  auditHeader: {
+  headerTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  classTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Palette.textDark,
+  welcomeText: {
+    color: '#C8D8F5',
+    fontSize: 15,
+    fontWeight: '500',
   },
-  submittedBy: {
-    fontSize: 12,
-    color: Palette.textLight,
+  principalName: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: 'bold',
     marginTop: 2,
   },
-  coverageChip: {
-    alignSelf: 'center',
+  roleText: {
+    color: '#C8D8F5',
+    fontSize: 15,
+    marginTop: 2,
   },
-  divider: {
-    marginVertical: 12,
-    backgroundColor: Palette.border,
+  bellButton: {
+    padding: 8,
+    position: 'relative',
   },
-  remarkBox: {
-    backgroundColor: '#F8FAFC',
-    borderRadius: 8,
-    padding: 10,
-    borderLeftWidth: 3,
-    borderLeftColor: Palette.success,
+  bellBadge: {
+    backgroundColor: '#EF4444',
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    borderWidth: 1.5,
+    borderColor: '#0F52BA',
   },
-  remarkTitle: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: Palette.success,
-    textTransform: 'uppercase',
+  contentWrapper: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    marginTop: -15,
   },
-  remarkContent: {
-    fontSize: 13,
-    color: Palette.textDark,
-    fontStyle: 'italic',
-    marginTop: 4,
-    lineHeight: 18,
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 32,
   },
-  approvalDate: {
-    fontSize: 11,
-    color: Palette.textLight,
-    marginTop: 6,
-  },
-  subjectsTitle: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: Palette.textLight,
-    textTransform: 'uppercase',
-    marginBottom: 6,
-  },
-  subjectRow: {
+  
+  // 2x3 Grid
+  statsGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 4,
+    width: '100%',
   },
-  subjectText: {
-    fontSize: 13,
-    color: Palette.textDark,
+  statCell: {
+    width: '48%',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  statIconBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  statTextBox: {
     flex: 1,
   },
-  subjectCoverage: {
-    fontSize: 13,
-    fontWeight: 'bold',
+  statLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#64748B',
   },
-  logoutBtn: {
-    marginVertical: 24,
+  statValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#0F52BA',
+    marginTop: 2,
+  },
+
+  // Quick Actions Section
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#0F52BA',
+    marginTop: 18,
+    marginBottom: 12,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  actionIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 14,
+  },
+  actionTextBox: {
+    flex: 1,
+  },
+  actionTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1E293B',
+  },
+  actionSubtitle: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 2,
+  },
+  
+  // Sign Out
+  signOutBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: 28,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderColor: '#FCE8E6',
+    borderRadius: 8,
+    backgroundColor: '#FEF2F2',
+  },
+  signOutText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#EF4444',
+    marginLeft: 6,
   },
 });
