@@ -59,7 +59,7 @@ export const LoginScreen = () => {
       return;
     }
 
-    if (!selectedDept) {
+    if (selectedRole !== 'ADMIN' && !selectedDept) {
       alert('Please select a department to enter');
       return;
     }
@@ -75,7 +75,9 @@ export const LoginScreen = () => {
       email: email || `${selectedRole.toLowerCase()}@college.edu`,
       role: selectedRole,
       isClassCoordinator: isCC,
-      department: DEPARTMENTS.find(d => d.value === selectedDept)?.label || 'Computer Science',
+      department: selectedRole === 'ADMIN' 
+        ? 'Administration' 
+        : (DEPARTMENTS.find(d => d.value === selectedDept)?.label || 'Computer Science'),
       assignedClassId: 'CSE-B',
     };
     login(dummyUser, 'dummy-access-token', 'dummy-refresh-token');
@@ -280,6 +282,7 @@ export const LoginScreen = () => {
                     onPress={() => {
                       setSelectedRole('ADMIN');
                       setSelectedSubRole(null);
+                      setSelectedDept(null);
                       setShowDropdown(false);
                     }}
                     activeOpacity={0.7}
@@ -353,67 +356,69 @@ export const LoginScreen = () => {
             )}
 
             {/* Department Picker Field */}
-            <View style={styles.fieldGroup}>
-              <View style={styles.fieldLabelRow}>
-                <Feather name="book-open" size={14} color="#0F52BA" style={styles.labelIcon} />
-                <Text style={styles.fieldLabel}>Department</Text>
-              </View>
-              
-              <TouchableOpacity
-                style={[
-                  styles.inputContainer,
-                  showDeptDropdown && styles.inputContainerActive,
-                ]}
-                onPress={() => setShowDeptDropdown(!showDeptDropdown)}
-                activeOpacity={0.9}
-              >
-                <View style={styles.inputLeftIconBox}>
-                  <MaterialCommunityIcons
-                    name="domain"
-                    size={22}
-                    color={selectedDept ? '#0F52BA' : '#94A3B8'}
-                  />
+            {selectedRole !== 'ADMIN' && (
+              <View style={styles.fieldGroup}>
+                <View style={styles.fieldLabelRow}>
+                  <Feather name="book-open" size={14} color="#0F52BA" style={styles.labelIcon} />
+                  <Text style={styles.fieldLabel}>Department</Text>
                 </View>
-                <Text
+                
+                <TouchableOpacity
                   style={[
-                    styles.roleTextValue,
-                    !selectedDept && styles.roleTextPlaceholder,
+                    styles.inputContainer,
+                    showDeptDropdown && styles.inputContainerActive,
                   ]}
+                  onPress={() => setShowDeptDropdown(!showDeptDropdown)}
+                  activeOpacity={0.9}
                 >
-                  {selectedDept ? DEPARTMENTS.find(d => d.value === selectedDept)?.label : 'Select Department'}
-                </Text>
-                <Feather
-                  name={showDeptDropdown ? 'chevron-up' : 'chevron-down'}
-                  size={18}
-                  color="#64748B"
-                  style={styles.chevronIcon}
-                />
-              </TouchableOpacity>
+                  <View style={styles.inputLeftIconBox}>
+                    <MaterialCommunityIcons
+                      name="domain"
+                      size={22}
+                      color={selectedDept ? '#0F52BA' : '#94A3B8'}
+                    />
+                  </View>
+                  <Text
+                    style={[
+                      styles.roleTextValue,
+                      !selectedDept && styles.roleTextPlaceholder,
+                    ]}
+                  >
+                    {selectedDept ? DEPARTMENTS.find(d => d.value === selectedDept)?.label : 'Select Department'}
+                  </Text>
+                  <Feather
+                    name={showDeptDropdown ? 'chevron-up' : 'chevron-down'}
+                    size={18}
+                    color="#64748B"
+                    style={styles.chevronIcon}
+                  />
+                </TouchableOpacity>
 
-              {/* Scrollable Custom Dropdown List */}
-              {showDeptDropdown && (
-                <View style={[styles.dropdownCard, { maxHeight: 220 }]}>
-                  <ScrollView nestedScrollEnabled={true} keyboardShouldPersistTaps="handled">
-                    {DEPARTMENTS.map((dept) => (
-                      <TouchableOpacity
-                        key={dept.value}
-                        style={styles.dropdownItem}
-                        onPress={() => {
-                          setSelectedDept(dept.value);
-                          setShowDeptDropdown(false);
-                        }}
-                        activeOpacity={0.7}
-                      >
-                        <View style={styles.dropdownItemIconBox}>
-                          <MaterialCommunityIcons name="office-building" size={20} color="#0F52BA" />
-                        </View>
-                        <Text style={styles.dropdownItemText}>{dept.label}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                </View>
-              )}
-            </View>
+                {/* Scrollable Custom Dropdown List */}
+                {showDeptDropdown && (
+                  <View style={[styles.dropdownCard, { maxHeight: 220 }]}>
+                    <ScrollView nestedScrollEnabled={true} keyboardShouldPersistTaps="handled">
+                      {DEPARTMENTS.map((dept) => (
+                        <TouchableOpacity
+                          key={dept.value}
+                          style={styles.dropdownItem}
+                          onPress={() => {
+                            setSelectedDept(dept.value);
+                            setShowDeptDropdown(false);
+                          }}
+                          activeOpacity={0.7}
+                        >
+                          <View style={styles.dropdownItemIconBox}>
+                            <MaterialCommunityIcons name="office-building" size={20} color="#0F52BA" />
+                          </View>
+                          <Text style={styles.dropdownItemText}>{dept.label}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </ScrollView>
+                  </View>
+                )}
+              </View>
+            )}
 
           </View>
 
