@@ -752,3 +752,5 @@
 {"_e":"metro:bundling:progress","_t":1783589741962,"id":"1","progress":0.8388865453470435,"total":1427,"current":1307}
 {"_e":"metro:bundling:done","_t":1783589742075,"id":"1","total":1427,"ms":818.0565}
 {"_e":"metro:client_log","_t":1783589746059,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
+{"_e":"metro:server_log","_t":1783590417631,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:client_log","_t":1783590597786,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
