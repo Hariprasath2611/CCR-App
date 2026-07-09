@@ -22,7 +22,7 @@ export const LandingScreen = () => {
       <View style={styles.blueHeader}>
         <Text style={styles.collegeName}>JAYA ENGINEERING COLLEGE</Text>
         <Image
-          source={require('../../../assets/logo_transparent.png')}
+          source={require('../../../assets/logo-removebg-preview.png')}
           style={[styles.logo, { width: logoWidth, height: logoHeight }]}
           resizeMode="contain"
         />
@@ -66,8 +66,8 @@ const styles = StyleSheet.create({
   },
   collegeName: {
     color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '800',
+    fontSize: 30,
+    fontWeight: '900',
     textAlign: 'center',
     letterSpacing: 1.5,
     paddingHorizontal: 20,

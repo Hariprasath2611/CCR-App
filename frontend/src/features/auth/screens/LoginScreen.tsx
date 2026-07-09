@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -29,6 +29,9 @@ export const LoginScreen = () => {
   const [secureText, setSecureText] = useState(true);
   const [isEmailFocused, setIsEmailFocused] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+
+  const emailRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
 
   const login = useAuthStore((state) => state.login);
   const navigation = useNavigation<NavigationProp>();
@@ -137,7 +140,7 @@ export const LoginScreen = () => {
   return (
     <KeyboardAvoidingView
       style={styles.keyboardContainer}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
 
@@ -151,7 +154,7 @@ export const LoginScreen = () => {
           <View style={styles.headerContainer}>
             <View style={styles.logoFrame}>
               <Image
-                source={require('../../../assets/logo.jpeg')}
+                source={require('../../../assets/logo-removebg-preview.png')}
                 style={styles.logo}
                 resizeMode="contain"
               />
@@ -169,7 +172,9 @@ export const LoginScreen = () => {
             {/* Email Field */}
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Email Address</Text>
-              <View
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={() => emailRef.current?.focus()}
                 style={[
                   styles.inputWrapper,
                   isEmailFocused && styles.inputWrapperFocused,
@@ -183,6 +188,7 @@ export const LoginScreen = () => {
                   />
                 </View>
                 <TextInput
+                  ref={emailRef}
                   style={styles.textInput}
                   placeholder="Enter email id"
                   placeholderTextColor={Palette.textLight}
@@ -190,16 +196,21 @@ export const LoginScreen = () => {
                   onChangeText={setEmail}
                   autoCapitalize="none"
                   keyboardType="email-address"
+                  autoCorrect={false}
+                  autoComplete="email"
+                  textContentType="emailAddress"
                   onFocus={() => setIsEmailFocused(true)}
                   onBlur={() => setIsEmailFocused(false)}
                 />
-              </View>
+              </TouchableOpacity>
             </View>
 
             {/* Password Field */}
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Password</Text>
-              <View
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={() => passwordRef.current?.focus()}
                 style={[
                   styles.inputWrapper,
                   isPasswordFocused && styles.inputWrapperFocused,
@@ -213,6 +224,7 @@ export const LoginScreen = () => {
                   />
                 </View>
                 <TextInput
+                  ref={passwordRef}
                   style={styles.textInput}
                   placeholder="Enter password"
                   placeholderTextColor={Palette.textLight}
@@ -234,7 +246,7 @@ export const LoginScreen = () => {
                     color={Palette.textLight}
                   />
                 </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             </View>
 
             {/* Smart Role Resolver Indicator */}
@@ -435,7 +447,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    height: '100%',
+    alignSelf: 'stretch',
     fontSize: 14.5,
     color: Palette.textDark,
     paddingHorizontal: 4,
