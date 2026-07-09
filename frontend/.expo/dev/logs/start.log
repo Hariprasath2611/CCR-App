@@ -876,3 +876,14 @@
 {"_e":"metro:bundling:progress","_t":1783608350280,"id":"1","progress":0.999,"total":1475,"current":1475}
 {"_e":"metro:bundling:done","_t":1783608350347,"id":"1","total":1475,"ms":1677.9452}
 {"_e":"metro:client_log","_t":1783608354364,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
+{"_e":"metro:bundling:started","_t":1783608710125,"id":"4","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783608710125,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1783608710206,"id":"4","total":1,"ms":80.7152}
+{"_e":"metro:client_log","_t":1783608713459,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
+{"_e":"metro:bundling:started","_t":1783608753628,"id":"6","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783608753629,"id":"6","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1783608753705,"id":"6","total":1,"ms":76.9266}
+{"_e":"metro:client_log","_t":1783608756918,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
+{"_e":"metro:bundling:failed","_t":1783609034312,"id":null,"message":"SyntaxError: C:\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\src\\features\\auth\\screens\\LandingScreen.tsx: Unexpected token (100:12)\n\n   98 |   illustrationContainer: {\n   99 |     alignItems: 'center',\n> 100 |     justify('center'), // Wait, let's keep it clean: justifyContent: 'center',\n      |             ^\n  101 |     marginVertical: 10,\n  102 |   },\n  103 |   illustration: {","importStack":null,"filename":"src\\features\\auth\\screens\\LandingScreen.tsx","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:failed","_t":1783609034511,"id":null,"message":"SyntaxError: C:\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\src\\features\\auth\\screens\\LandingScreen.tsx: Unexpected token (100:12)\n\n   98 |   illustrationContainer: {\n   99 |     alignItems: 'center',\n> 100 |     justify('center'), // Wait, let's keep it clean: justifyContent: 'center',\n      |             ^\n  101 |     marginVertical: 10,\n  102 |   },\n  103 |   illustration: {","importStack":null,"filename":"src\\features\\auth\\screens\\LandingScreen.tsx","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:server_log","_t":1783609424781,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
