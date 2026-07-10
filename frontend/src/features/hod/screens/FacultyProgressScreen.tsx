@@ -1,24 +1,377 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { StyleSheet, View, ScrollView } from 'react-native';
+import { Text, Card, ProgressBar, Button, Badge, Divider } from 'react-native-paper';
+import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useReportStore } from '@features/cc/store/useReportStore';
+import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { Palette } from '@theme/colors';
+import { StaffStackParamList } from '@navigation/types';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+
+type RouteParams = RouteProp<StaffStackParamList, 'FacultyProgress'>;
+type HodNav = NativeStackNavigationProp<StaffStackParamList>;
 
 export const FacultyProgressScreen = () => {
+  const route = useRoute<RouteParams>();
+  const navigation = useNavigation<HodNav>();
+  const { user } = useAuthStore();
+  const reports = useReportStore((state) => state.reports);
+  const subjectProgressList = useReportStore((state) => state.subjectProgressList);
+
+  const classId = route.params?.classId || 'CSE-B';
+  const selectedWeek = '12'; // Default week
+  const progressList = subjectProgressList[`${classId}_${selectedWeek}`] || [];
+
+  // Filter pending consolidated reports submitted for this specific class
+  const classPendingReports = reports.filter(
+    (r) => r.classId === classId && r.status === 'SUBMITTED_TO_HOD'
+  );
+  const PENDING_REPORTS = classPendingReports.length;
+  
+  // Mock slot request for this class
+  const PENDING_EXTRA_HOURS = classId === 'CSE-B' ? 1 : 0;
+
+  const getStatusLabel = (status: string) => {
+    if (status === 'Submitted') {
+      return { label: 'LOGGED', bgColor: '#ECFDF5', textColor: Palette.success };
+    }
+    return { label: 'PENDING', bgColor: '#FEF2F2', textColor: Palette.error };
+  };
+
   return (
-    <View style={styles.container}>
-      <Text variant="headlineMedium">Faculty Syllabus Progress</Text>
-      <Text variant="bodyMedium">View progress breakdown by subject faculty.</Text>
-    </View>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {/* ── CLASS HEADER BANNER ── */}
+      <View style={styles.classHeader}>
+        <View style={styles.headerIconBox}>
+          <MaterialCommunityIcons name="google-classroom" size={24} color="#FFFFFF" />
+        </View>
+        <View style={styles.headerInfo}>
+          <Text style={styles.classTitle}>{classId} Class Syllabus Status</Text>
+          <Text style={styles.classSubtitle}>
+            Department: {user?.department || 'Computer Science Engineering'} · Week {selectedWeek}
+          </Text>
+        </View>
+      </View>
+
+      {/* ── DYNAMIC SUBJECT LIST ── */}
+      <Text style={styles.sectionTitle}>Subject-wise Syllabus Coverage</Text>
+      {progressList.length === 0 ? (
+        <Card style={styles.emptyCard}>
+          <Card.Content>
+            <Text style={styles.emptyText}>No faculty logs recorded for this class.</Text>
+          </Card.Content>
+        </Card>
+      ) : (
+        progressList.map((subj) => {
+          const statusCfg = getStatusLabel(subj.status);
+          return (
+            <Card key={subj.code} style={styles.subjectCard}>
+              <Card.Content>
+                <View style={styles.subjRow}>
+                  <View style={styles.subjLeft}>
+                    <Text style={styles.subjCode}>{subj.code}</Text>
+                    <Text style={styles.subjName}>{subj.name}</Text>
+                    <Text style={styles.subjFaculty}>Faculty: {subj.faculty}</Text>
+                  </View>
+                  <View style={styles.subjRight}>
+                    <View style={[styles.badgeStyle, { backgroundColor: statusCfg.bgColor }]}>
+                      <Text style={[styles.badgeText, { color: statusCfg.textColor }]}>
+                        {statusCfg.label}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                
+                <View style={styles.progressBlock}>
+                  <View style={styles.progressLabelRow}>
+                    <Text style={styles.progressLabel}>Coverage Progress</Text>
+                    <Text style={styles.progressValue}>{subj.coverage}%</Text>
+                  </View>
+                  <ProgressBar
+                    progress={subj.coverage / 100}
+                    color={subj.status === 'Submitted' ? Palette.primary : Palette.error}
+                    style={styles.progressBar}
+                  />
+                  <Text style={styles.topicsCount}>
+                    {subj.completedTopicsCount} of {subj.totalTopicsCount} syllabus units completed
+                  </Text>
+                </View>
+              </Card.Content>
+            </Card>
+          );
+        })
+      )}
+
+      {/* ── PENDING REVIEWS SPECIFIC TO THIS CLASS ── */}
+      <Text style={styles.sectionTitle}>Pending Reviews for {classId}</Text>
+      
+      {/* Review Consolidated Reports */}
+      <Card style={styles.reviewCard}>
+        <Card.Content>
+          <View style={styles.reviewHeader}>
+            <Text style={styles.reviewTitle}>CC Consolidated Reports</Text>
+            {PENDING_REPORTS > 0 && (
+              <Badge style={styles.errorBadge}>{PENDING_REPORTS}</Badge>
+            )}
+          </View>
+          <Text style={styles.reviewSubtitle}>
+            {PENDING_REPORTS > 0 
+              ? `${PENDING_REPORTS} class report is awaiting HOD feedback and approval remarks.`
+              : `No reports submitted for HOD review for ${classId} this week.`}
+          </Text>
+          <Button
+            mode="contained"
+            disabled={PENDING_REPORTS === 0}
+            style={styles.reviewBtn}
+            buttonColor={Palette.primary}
+            onPress={() => {
+              if (PENDING_REPORTS > 0) {
+                navigation.navigate('RequestDetails', {
+                  requestId: classPendingReports[0].id,
+                  requestType: 'CC_REPORT',
+                });
+              }
+            }}
+          >
+            Review Reports
+          </Button>
+        </Card.Content>
+      </Card>
+
+      {/* Review Extra Hour Requests */}
+      <Card style={styles.reviewCard}>
+        <Card.Content>
+          <View style={styles.reviewHeader}>
+            <Text style={styles.reviewTitle}>Extra Hour Slot Requests</Text>
+            {PENDING_EXTRA_HOURS > 0 && (
+              <Badge style={styles.warningBadge}>{PENDING_EXTRA_HOURS}</Badge>
+            )}
+          </View>
+          <Text style={styles.reviewSubtitle}>
+            {PENDING_EXTRA_HOURS > 0
+              ? `${PENDING_EXTRA_HOURS} faculty requested an extra Slot for ${classId} subjects.`
+              : `No pending compensatory slot requests for ${classId}.`}
+          </Text>
+          <Button
+            mode="outlined"
+            disabled={PENDING_EXTRA_HOURS === 0}
+            style={styles.reviewBtn}
+            textColor={Palette.warning}
+            onPress={() =>
+              navigation.navigate('RequestDetails', {
+                requestId: 'sample-extra-001',
+                requestType: 'EXTRA_HOURS',
+              })
+            }
+          >
+            Review Requests
+          </Button>
+        </Card.Content>
+      </Card>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: Palette.background,
   },
+  content: {
+    padding: 16,
+    paddingBottom: 32,
+  },
+
+  // Class Header styles
+  classHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Palette.primary,
+    borderRadius: 20,
+    padding: 16,
+    marginBottom: 20,
+    elevation: 3,
+    shadowColor: Palette.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+  },
+  headerIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 14,
+  },
+  headerInfo: {
+    flex: 1,
+  },
+  classTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  classSubtitle: {
+    fontSize: 11.5,
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontWeight: '500',
+    marginTop: 2,
+  },
+
+  // Section titles
+  sectionTitle: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: Palette.textLight,
+    letterSpacing: 1.0,
+    textTransform: 'uppercase',
+    marginBottom: 10,
+    marginTop: 12,
+    paddingLeft: 4,
+  },
+
+  // Subject Cards
+  subjectCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.02,
+    shadowRadius: 8,
+    elevation: 1,
+  },
+  subjRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  subjLeft: {
+    flex: 1,
+    paddingRight: 8,
+  },
+  subjCode: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: Palette.primary,
+    letterSpacing: 0.3,
+  },
+  subjName: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: Palette.textDark,
+    marginTop: 2,
+  },
+  subjFaculty: {
+    fontSize: 12,
+    color: Palette.textLight,
+    fontWeight: '500',
+    marginTop: 2,
+  },
+  subjRight: {
+    alignItems: 'flex-end',
+  },
+  badgeStyle: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+  },
+  badgeText: {
+    fontSize: 9,
+    fontWeight: '800',
+  },
+  progressBlock: {
+    marginTop: 6,
+  },
+  progressLabelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  progressLabel: {
+    fontSize: 11,
+    color: Palette.textLight,
+    fontWeight: '600',
+  },
+  progressValue: {
+    fontSize: 12.5,
+    fontWeight: '800',
+    color: Palette.primary,
+  },
+  progressBar: {
+    height: 6,
+    borderRadius: 3,
+    marginBottom: 6,
+  },
+  topicsCount: {
+    fontSize: 10.5,
+    color: Palette.textLight,
+    fontWeight: '500',
+  },
+
+  // Review card styles
+  reviewCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.01,
+    shadowRadius: 6,
+    elevation: 1,
+  },
+  reviewHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  reviewTitle: {
+    fontSize: 14.5,
+    fontWeight: '800',
+    color: Palette.textDark,
+  },
+  reviewSubtitle: {
+    fontSize: 12,
+    color: Palette.textLight,
+    lineHeight: 18,
+    marginBottom: 12,
+  },
+  errorBadge: {
+    backgroundColor: Palette.error,
+    color: '#FFFFFF',
+  },
+  warningBadge: {
+    backgroundColor: Palette.warning,
+    color: '#FFFFFF',
+  },
+  reviewBtn: {
+    borderRadius: 10,
+    paddingVertical: 2,
+  },
+
+  // Empty styles
+  emptyCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  emptyText: {
+    fontSize: 13,
+    color: Palette.textLight,
+    fontStyle: 'italic',
+  },
 });
+
 export default FacultyProgressScreen;

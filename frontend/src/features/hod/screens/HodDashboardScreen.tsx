@@ -127,67 +127,6 @@ export const HodDashboardScreen = () => {
         ))}
       </View>
 
-      {/* ── PENDING REVIEWS ── */}
-      <Text style={styles.sectionTitle}>Pending CC & HOD Reviews</Text>
-      
-      {/* Review Consolidated Reports */}
-      <Card style={styles.reviewCard}>
-        <Card.Content>
-          <View style={styles.reviewHeader}>
-            <Text style={styles.reviewTitle}>CC Consolidated Reports</Text>
-            {PENDING_REPORTS > 0 && (
-              <Badge style={styles.errorBadge}>{PENDING_REPORTS}</Badge>
-            )}
-          </View>
-          <Text style={styles.reviewSubtitle}>
-            {PENDING_REPORTS} class consolidated progress reports are awaiting your approval and HOD feedback.
-          </Text>
-          <Button
-            mode="contained"
-            style={styles.reviewBtn}
-            buttonColor={Palette.primary}
-            onPress={() => {
-              if (PENDING_REPORTS > 0) {
-                navigation.navigate('RequestDetails', {
-                  requestId: pendingReportsList[0].id,
-                  requestType: 'CC_REPORT',
-                });
-              } else {
-                alert('No pending CC reports to review.');
-              }
-            }}
-          >
-            Review Reports
-          </Button>
-        </Card.Content>
-      </Card>
-
-      {/* Review Extra Hour Requests */}
-      <Card style={styles.reviewCard}>
-        <Card.Content>
-          <View style={styles.reviewHeader}>
-            <Text style={styles.reviewTitle}>Extra Hour Slot Requests</Text>
-            <Badge style={styles.warningBadge}>{PENDING_EXTRA_HOURS}</Badge>
-          </View>
-          <Text style={styles.reviewSubtitle}>
-            {PENDING_EXTRA_HOURS} faculty slot requests require approval for compensatory lecture timing.
-          </Text>
-          <Button
-            mode="outlined"
-            style={styles.reviewBtn}
-            textColor={Palette.warning}
-            onPress={() =>
-              navigation.navigate('RequestDetails', {
-                requestId: 'sample-extra-001',
-                requestType: 'EXTRA_HOURS',
-              })
-            }
-          >
-            Review Requests
-          </Button>
-        </Card.Content>
-      </Card>
-
       {/* ── LOGOUT BUTTON ── */}
       <Button
         mode="text"
