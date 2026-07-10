@@ -13,7 +13,7 @@ type CCNav = NativeStackNavigationProp<CCStackParamList>;
 
 export const CCDashboardScreen = () => {
   const { user } = useAuthStore();
-  const navigation = useNavigation<CCNav>();
+  const navigation = useNavigation<any>();
   
   const reports = useReportStore((state) => state.reports);
   const subjectProgressList = useReportStore((state) => state.subjectProgressList);
@@ -68,7 +68,10 @@ export const CCDashboardScreen = () => {
           mode="contained"
           icon="send"
           style={[styles.actionBtn, styles.submitBtn]}
-          onPress={() => navigation.navigate('SubmitToHOD', { reportId: `${classId}_W${selectedWeek}` })}
+          onPress={() => navigation.navigate('StaffHome', {
+            screen: 'SubmitToHOD',
+            params: { reportId: `${classId}_W${selectedWeek}` }
+          })}
           labelStyle={styles.btnLabel}
         >
           Submit to HOD
@@ -78,7 +81,10 @@ export const CCDashboardScreen = () => {
           mode="outlined"
           icon="file-pdf-box"
           style={[styles.actionBtn, styles.exportBtn]}
-          onPress={() => navigation.navigate('ReportExport', { reportId: `${classId}_W${selectedWeek}` })}
+          onPress={() => navigation.navigate('StaffHome', {
+            screen: 'ReportExport',
+            params: { reportId: `${classId}_W${selectedWeek}` }
+          })}
           textColor={Palette.primary}
           labelStyle={styles.btnLabelOutlined}
         >

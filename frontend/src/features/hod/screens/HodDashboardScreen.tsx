@@ -38,7 +38,7 @@ const CLASSES_DATA: ClassData[] = [
 
 export const HodDashboardScreen = () => {
   const { user, logout } = useAuthStore();
-  const navigation = useNavigation<HodNav>();
+  const navigation = useNavigation<any>();
   const reports = useReportStore((state) => state.reports);
 
   const [selectedYear, setSelectedYear] = useState('2nd Year');
@@ -118,7 +118,10 @@ export const HodDashboardScreen = () => {
                 icon="eye"
                 style={styles.inspectBtn}
                 labelStyle={styles.inspectBtnLabel}
-                onPress={() => navigation.navigate('FacultyProgress', { classId: cls.classId })}
+                onPress={() => navigation.navigate('StaffHome', {
+                screen: 'FacultyProgress',
+                params: { classId: cls.classId }
+              })}
               >
                 Inspect Class Progress
               </Button>
