@@ -1,156 +1,203 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
-import { Text, Card, Avatar, Button, Badge, Divider } from 'react-native-paper';
+import { Text, Card, Avatar, Button, Badge, Divider, ProgressBar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { Palette } from '@theme/colors';
-import { HodStackParamList } from '@navigation/types';
-
-type HodNav = NativeStackNavigationProp<HodStackParamList>;
+import { StaffStackParamList } from '@navigation/types';
 import { useReportStore } from '@features/cc/store/useReportStore';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
-interface ActionCardProps {
-  title: string;
-  subtitle: string;
-  badgeCount?: number;
-  buttonLabel: string;
-  onPress: () => void;
-  buttonMode?: 'contained' | 'outlined';
-  accentColor?: string;
+type HodNav = NativeStackNavigationProp<StaffStackParamList>;
+
+interface ClassData {
+  classId: string;
+  name: string;
+  year: string;
+  coverage: number;
+  pendingCount: number;
 }
 
-const ActionCard: React.FC<ActionCardProps> = ({
-  title,
-  subtitle,
-  badgeCount,
-  buttonLabel,
-  onPress,
-  buttonMode = 'contained',
-  accentColor = Palette.primary,
-}) => (
-  <Card style={[styles.card, { borderLeftColor: accentColor }]}>
-    <Card.Content>
-      <View style={styles.cardHeader}>
-        <Text style={styles.cardTitle}>{title}</Text>
-        {badgeCount !== undefined && badgeCount > 0 && (
-          <Badge style={[styles.badge, { backgroundColor: Palette.error }]}>
-            {badgeCount}
-          </Badge>
-        )}
-      </View>
-      <Text style={styles.cardSubtitle}>{subtitle}</Text>
-      <Button
-        mode={buttonMode}
-        compact
-        style={[styles.cardBtn, buttonMode === 'contained' && { backgroundColor: accentColor }]}
-        onPress={onPress}
-        labelStyle={styles.cardBtnLabel}
-      >
-        {buttonLabel}
-      </Button>
-    </Card.Content>
-  </Card>
-);
+const CLASSES_DATA: ClassData[] = [
+  // 2nd Year
+  { classId: '2nd Year CSE-A', name: '2nd Year CSE-A', year: '2nd Year', coverage: 80, pendingCount: 0 },
+  { classId: 'CSE-B', name: '2nd Year CSE-B', year: '2nd Year', coverage: 65, pendingCount: 1 },
+  { classId: '2nd Year CSBS', name: '2nd Year CSBS', year: '2nd Year', coverage: 70, pendingCount: 0 },
+
+  // 3rd Year
+  { classId: '3rd Year CSE-A', name: '3rd Year CSE-A', year: '3rd Year', coverage: 82, pendingCount: 0 },
+  { classId: '3rd Year CSE-B', name: '3rd Year CSE-B', year: '3rd Year', coverage: 75, pendingCount: 0 },
+  { classId: '3rd Year IT', name: '3rd Year IT', year: '3rd Year', coverage: 60, pendingCount: 2 },
+
+  // 4th Year
+  { classId: '4th Year CSE-A', name: '4th Year CSE-A', year: '4th Year', coverage: 90, pendingCount: 0 },
+  { classId: '4th Year CSE-B', name: '4th Year CSE-B', year: '4th Year', coverage: 85, pendingCount: 0 },
+  { classId: '4th Year ECE', name: '4th Year ECE', year: '4th Year', coverage: 78, pendingCount: 1 },
+];
 
 export const HodDashboardScreen = () => {
   const { user, logout } = useAuthStore();
   const navigation = useNavigation<HodNav>();
   const reports = useReportStore((state) => state.reports);
 
+  const [selectedYear, setSelectedYear] = useState('2nd Year');
+
   // Filter pending reports that are submitted to the HOD
   const pendingReportsList = reports.filter((r) => r.status === 'SUBMITTED_TO_HOD');
   const PENDING_REPORTS = pendingReportsList.length;
-  const PENDING_EXTRA_HOURS = 3; // Mock other requests
+  const PENDING_EXTRA_HOURS = 3;
 
   const initials = user?.name
     ? user.name.split(' ').map((w) => w[0]).join('').substring(0, 2).toUpperCase()
     : 'HD';
 
+  // Filter classes according to selectedYear
+  const filteredClasses = CLASSES_DATA.filter((c) => c.year === selectedYear);
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* ── Header ── */}
+      {/* ── HEADER ── */}
       <View style={styles.header}>
-        <Avatar.Text size={52} label={initials} style={styles.avatar} />
+        <Avatar.Text size={52} label={initials} style={styles.avatar} labelStyle={styles.avatarLabel} />
         <View style={styles.headerText}>
           <Text style={styles.welcomeLabel}>HOD Dashboard</Text>
-          <Text style={styles.deptName}>{user?.department || 'Department'}</Text>
+          <Text style={styles.deptName}>{user?.department || 'Computer Science Engineering'}</Text>
         </View>
       </View>
 
-      {/* ── Summary Strip ── */}
-      <View style={styles.summaryRow}>
-        <View style={styles.summaryChip}>
-          <Text style={styles.summaryCount}>{PENDING_REPORTS}</Text>
-          <Text style={styles.summaryLabel}>Pending{'\n'}Reports</Text>
-        </View>
-        <Divider style={styles.summaryDivider} />
-        <View style={styles.summaryChip}>
-          <Text style={styles.summaryCount}>{PENDING_EXTRA_HOURS}</Text>
-          <Text style={styles.summaryLabel}>Extra Hour{'\n'}Requests</Text>
-        </View>
-        <Divider style={styles.summaryDivider} />
-        <View style={styles.summaryChip}>
-          <Text style={[styles.summaryCount, { color: Palette.success }]}>74%</Text>
-          <Text style={styles.summaryLabel}>Syllabus{'\n'}Coverage</Text>
-        </View>
+      {/* ── SELECT ACADEMIC YEAR ── */}
+      <Text style={styles.sectionTitle}>Select Academic Year</Text>
+      <View style={styles.yearSelectorContainer}>
+        {['2nd Year', '3rd Year', '4th Year'].map((year) => {
+          const isSelected = selectedYear === year;
+          return (
+            <TouchableOpacity
+              key={year}
+              onPress={() => setSelectedYear(year)}
+              style={[styles.yearBtn, isSelected && styles.yearBtnActive]}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.yearBtnText, isSelected && styles.yearBtnTextActive]}>
+                {year}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
-      {/* ── Action Cards ── */}
-      <Text style={styles.sectionTitle}>Pending Reviews</Text>
+      {/* ── CLASSES DISPLAY LIST ── */}
+      <Text style={styles.sectionTitle}>{selectedYear} Classes Overview</Text>
+      <View style={styles.classesContainer}>
+        {filteredClasses.map((cls) => (
+          <Card key={cls.classId} style={styles.classCard}>
+            <Card.Content>
+              <View style={styles.classHeader}>
+                <View>
+                  <Text style={styles.className}>{cls.name}</Text>
+                  <Text style={styles.classDeptSub}>{user?.department || 'CSE Dept'}</Text>
+                </View>
+                {cls.pendingCount > 0 ? (
+                  <Badge style={styles.pendingBadge}>{`${cls.pendingCount} Pending`}</Badge>
+                ) : (
+                  <Badge style={styles.okBadge}>All Logged</Badge>
+                )}
+              </View>
 
-      <ActionCard
-        title="CC Consolidated Reports"
-        subtitle={`${PENDING_REPORTS} class reports awaiting HOD approval and remarks.`}
-        badgeCount={PENDING_REPORTS}
-        buttonLabel="Review Reports"
-        accentColor={Palette.primary}
-        onPress={() => {
-          if (PENDING_REPORTS > 0) {
-            navigation.navigate('RequestDetails', {
-              requestId: pendingReportsList[0].id,
-              requestType: 'CC_REPORT',
-            });
-          } else {
-            alert('No pending CC reports to review.');
-          }
-        }}
-      />
+              <View style={styles.progressSection}>
+                <View style={styles.progressLabelRow}>
+                  <Text style={styles.progressLabel}>Average Coverage</Text>
+                  <Text style={styles.progressValue}>{cls.coverage}%</Text>
+                </View>
+                <ProgressBar progress={cls.coverage / 100} color={Palette.primary} style={styles.progressBar} />
+              </View>
 
-      <ActionCard
-        title="Extra Teaching Hour Requests"
-        subtitle={`${PENDING_EXTRA_HOURS} faculty requested compensatory class slots this week.`}
-        badgeCount={PENDING_EXTRA_HOURS}
-        buttonLabel="Review Requests"
-        accentColor={Palette.warning}
-        buttonMode="outlined"
-        onPress={() =>
-          navigation.navigate('RequestDetails', {
-            requestId: 'sample-extra-001',
-            requestType: 'EXTRA_HOURS',
-          })
-        }
-      />
+              <Button
+                mode="outlined"
+                compact
+                icon="eye"
+                style={styles.inspectBtn}
+                labelStyle={styles.inspectBtnLabel}
+                onPress={() => navigation.navigate('FacultyProgress', { classId: cls.classId })}
+              >
+                Inspect Class Progress
+              </Button>
+            </Card.Content>
+          </Card>
+        ))}
+      </View>
 
-      <Text style={styles.sectionTitle}>Analytics</Text>
+      {/* ── PENDING REVIEWS ── */}
+      <Text style={styles.sectionTitle}>Pending CC & HOD Reviews</Text>
+      
+      {/* Review Consolidated Reports */}
+      <Card style={styles.reviewCard}>
+        <Card.Content>
+          <View style={styles.reviewHeader}>
+            <Text style={styles.reviewTitle}>CC Consolidated Reports</Text>
+            {PENDING_REPORTS > 0 && (
+              <Badge style={styles.errorBadge}>{PENDING_REPORTS}</Badge>
+            )}
+          </View>
+          <Text style={styles.reviewSubtitle}>
+            {PENDING_REPORTS} class consolidated progress reports are awaiting your approval and HOD feedback.
+          </Text>
+          <Button
+            mode="contained"
+            style={styles.reviewBtn}
+            buttonColor={Palette.primary}
+            onPress={() => {
+              if (PENDING_REPORTS > 0) {
+                navigation.navigate('RequestDetails', {
+                  requestId: pendingReportsList[0].id,
+                  requestType: 'CC_REPORT',
+                });
+              } else {
+                alert('No pending CC reports to review.');
+              }
+            }}
+          >
+            Review Reports
+          </Button>
+        </Card.Content>
+      </Card>
 
-      <ActionCard
-        title="Department Syllabus Analytics"
-        subtitle="View class-wise and faculty-wise syllabus completion trends and coverage index."
-        buttonLabel="Open Analytics"
-        accentColor={Palette.success}
-        buttonMode="outlined"
-        onPress={() => navigation.navigate('DeptAnalytics')}
-      />
+      {/* Review Extra Hour Requests */}
+      <Card style={styles.reviewCard}>
+        <Card.Content>
+          <View style={styles.reviewHeader}>
+            <Text style={styles.reviewTitle}>Extra Hour Slot Requests</Text>
+            <Badge style={styles.warningBadge}>{PENDING_EXTRA_HOURS}</Badge>
+          </View>
+          <Text style={styles.reviewSubtitle}>
+            {PENDING_EXTRA_HOURS} faculty slot requests require approval for compensatory lecture timing.
+          </Text>
+          <Button
+            mode="outlined"
+            style={styles.reviewBtn}
+            textColor={Palette.warning}
+            onPress={() =>
+              navigation.navigate('RequestDetails', {
+                requestId: 'sample-extra-001',
+                requestType: 'EXTRA_HOURS',
+              })
+            }
+          >
+            Review Requests
+          </Button>
+        </Card.Content>
+      </Card>
 
+      {/* ── LOGOUT BUTTON ── */}
       <Button
         mode="text"
         onPress={logout}
         style={styles.logoutBtn}
         textColor={Palette.error}
         labelStyle={styles.logoutLabel}
+        icon="logout"
       >
-        Sign Out
+        Sign Out Account
       </Button>
     </ScrollView>
   );
@@ -159,129 +206,219 @@ export const HodDashboardScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAF9F6', // Off-white premium workspace canvas
+    backgroundColor: Palette.background,
   },
   content: {
     padding: 16,
     paddingBottom: 32,
   },
+
+  // Header styles
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 8,
-    marginBottom: 24,
+    marginBottom: 20,
   },
   avatar: {
-    backgroundColor: '#0F52BA',
+    backgroundColor: Palette.primary,
+    elevation: 2,
+  },
+  avatarLabel: {
+    fontWeight: '800',
+    color: '#FFFFFF',
   },
   headerText: {
     marginLeft: 14,
+    flex: 1,
   },
   welcomeLabel: {
-    fontSize: 13,
-    color: '#64748B',
+    fontSize: 12,
+    fontWeight: '700',
+    color: Palette.textLight,
+    textTransform: 'uppercase',
   },
   deptName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1E293B',
+    fontSize: 18,
+    fontWeight: '900',
+    color: Palette.textDark,
+    marginTop: 1,
   },
-  summaryRow: {
+
+  // Section labels
+  sectionTitle: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: Palette.textLight,
+    letterSpacing: 1.0,
+    textTransform: 'uppercase',
+    marginBottom: 10,
+    marginTop: 14,
+    paddingLeft: 4,
+  },
+
+  // Year Selector styles
+  yearSelectorContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    marginBottom: 28,
+    padding: 8,
     borderWidth: 1,
     borderColor: '#F1F5F9',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-    elevation: 2,
+    marginBottom: 12,
   },
-  summaryChip: {
+  yearBtn: {
     flex: 1,
+    paddingVertical: 10,
+    borderRadius: 12,
     alignItems: 'center',
-  },
-  summaryCount: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#0F52BA',
-  },
-  summaryLabel: {
-    fontSize: 11,
-    color: '#64748B',
-    textAlign: 'center',
-    marginTop: 4,
-  },
-  summaryDivider: {
-    height: 40,
-    width: 1,
+    marginHorizontal: 4,
     backgroundColor: '#F1F5F9',
   },
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#64748B',
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    marginBottom: 12,
-    marginTop: 4,
+  yearBtnActive: {
+    backgroundColor: Palette.primary,
   },
-  card: {
+  yearBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: Palette.textLight,
+  },
+  yearBtnTextActive: {
+    color: '#FFFFFF',
+  },
+
+  // Class Cards styles
+  classesContainer: {
+    marginBottom: 8,
+  },
+  classCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    marginBottom: 14,
-    borderLeftWidth: 4,
+    borderRadius: 20,
+    marginBottom: 12,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.02,
+    shadowRadius: 8,
+    elevation: 1,
     borderWidth: 1,
     borderColor: '#F1F5F9',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.02,
+  },
+  classHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  className: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: Palette.textDark,
+  },
+  classDeptSub: {
+    fontSize: 12,
+    color: Palette.textLight,
+    fontWeight: '500',
+    marginTop: 1,
+  },
+  pendingBadge: {
+    backgroundColor: '#FEF2F2',
+    color: Palette.error,
+    fontWeight: '800',
+    paddingHorizontal: 8,
+    borderRadius: 6,
+  },
+  okBadge: {
+    backgroundColor: '#ECFDF5',
+    color: Palette.success,
+    fontWeight: '800',
+    paddingHorizontal: 8,
+    borderRadius: 6,
+  },
+  progressSection: {
+    marginBottom: 14,
+  },
+  progressLabelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  progressLabel: {
+    fontSize: 12,
+    color: Palette.textLight,
+    fontWeight: '600',
+  },
+  progressValue: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: Palette.primary,
+  },
+  progressBar: {
+    height: 6,
+    borderRadius: 3,
+  },
+  inspectBtn: {
+    borderRadius: 10,
+    borderColor: Palette.primary,
+    borderWidth: 1.5,
+  },
+  inspectBtnLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+
+  // Review card styles
+  reviewCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.01,
     shadowRadius: 6,
     elevation: 1,
   },
-  cardHeader: {
+  reviewHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 4,
+    alignItems: 'center',
+    marginBottom: 6,
   },
-  cardTitle: {
+  reviewTitle: {
     fontSize: 15,
-    fontWeight: '700',
-    color: '#1E293B',
-    flex: 1,
+    fontWeight: '800',
+    color: Palette.textDark,
   },
-  badge: {
-    alignSelf: 'center',
-    marginLeft: 8,
-  },
-  cardSubtitle: {
-    fontSize: 13,
-    color: '#64748B',
+  reviewSubtitle: {
+    fontSize: 12.5,
+    color: Palette.textLight,
     lineHeight: 18,
-    marginBottom: 4,
+    marginBottom: 12,
   },
-  cardBtn: {
-    marginTop: 12,
-    alignSelf: 'flex-start',
-    borderRadius: 8,
+  errorBadge: {
+    backgroundColor: Palette.error,
+    color: '#FFFFFF',
   },
-  cardBtnLabel: {
-    fontSize: 13,
-    fontWeight: '600',
+  warningBadge: {
+    backgroundColor: Palette.warning,
+    color: '#FFFFFF',
   },
+  reviewBtn: {
+    borderRadius: 10,
+    paddingVertical: 2,
+  },
+
+  // Logout styles
   logoutBtn: {
-    marginTop: 24,
+    marginTop: 20,
     alignSelf: 'center',
   },
   logoutLabel: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '800',
   },
 });
+
+export default HodDashboardScreen;
