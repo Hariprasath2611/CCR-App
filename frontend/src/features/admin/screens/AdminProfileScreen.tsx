@@ -9,10 +9,10 @@ export const AdminProfileScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text variant="headlineSmall" style={styles.title}>Admin Profile</Text>
+      <Text variant="headlineSmall" style={styles.title}>Principal Profile</Text>
       <Text variant="titleMedium">{user?.name}</Text>
       <Text variant="bodyMedium" style={styles.subtitle}>{user?.email}</Text>
-      <Text variant="bodySmall" style={styles.subtitle}>Role: {user?.role}</Text>
+      <Text variant="bodySmall" style={styles.subtitle}>Role: {user?.role === 'ADMIN' ? 'Principal' : user?.role}</Text>
 
       <Button mode="contained" onPress={logout} style={styles.btn} buttonColor={Palette.error}>
         Sign Out

@@ -53,13 +53,18 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower.includes('admin')) {
+    if (
+      emailLower.includes('admin') ||
+      emailLower.includes('principal') ||
+      emailLower.includes('principel') ||
+      emailLower.includes('principle')
+    ) {
       return {
         role: 'ADMIN' as const,
         isCC: false,
-        name: 'Faculty Admin',
+        name: 'Faculty Principal',
         dept: 'Administration',
-        label: 'Administrator',
+        label: 'Principal',
         icon: 'shield-crown',
         color: '#8B5CF6',
         bgColor: '#F5F3FF',
@@ -299,7 +304,7 @@ export const LoginScreen = () => {
 
           {/* Bottom subtle guidance for tester */}
           <Text style={styles.guidanceText}>
-            Tip: Type "admin", "hod", or "cc" in email to test different portal roles.
+            Tip: Type "principal", "hod", or "cc" in email to test different portal roles.
           </Text>
         </View>
       </ScrollView>

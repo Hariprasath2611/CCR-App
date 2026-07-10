@@ -75,7 +75,7 @@ const INITIAL_REPORTS: ConsolidatedReport[] = [
     ccRemarks: 'All subjects are progressing well. Database systems lab coverage is slightly behind due to holidays.',
     status: 'SENT_TO_ADMIN',
     subjects: INITIAL_SUBJECTS_PROGRESS['CSE-B_11'],
-    hodRemarks: 'Reviewed and found correct. Forwarded to admin.',
+    hodRemarks: 'Reviewed and found correct. Forwarded to principal.',
     approvedAt: '2026-06-29',
   },
   {

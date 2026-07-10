@@ -116,7 +116,7 @@ export const RequestDetailsScreen = () => {
 
       Alert.alert(
         'Decision Submitted',
-        `You have ${decision === 'APPROVED' ? 'approved and sent this report to the Admin' : decision === 'REJECTED' ? 'rejected' : 'returned'} this ${isExtraHour ? 'request' : 'report'}.`,
+        `You have ${decision === 'APPROVED' ? 'approved and sent this report to the Principal' : decision === 'REJECTED' ? 'rejected' : 'returned'} this ${isExtraHour ? 'request' : 'report'}.`,
         [{ text: 'OK', onPress: () => navigation.goBack() }]
       );
       reset();

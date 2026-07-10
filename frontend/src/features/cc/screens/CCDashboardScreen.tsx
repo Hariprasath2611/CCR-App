@@ -27,7 +27,7 @@ export const CCDashboardScreen = () => {
   const getStatusChip = (status: ConsolidatedReport['status']) => {
     switch (status) {
       case 'SENT_TO_ADMIN':
-        return { label: 'Approved & Sent to Admin', color: '#E6F4EA', textColor: Palette.success };
+        return { label: 'Approved & Sent to Principal', color: '#E6F4EA', textColor: Palette.success };
       case 'SUBMITTED_TO_HOD':
         return { label: 'Awaiting HOD Review', color: '#FFF3E0', textColor: Palette.warning };
       case 'RETURNED_BY_HOD':
