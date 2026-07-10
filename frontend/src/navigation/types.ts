@@ -15,6 +15,24 @@ export type StaffStackParamList = {
   ReportHistory: undefined;
   ApprovalStatus: undefined;
   StaffProfile: undefined;
+  // HOD routes
+  DepartmentClasses: undefined;
+  FacultyProgress: { classId?: string } | undefined;
+  SubjectReports: undefined;
+  CCReports: undefined;
+  RequestDetails: { requestId: string; requestType: 'PLAN' | 'PROGRESS' | 'CC_REPORT' | 'EXTRA_HOURS' };
+  ApprovalScreen: undefined;
+  ExtraHourRequests: undefined;
+  DeptAnalytics: undefined;
+  HodProfile: undefined;
+  // CC routes
+  CCDashboard: undefined;
+  ClassProgress: { classId: string };
+  SubjectProgressDetail: { progressId: string };
+  PendingSubmissions: { classId: string };
+  ConsolidatedReport: { classId: string; weekNumber: number };
+  SubmitToHOD: { reportId: string };
+  ReportExport: { reportId: string };
 };
 
 export type CCStackParamList = {

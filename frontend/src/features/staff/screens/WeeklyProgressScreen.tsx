@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Alert, StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
-import { Text, Card, Checkbox, ActivityIndicator } from 'react-native-paper';
+import { Text, Card, ActivityIndicator } from 'react-native-paper';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AppTextInput } from '@components/common/AppTextInput';
 import { AppButton } from '@components/common/AppButton';
+import { AppDropdown } from '@components/common/AppDropdown';
 import { SyllabusRepository } from '@database/repositories/SyllabusRepository';
 import { SyncQueueRepository } from '@database/repositories/SyncQueueRepository';
 import { SQLiteSyllabusNode } from '@database/types';
@@ -14,23 +15,51 @@ import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { useReportStore } from '@features/cc/store/useReportStore';
 import { Palette } from '@theme/colors';
 import { StaffStackParamList } from '@navigation/types';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
 type RouteParams = RouteProp<StaffStackParamList, 'WeeklyProgress'>;
 
 const progressSchema = z.object({
+  unit: z.string().min(1, 'Please select the main unit'),
+  tempUnit: z.string().optional(),
+  topicsCovered: z.string().min(1, 'Please type the topics covered'),
+  completedOnPlan: z.enum(['YES', 'NO']),
   reasonsForPending: z.string().optional(),
-  extraHoursRequested: z.boolean(),
+}).refine((data) => {
+  if (data.completedOnPlan === 'NO' && (!data.reasonsForPending || data.reasonsForPending.trim().length === 0)) {
+    return false;
+  }
+  return true;
+}, {
+  message: 'Please explain the reason for pending topics',
+  path: ['reasonsForPending'],
 });
 
 type ProgressFormData = z.infer<typeof progressSchema>;
 
 const SUBJECT_NAMES: Record<string, string> = {
-  'CS8501': 'Theory of Computation',
-  'CS8502': 'Database Systems',
-  'CS8503': 'Computer Networks',
+  'CS8501': 'Theory of Computation (OOPS)',
+  'CS8502': 'Database Systems (Java)',
+  'CS8503': 'Computer Networks (DBMS)',
   'CS8504': 'OS Principles',
 };
+
+const UNIT_OPTIONS = [
+  { label: 'Unit 1', value: 'Unit 1' },
+  { label: 'Unit 2', value: 'Unit 2' },
+  { label: 'Unit 3', value: 'Unit 3' },
+  { label: 'Unit 4', value: 'Unit 4' },
+  { label: 'Unit 5', value: 'Unit 5' },
+];
+
+const TEMP_UNIT_OPTIONS = [
+  { label: 'None (No temporary unit)', value: 'None' },
+  { label: 'Unit 1 (Temporary)', value: 'Unit 1' },
+  { label: 'Unit 2 (Temporary)', value: 'Unit 2' },
+  { label: 'Unit 3 (Temporary)', value: 'Unit 3' },
+  { label: 'Unit 4 (Temporary)', value: 'Unit 4' },
+  { label: 'Unit 5 (Temporary)', value: 'Unit 5' },
+];
 
 export const WeeklyProgressScreen = () => {
   const user = useAuthStore((state) => state.user);
@@ -43,20 +72,24 @@ export const WeeklyProgressScreen = () => {
   const weekNumber = route.params?.weekNumber || 12;
 
   const [syllabusNodes, setSyllabusNodes] = useState<SQLiteSyllabusNode[]>([]);
-  const [completedTopics, setCompletedTopics] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const syllabusRepo = new SyllabusRepository();
   const syncQueueRepo = new SyncQueueRepository();
 
-  const { control, handleSubmit, setValue, formState: { errors } } = useForm<ProgressFormData>({
+  const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<ProgressFormData>({
     resolver: zodResolver(progressSchema),
     defaultValues: {
+      unit: '',
+      tempUnit: 'None',
+      topicsCovered: '',
+      completedOnPlan: 'YES',
       reasonsForPending: '',
-      extraHoursRequested: false,
     },
   });
+
+  const completedOnPlan = watch('completedOnPlan');
 
   useEffect(() => {
     const loadSyllabus = async () => {
@@ -64,10 +97,6 @@ export const WeeklyProgressScreen = () => {
         setLoading(true);
         const nodes = await syllabusRepo.getSyllabusBySubject(subjectCode);
         setSyllabusNodes(nodes);
-        
-        // Load initial completed topic IDs from SQLite table
-        const completed = nodes.filter((n) => n.is_completed === 1).map((n) => n.topic_id);
-        setCompletedTopics(completed);
       } catch (err) {
         console.error('Failed to load syllabus:', err);
       } finally {
@@ -77,31 +106,45 @@ export const WeeklyProgressScreen = () => {
     loadSyllabus();
   }, [subjectCode]);
 
-  const handleTopicToggle = (topicId: string) => {
-    setCompletedTopics((prev) =>
-      prev.includes(topicId)
-        ? prev.filter((id) => id !== topicId)
-        : [...prev, topicId]
-    );
-  };
-
   const onSubmit = async (data: ProgressFormData) => {
-    const pendingTopics = syllabusNodes
-      .filter((n) => !completedTopics.includes(n.topic_id))
-      .map((n) => n.topic_id);
-
-    if (pendingTopics.length > 0 && !data.reasonsForPending?.trim()) {
-      Alert.alert('Validation Error', 'You must provide a reason for the pending topics.');
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       const classId = user?.assignedClassId || 'CSE-B';
-      const completedCount = completedTopics.length;
-      const totalCount = syllabusNodes.length;
 
-      // 1. Log in global Zustand Report Store so CC consolidated screens see it
+      // 1. Mark topics in SQLite based on unit coverage
+      const selectedUnitTopics = syllabusNodes.filter(
+        (n) => n.unit.toLowerCase() === data.unit.toLowerCase()
+      );
+      
+      const completedTopicIds = data.completedOnPlan === 'YES' 
+        ? selectedUnitTopics.map((n) => n.topic_id) 
+        : [];
+      
+      const pendingTopicIds = data.completedOnPlan === 'NO'
+        ? selectedUnitTopics.map((n) => n.topic_id)
+        : [];
+
+      for (const node of syllabusNodes) {
+        const isTargetUnit = node.unit.toLowerCase() === data.unit.toLowerCase();
+        let finalStatus = node.is_completed === 1;
+
+        if (isTargetUnit) {
+          finalStatus = (data.completedOnPlan === 'YES');
+        }
+
+        await syllabusRepo.updateCompletionStatus(
+          node.topic_id,
+          finalStatus,
+          finalStatus ? new Date().toISOString().split('T')[0] : undefined
+        );
+      }
+
+      // Re-read DB completion states to compile correct overall summary counts
+      const updatedNodes = await syllabusRepo.getSyllabusBySubject(subjectCode);
+      const totalCount = updatedNodes.length || 5;
+      const completedCount = updatedNodes.filter((n) => n.is_completed === 1).length;
+
+      // 2. Update Consolidated Report Store
       addProgressLog(
         classId,
         weekNumber,
@@ -109,40 +152,33 @@ export const WeeklyProgressScreen = () => {
         completedCount,
         totalCount,
         data.reasonsForPending || '',
-        data.extraHoursRequested
+        data.completedOnPlan === 'NO' // Treat as extra hours needed if not completed on plan
       );
 
-      // 2. Queue for background synchronizing
+      // 3. Sync Queue logging
       const progressPayload = {
         id: `progress_${subjectCode}_W${weekNumber}_${Date.now()}`,
         facultyId: user?.id,
         subjectCode,
         classId,
         academicWeekNumber: weekNumber,
-        completedTopicIds: completedTopics,
-        pendingTopicIds: pendingTopics,
+        unitSelected: data.unit,
+        temporaryUnit: data.tempUnit !== 'None' ? data.tempUnit : null,
+        topicsCoveredText: data.topicsCovered,
+        completedOnPlan: data.completedOnPlan,
+        completedTopicIds,
+        pendingTopicIds,
         reasonsForPending: data.reasonsForPending || '',
-        extraHoursRequested: data.extraHoursRequested,
         submittedAt: new Date().toISOString(),
       };
       await syncQueueRepo.enqueue('SUBMIT_PROGRESS', progressPayload);
 
-      // 3. Update local SQLite DB syllabus progress completion values
-      for (const node of syllabusNodes) {
-        const isNowCompleted = completedTopics.includes(node.topic_id);
-        await syllabusRepo.updateCompletionStatus(
-          node.topic_id,
-          isNowCompleted,
-          isNowCompleted ? new Date().toISOString().split('T')[0] : undefined
-        );
-      }
-
-      Alert.alert('Success', 'Weekly progress successfully enqueued & synced!', [
+      Alert.alert('Success', 'Course coverage successfully logged and synchronized!', [
         { text: 'OK', onPress: () => navigation.goBack() }
       ]);
     } catch (err) {
       console.error('Progress submit failed:', err);
-      Alert.alert('Error', 'Failed to log weekly progress.');
+      Alert.alert('Error', 'Failed to log course coverage.');
     } finally {
       setIsSubmitting(false);
     }
@@ -159,91 +195,124 @@ export const WeeklyProgressScreen = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Card style={styles.formCard}>
-        <Card.Content>
-          <View style={styles.headerRow}>
-            <View style={styles.subjectIconBox}>
-              <Feather name="book" size={24} color={Palette.primary} />
-            </View>
-            <View style={styles.headerInfo}>
-              <Text style={styles.subjectCode}>{subjectCode}</Text>
-              <Text style={styles.subjectName}>{SUBJECT_NAMES[subjectCode] || 'Subject Course'}</Text>
-              <Text style={styles.weekLabel}>Class: {user?.assignedClassId || 'CSE-B'} · Week {weekNumber}</Text>
-            </View>
-          </View>
+      {/* Header Row */}
+      <View style={styles.headerRow}>
+        <View style={styles.subjectIconBox}>
+          <Feather name="book-open" size={24} color={Palette.primary} />
+        </View>
+        <View style={styles.headerInfo}>
+          <Text style={styles.headingText}>Course Coverage</Text>
+          <Text style={styles.subjectName}>{SUBJECT_NAMES[subjectCode] || 'Subject Course'}</Text>
+          <Text style={styles.weekLabel}>
+            Code: {subjectCode} · Class: {user?.assignedClassId || 'CSE-B'} · Week {weekNumber}
+          </Text>
+        </View>
+      </View>
 
-          {/* Syllabus Topics Checklist */}
-          <View style={styles.syllabusBlock}>
-            <Text style={styles.syllabusLabel}>Check Covered Topics for Week {weekNumber}:</Text>
-            {syllabusNodes.length === 0 ? (
-              <Text style={styles.emptyText}>No topics found for this subject.</Text>
-            ) : (
-              syllabusNodes.map((node) => {
-                const checked = completedTopics.includes(node.topic_id);
-                return (
-                  <TouchableOpacity
-                    key={node.topic_id}
-                    style={[styles.checkboxRow, checked && styles.checkboxRowChecked]}
-                    onPress={() => handleTopicToggle(node.topic_id)}
-                    activeOpacity={0.7}
-                  >
-                    <Checkbox.Android
-                      status={checked ? 'checked' : 'unchecked'}
-                      onPress={() => handleTopicToggle(node.topic_id)}
-                      color={Palette.primary}
-                    />
-                    <View style={styles.topicTextContainer}>
-                      <Text style={[styles.topicUnit, checked && styles.topicTextChecked]}>{node.unit}</Text>
-                      <Text style={[styles.topicTitle, checked && styles.topicTextChecked]}>{node.topic_title}</Text>
-                    </View>
-                  </TouchableOpacity>
-                );
-              })
-            )}
-          </View>
-
-          {/* Reasons for Pending Field */}
-          <Controller
-            control={control}
-            name="reasonsForPending"
-            render={({ field: { onChange, value } }) => (
-              <AppTextInput
-                label="Reasons for Pending Topics (Required if any left unchecked)"
-                value={value || ''}
-                onChangeText={onChange}
-                error={errors.reasonsForPending?.message}
-                multiline
-                numberOfLines={3}
-                style={styles.textInput}
-              />
-            )}
+      {/* Main Unit Selector */}
+      <Controller
+        control={control}
+        name="unit"
+        render={({ field: { onChange, value } }) => (
+          <AppDropdown
+            label="Select Unit"
+            value={value}
+            options={UNIT_OPTIONS}
+            onSelect={onChange}
+            error={errors.unit?.message}
           />
+        )}
+      />
 
-          {/* Extra Hours Request Toggler */}
-          <View style={styles.extraHoursRow}>
-            <Controller
-              control={control}
-              name="extraHoursRequested"
-              render={({ field: { onChange, value } }) => (
-                <Checkbox.Android
-                  status={value ? 'checked' : 'unchecked'}
-                  onPress={() => onChange(!value)}
-                  color={Palette.primary}
-                />
-              )}
+      {/* Temporary Unit Selector */}
+      <Controller
+        control={control}
+        name="tempUnit"
+        render={({ field: { onChange, value } }) => (
+          <AppDropdown
+            label="Select Unit (Temporary / Extra Hour)"
+            value={value || 'None'}
+            options={TEMP_UNIT_OPTIONS}
+            onSelect={onChange}
+            error={errors.tempUnit?.message}
+            style={styles.dropdownSpacing}
+          />
+        )}
+      />
+
+      {/* Topics Covered Typing Box */}
+      <Controller
+        control={control}
+        name="topicsCovered"
+        render={({ field: { onChange, value } }) => (
+          <AppTextInput
+            label="Topics Covered (Type topics covered)"
+            value={value || ''}
+            onChangeText={onChange}
+            error={errors.topicsCovered?.message}
+            multiline
+            numberOfLines={8}
+            style={styles.textInput}
+          />
+        )}
+      />
+
+      {/* Completed Based on Plan Toggle */}
+      <Text style={styles.radioGroupLabel}>Completed based on plan?</Text>
+      <View style={styles.radioRow}>
+        <TouchableOpacity
+          style={[styles.radioCard, completedOnPlan === 'YES' && styles.radioCardSelected]}
+          onPress={() => setValue('completedOnPlan', 'YES')}
+          activeOpacity={0.7}
+        >
+          <MaterialCommunityIcons 
+            name={completedOnPlan === 'YES' ? 'checkbox-marked-circle' : 'circle-outline'} 
+            size={20} 
+            color={completedOnPlan === 'YES' ? Palette.success : Palette.textLight} 
+          />
+          <Text style={[styles.radioLabel, completedOnPlan === 'YES' && styles.radioLabelSelected]}>Yes</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.radioCard, completedOnPlan === 'NO' && styles.radioCardSelectedNo]}
+          onPress={() => setValue('completedOnPlan', 'NO')}
+          activeOpacity={0.7}
+        >
+          <MaterialCommunityIcons 
+            name={completedOnPlan === 'NO' ? 'close-circle' : 'circle-outline'} 
+            size={20} 
+            color={completedOnPlan === 'NO' ? Palette.error : Palette.textLight} 
+          />
+          <Text style={[styles.radioLabel, completedOnPlan === 'NO' && styles.radioLabelSelectedNo]}>No</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Conditional Reason for Pending Topics Typing Box */}
+      {completedOnPlan === 'NO' && (
+        <Controller
+          control={control}
+          name="reasonsForPending"
+          render={({ field: { onChange, value } }) => (
+            <AppTextInput
+              label="Reason for pending topics"
+              value={value || ''}
+              onChangeText={onChange}
+              error={errors.reasonsForPending?.message}
+              multiline
+              numberOfLines={3}
+              style={styles.textInputReason}
             />
-            <Text style={styles.extraHoursLabel}>Request Extra Teaching Slot for this class</Text>
-          </View>
+          )}
+        />
+      )}
 
-          <AppButton
-            mode="contained"
-            title="Log Weekly Progress"
-            onPress={handleSubmit(onSubmit)}
-            loading={isSubmitting}
-            style={styles.submitBtn}
-          />
-        </Card.Content>
-      </Card>
+      <AppButton
+        mode="contained"
+        title="Log Course Coverage"
+        onPress={handleSubmit(onSubmit)}
+        loading={isSubmitting}
+        style={styles.submitBtn}
+      />
     </ScrollView>
   );
 };
@@ -276,7 +345,7 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 24,
     borderBottomWidth: 1,
     borderBottomColor: Palette.border,
     paddingBottom: 16,
@@ -293,80 +362,74 @@ const styles = StyleSheet.create({
   headerInfo: {
     flex: 1,
   },
-  subjectCode: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: Palette.primary,
+  headingText: {
+    fontSize: 20,
+    fontWeight: '900',
+    color: Palette.textDark,
+    letterSpacing: -0.4,
   },
   subjectName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Palette.textDark,
-  },
-  weekLabel: {
-    fontSize: 13,
-    color: Palette.textLight,
-    marginTop: 2,
-  },
-  syllabusBlock: {
-    marginBottom: 16,
-  },
-  syllabusLabel: {
     fontSize: 15,
     fontWeight: '700',
-    color: Palette.textDark,
-    marginBottom: 12,
+    color: Palette.primary,
+    marginTop: 2,
   },
-  checkboxRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 8,
-  },
-  checkboxRowChecked: {
-    borderColor: '#D2E0F5',
-    backgroundColor: '#EDF5FD',
-  },
-  topicTextContainer: {
-    flex: 1,
-    marginLeft: 8,
-  },
-  topicUnit: {
-    fontSize: 11,
-    fontWeight: 'bold',
+  weekLabel: {
+    fontSize: 12,
     color: Palette.textLight,
-    textTransform: 'uppercase',
-  },
-  topicTitle: {
-    fontSize: 14,
-    color: Palette.textDark,
+    marginTop: 2,
     fontWeight: '500',
   },
-  topicTextChecked: {
-    color: '#0B5ED7',
-  },
-  emptyText: {
-    color: Palette.textLight,
-    fontStyle: 'italic',
-    paddingVertical: 10,
+  dropdownSpacing: {
+    marginTop: 12,
   },
   textInput: {
-    marginTop: 10,
+    marginTop: 14,
   },
-  extraHoursRow: {
+  radioGroupLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Palette.textDark,
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  radioRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  radioCard: {
+    flex: 0.48,
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 12,
-    paddingVertical: 4,
+    borderWidth: 1.5,
+    borderColor: Palette.border,
+    borderRadius: 12,
+    padding: 12,
+    backgroundColor: '#FFFFFF',
   },
-  extraHoursLabel: {
+  radioCardSelected: {
+    borderColor: Palette.success,
+    backgroundColor: '#ECFDF5',
+  },
+  radioCardSelectedNo: {
+    borderColor: Palette.error,
+    backgroundColor: '#FEF2F2',
+  },
+  radioLabel: {
     fontSize: 14,
-    color: Palette.textDark,
+    fontWeight: '700',
+    color: Palette.textLight,
     marginLeft: 8,
-    fontWeight: '500',
+  },
+  radioLabelSelected: {
+    color: Palette.success,
+  },
+  radioLabelSelectedNo: {
+    color: Palette.error,
+  },
+  textInputReason: {
+    marginTop: 8,
   },
   submitBtn: {
     marginTop: 24,

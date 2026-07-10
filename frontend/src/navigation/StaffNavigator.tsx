@@ -17,6 +17,26 @@ import { ApprovalStatusScreen } from '@features/staff/screens/ApprovalStatusScre
 import { StaffProfileScreen } from '@features/staff/screens/StaffProfileScreen';
 import { NotificationsScreen } from '@features/notifications/screens/NotificationsScreen';
 
+// HOD Screens
+import { DepartmentClassesScreen } from '@features/hod/screens/DepartmentClassesScreen';
+import { FacultyProgressScreen } from '@features/hod/screens/FacultyProgressScreen';
+import { SubjectReportsScreen } from '@features/hod/screens/SubjectReportsScreen';
+import { CCReportsScreen } from '@features/hod/screens/CCReportsScreen';
+import { RequestDetailsScreen } from '@features/hod/screens/RequestDetailsScreen';
+import { ApprovalScreen } from '@features/hod/screens/ApprovalScreen';
+import { ExtraHourRequestsScreen } from '@features/hod/screens/ExtraHourRequestsScreen';
+import { DeptAnalyticsScreen } from '@features/hod/screens/DeptAnalyticsScreen';
+import { HodProfileScreen } from '@features/hod/screens/HodProfileScreen';
+
+// CC Screens
+import { CCDashboardScreen } from '@features/cc/screens/CCDashboardScreen';
+import { ClassProgressScreen } from '@features/cc/screens/ClassProgressScreen';
+import { SubjectProgressDetailScreen } from '@features/cc/screens/SubjectProgressDetailScreen';
+import { PendingSubmissionsScreen } from '@features/cc/screens/PendingSubmissionsScreen';
+import { ConsolidatedReportScreen } from '@features/cc/screens/ConsolidatedReportScreen';
+import { SubmitToHODScreen } from '@features/cc/screens/SubmitToHODScreen';
+import { ReportExportScreen } from '@features/cc/screens/ReportExportScreen';
+
 // Navigators
 import { CCNavigator } from './CCNavigator';
 
@@ -87,12 +107,97 @@ const StaffStackNavigator = () => {
         component={StaffProfileScreen}
         options={{ title: 'Profile' }}
       />
+      
+      {/* HOD Screens integrated in the same stack */}
+      <Stack.Screen
+        name="DepartmentClasses"
+        component={DepartmentClassesScreen}
+        options={{ title: 'Classes' }}
+      />
+      <Stack.Screen
+        name="FacultyProgress"
+        component={FacultyProgressScreen}
+        options={{ title: 'Faculty Progress' }}
+      />
+      <Stack.Screen
+        name="SubjectReports"
+        component={SubjectReportsScreen}
+        options={{ title: 'Subject Reports' }}
+      />
+      <Stack.Screen
+        name="CCReports"
+        component={CCReportsScreen}
+        options={{ title: 'CC Class Reports' }}
+      />
+      <Stack.Screen
+        name="RequestDetails"
+        component={RequestDetailsScreen}
+        options={{ title: 'Request Details' }}
+      />
+      <Stack.Screen
+        name="ApprovalScreen"
+        component={ApprovalScreen}
+        options={{ title: 'Approval Queue' }}
+      />
+      <Stack.Screen
+        name="ExtraHourRequests"
+        component={ExtraHourRequestsScreen}
+        options={{ title: 'Extra Hour Requests' }}
+      />
+      <Stack.Screen
+        name="DeptAnalytics"
+        component={DeptAnalyticsScreen}
+        options={{ title: 'Analytics' }}
+      />
+      <Stack.Screen
+        name="HodProfile"
+        component={HodProfileScreen}
+        options={{ title: 'HOD Profile' }}
+      />
+
+      {/* CC Screens integrated in the same stack */}
+      <Stack.Screen 
+        name="CCDashboard" 
+        component={CCDashboardScreen} 
+        options={{ title: 'CC Dashboard' }} 
+      />
+      <Stack.Screen 
+        name="ClassProgress" 
+        component={ClassProgressScreen} 
+        options={{ title: 'Class Progress' }} 
+      />
+      <Stack.Screen 
+        name="SubjectProgressDetail" 
+        component={SubjectProgressDetailScreen} 
+        options={{ title: 'Subject Progress' }} 
+      />
+      <Stack.Screen 
+        name="PendingSubmissions" 
+        component={PendingSubmissionsScreen} 
+        options={{ title: 'Pending Submissions' }} 
+      />
+      <Stack.Screen 
+        name="ConsolidatedReport" 
+        component={ConsolidatedReportScreen} 
+        options={{ title: 'Consolidated Report' }} 
+      />
+      <Stack.Screen 
+        name="SubmitToHOD" 
+        component={SubmitToHODScreen} 
+        options={{ title: 'Submit to HOD' }} 
+      />
+      <Stack.Screen 
+        name="ReportExport" 
+        component={ReportExportScreen} 
+        options={{ title: 'Export Report' }} 
+      />
     </Stack.Navigator>
   );
 };
 
 export const StaffTabNavigator = () => {
   const { user } = useAuthStore();
+  const ProfileScreenComponent = user?.role === 'HOD' ? HodProfileScreen : StaffProfileScreen;
 
   return (
     <Tab.Navigator
@@ -107,11 +212,7 @@ export const StaffTabNavigator = () => {
         tabBarIcon: ({ color, size }) => {
           let iconName = 'help-circle';
           if (route.name === 'StaffHome') {
-            iconName = 'account-box';
-          } else if (route.name === 'CCPanel') {
-            iconName = 'shield-account';
-          } else if (route.name === 'Notifications') {
-            iconName = 'bell';
+            iconName = 'home';
           } else if (route.name === 'Profile') {
             iconName = 'account';
           }
@@ -122,23 +223,11 @@ export const StaffTabNavigator = () => {
       <Tab.Screen
         name="StaffHome"
         component={StaffStackNavigator}
-        options={{ title: 'Staff Portal', headerShown: false }}
-      />
-      {user?.isClassCoordinator && (
-        <Tab.Screen
-          name="CCPanel"
-          component={CCNavigator}
-          options={{ title: 'CC Board', headerShown: false }}
-        />
-      )}
-      <Tab.Screen
-        name="Notifications"
-        component={NotificationsScreen}
-        options={{ title: 'Notifications' }}
+        options={{ title: 'Home', headerShown: false }}
       />
       <Tab.Screen
         name="Profile"
-        component={StaffProfileScreen}
+        component={ProfileScreenComponent}
         options={{ title: 'Profile' }}
       />
     </Tab.Navigator>

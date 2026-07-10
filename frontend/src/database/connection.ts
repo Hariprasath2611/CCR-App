@@ -101,5 +101,47 @@ export const getDBConnection = async (): Promise<SQLite.SQLiteDatabase> => {
     console.error('Error seeding syllabus:', err);
   }
 
+  // Database Seeding for Timetable
+  try {
+    const timetableCountResult = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM timetable;');
+    if (timetableCountResult && timetableCountResult.count === 0) {
+      await db.withTransactionAsync(async () => {
+        const seedSlots = [
+          // Monday
+          { id: 't1', day_of_week: 'Monday', period: 1, subject_code: 'CS8501', subject_name: 'Theory of Computation', class_section: 'CSE-B', room_no: 'LH-302' },
+          { id: 't2', day_of_week: 'Monday', period: 3, subject_code: 'CS8502', subject_name: 'Database Systems', class_section: 'CSE-B', room_no: 'LH-303' },
+          { id: 't3', day_of_week: 'Monday', period: 5, subject_code: 'CS8503', subject_name: 'Computer Networks', class_section: 'CSE-B', room_no: 'LH-201' },
+          // Tuesday
+          { id: 't4', day_of_week: 'Tuesday', period: 2, subject_code: 'CS8502', subject_name: 'Database Systems', class_section: 'CSE-B', room_no: 'LH-303' },
+          { id: 't5', day_of_week: 'Tuesday', period: 4, subject_code: 'CS8504', subject_name: 'OS Principles', class_section: 'CSE-B', room_no: 'Lab 3' },
+          { id: 't6', day_of_week: 'Tuesday', period: 6, subject_code: 'CS8501', subject_name: 'Theory of Computation', class_section: 'CSE-B', room_no: 'LH-302' },
+          // Wednesday
+          { id: 't7', day_of_week: 'Wednesday', period: 1, subject_code: 'CS8503', subject_name: 'Computer Networks', class_section: 'CSE-B', room_no: 'LH-201' },
+          { id: 't8', day_of_week: 'Wednesday', period: 3, subject_code: 'CS8504', subject_name: 'OS Principles', class_section: 'CSE-B', room_no: 'Lab 3' },
+          { id: 't9', day_of_week: 'Wednesday', period: 5, subject_code: 'CS8502', subject_name: 'Database Systems', class_section: 'CSE-B', room_no: 'LH-303' },
+          // Thursday
+          { id: 't10', day_of_week: 'Thursday', period: 2, subject_code: 'CS8501', subject_name: 'Theory of Computation', class_section: 'CSE-B', room_no: 'LH-302' },
+          { id: 't11', day_of_week: 'Thursday', period: 4, subject_code: 'CS8503', subject_name: 'Computer Networks', class_section: 'CSE-B', room_no: 'LH-201' },
+          { id: 't12', day_of_week: 'Thursday', period: 6, subject_code: 'CS8504', subject_name: 'OS Principles', class_section: 'CSE-B', room_no: 'Lab 3' },
+          // Friday
+          { id: 't13', day_of_week: 'Friday', period: 1, subject_code: 'CS8504', subject_name: 'OS Principles', class_section: 'CSE-B', room_no: 'Lab 3' },
+          { id: 't14', day_of_week: 'Friday', period: 3, subject_code: 'CS8501', subject_name: 'Theory of Computation', class_section: 'CSE-B', room_no: 'LH-302' },
+          { id: 't15', day_of_week: 'Friday', period: 5, subject_code: 'CS8503', subject_name: 'Computer Networks', class_section: 'CSE-B', room_no: 'LH-201' },
+        ];
+
+        for (const slot of seedSlots) {
+          await db.runAsync(
+            `INSERT OR IGNORE INTO timetable (id, day_of_week, period, subject_code, subject_name, class_section, room_no)
+             VALUES (?, ?, ?, ?, ?, ?, ?);`,
+            [slot.id, slot.day_of_week, slot.period, slot.subject_code, slot.subject_name, slot.class_section, slot.room_no]
+          );
+        }
+      });
+      console.log('Timetable data successfully seeded.');
+    }
+  } catch (err) {
+    console.error('Error seeding timetable:', err);
+  }
+
   return db;
 };

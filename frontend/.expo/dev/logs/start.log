@@ -888,3 +888,40 @@
 {"_e":"metro:bundling:failed","_t":1783609034511,"id":null,"message":"SyntaxError: C:\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\src\\features\\auth\\screens\\LandingScreen.tsx: Unexpected token (100:12)\n\n   98 |   illustrationContainer: {\n   99 |     alignItems: 'center',\n> 100 |     justify('center'), // Wait, let's keep it clean: justifyContent: 'center',\n      |             ^\n  101 |     marginVertical: 10,\n  102 |   },\n  103 |   illustration: {","importStack":null,"filename":"src\\features\\auth\\screens\\LandingScreen.tsx","targetModuleName":null,"originModulePath":null}
 {"_e":"metro:server_log","_t":1783609424781,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
 {"_e":"metro:client_log","_t":1783609460616,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
+{"_e":"root:init","_t":1783654405429,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1783654405752,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1783654407556,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1783654452897,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"root:init","_t":1783661717383,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1783661717412,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1783661718079,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1783661727239,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1783661761799,"id":"1","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783661761799,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783661761804,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783661761904,"id":"1","progress":0.05660507732065615,"total":269,"current":64}
+{"_e":"metro:bundling:progress","_t":1783661762004,"id":"1","progress":0.19311904907226562,"total":512,"current":225}
+{"_e":"metro:bundling:progress","_t":1783661762104,"id":"1","progress":0.24629908881966048,"total":673,"current":334}
+{"_e":"metro:bundling:progress","_t":1783661762204,"id":"1","progress":0.40966102730277965,"total":839,"current":537}
+{"_e":"metro:bundling:progress","_t":1783661762304,"id":"1","progress":0.6384475445376567,"total":1030,"current":823}
+{"_e":"metro:bundling:progress","_t":1783661762404,"id":"1","progress":0.7685640567992433,"total":1192,"current":1045}
+{"_e":"metro:bundling:progress","_t":1783661762511,"id":"1","progress":0.7702469333618189,"total":1422,"current":1248}
+{"_e":"metro:bundling:done","_t":1783661762643,"id":"1","total":1422,"ms":844.3507}
+{"_e":"metro:client_log","_t":1783661768505,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1783661785980,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1783661793513,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
+{"_e":"root:init","_t":1783662768512,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1783662768530,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1783662768830,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1783662776692,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1783662806133,"id":"1","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783662806133,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783662806135,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783662806237,"id":"1","progress":0.03537701083912305,"total":319,"current":60}
+{"_e":"metro:bundling:progress","_t":1783662806337,"id":"1","progress":0.24011778617329982,"total":551,"current":270}
+{"_e":"metro:bundling:progress","_t":1783662806438,"id":"1","progress":0.4166402639869441,"total":818,"current":528}
+{"_e":"metro:bundling:progress","_t":1783662806537,"id":"1","progress":0.7053437792223016,"total":1049,"current":881}
+{"_e":"metro:bundling:progress","_t":1783662806637,"id":"1","progress":0.7335903194978892,"total":1331,"current":1140}
+{"_e":"metro:bundling:progress","_t":1783662806737,"id":"1","progress":0.9725852673912805,"total":1449,"current":1429}
+{"_e":"metro:bundling:done","_t":1783662806802,"id":"1","total":1449,"ms":669.4441}
+{"_e":"metro:client_log","_t":1783662812689,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
