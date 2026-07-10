@@ -42,7 +42,7 @@ export const DEPARTMENTS: DeptInfo[] = [
   { id: 'CSE-AIML', name: 'CSE (Artificial Intelligence and Machine Learning)', code: 'CSE-AIML', icon: 'brain', iconColor: '#EC4899', bgColor: '#FDF2F8', coverage: 85, classesCount: 8 },
   { id: 'CCE', name: 'Computer and Communication Engineering', code: 'CCE', icon: 'transit-connection-variant', iconColor: '#6366F1', bgColor: '#EEF2FF', coverage: 78, classesCount: 8 },
   { id: 'CSBS', name: 'Computer Science and Business Systems', code: 'CSBS', icon: 'briefcase-outline', iconColor: '#F97316', bgColor: '#FFF7ED', coverage: 84, classesCount: 8 },
-  { id: 'ECE', name: 'Electronics and Communication Engineering', code: 'ECE', icon: 'cpu', iconColor: '#8B5CF6', bgColor: '#F5F3FF', coverage: 80, classesCount: 8 },
+  { id: 'ECE', name: 'Electronics and Communication Engineering', code: 'ECE', icon: 'memory', iconColor: '#8B5CF6', bgColor: '#F5F3FF', coverage: 80, classesCount: 8 },
   { id: 'EEE', name: 'Electrical and Electronics Engineering', code: 'EEE', icon: 'flash', iconColor: '#EAB308', bgColor: '#FEF9C3', coverage: 75, classesCount: 8 },
   { id: 'EIE', name: 'Electronics and Instrumentation Engineering', code: 'EIE', icon: 'sine-wave', iconColor: '#06B6D4', bgColor: '#ECFEFF', coverage: 76, classesCount: 8 },
   { id: 'MECH', name: 'Mechanical Engineering', code: 'MECH', icon: 'cog', iconColor: '#64748B', bgColor: '#F8FAFC', coverage: 71, classesCount: 8 },
@@ -836,14 +836,19 @@ const styles = StyleSheet.create({
 
   // Detail Modal styles
   modalContainer: {
-    backgroundColor: '#FFFFFF',
-    margin: 12,
-    borderRadius: 20,
-    maxHeight: '92%',
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
   },
   modalContent: {
-    flex: 1,
-    padding: 20,
+    width: width - 32,
+    maxHeight: '90%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    overflow: 'hidden',
+    elevation: 10,
+    padding: 16,
   },
   modalHeader: {
     flexDirection: 'row',
