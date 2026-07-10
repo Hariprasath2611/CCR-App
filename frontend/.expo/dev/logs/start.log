@@ -1031,3 +1031,62 @@
 {"_e":"metro:bundling:progress","_t":1783692482126,"id":"1","progress":0.954347145821264,"total":1429,"current":1396}
 {"_e":"metro:bundling:done","_t":1783692482242,"id":"1","total":1429,"ms":1031.6098}
 {"_e":"metro:client_log","_t":1783692487741,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1783692945071,"level":"warn","data":["\"cpu\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:client_log","_t":1783692967929,"level":"warn","data":["\"cpu\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:client_log","_t":1783693071759,"level":"warn","data":["\"cpu\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:client_log","_t":1783693187451,"level":"warn","data":["\"cpu\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:server_log","_t":1783693795278,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:client_log","_t":1783693810081,"level":"warn","data":["\"cpu\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:server_log","_t":1783694227398,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:client_log","_t":1783694331446,"level":"warn","data":["\"cpu\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:client_log","_t":1783694333326,"level":"warn","data":["\"cpu\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:client_log","_t":1783694357350,"level":"warn","data":["\"cpu\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:client_log","_t":1783694371996,"level":"warn","data":["\"cpu\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:client_log","_t":1783694380725,"level":"warn","data":["\"cpu\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:client_log","_t":1783694388340,"level":"warn","data":["\"cpu\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:server_log","_t":1783694561700,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"root:init","_t":1783695741253,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1783695741277,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1783695741648,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1783695750421,"atlas":false,"workers":8,"host":"::","port":8082}
+{"_e":"metro:bundling:started","_t":1783695785719,"id":"1","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783695785719,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783695785723,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783695785823,"id":"1","progress":0.047112553332131483,"total":258,"current":56}
+{"_e":"metro:bundling:progress","_t":1783695785923,"id":"1","progress":0.09868150544118856,"total":382,"current":120}
+{"_e":"metro:bundling:progress","_t":1783695786023,"id":"1","progress":0.1971856814514157,"total":572,"current":254}
+{"_e":"metro:bundling:progress","_t":1783695786123,"id":"1","progress":0.3638756755250392,"total":683,"current":412}
+{"_e":"metro:bundling:progress","_t":1783695786223,"id":"1","progress":0.38816675849403126,"total":825,"current":514}
+{"_e":"metro:bundling:progress","_t":1783695786323,"id":"1","progress":0.47779624499846113,"total":855,"current":591}
+{"_e":"metro:bundling:progress","_t":1783695786423,"id":"1","progress":0.665775904249313,"total":978,"current":798}
+{"_e":"metro:bundling:progress","_t":1783695786526,"id":"1","progress":0.665775904249313,"total":1056,"current":847}
+{"_e":"metro:bundling:progress","_t":1783695786637,"id":"1","progress":0.7799742563266848,"total":1164,"current":1028}
+{"_e":"metro:bundling:progress","_t":1783695786737,"id":"1","progress":0.7799742563266848,"total":1400,"current":1201}
+{"_e":"metro:bundling:progress","_t":1783695786837,"id":"1","progress":0.9272976680384086,"total":1431,"current":1378}
+{"_e":"metro:bundling:done","_t":1783695786985,"id":"1","total":1431,"ms":1266.1709}
+{"_e":"metro:client_log","_t":1783695791954,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1783695794386,"level":"warn","data":["\"cpu\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:server_log","_t":1783695871510,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"root:init","_t":1783699704933,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1783699704982,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1783699706028,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1783699727390,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1783699755132,"id":"1","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783699755132,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783699755138,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783699755238,"id":"1","progress":0.010888468809073723,"total":230,"current":24}
+{"_e":"metro:bundling:progress","_t":1783699755339,"id":"1","progress":0.16589603585405882,"total":356,"current":145}
+{"_e":"metro:bundling:progress","_t":1783699755438,"id":"1","progress":0.16946194604530176,"total":549,"current":226}
+{"_e":"metro:bundling:progress","_t":1783699755542,"id":"1","progress":0.26662606306238856,"total":703,"current":363}
+{"_e":"metro:bundling:progress","_t":1783699755643,"id":"1","progress":0.4317918720354455,"total":837,"current":550}
+{"_e":"metro:bundling:progress","_t":1783699755743,"id":"1","progress":0.6905375917476692,"total":923,"current":767}
+{"_e":"metro:bundling:progress","_t":1783699755842,"id":"1","progress":0.7114424557013067,"total":1118,"current":943}
+{"_e":"metro:bundling:progress","_t":1783699755942,"id":"1","progress":0.8188007547599011,"total":1251,"current":1132}
+{"_e":"metro:bundling:progress","_t":1783699756042,"id":"1","progress":0.8188007547599011,"total":1416,"current":1237}
+{"_e":"metro:bundling:progress","_t":1783699756142,"id":"1","progress":0.9904730042863338,"total":1466,"current":1459}
+{"_e":"metro:bundling:done","_t":1783699756218,"id":"1","total":1466,"ms":1085.7061}
+{"_e":"metro:client_log","_t":1783699760398,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1783699785665,"level":"warn","data":["\"cpu\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:server_log","_t":1783700325218,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:client_log","_t":1783700572935,"level":"error","data":["The action 'GO_BACK' was not handled by any navigator.\n\nIs there any screen to go back to?\n\nThis is a development-only warning and won't be shown in production."]}
+{"_e":"metro:client_log","_t":1783700592663,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
