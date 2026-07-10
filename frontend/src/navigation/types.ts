@@ -61,7 +61,7 @@ export type HodStackParamList = {
 
 export type AdminStackParamList = {
   AdminDashboard: undefined;
-  DeptSummary: { departmentId: string };
+  DeptSummary: { departmentId?: string } | undefined;
   WeeklyReports: undefined;
   InstitutionAnalytics: undefined;
   FacultyAnalytics: undefined;

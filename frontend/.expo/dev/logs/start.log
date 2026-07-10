@@ -1009,3 +1009,25 @@
 {"_e":"metro:client_log","_t":1783674451047,"level":"error","data":["Error running synchronization processing:","[Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.\n→ Caused by: java.lang.NullPointerException: java.lang.NullPointerException]"]}
 {"_e":"metro:client_log","_t":1783674453083,"level":"error","data":["[Error: Uncaught (in promise, id: 0): \"Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.\n→ Caused by: java.lang.NullPointerException: java.lang.NullPointerException\"]"]}
 {"_e":"metro:client_log","_t":1783674700814,"level":"error","data":["Failed to load dashboard metrics:","[Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.\n→ Caused by: java.lang.NullPointerException: java.lang.NullPointerException]"]}
+{"_e":"root:init","_t":1783692356956,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1783692356984,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1783692357824,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1783692366712,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"root:init","_t":1783692437612,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1783692437633,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1783692437905,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1783692445525,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1783692481210,"id":"1","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783692481210,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783692481218,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783692481318,"id":"1","progress":0.006232686980609418,"total":228,"current":18}
+{"_e":"metro:bundling:progress","_t":1783692481417,"id":"1","progress":0.13653693354432495,"total":387,"current":143}
+{"_e":"metro:bundling:progress","_t":1783692481517,"id":"1","progress":0.20618209888594866,"total":577,"current":262}
+{"_e":"metro:bundling:progress","_t":1783692481626,"id":"1","progress":0.30895901891928856,"total":779,"current":433}
+{"_e":"metro:bundling:progress","_t":1783692481727,"id":"1","progress":0.48455648724854805,"total":872,"current":607}
+{"_e":"metro:bundling:progress","_t":1783692481826,"id":"1","progress":0.6949756698558471,"total":1046,"current":872}
+{"_e":"metro:bundling:progress","_t":1783692481926,"id":"1","progress":0.7991276400367309,"total":1188,"current":1062}
+{"_e":"metro:bundling:progress","_t":1783692482026,"id":"1","progress":0.7991276400367309,"total":1391,"current":1196}
+{"_e":"metro:bundling:progress","_t":1783692482126,"id":"1","progress":0.954347145821264,"total":1429,"current":1396}
+{"_e":"metro:bundling:done","_t":1783692482242,"id":"1","total":1429,"ms":1031.6098}
+{"_e":"metro:client_log","_t":1783692487741,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}

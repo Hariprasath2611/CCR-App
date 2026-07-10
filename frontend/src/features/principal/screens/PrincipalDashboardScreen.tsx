@@ -123,7 +123,7 @@ export const PrincipalDashboardScreen = () => {
           {/* Action 1: View Departments */}
           <TouchableOpacity
             style={styles.actionRow}
-            onPress={() => navigation.navigate('Reports')}
+            onPress={() => navigation.navigate('DeptSummary')}
             activeOpacity={0.7}
           >
             <View style={[styles.actionIconBox, { backgroundColor: '#F5F3FF' }]}>
