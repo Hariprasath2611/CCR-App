@@ -137,37 +137,6 @@ export const PrincipalDashboardScreen = () => {
             <Feather name="chevron-right" size={20} color="#94A3B8" />
           </TouchableOpacity>
 
-          {/* Action 2: Pending Approvals */}
-          <TouchableOpacity
-            style={styles.actionRow}
-            onPress={() => navigation.navigate('Reports')}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.actionIconBox, { backgroundColor: '#FFF7ED' }]}>
-              <MaterialCommunityIcons name="folder-clock-outline" size={24} color="#F97316" />
-            </View>
-            <View style={styles.actionTextBox}>
-              <Text style={styles.actionTitle}>Pending Approvals</Text>
-              <Text style={styles.actionSubtitle}>Approve or reject reports</Text>
-            </View>
-            <Feather name="chevron-right" size={20} color="#94A3B8" />
-          </TouchableOpacity>
-
-          {/* Action 3: Report Analytics */}
-          <TouchableOpacity
-            style={styles.actionRow}
-            onPress={() => navigation.navigate('Analytics')}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.actionIconBox, { backgroundColor: '#ECFDF5' }]}>
-              <MaterialCommunityIcons name="chart-bar" size={24} color="#10B981" />
-            </View>
-            <View style={styles.actionTextBox}>
-              <Text style={styles.actionTitle}>Report Analytics</Text>
-              <Text style={styles.actionSubtitle}>View overall report analytics</Text>
-            </View>
-            <Feather name="chevron-right" size={20} color="#94A3B8" />
-          </TouchableOpacity>
 
           {/* Sign Out Button */}
           <TouchableOpacity

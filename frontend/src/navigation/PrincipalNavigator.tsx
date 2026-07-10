@@ -73,10 +73,6 @@ export const PrincipalTabNavigator = () => {
           let iconName = 'help-circle';
           if (route.name === 'AdminHome') {
             iconName = 'home';
-          } else if (route.name === 'Reports') {
-            iconName = 'file-document-outline';
-          } else if (route.name === 'Analytics') {
-            iconName = 'chart-line';
           } else if (route.name === 'Profile') {
             iconName = 'account-outline';
           }
@@ -88,16 +84,6 @@ export const PrincipalTabNavigator = () => {
         name="AdminHome"
         component={PrincipalStackNavigator}
         options={{ title: 'Dashboard', headerShown: false }}
-      />
-      <Tab.Screen
-        name="Reports"
-        component={WeeklyReportsScreen}
-        options={{ title: 'Reports' }}
-      />
-      <Tab.Screen
-        name="Analytics"
-        component={InstitutionAnalyticsScreen}
-        options={{ title: 'Analytics' }}
       />
       <Tab.Screen
         name="Profile"

@@ -128,6 +128,47 @@ export const DeptSummaryScreen = () => {
   };
 
   // Helper to generate subject syllabus coverage for any class
+  // Helper to generate dynamic mock subjects for any department code and year
+  const getMockSubjectsForDept = (deptCode: string, year: number): { code: string; name: string; faculty: string }[] => {
+    const faculties = [
+      'Dr. Sundaram A', 'Prof. Priyadharshini M', 'Dr. Suresh Babu', 'Prof. Divya R',
+      'Dr. Vignesh K', 'Prof. Archana S', 'Dr. Ganesan V', 'Prof. Anandhi T',
+      'Dr. Meena Kumari', 'Prof. Karthick D', 'Prof. Rajesh K', 'Dr. Anita S'
+    ];
+    
+    const deptSubjectTemplates: Record<string, string[]> = {
+      AERO: ['Aerodynamics', 'Aircraft Structures', 'Propulsion', 'Control Engineering', 'Flight Dynamics', 'Avionics'],
+      CIVIL: ['Structural Analysis', 'Foundation Engineering', 'Environmental Engineering', 'Reinforced Concrete Elements', 'Surveying', 'Hydraulics'],
+      CSE: ['Theory of Computation', 'Database Systems', 'Computer Networks', 'OS Principles', 'Compiler Design', 'Software Engineering'],
+      'CSE-AIML': ['Artificial Intelligence', 'Machine Learning', 'Deep Learning', 'Data Science & Visualisation', 'Natural Language Processing', 'Computer Vision'],
+      CCE: ['Digital Communication Systems', 'Computer Communication Networks', 'Information Theory and Coding', 'Java Programming', 'Signals & Systems', 'Electromagnetics'],
+      CSBS: ['Design & Analysis of Algorithms', 'Business Communication', 'Fundamentals of Management', 'Software Testing', 'Financial Accounting', 'Human Resource Management'],
+      ECE: ['Digital Communication', 'Discrete-Time Signal Processing', 'Computer Architecture & Org', 'Transmission Lines & Wave Guides', 'Microprocessors', 'VLSI Design'],
+      EEE: ['Power System Analysis', 'Microprocessors & Microcontrollers', 'Power Electronics', 'Transmission & Distribution', 'Electrical Machines', 'Control Systems'],
+      EIE: ['Industrial Instrumentation', 'Process Control', 'Analytical Instruments', 'Microprocessors and Applications', 'Transducer Engineering', 'Logic and Distributed Control'],
+      MECH: ['Design of Machine Elements', 'Dynamics of Machines', 'Metrology & Measurements', 'Thermal Engineering', 'Fluid Mechanics', 'Kinematics of Machinery'],
+      RA: ['Robot Kinematics & Dynamics', 'Sensors and Transducers', 'Control Systems for Robotics', 'Embedded Systems Design', 'Robotic Vision', 'Industrial Automation'],
+      IT: ['Web Technology', 'Computer Network & Admin', 'Software Product Engineering', 'Data Mining & Warehousing', 'Mobile Computing', 'Object Oriented Analysis & Design'],
+      'ME-VLSI': ['ASIC and FPGA Design', 'CAD for VLSI Circuits', 'Testing of VLSI Circuits', 'Low Power VLSI Design', 'DSP Structures for VLSI', 'RF IC Design'],
+      MBA: ['Marketing Management', 'Financial Management', 'Human Resource Management', 'Operations Management', 'Organizational Behavior', 'Strategic Management'],
+      MCA: ['Advanced Java Programming', 'Cloud Computing Technologies', 'Mobile Application Development', 'Cyber Security & Forensics', 'Web Application Development', 'Data Structures using C++'],
+      TEXTILE: ['Yarn Manufacture', 'Fabric Manufacture', 'Textile Chemical Processing', 'Fiber Science & Technology', 'Textile Testing', 'Garment Technology'],
+    };
+
+    const templates = deptSubjectTemplates[deptCode] || ['Core Course I', 'Core Course II', 'Core Course III', 'Core Course IV'];
+    const yearRoman = ['I', 'II', 'III', 'IV'][year - 1] || 'III';
+    
+    return [0, 1, 2, 3].map((idx) => {
+      const templateName = templates[idx % templates.length];
+      const name = year === 1 ? `Fundamentals of ${templateName}` : `${templateName} ${yearRoman}`;
+      const codeNum = 8000 + (year * 100) + (idx + 1) * 10;
+      const code = `${deptCode}${codeNum}`;
+      const faculty = faculties[(deptCode.charCodeAt(0) + year + idx) % faculties.length];
+      return { code, name, faculty };
+    });
+  };
+
+  // Helper to generate subject syllabus coverage for any class
   const getSubjectsProgressForClass = (classId: string): SubjectProgressInfo[] => {
     const week = '12';
     const storeKey = `${classId}_${week}`;
@@ -145,41 +186,16 @@ export const DeptSummaryScreen = () => {
     else if (classId.includes('3rd Year')) yearNum = 3;
     else if (classId.includes('4th Year')) yearNum = 4;
 
-    const mockSubjects: Record<string, Record<number, { code: string; name: string; faculty: string }[]>> = {
-      CSE: {
-        1: [
-          { code: 'PH8151', name: 'Engineering Physics', faculty: 'Dr. Ramesh Kumar' },
-          { code: 'CY8151', name: 'Engineering Chemistry', faculty: 'Dr. Sumathi S' },
-          { code: 'GE8151', name: 'Problem Solving and Python Programming', faculty: 'Prof. Ramya K' },
-        ],
-        2: [
-          { code: 'CS8351', name: 'Digital Principles and System Design', faculty: 'Prof. Divya N' },
-          { code: 'CS8391', name: 'Data Structures', faculty: 'Dr. Anand Babu' },
-          { code: 'CS8392', name: 'Object Oriented Programming', faculty: 'Prof. Priya Dharshini' },
-        ],
-        3: [
-          { code: 'CS8501', name: 'Theory of Computation', faculty: 'Dr. Meena Kumari' },
-          { code: 'CS8502', name: 'Database Systems', faculty: 'Prof. Karthick D' },
-          { code: 'CS8503', name: 'Computer Networks', faculty: 'Prof. Rajesh K' },
-          { code: 'CS8504', name: 'OS Principles', faculty: 'Dr. Anita S' },
-        ],
-        4: [
-          { code: 'CS8791', name: 'Cloud Computing', faculty: 'Dr. Vigneshwaran S' },
-          { code: 'CS8792', name: 'Cryptography and Network Security', faculty: 'Dr. Sathish Kumar' },
-          { code: 'GE8076', name: 'Professional Ethics in Engineering', faculty: 'Prof. Lakshmi Narayanan' },
-        ],
-      },
-    };
-
-    const subjectsList = mockSubjects[dept]?.[yearNum] || [
-      { code: `${dept}${yearNum}01`, name: `${dept} Core Course I`, faculty: 'Dr. Faculty Member A' },
-      { code: `${dept}${yearNum}02`, name: `${dept} Core Course II`, faculty: 'Prof. Faculty Member B' },
-      { code: `${dept}${yearNum}03`, name: `${dept} Core Course III`, faculty: 'Dr. Faculty Member C' },
-      { code: `${dept}${yearNum}04`, name: `${dept} Core Course IV`, faculty: 'Prof. Faculty Member D' },
-    ];
+    const subjectsList = getMockSubjectsForDept(dept, yearNum);
 
     return subjectsList.map((s, idx) => {
-      const coverage = Math.min(60 + (idx * 8) + (yearNum * 2), 95);
+      let coverage = Math.min(60 + (idx * 8) + (yearNum * 2), 95);
+      if (classId.includes('-A')) {
+        coverage = Math.min(78 + (idx * 4), 98);
+      } else if (classId.includes('-B')) {
+        coverage = Math.min(68 + (idx * 5), 92);
+      }
+      
       const totalTopics = 8 + idx;
       const completedTopics = Math.round((coverage / 100) * totalTopics);
       return {
