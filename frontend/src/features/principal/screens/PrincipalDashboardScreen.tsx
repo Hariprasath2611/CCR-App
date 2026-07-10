@@ -6,6 +6,7 @@ import { useAuthStore } from '../../auth/store/useAuthStore';
 import { useReportStore } from '@features/cc/store/useReportStore';
 import { Palette } from '@theme/colors';
 import { Feather, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { DEPARTMENTS } from './DeptSummaryScreen';
 
 export const PrincipalDashboardScreen = () => {
   const { logout, user } = useAuthStore();
@@ -13,7 +14,7 @@ export const PrincipalDashboardScreen = () => {
   const reports = useReportStore((state) => state.reports);
 
   // Dynamic statistics calculations
-  const totalDepartments = 12; // Seeding departments list
+  const totalDepartments = DEPARTMENTS.length;
   const totalClasses = 48; // Standard mockup
   const reportsSubmitted = reports.length;
   const pendingApproval = reports.filter((r) => r.status === 'SUBMITTED_TO_HOD').length;
