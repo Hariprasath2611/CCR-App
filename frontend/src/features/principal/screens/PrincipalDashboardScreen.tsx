@@ -138,15 +138,7 @@ export const PrincipalDashboardScreen = () => {
           </TouchableOpacity>
 
 
-          {/* Sign Out Button */}
-          <TouchableOpacity
-            style={styles.signOutBtn}
-            onPress={logout}
-            activeOpacity={0.8}
-          >
-            <Feather name="log-out" size={18} color={Palette.error} />
-            <Text style={styles.signOutText}>Sign Out</Text>
-          </TouchableOpacity>
+
 
         </ScrollView>
       </View>
