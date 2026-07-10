@@ -18,6 +18,7 @@ import { StaffProfileScreen } from '@features/staff/screens/StaffProfileScreen';
 import { NotificationsScreen } from '@features/notifications/screens/NotificationsScreen';
 
 // HOD Screens
+import { HodDashboardScreen } from '@features/hod/screens/HodDashboardScreen';
 import { DepartmentClassesScreen } from '@features/hod/screens/DepartmentClassesScreen';
 import { FacultyProgressScreen } from '@features/hod/screens/FacultyProgressScreen';
 import { SubjectReportsScreen } from '@features/hod/screens/SubjectReportsScreen';
@@ -110,6 +111,11 @@ const StaffStackNavigator = () => {
       
       {/* HOD Screens integrated in the same stack */}
       <Stack.Screen
+        name="HodDashboard"
+        component={HodDashboardScreen}
+        options={{ title: 'HOD Dashboard' }}
+      />
+      <Stack.Screen
         name="DepartmentClasses"
         component={DepartmentClassesScreen}
         options={{ title: 'Classes' }}
@@ -159,7 +165,7 @@ const StaffStackNavigator = () => {
       <Stack.Screen 
         name="CCDashboard" 
         component={CCDashboardScreen} 
-        options={{ title: 'CC Dashboard' }} 
+        options={{ title: 'Class Counselor Dashboard' }} 
       />
       <Stack.Screen 
         name="ClassProgress" 
@@ -213,6 +219,8 @@ export const StaffTabNavigator = () => {
           let iconName = 'help-circle';
           if (route.name === 'StaffHome') {
             iconName = 'home';
+          } else if (route.name === 'CounselorTab') {
+            iconName = 'shield-account';
           } else if (route.name === 'Profile') {
             iconName = 'account';
           }
@@ -225,6 +233,13 @@ export const StaffTabNavigator = () => {
         component={StaffStackNavigator}
         options={{ title: 'Home', headerShown: false }}
       />
+      {user?.isClassCoordinator && (
+        <Tab.Screen
+          name="CounselorTab"
+          component={CCDashboardScreen}
+          options={{ title: 'Counselor', headerTitle: 'Class Counselor Dashboard' }}
+        />
+      )}
       <Tab.Screen
         name="Profile"
         component={ProfileScreenComponent}

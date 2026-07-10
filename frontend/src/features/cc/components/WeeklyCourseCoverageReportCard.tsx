@@ -76,11 +76,8 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
           {/* Column 1 */}
           <View style={styles.infoColumn}>
             <InfoItem icon="office-building" label="Department" value={displayDept} />
-            <InfoItem icon="school-outline" label="Academic Year" value="2024 - 2025 (Odd Semester)" />
             <InfoItem icon="account-group-outline" label="Class" value={displayClass} />
             <InfoItem icon="door" label="Section" value={sectionChar} />
-            <InfoItem icon="book-open-variant" label="Subject" value={subjects[0]?.name || 'Database Management Systems'} />
-            <InfoItem icon="code-tags" label="Subject Code" value={subjects[0]?.code || 'CS3352'} />
           </View>
 
           {/* Column 2 */}
@@ -88,7 +85,6 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
             <InfoItem icon="calendar-outline" label="Report Week No." value={weekNumber.toString()} />
             <InfoItem icon="clock-outline" label="From Date" value={dates.from} />
             <InfoItem icon="clock-check-outline" label="To Date" value={dates.to} />
-            <InfoItem icon="briefcase-outline" label="No. of Working Days" value="6" />
             <InfoItem icon="account-tie" label="Prepared By" value="Class Coordinator" />
           </View>
         </View>
@@ -193,88 +189,6 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
             </Text>
           </View>
         ) : null}
-
-        <Divider style={styles.divider} />
-
-        {/* ── Approval Signatures Panel ── */}
-        <Text style={styles.approvalHeader}>APPROVAL SIGNATURES</Text>
-        <View style={styles.signaturesRow}>
-          
-          {/* Card 1: HOD Signature */}
-          <View style={styles.signatureCard}>
-            <Text style={styles.signatureRole}>HOD Signature</Text>
-            {isApprovedHOD ? (
-              <View style={styles.stampWrapper}>
-                <Ionicons name="checkmark-circle" size={18} color="#10B981" />
-                <Text style={styles.stampText}>Digitally Signed</Text>
-                <Text style={styles.stampDate}>{approvedAt || 'HOD Approved'}</Text>
-              </View>
-            ) : (
-              <View style={styles.stampWrapperPending}>
-                <Text style={styles.pendingStampText}>Awaiting HOD</Text>
-                <View style={styles.signatureLine} />
-                <Text style={styles.signatureDate}>Date: ________</Text>
-              </View>
-            )}
-          </View>
-
-          {/* Card 2: AC Signature */}
-          <View style={styles.signatureCard}>
-            <Text style={styles.signatureRole}>AC Signature</Text>
-            {isApprovedHOD ? (
-              <View style={styles.stampWrapper}>
-                <Ionicons name="checkmark-circle" size={18} color="#10B981" />
-                <Text style={styles.stampText}>AC Logged</Text>
-                <Text style={styles.stampDate}>System Checked</Text>
-              </View>
-            ) : (
-              <View style={styles.stampWrapperPending}>
-                <Text style={styles.pendingStampText}>Awaiting AC</Text>
-                <View style={styles.signatureLine} />
-                <Text style={styles.signatureDate}>Date: ________</Text>
-              </View>
-            )}
-          </View>
-
-          {/* Card 3: Principal Signature */}
-          <View style={styles.signatureCard}>
-            <Text style={styles.signatureRole}>Principal Signature</Text>
-            {isApprovedAdmin ? (
-              <View style={styles.stampWrapper}>
-                <Ionicons name="checkmark-circle" size={18} color="#10B981" />
-                <Text style={[styles.stampText, { color: '#0F52BA' }]}>APPROVED</Text>
-                <Text style={styles.stampDate}>Dr. Ramesh</Text>
-              </View>
-            ) : (
-              <View style={styles.stampWrapperPending}>
-                <Text style={styles.pendingStampText}>Awaiting Principal</Text>
-                <View style={styles.signatureLine} />
-                <Text style={styles.signatureDate}>Date: ________</Text>
-              </View>
-            )}
-          </View>
-
-        </View>
-
-        {/* ── Legend Reference Grid ── */}
-        <Text style={styles.legendHeader}>LEGEND / FORMAT REFERENCE</Text>
-        <View style={styles.legendTable}>
-          <View style={styles.legendCol}>
-            <Text style={styles.legendLabelText}>If No Reason</Text>
-            <Text style={styles.legendArrow}>↓</Text>
-            <Text style={styles.legendValueText}>HOD</Text>
-          </View>
-          <View style={styles.legendCol}>
-            <Text style={styles.legendLabelText}>If No. of Extra Hrs Required</Text>
-            <Text style={styles.legendArrow}>↓</Text>
-            <Text style={styles.legendValueText}>AC</Text>
-          </View>
-          <View style={styles.legendCol}>
-            <Text style={styles.legendLabelText}>Signature</Text>
-            <Text style={styles.legendArrow}>↓</Text>
-            <Text style={styles.legendValueText}>VP</Text>
-          </View>
-        </View>
 
         {/* ── Action Buttons ── */}
         {showDownloadButton && (

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Dimensions } from 'react-native';
-import { Text, Card, Avatar, ProgressBar, ActivityIndicator } from 'react-native-paper';
+import { Text, Card, Avatar, ProgressBar, ActivityIndicator, Button } from 'react-native-paper';
 import { useAuthStore } from '../../auth/store/useAuthStore';
 import { SyllabusRepository } from '@database/repositories/SyllabusRepository';
 import { Palette } from '@theme/colors';
@@ -116,6 +116,19 @@ export const StaffDashboardScreen = () => {
             <Text style={styles.welcomeGreeting}>Welcome,</Text>
             <Text style={styles.facultyName}>{user?.name || 'Professor'}</Text>
             <Text style={styles.roleTag}>{getRoleLabel()} • {user?.department || 'Computer Science Engineering'}</Text>
+            
+            {user?.role === 'HOD' && (
+              <Button 
+                mode="contained" 
+                compact 
+                icon="shield-star" 
+                style={[styles.headerDashboardBtn, { backgroundColor: '#8B5CF6' }]} 
+                onPress={() => navigation.navigate('HodDashboard')}
+                labelStyle={styles.headerDashboardBtnLabel}
+              >
+                Go to HOD Dashboard
+              </Button>
+            )}
           </View>
         </View>
       </View>
@@ -246,6 +259,20 @@ const styles = StyleSheet.create({
     color: Palette.primary,
     fontWeight: '700',
     marginTop: 2,
+    marginBottom: 4,
+  },
+  headerDashboardBtn: {
+    marginTop: 8,
+    alignSelf: 'flex-start',
+    borderRadius: 8,
+    backgroundColor: Palette.primary,
+  },
+  headerDashboardBtnLabel: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginVertical: 1,
+    marginHorizontal: 4,
   },
   syncStatusContainer: {
     flexDirection: 'row',

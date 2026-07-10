@@ -16,6 +16,7 @@ export type StaffStackParamList = {
   ApprovalStatus: undefined;
   StaffProfile: undefined;
   // HOD routes
+  HodDashboard: undefined;
   DepartmentClasses: undefined;
   FacultyProgress: { classId?: string } | undefined;
   SubjectReports: undefined;
