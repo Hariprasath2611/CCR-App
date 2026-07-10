@@ -4,13 +4,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // Screens
-import { AdminDashboardScreen } from '@features/admin/screens/AdminDashboardScreen';
-import { DeptSummaryScreen } from '@features/admin/screens/DeptSummaryScreen';
-import { WeeklyReportsScreen } from '@features/admin/screens/WeeklyReportsScreen';
-import { InstitutionAnalyticsScreen } from '@features/admin/screens/InstitutionAnalyticsScreen';
-import { FacultyAnalyticsScreen } from '@features/admin/screens/FacultyAnalyticsScreen';
-import { ReportExportScreen } from '@features/admin/screens/ReportExportScreen';
-import { AdminProfileScreen } from '@features/admin/screens/AdminProfileScreen';
+import { PrincipalDashboardScreen } from '@features/principal/screens/PrincipalDashboardScreen';
+import { DeptSummaryScreen } from '@features/principal/screens/DeptSummaryScreen';
+import { WeeklyReportsScreen } from '@features/principal/screens/WeeklyReportsScreen';
+import { InstitutionAnalyticsScreen } from '@features/principal/screens/InstitutionAnalyticsScreen';
+import { FacultyAnalyticsScreen } from '@features/principal/screens/FacultyAnalyticsScreen';
+import { ReportExportScreen } from '@features/principal/screens/ReportExportScreen';
+import { PrincipalProfileScreen } from '@features/principal/screens/PrincipalProfileScreen';
 
 // Types
 import { AdminStackParamList } from './types';
@@ -19,7 +19,7 @@ import { Palette } from '@theme/colors';
 const Stack = createNativeStackNavigator<AdminStackParamList>();
 const Tab = createBottomTabNavigator();
 
-const AdminStackNavigator = () => {
+const PrincipalStackNavigator = () => {
   return (
     <Stack.Navigator
       id="admin-stack"
@@ -31,7 +31,7 @@ const AdminStackNavigator = () => {
     >
       <Stack.Screen
         name="AdminDashboard"
-        component={AdminDashboardScreen}
+        component={PrincipalDashboardScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -51,14 +51,14 @@ const AdminStackNavigator = () => {
       />
       <Stack.Screen
         name="AdminProfile"
-        component={AdminProfileScreen}
+        component={PrincipalProfileScreen}
         options={{ title: 'Profile' }}
       />
     </Stack.Navigator>
   );
 };
 
-export const AdminTabNavigator = () => {
+export const PrincipalTabNavigator = () => {
   return (
     <Tab.Navigator
       id="admin-tab"
@@ -86,7 +86,7 @@ export const AdminTabNavigator = () => {
     >
       <Tab.Screen
         name="AdminHome"
-        component={AdminStackNavigator}
+        component={PrincipalStackNavigator}
         options={{ title: 'Dashboard', headerShown: false }}
       />
       <Tab.Screen
@@ -101,11 +101,11 @@ export const AdminTabNavigator = () => {
       />
       <Tab.Screen
         name="Profile"
-        component={AdminProfileScreen}
+        component={PrincipalProfileScreen}
         options={{ title: 'Profile' }}
       />
     </Tab.Navigator>
   );
 };
 
-export default AdminTabNavigator;
+export default PrincipalTabNavigator;

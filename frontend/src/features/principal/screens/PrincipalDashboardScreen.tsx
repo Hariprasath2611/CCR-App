@@ -7,7 +7,7 @@ import { useReportStore } from '@features/cc/store/useReportStore';
 import { Palette } from '@theme/colors';
 import { Feather, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 
-export const AdminDashboardScreen = () => {
+export const PrincipalDashboardScreen = () => {
   const { logout, user } = useAuthStore();
   const navigation = useNavigation<any>();
   const reports = useReportStore((state) => state.reports);

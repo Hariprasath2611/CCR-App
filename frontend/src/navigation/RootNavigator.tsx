@@ -10,7 +10,7 @@ import { ForgotPasswordScreen } from '@features/auth/screens/ForgotPasswordScree
 // Navigators
 import { StaffTabNavigator } from './StaffNavigator';
 import { HodTabNavigator } from './HodNavigator';
-import { AdminTabNavigator } from './AdminNavigator';
+import { PrincipalTabNavigator } from './PrincipalNavigator';
 
 // Types
 import { AuthStackParamList } from './types';
@@ -38,7 +38,7 @@ export const RootNavigator = () => {
   // Switch dashboards based on user role privileges
   switch (user.role) {
     case 'ADMIN':
-      return <AdminTabNavigator />;
+      return <PrincipalTabNavigator />;
     case 'HOD':
       return <StaffTabNavigator />;
     case 'STAFF':

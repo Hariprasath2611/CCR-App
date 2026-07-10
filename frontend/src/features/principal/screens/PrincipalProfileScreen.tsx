@@ -4,7 +4,7 @@ import { Text, Button } from 'react-native-paper';
 import { useAuthStore } from '../../auth/store/useAuthStore';
 import { Palette } from '@theme/colors';
 
-export const AdminProfileScreen = () => {
+export const PrincipalProfileScreen = () => {
   const { user, logout } = useAuthStore();
 
   return (
@@ -43,4 +43,4 @@ const styles = StyleSheet.create({
     width: '80%',
   },
 });
-export default AdminProfileScreen;
+export default PrincipalProfileScreen;
