@@ -116,19 +116,6 @@ export const StaffDashboardScreen = () => {
             <Text style={styles.welcomeGreeting}>Welcome,</Text>
             <Text style={styles.facultyName}>{user?.name || 'Professor'}</Text>
             <Text style={styles.roleTag}>{getRoleLabel()} • {user?.department || 'Computer Science Engineering'}</Text>
-            
-            {user?.role === 'HOD' && (
-              <Button 
-                mode="contained" 
-                compact 
-                icon="shield-star" 
-                style={[styles.headerDashboardBtn, { backgroundColor: '#8B5CF6' }]} 
-                onPress={() => navigation.navigate('HodDashboard')}
-                labelStyle={styles.headerDashboardBtnLabel}
-              >
-                Go to HOD Dashboard
-              </Button>
-            )}
           </View>
         </View>
       </View>

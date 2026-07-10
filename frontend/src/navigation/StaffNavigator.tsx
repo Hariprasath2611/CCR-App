@@ -221,6 +221,8 @@ export const StaffTabNavigator = () => {
             iconName = 'home';
           } else if (route.name === 'CounselorTab') {
             iconName = 'shield-account';
+          } else if (route.name === 'HodTab') {
+            iconName = 'shield-star';
           } else if (route.name === 'Profile') {
             iconName = 'account';
           }
@@ -238,6 +240,13 @@ export const StaffTabNavigator = () => {
           name="CounselorTab"
           component={CCDashboardScreen}
           options={{ title: 'Counselor', headerTitle: 'Class Counselor Dashboard' }}
+        />
+      )}
+      {user?.role === 'HOD' && (
+        <Tab.Screen
+          name="HodTab"
+          component={HodDashboardScreen}
+          options={{ title: 'HOD Board', headerTitle: 'HOD Dashboard' }}
         />
       )}
       <Tab.Screen
