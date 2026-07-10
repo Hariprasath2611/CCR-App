@@ -925,3 +925,31 @@
 {"_e":"metro:bundling:progress","_t":1783662806737,"id":"1","progress":0.9725852673912805,"total":1449,"current":1429}
 {"_e":"metro:bundling:done","_t":1783662806802,"id":"1","total":1449,"ms":669.4441}
 {"_e":"metro:client_log","_t":1783662812689,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
+{"_e":"root:init","_t":1783669473311,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1783669473332,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1783669473636,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1783669481527,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1783669517616,"id":"1","platform":"android","environment":null,"entry":"..\\..\\Users\\D Hariprasath\\Desktop\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783669517616,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783669517637,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783669517737,"id":"1","progress":0.0044903815495801885,"total":194,"current":13}
+{"_e":"metro:bundling:progress","_t":1783669517838,"id":"1","progress":0.04417121516805515,"total":295,"current":62}
+{"_e":"metro:bundling:progress","_t":1783669517937,"id":"1","progress":0.14136029286449564,"total":383,"current":144}
+{"_e":"metro:bundling:progress","_t":1783669518037,"id":"1","progress":0.19673517169614985,"total":496,"current":220}
+{"_e":"metro:bundling:progress","_t":1783669518137,"id":"1","progress":0.2684813035759022,"total":606,"current":314}
+{"_e":"metro:bundling:progress","_t":1783669518237,"id":"1","progress":0.32011772853185594,"total":684,"current":387}
+{"_e":"metro:bundling:progress","_t":1783669518338,"id":"1","progress":0.44988102320047596,"total":738,"current":495}
+{"_e":"metro:bundling:progress","_t":1783669518438,"id":"1","progress":0.5803140086818939,"total":785,"current":598}
+{"_e":"metro:bundling:progress","_t":1783669518579,"id":"1","progress":0.7790440675535157,"total":835,"current":737}
+{"_e":"metro:bundling:progress","_t":1783669518679,"id":"1","progress":0.8495842977552625,"total":856,"current":789}
+{"_e":"metro:bundling:progress","_t":1783669518802,"id":"1","progress":0.8495842977552625,"total":905,"current":833}
+{"_e":"metro:bundling:progress","_t":1783669518903,"id":"1","progress":0.8602952210295883,"total":952,"current":883}
+{"_e":"metro:bundling:progress","_t":1783669519002,"id":"1","progress":0.870251391340023,"total":1013,"current":945}
+{"_e":"metro:bundling:progress","_t":1783669519127,"id":"1","progress":0.9119884103286797,"total":1044,"current":997}
+{"_e":"metro:bundling:progress","_t":1783669519227,"id":"1","progress":0.9119884103286797,"total":1171,"current":1094}
+{"_e":"metro:bundling:progress","_t":1783669519327,"id":"1","progress":0.9690899738938868,"total":1284,"current":1264}
+{"_e":"metro:bundling:progress","_t":1783669519428,"id":"1","progress":0.9690899738938868,"total":1436,"current":1316}
+{"_e":"metro:bundling:progress","_t":1783669519541,"id":"1","progress":0.999,"total":1436,"current":1436}
+{"_e":"metro:bundling:done","_t":1783669519705,"id":"1","total":1436,"ms":2088.8449}
+{"_e":"metro:client_log","_t":1783669524722,"level":"log","data":["Timetable data successfully seeded."]}
+{"_e":"metro:client_log","_t":1783669525115,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
