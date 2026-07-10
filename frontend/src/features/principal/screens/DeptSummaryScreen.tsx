@@ -17,7 +17,8 @@ import {
   Divider,
   Button,
 } from 'react-native-paper';
-import { useReportStore } from '@features/cc/store/useReportStore';
+import { useReportStore, ConsolidatedReport } from '@features/cc/store/useReportStore';
+import { WeeklyCourseCoverageReportCard } from '../../cc/components/WeeklyCourseCoverageReportCard';
 import { Palette } from '@theme/colors';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -79,6 +80,7 @@ export const DeptSummaryScreen = () => {
   const [selectedDept, setSelectedDept] = useState<DeptInfo | null>(null);
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [selectedClass, setSelectedClass] = useState<ClassProgressInfo | null>(null);
+  const [selectedReport, setSelectedReport] = useState<ConsolidatedReport | null>(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
 
   // Helper to generate classes list for a selected dept & year
@@ -225,6 +227,38 @@ export const DeptSummaryScreen = () => {
 
   const handleClassSelect = (cls: ClassProgressInfo) => {
     setSelectedClass(cls);
+    
+    // Generate subjects progress
+    const subjects = getSubjectsProgressForClass(cls.classId);
+    
+    // Map to ConsolidatedReport format
+    const mockReport: ConsolidatedReport = {
+      id: `report-${cls.classId}`,
+      classId: cls.classId,
+      weekNumber: 12,
+      overallCoverage: cls.coverage,
+      submittedBy: 'Prof. Anitha K (Class Coordinator)',
+      submittedAt: '2026-07-08',
+      ccRemarks: cls.pendingCount > 0 
+        ? 'Some lab sessions are slightly behind due to public holidays. Extra hours will be arranged.' 
+        : 'All topics completed successfully as per the syllabus plan.',
+      status: cls.pendingCount > 0 ? 'SUBMITTED_TO_HOD' : 'SENT_TO_ADMIN',
+      subjects: subjects.map(s => ({
+        code: s.code,
+        name: s.name,
+        faculty: s.faculty,
+        coverage: s.coverage,
+        status: s.status,
+        completedTopicsCount: s.completedTopicsCount,
+        totalTopicsCount: s.totalTopicsCount,
+        reasonsForPending: s.status === 'Pending' ? 'Lab hours clashing with internal assessments.' : undefined,
+        extraHoursRequested: s.status === 'Pending' ? true : undefined,
+      })),
+      hodRemarks: 'Reviewed syllabus coverage and verified logs. Found correct.',
+      approvedAt: '2026-07-09',
+    };
+    
+    setSelectedReport(mockReport);
     setDetailModalVisible(true);
   };
 
@@ -233,10 +267,12 @@ export const DeptSummaryScreen = () => {
       setSelectedDept(null);
       setSelectedYear(null);
       setSelectedClass(null);
+      setSelectedReport(null);
       setStep(1);
     } else if (targetStep === 2) {
       setSelectedYear(null);
       setSelectedClass(null);
+      setSelectedReport(null);
       setStep(2);
     }
   };
@@ -420,14 +456,14 @@ export const DeptSummaryScreen = () => {
           onDismiss={() => setDetailModalVisible(false)}
           contentContainerStyle={styles.modalContainer}
         >
-          {selectedClass && (
+          {selectedReport && (
             <View style={styles.modalContent}>
               {/* Modal Header */}
               <View style={styles.modalHeader}>
                 <View style={styles.modalTitleBox}>
-                  <Text style={styles.modalTitle}>{selectedClass.name}</Text>
+                  <Text style={styles.modalTitle}>{selectedReport.classId} Course Coverage</Text>
                   <Text style={styles.modalSubtitle}>
-                    Syllabus Coverage Breakdown (Week 12)
+                    Official Auditing Sheet · Week {selectedReport.weekNumber}
                   </Text>
                 </View>
                 <TouchableOpacity
@@ -442,52 +478,7 @@ export const DeptSummaryScreen = () => {
 
               {/* Modal Body */}
               <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
-                {activeSubjects.map((subj) => {
-                  const isLogged = subj.status === 'Submitted';
-                  return (
-                    <View key={subj.code} style={styles.modalSubjectCard}>
-                      <View style={styles.modalSubjectRow}>
-                        <View style={styles.modalSubjectLeft}>
-                          <Text style={styles.modalSubjectCode}>{subj.code}</Text>
-                          <Text style={styles.modalSubjectName}>{subj.name}</Text>
-                          <Text style={styles.modalSubjectFaculty}>Faculty: {subj.faculty}</Text>
-                        </View>
-                        <View style={styles.modalSubjectRight}>
-                          <Badge
-                            style={[
-                              styles.modalStatusBadge,
-                              isLogged ? styles.statusLogged : styles.statusPending,
-                            ]}
-                          >
-                            {isLogged ? 'LOGGED' : 'PENDING'}
-                          </Badge>
-                        </View>
-                      </View>
-
-                      <View style={styles.modalProgressSection}>
-                        <View style={styles.modalProgressLabelRow}>
-                          <Text style={styles.modalProgressLabel}>Syllabus coverage</Text>
-                          <Text
-                            style={[
-                              styles.modalProgressValue,
-                              { color: isLogged ? Palette.primary : Palette.error },
-                            ]}
-                          >
-                            {subj.coverage}%
-                          </Text>
-                        </View>
-                        <ProgressBar
-                          progress={subj.coverage / 100}
-                          color={isLogged ? Palette.primary : Palette.error}
-                          style={styles.modalProgressBar}
-                        />
-                        <Text style={styles.modalTopicsCount}>
-                          {subj.completedTopicsCount} of {subj.totalTopicsCount} syllabus topics completed
-                        </Text>
-                      </View>
-                    </View>
-                  );
-                })}
+                <WeeklyCourseCoverageReportCard report={selectedReport} showDownloadButton={true} />
               </ScrollView>
 
               <Divider style={styles.modalDivider} />
@@ -500,7 +491,7 @@ export const DeptSummaryScreen = () => {
                   style={styles.modalCloseButton}
                   buttonColor={Palette.primary}
                 >
-                  Close Window
+                  Close Document
                 </Button>
               </View>
             </View>
@@ -782,9 +773,9 @@ const styles = StyleSheet.create({
   // Detail Modal styles
   modalContainer: {
     backgroundColor: '#FFFFFF',
-    margin: 20,
-    borderRadius: 24,
-    maxHeight: '85%',
+    margin: 12,
+    borderRadius: 20,
+    maxHeight: '92%',
   },
   modalContent: {
     flex: 1,
