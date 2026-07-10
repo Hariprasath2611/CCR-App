@@ -1,13 +1,14 @@
-import React from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import { Text, Card, ProgressBar, Button, Badge, Divider } from 'react-native-paper';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useReportStore } from '@features/cc/store/useReportStore';
+import { useReportStore, ConsolidatedReport } from '@features/cc/store/useReportStore';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { Palette } from '@theme/colors';
 import { StaffStackParamList } from '@navigation/types';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { WeeklyCourseCoverageReportCard } from '../../cc/components/WeeklyCourseCoverageReportCard';
 
 type RouteParams = RouteProp<StaffStackParamList, 'FacultyProgress'>;
 type HodNav = NativeStackNavigationProp<StaffStackParamList>;
@@ -23,6 +24,8 @@ export const FacultyProgressScreen = () => {
   const selectedWeek = '12'; // Default week
   const progressList = subjectProgressList[`${classId}_${selectedWeek}`] || [];
 
+  const [viewMode, setViewMode] = useState<'list' | 'spreadsheet'>('list');
+
   // Filter pending consolidated reports submitted for this specific class
   const classPendingReports = reports.filter(
     (r) => r.classId === classId && r.status === 'SUBMITTED_TO_HOD'
@@ -31,6 +34,37 @@ export const FacultyProgressScreen = () => {
   
   // Mock slot request for this class
   const PENDING_EXTRA_HOURS = classId === 'CSE-B' ? 1 : 0;
+
+  // Find or construct ConsolidatedReport
+  const existingReport = reports.find(
+    (r) => r.classId === classId && r.weekNumber === parseInt(selectedWeek)
+  );
+
+  const averageCoverage = progressList.length > 0
+    ? Math.round(progressList.reduce((sum, s) => sum + s.coverage, 0) / progressList.length)
+    : 0;
+
+  const reportToShow: ConsolidatedReport = existingReport || {
+    id: `provisional-${classId}-W${selectedWeek}`,
+    classId,
+    weekNumber: parseInt(selectedWeek),
+    overallCoverage: averageCoverage,
+    submittedBy: 'Class Coordinator',
+    submittedAt: new Date().toISOString().split('T')[0],
+    ccRemarks: 'Provisional course coverage data based on latest faculty logs.',
+    status: 'SUBMITTED_TO_HOD',
+    subjects: progressList.map((s) => ({
+      code: s.code,
+      name: s.name,
+      faculty: s.faculty,
+      coverage: s.coverage,
+      status: s.status,
+      completedTopicsCount: s.completedTopicsCount,
+      totalTopicsCount: s.totalTopicsCount,
+      reasonsForPending: s.reasonsForPending || (s.coverage < 60 ? 'Topics not completed' : undefined),
+      extraHoursRequested: s.extraHoursRequested,
+    })),
+  };
 
   const getStatusLabel = (status: string) => {
     if (status === 'Submitted') {
@@ -54,53 +88,89 @@ export const FacultyProgressScreen = () => {
         </View>
       </View>
 
-      {/* ── DYNAMIC SUBJECT LIST ── */}
-      <Text style={styles.sectionTitle}>Subject-wise Syllabus Coverage</Text>
-      {progressList.length === 0 ? (
-        <Card style={styles.emptyCard}>
-          <Card.Content>
-            <Text style={styles.emptyText}>No faculty logs recorded for this class.</Text>
-          </Card.Content>
-        </Card>
-      ) : (
-        progressList.map((subj) => {
-          const statusCfg = getStatusLabel(subj.status);
-          return (
-            <Card key={subj.code} style={styles.subjectCard}>
+      {/* ── VIEW SWITCHER TABS ── */}
+      <View style={styles.tabContainer}>
+        <TouchableOpacity
+          style={[styles.tabButton, viewMode === 'list' && styles.activeTabButton]}
+          onPress={() => setViewMode('list')}
+          activeOpacity={0.7}
+        >
+          <MaterialCommunityIcons
+            name="format-list-bulleted"
+            size={18}
+            color={viewMode === 'list' ? '#FFFFFF' : Palette.textLight}
+          />
+          <Text style={[styles.tabText, viewMode === 'list' && styles.activeTabText]}>List View</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tabButton, viewMode === 'spreadsheet' && styles.activeTabButton]}
+          onPress={() => setViewMode('spreadsheet')}
+          activeOpacity={0.7}
+        >
+          <MaterialCommunityIcons
+            name="table"
+            size={18}
+            color={viewMode === 'spreadsheet' ? '#FFFFFF' : Palette.textLight}
+          />
+          <Text style={[styles.tabText, viewMode === 'spreadsheet' && styles.activeTabText]}>Spreadsheet Details</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* ── RENDERING BY VIEW MODE ── */}
+      {viewMode === 'list' ? (
+        <>
+          <Text style={styles.sectionTitle}>Subject-wise Syllabus Coverage</Text>
+          {progressList.length === 0 ? (
+            <Card style={styles.emptyCard}>
               <Card.Content>
-                <View style={styles.subjRow}>
-                  <View style={styles.subjLeft}>
-                    <Text style={styles.subjCode}>{subj.code}</Text>
-                    <Text style={styles.subjName}>{subj.name}</Text>
-                    <Text style={styles.subjFaculty}>Faculty: {subj.faculty}</Text>
-                  </View>
-                  <View style={styles.subjRight}>
-                    <View style={[styles.badgeStyle, { backgroundColor: statusCfg.bgColor }]}>
-                      <Text style={[styles.badgeText, { color: statusCfg.textColor }]}>
-                        {statusCfg.label}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-                
-                <View style={styles.progressBlock}>
-                  <View style={styles.progressLabelRow}>
-                    <Text style={styles.progressLabel}>Coverage Progress</Text>
-                    <Text style={styles.progressValue}>{subj.coverage}%</Text>
-                  </View>
-                  <ProgressBar
-                    progress={subj.coverage / 100}
-                    color={subj.status === 'Submitted' ? Palette.primary : Palette.error}
-                    style={styles.progressBar}
-                  />
-                  <Text style={styles.topicsCount}>
-                    {subj.completedTopicsCount} of {subj.totalTopicsCount} syllabus units completed
-                  </Text>
-                </View>
+                <Text style={styles.emptyText}>No faculty logs recorded for this class.</Text>
               </Card.Content>
             </Card>
-          );
-        })
+          ) : (
+            progressList.map((subj) => {
+              const statusCfg = getStatusLabel(subj.status);
+              return (
+                <Card key={subj.code} style={styles.subjectCard}>
+                  <Card.Content>
+                    <View style={styles.subjRow}>
+                      <View style={styles.subjLeft}>
+                        <Text style={styles.subjCode}>{subj.code}</Text>
+                        <Text style={styles.subjName}>{subj.name}</Text>
+                        <Text style={styles.subjFaculty}>Faculty: {subj.faculty}</Text>
+                      </View>
+                      <View style={styles.subjRight}>
+                        <View style={[styles.badgeStyle, { backgroundColor: statusCfg.bgColor }]}>
+                          <Text style={[styles.badgeText, { color: statusCfg.textColor }]}>
+                            {statusCfg.label}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    
+                    <View style={styles.progressBlock}>
+                      <View style={styles.progressLabelRow}>
+                        <Text style={styles.progressLabel}>Coverage Progress</Text>
+                        <Text style={styles.progressValue}>{subj.coverage}%</Text>
+                      </View>
+                      <ProgressBar
+                        progress={subj.coverage / 100}
+                        color={subj.status === 'Submitted' ? Palette.primary : Palette.error}
+                        style={styles.progressBar}
+                      />
+                      <Text style={styles.topicsCount}>
+                        {subj.completedTopicsCount} of {subj.totalTopicsCount} syllabus units completed
+                      </Text>
+                    </View>
+                  </Card.Content>
+                </Card>
+              );
+            })
+          )}
+        </>
+      ) : (
+        <View style={{ marginBottom: 20 }}>
+          <WeeklyCourseCoverageReportCard report={reportToShow} showDownloadButton={false} />
+        </View>
       )}
 
       {/* ── PENDING REVIEWS SPECIFIC TO THIS CLASS ── */}
@@ -371,6 +441,39 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Palette.textLight,
     fontStyle: 'italic',
+  },
+  // Tab switcher styles
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#EEF2FF',
+    borderRadius: 12,
+    padding: 4,
+    marginBottom: 16,
+  },
+  tabButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 8,
+    gap: 6,
+  },
+  activeTabButton: {
+    backgroundColor: Palette.primary,
+    elevation: 2,
+    shadowColor: Palette.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  tabText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: Palette.textLight,
+  },
+  activeTabText: {
+    color: '#FFFFFF',
   },
 });
 

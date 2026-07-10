@@ -130,6 +130,23 @@ export const HodDashboardScreen = () => {
         ))}
       </View>
 
+      {/* ── QUICK ACTIONS ── */}
+      <Text style={styles.sectionTitle}>Quick Actions</Text>
+      <TouchableOpacity
+        style={styles.actionRow}
+        onPress={() => navigation.navigate('DepartmentClasses')}
+        activeOpacity={0.7}
+      >
+        <View style={[styles.actionIconBox, { backgroundColor: '#EFF6FF' }]}>
+          <MaterialCommunityIcons name="google-classroom" size={22} color={Palette.primary} />
+        </View>
+        <View style={styles.actionTextBox}>
+          <Text style={styles.actionTitle}>Department Classes & Subjects</Text>
+          <Text style={styles.actionSubtitle}>Explore classes, spreadsheets, and subjects mapping</Text>
+        </View>
+        <Feather name="chevron-right" size={20} color="#94A3B8" />
+      </TouchableOpacity>
+
       {/* ── LOGOUT BUTTON ── */}
       <Button
         mode="text"
@@ -360,6 +377,44 @@ const styles = StyleSheet.create({
   logoutLabel: {
     fontSize: 13,
     fontWeight: '800',
+  },
+  // Quick Actions styles
+  actionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    marginBottom: 16,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.02,
+    shadowRadius: 8,
+    elevation: 1,
+  },
+  actionIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 14,
+  },
+  actionTextBox: {
+    flex: 1,
+  },
+  actionTitle: {
+    fontSize: 14.5,
+    fontWeight: '800',
+    color: Palette.textDark,
+  },
+  actionSubtitle: {
+    fontSize: 11.5,
+    color: Palette.textLight,
+    fontWeight: '500',
+    marginTop: 2,
   },
 });
 
