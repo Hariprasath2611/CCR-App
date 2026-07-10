@@ -82,6 +82,18 @@ export const DeptSummaryScreen = () => {
   const [selectedClass, setSelectedClass] = useState<ClassProgressInfo | null>(null);
   const [selectedReport, setSelectedReport] = useState<ConsolidatedReport | null>(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [deptTab, setDeptTab] = useState<'years' | 'subjects'>('years');
+
+  const getAllSubjectsForDept = (deptCode: string) => {
+    return [1, 2, 3, 4].flatMap((yearNum) => {
+      const subjects = getMockSubjectsForDept(deptCode, yearNum);
+      return subjects.map((s) => ({
+        ...s,
+        year: `${yearNum}${yearNum === 1 ? 'st' : yearNum === 2 ? 'nd' : yearNum === 3 ? 'rd' : 'th'} Year`,
+        topics: 8 + (s.code.charCodeAt(s.code.length - 1) % 4),
+      }));
+    });
+  };
 
   // Helper to generate classes list for a selected dept & year
   const getClassesForDeptAndYear = (deptId: string, year: string): ClassProgressInfo[] => {
@@ -218,6 +230,7 @@ export const DeptSummaryScreen = () => {
   const handleDeptSelect = (dept: DeptInfo) => {
     setSelectedDept(dept);
     setStep(2);
+    setDeptTab('years');
   };
 
   const handleYearSelect = (year: string) => {
@@ -355,36 +368,87 @@ export const DeptSummaryScreen = () => {
               <Text style={styles.backLinkText}>Back to Departments</Text>
             </TouchableOpacity>
             <Text style={styles.title}>{selectedDept.name}</Text>
-            <Text style={styles.subtitle}>Select the academic year to view classes syllabus progress</Text>
+            <Text style={styles.subtitle}>Select the academic year to view classes or browse mapped department subjects.</Text>
           </View>
 
-          <View style={styles.yearsGrid}>
-            {YEARS.map((year, idx) => {
-              const yearCoverage = Math.round(selectedDept.coverage + (idx * 2) - 4); // Simulated variations
-              const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B'];
-              const yearColor = colors[idx] || Palette.primary;
-              return (
-                <TouchableOpacity
-                  key={year}
-                  style={styles.yearCard}
-                  onPress={() => handleYearSelect(year)}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.yearCardTop}>
-                    <View style={[styles.yearIndicator, { backgroundColor: yearColor + '15' }]}>
-                      <Text style={[styles.yearIndicatorText, { color: yearColor }]}>Y{idx + 1}</Text>
-                    </View>
-                    <Text style={styles.yearTitle}>{year}</Text>
-                  </View>
-                  <View style={styles.yearCardStats}>
-                    <Text style={styles.yearClassesMuted}>3 Classes Mapped</Text>
-                    <Text style={[styles.yearPercent, { color: yearColor }]}>{yearCoverage}% Avg</Text>
-                  </View>
-                  <ProgressBar progress={yearCoverage / 100} color={yearColor} style={styles.yearProgressBar} />
-                </TouchableOpacity>
-              );
-            })}
+          {/* ── DEP SWITCHER TABS ── */}
+          <View style={styles.tabContainer}>
+            <TouchableOpacity
+              style={[styles.tabButton, deptTab === 'years' && styles.activeTabButton]}
+              onPress={() => setDeptTab('years')}
+              activeOpacity={0.7}
+            >
+              <MaterialCommunityIcons name="google-classroom" size={18} color={deptTab === 'years' ? '#FFFFFF' : Palette.textLight} />
+              <Text style={[styles.tabText, deptTab === 'years' && styles.activeTabText]}>Classes & Years</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tabButton, deptTab === 'subjects' && styles.activeTabButton]}
+              onPress={() => setDeptTab('subjects')}
+              activeOpacity={0.7}
+            >
+              <MaterialCommunityIcons name="book-open-page-variant" size={18} color={deptTab === 'subjects' ? '#FFFFFF' : Palette.textLight} />
+              <Text style={[styles.tabText, deptTab === 'subjects' && styles.activeTabText]}>Subject Catalog</Text>
+            </TouchableOpacity>
           </View>
+
+          {deptTab === 'years' ? (
+            <View style={styles.yearsGrid}>
+              {YEARS.map((year, idx) => {
+                const yearCoverage = Math.round(selectedDept.coverage + (idx * 2) - 4); // Simulated variations
+                const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B'];
+                const yearColor = colors[idx] || Palette.primary;
+                return (
+                  <TouchableOpacity
+                    key={year}
+                    style={styles.yearCard}
+                    onPress={() => handleYearSelect(year)}
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.yearCardTop}>
+                      <View style={[styles.yearIndicator, { backgroundColor: yearColor + '15' }]}>
+                        <Text style={[styles.yearIndicatorText, { color: yearColor }]}>Y{idx + 1}</Text>
+                      </View>
+                      <Text style={styles.yearTitle}>{year}</Text>
+                    </View>
+                    <View style={styles.yearCardStats}>
+                      <Text style={styles.yearClassesMuted}>3 Classes Mapped</Text>
+                      <Text style={[styles.yearPercent, { color: yearColor }]}>{yearCoverage}% Avg</Text>
+                    </View>
+                    <ProgressBar progress={yearCoverage / 100} color={yearColor} style={styles.yearProgressBar} />
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ) : (
+            <View style={styles.subjectsGrid}>
+              {getAllSubjectsForDept(selectedDept.code).map((sub) => (
+                <Card key={sub.code} style={styles.subjectCard}>
+                  <Card.Content>
+                    <View style={styles.subjectHeader}>
+                      <View style={styles.subCodeBadge}>
+                        <Text style={styles.subCodeText}>{sub.code}</Text>
+                      </View>
+                      <Text style={styles.subYearBadge}>{sub.year}</Text>
+                    </View>
+                    <Text style={styles.subjectName}>{sub.name}</Text>
+                    
+                    <Divider style={styles.subDivider} />
+                    
+                    <View style={styles.subjectMeta}>
+                      <View style={styles.metaItem}>
+                        <Feather name="user" size={13} color={Palette.textLight} />
+                        <Text style={styles.metaText} numberOfLines={1}>{sub.faculty}</Text>
+                      </View>
+                      <View style={styles.metaItem}>
+                        <Feather name="list" size={13} color={Palette.textLight} />
+                        <Text style={styles.metaText}>{sub.topics} Syllabus Units</Text>
+                      </View>
+                    </View>
+                  </Card.Content>
+                </Card>
+              ))}
+            </View>
+          )}
         </ScrollView>
       )}
 
@@ -893,6 +957,96 @@ const styles = StyleSheet.create({
   },
   modalCloseButton: {
     borderRadius: 12,
+  },
+  // Switcher and Subject styles
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#EEF2FF',
+    borderRadius: 14,
+    padding: 5,
+    marginBottom: 16,
+  },
+  tabButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 10,
+    gap: 6,
+  },
+  activeTabButton: {
+    backgroundColor: Palette.primary,
+    elevation: 2,
+  },
+  tabText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: Palette.textLight,
+  },
+  activeTabText: {
+    color: '#FFFFFF',
+  },
+  subjectsGrid: {
+    gap: 12,
+  },
+  subjectCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 6,
+    elevation: 1,
+  },
+  subjectHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  subCodeBadge: {
+    backgroundColor: '#EFF6FF',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  subCodeText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: Palette.primary,
+  },
+  subYearBadge: {
+    fontSize: 11.5,
+    color: Palette.textLight,
+    fontWeight: '600',
+  },
+  subjectName: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: Palette.textDark,
+    marginBottom: 8,
+  },
+  subDivider: {
+    marginVertical: 8,
+    backgroundColor: '#F1F5F9',
+  },
+  subjectMeta: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  metaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flex: 1,
+  },
+  metaText: {
+    fontSize: 11.5,
+    color: Palette.textLight,
+    fontWeight: '500',
   },
 });
 
