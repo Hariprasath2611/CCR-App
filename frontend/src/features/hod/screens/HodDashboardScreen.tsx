@@ -28,12 +28,12 @@ const CLASSES_DATA: ClassData[] = [
   // 3rd Year
   { classId: '3rd Year CSE-A', name: '3rd Year CSE-A', year: '3rd Year', coverage: 82, pendingCount: 0 },
   { classId: '3rd Year CSE-B', name: '3rd Year CSE-B', year: '3rd Year', coverage: 75, pendingCount: 0 },
-  { classId: '3rd Year IT', name: '3rd Year IT', year: '3rd Year', coverage: 60, pendingCount: 2 },
+  { classId: '3rd Year CSBS', name: '3rd Year CSBS', year: '3rd Year', coverage: 60, pendingCount: 2 },
 
   // 4th Year
   { classId: '4th Year CSE-A', name: '4th Year CSE-A', year: '4th Year', coverage: 90, pendingCount: 0 },
   { classId: '4th Year CSE-B', name: '4th Year CSE-B', year: '4th Year', coverage: 85, pendingCount: 0 },
-  { classId: '4th Year ECE', name: '4th Year ECE', year: '4th Year', coverage: 78, pendingCount: 1 },
+  { classId: '4th Year CSBS', name: '4th Year CSBS', year: '4th Year', coverage: 78, pendingCount: 1 },
 ];
 
 export const HodDashboardScreen = () => {

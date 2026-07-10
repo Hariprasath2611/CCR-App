@@ -25,8 +25,8 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
   const isApprovedAdmin = status === 'SENT_TO_ADMIN';
 
   const sectionChar = classId.split('-')[1] || 'A';
-  const displayClass = classId.startsWith('CSE') ? 'III Year / V Semester' : 'II Year / III Semester';
-  const displayDept = classId.startsWith('CSE') ? 'Computer Science and Engineering' : 'Information Technology';
+  const displayClass = classId.includes('CSE') ? 'III Year / V Semester' : 'II Year / III Semester';
+  const displayDept = classId.includes('CSE') ? 'Computer Science and Engineering' : 'Computer Science and Business Systems (CSBS)';
 
   // Compute dates based on weekNumber
   const getDates = (week: number) => {
