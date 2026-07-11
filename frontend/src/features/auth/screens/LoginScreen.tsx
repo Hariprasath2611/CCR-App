@@ -11,6 +11,8 @@ import {
   ScrollView,
   StatusBar,
   Dimensions,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useAuthStore, UserSession } from '../store/useAuthStore';
 import { Palette } from '@theme/colors';
@@ -18,6 +20,7 @@ import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@navigation/types';
+import { apiClient } from '@services/api/apiClient';
 
 const { height, width } = Dimensions.get('window');
 
@@ -113,33 +116,36 @@ export const LoginScreen = () => {
     };
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const currentRoleInfo = detectRole(email);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email) {
-      alert('Please enter your email ID');
+      Alert.alert('Validation', 'Please enter your email ID');
       return;
     }
     if (!password) {
-      alert('Please enter your password');
+      Alert.alert('Validation', 'Please enter your password');
       return;
     }
 
-    const { role, isCC, name, dept } = currentRoleInfo;
+    setIsLoading(true);
+    try {
+      const response = await apiClient.post('/auth/login', {
+        email: email.toLowerCase().trim(),
+        password,
+      });
 
-    const dummyUser: UserSession = {
-      id: Math.random().toString(),
-      name: role === 'STAFF' 
-        ? (isCC ? `${name} (CS)` : `${name} (CS)`) 
-        : name,
-      email: email,
-      role: role,
-      isClassCoordinator: isCC,
-      department: dept,
-      assignedClassId: 'CSE-B',
-    };
-
-    login(dummyUser, 'dummy-access-token', 'dummy-refresh-token');
+      const { user: userSession, accessToken, refreshToken } = response.data;
+      login(userSession, accessToken, refreshToken);
+    } catch (error: any) {
+      console.error('Login error details:', error);
+      const errMsg = error.response?.data?.error || 'Failed to authenticate. Please check your credentials and network connection.';
+      Alert.alert('Login Failed', errMsg);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -294,11 +300,18 @@ export const LoginScreen = () => {
               style={styles.signInButton}
               onPress={handleLogin}
               activeOpacity={0.85}
+              disabled={isLoading}
             >
-              <Text style={styles.signInButtonText}>Sign In</Text>
-              <View style={styles.signInButtonIconBox}>
-                <Feather name="arrow-right" size={16} color={Palette.primary} />
-              </View>
+              {isLoading ? (
+                <ActivityIndicator color="#FFFFFF" size="small" style={{ alignSelf: 'center', flex: 1 }} />
+              ) : (
+                <>
+                  <Text style={styles.signInButtonText}>Sign In</Text>
+                  <View style={styles.signInButtonIconBox}>
+                    <Feather name="arrow-right" size={16} color={Palette.primary} />
+                  </View>
+                </>
+              )}
             </TouchableOpacity>
           </View>
 

@@ -40,6 +40,11 @@ export const HodDashboardScreen = () => {
   const { user, logout } = useAuthStore();
   const navigation = useNavigation<any>();
   const reports = useReportStore((state) => state.reports);
+  const fetchReports = useReportStore((state) => state.fetchReports);
+
+  React.useEffect(() => {
+    fetchReports();
+  }, [fetchReports]);
 
   const [selectedYear, setSelectedYear] = useState('2nd Year');
 

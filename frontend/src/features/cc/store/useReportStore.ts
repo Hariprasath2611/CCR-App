@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { apiClient } from '@services/api/apiClient';
 
 export interface SubjectProgress {
   code: string;
@@ -29,6 +30,8 @@ export interface ConsolidatedReport {
 interface ReportStoreState {
   reports: ConsolidatedReport[];
   subjectProgressList: Record<string, SubjectProgress[]>; // Keyed by classId_weekNumber
+  fetchReports: () => Promise<void>;
+  fetchWeeklyProgress: (classId: string, weekNumber: number) => Promise<void>;
   addProgressLog: (
     classId: string,
     weekNumber: number,
@@ -38,8 +41,8 @@ interface ReportStoreState {
     reasonsForPending?: string,
     extraHoursRequested?: boolean
   ) => void;
-  compileWeeklyReport: (classId: string, weekNumber: number, ccRemarks: string, ccName: string) => string;
-  submitHODDecision: (reportId: string, decision: 'APPROVED' | 'RETURNED' | 'REJECTED', remarks: string) => void;
+  compileWeeklyReport: (classId: string, weekNumber: number, ccRemarks: string, ccName: string) => Promise<string>;
+  submitHODDecision: (reportId: string, decision: 'APPROVED' | 'RETURNED' | 'REJECTED', remarks: string) => Promise<void>;
   getReportById: (reportId: string) => ConsolidatedReport | undefined;
 }
 
@@ -95,6 +98,31 @@ export const useReportStore = create<ReportStoreState>((set, get) => ({
   reports: INITIAL_REPORTS,
   subjectProgressList: INITIAL_SUBJECTS_PROGRESS,
 
+  fetchReports: async () => {
+    try {
+      const response = await apiClient.get('/reports');
+      set({ reports: response.data });
+    } catch (err) {
+      console.error('fetchReports error:', err);
+    }
+  },
+
+  fetchWeeklyProgress: async (classId, weekNumber) => {
+    try {
+      const response = await apiClient.get(`/reports/weekly/${classId}/${weekNumber}`);
+      const report = response.data;
+      const key = `${classId}_${weekNumber}`;
+      set((state) => ({
+        subjectProgressList: {
+          ...state.subjectProgressList,
+          [key]: report.subjects,
+        },
+      }));
+    } catch (err) {
+      console.error('fetchWeeklyProgress error:', err);
+    }
+  },
+
   addProgressLog: (classId, weekNumber, subjectCode, completedTopics, totalTopics, reasonsForPending, extraHoursRequested) => {
     const key = `${classId}_${weekNumber}`;
     set((state) => {
@@ -130,7 +158,7 @@ export const useReportStore = create<ReportStoreState>((set, get) => ({
     });
   },
 
-  compileWeeklyReport: (classId, weekNumber, ccRemarks, ccName) => {
+  compileWeeklyReport: async (classId, weekNumber, ccRemarks, ccName) => {
     const key = `${classId}_${weekNumber}`;
     const subjects = get().subjectProgressList[key] || [];
     
@@ -155,10 +183,27 @@ export const useReportStore = create<ReportStoreState>((set, get) => ({
       reports: [newReport, ...state.reports],
     }));
 
+    try {
+      await apiClient.post('/reports/compile', newReport);
+    } catch (err) {
+      console.error('compileWeeklyReport backend post failed:', err);
+    }
+
     return reportId;
   },
 
-  submitHODDecision: (reportId, decision, remarks) => {
+  submitHODDecision: async (reportId, decision, remarks) => {
+    try {
+      await apiClient.post('/hod/decision', {
+        requestId: reportId,
+        decision,
+        remarks,
+        isExtraHour: false,
+      });
+    } catch (err) {
+      console.error('submitHODDecision backend post failed:', err);
+    }
+
     set((state) => {
       const updatedReports = state.reports.map((report) => {
         if (report.id === reportId) {

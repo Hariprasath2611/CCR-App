@@ -12,6 +12,11 @@ export const PrincipalDashboardScreen = () => {
   const { logout, user } = useAuthStore();
   const navigation = useNavigation<any>();
   const reports = useReportStore((state) => state.reports);
+  const fetchReports = useReportStore((state) => state.fetchReports);
+
+  React.useEffect(() => {
+    fetchReports();
+  }, [fetchReports]);
 
   // Dynamic statistics calculations
   const totalDepartments = DEPARTMENTS.length;

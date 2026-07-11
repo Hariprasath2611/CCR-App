@@ -44,7 +44,7 @@ export const SubmitToHODScreen = () => {
     setIsSubmitting(true);
     try {
       const ccName = user?.name || 'Class Coordinator';
-      compileWeeklyReport(classId, weekNumber, data.ccRemarks, ccName);
+      await compileWeeklyReport(classId, weekNumber, data.ccRemarks, ccName);
 
       Alert.alert(
         'Report Submitted',

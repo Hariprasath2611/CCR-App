@@ -108,7 +108,7 @@ export const RequestDetailsScreen = () => {
     setIsSubmitting(true);
     try {
       if (!isExtraHour) {
-        submitHODDecision(requestId, decision, remarks);
+        await submitHODDecision(requestId, decision, remarks);
       }
       
       console.log('HOD Decision Submitted:', { requestId, decision, remarks });

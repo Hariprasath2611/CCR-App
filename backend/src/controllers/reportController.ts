@@ -164,3 +164,30 @@ export const compileReport = async (req: AuthenticatedRequest, res: Response) =>
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const listReports = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const reports = await prisma.consolidatedReport.findMany({
+      orderBy: { weekNumber: 'desc' },
+    });
+
+    const parsedReports = reports.map((r) => ({
+      id: r.id,
+      classId: r.classId,
+      weekNumber: r.weekNumber,
+      overallCoverage: r.overallCoverage,
+      submittedBy: r.submittedBy,
+      submittedAt: r.submittedAt,
+      ccRemarks: r.ccRemarks,
+      status: r.status,
+      subjects: JSON.parse(r.subjectsJson),
+      hodRemarks: r.hodRemarks || undefined,
+      approvedAt: r.approvedAt || undefined,
+    }));
+
+    return res.json(parsedReports);
+  } catch (error) {
+    console.error('listReports error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
