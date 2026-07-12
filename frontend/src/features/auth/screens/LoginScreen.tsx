@@ -56,11 +56,94 @@ export const LoginScreen = () => {
       };
     }
 
+    // Explicit mapping for seeded users to match database exactly
+    if (emailLower === 'meena@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: true,
+        name: 'Dr. Meena Kumari',
+        dept: 'Computer Science',
+        label: 'Class Coordinator (CSE-B)',
+        icon: 'shield-star',
+        color: '#3B82F6',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+    if (emailLower === 'karthick@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Prof. Karthick D',
+        dept: 'Computer Science',
+        label: 'Subject Teacher (CSE)',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+    if (emailLower === 'rajesh@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Prof. Rajesh K',
+        dept: 'Computer Science',
+        label: 'Subject Teacher (CSE)',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+    if (emailLower === 'anita@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Dr. Anita S',
+        dept: 'Computer Science',
+        label: 'Subject Teacher (CSE)',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+    if (emailLower === 'hod@ccms.edu') {
+      return {
+        role: 'HOD' as const,
+        isCC: false,
+        name: 'Faculty HOD',
+        dept: 'Computer Science',
+        label: 'Head of Department (CSE)',
+        icon: 'account-tie',
+        color: '#10B981',
+        bgColor: '#ECFDF5',
+        borderColor: '#A7F3D0',
+      };
+    }
+    if (emailLower === 'principal@ccms.edu') {
+      return {
+        role: 'ADMIN' as const,
+        isCC: false,
+        name: 'Faculty Principal',
+        dept: 'Administration',
+        label: 'Principal',
+        icon: 'shield-crown',
+        color: '#8B5CF6',
+        bgColor: '#F5F3FF',
+        borderColor: '#DDD6FE',
+      };
+    }
+
+    // General fallback: only analyze the username prefix, NOT the domain name (to avoid matching 'cc' in '@ccms.edu')
+    const username = emailLower.split('@')[0];
+
     if (
-      emailLower.includes('admin') ||
-      emailLower.includes('principal') ||
-      emailLower.includes('principel') ||
-      emailLower.includes('principle')
+      username.includes('admin') ||
+      username.includes('principal') ||
+      username.includes('principel') ||
+      username.includes('principle')
     ) {
       return {
         role: 'ADMIN' as const,
@@ -75,7 +158,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower.includes('hod')) {
+    if (username.includes('hod')) {
       return {
         role: 'HOD' as const,
         isCC: false,
@@ -89,7 +172,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower.includes('cc') || emailLower.includes('coordinator')) {
+    if (username.includes('cc') || username.includes('coordinator')) {
       return {
         role: 'STAFF' as const,
         isCC: true,

@@ -1325,3 +1325,75 @@
 {"_e":"metro:client_log","_t":1783856059790,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[AxiosError: Network Error]"]}
 {"_e":"metro:client_log","_t":1783856069468,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}
 {"_e":"metro:bundling:failed","_t":1783856121533,"id":null,"message":"Unable to resolve \"../../../assets/landing_illustration.png\" from \"d:\\work\\cc-app\\frontend\\src\\features\\auth\\screens\\LandingScreen.tsx\"\n  76 |       <View style={styles.emblemContainer}>\n  77 |         <Image\n> 78 |           source={require('../../../assets/landing_illustration.png')}\n     |                            ^\n  79 |           style={{ width: emblemSize, height: emblemSize }}\n  80 |           resizeMode=\"contain\"\n  81 |         />","importStack":"\u001b[1mImport stack:\u001b[22m\n\n\u001b[90m \u001b[39msrc\\features\\auth\\screens\\LandingScreen.tsx\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../../../assets/landing_illustration.png\"\u001b[39m\n\n\u001b[90m \u001b[39m\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./src/features/auth/screens/LandingScreen\"\u001b[39m\n","filename":null,"targetModuleName":"../../../assets/landing_illustration.png","originModulePath":"d:\\work\\cc-app\\frontend\\src\\features\\auth\\screens\\LandingScreen.tsx"}
+{"_e":"root:init","_t":1783856924419,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1783856924505,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1783856926774,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1783856948619,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1783856995724,"id":"1","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783856995725,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783856998014,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783857000304,"id":"1","progress":0.010000000000000002,"total":1,"current":1}
+{"_e":"metro:bundling:progress","_t":1783857000882,"id":"1","progress":0.010000000000000002,"total":3,"current":1}
+{"_e":"metro:bundling:progress","_t":1783857002716,"id":"1","progress":0.04000000000000001,"total":3,"current":2}
+{"_e":"metro:bundling:progress","_t":1783857003321,"id":"1","progress":0.04000000000000001,"total":18,"current":3}
+{"_e":"metro:bundling:progress","_t":1783857005032,"id":"1","progress":0.04938271604938271,"total":18,"current":4}
+{"_e":"metro:bundling:progress","_t":1783857005678,"id":"1","progress":0.04938271604938271,"total":228,"current":18}
+{"_e":"metro:bundling:progress","_t":1783857007380,"id":"1","progress":0.04938271604938271,"total":228,"current":19}
+{"_e":"metro:bundling:progress","_t":1783857007480,"id":"1","progress":0.10913584183673469,"total":336,"current":111}
+{"_e":"metro:bundling:progress","_t":1783857007581,"id":"1","progress":0.155188246097337,"total":495,"current":195}
+{"_e":"metro:bundling:progress","_t":1783857008185,"id":"1","progress":0.17565960207612458,"total":544,"current":228}
+{"_e":"metro:bundling:progress","_t":1783857009892,"id":"1","progress":0.17720385488754326,"total":544,"current":229}
+{"_e":"metro:bundling:progress","_t":1783857009991,"id":"1","progress":0.2433187878300388,"total":669,"current":330}
+{"_e":"metro:bundling:progress","_t":1783857010098,"id":"1","progress":0.40057683063611604,"total":711,"current":450}
+{"_e":"metro:bundling:progress","_t":1783857010198,"id":"1","progress":0.414375189619361,"total":828,"current":533}
+{"_e":"metro:bundling:progress","_t":1783857010793,"id":"1","progress":0.42444834881135934,"total":835,"current":544}
+{"_e":"metro:bundling:progress","_t":1783857012784,"id":"1","progress":0.4260102549392234,"total":835,"current":545}
+{"_e":"metro:bundling:progress","_t":1783857012884,"id":"1","progress":0.5957856732020373,"total":903,"current":697}
+{"_e":"metro:bundling:progress","_t":1783857012992,"id":"1","progress":0.6340297368094736,"total":1016,"current":809}
+{"_e":"metro:bundling:progress","_t":1783857013638,"id":"1","progress":0.6597611243167951,"total":1028,"current":835}
+{"_e":"metro:bundling:progress","_t":1783857015454,"id":"1","progress":0.6613423367499887,"total":1028,"current":836}
+{"_e":"metro:bundling:progress","_t":1783857015554,"id":"1","progress":0.7804303471234127,"total":1158,"current":1023}
+{"_e":"metro:bundling:progress","_t":1783857016135,"id":"1","progress":0.7804303471234127,"total":1164,"current":1027}
+{"_e":"metro:bundling:progress","_t":1783857016716,"id":"1","progress":0.7804303471234127,"total":1164,"current":1028}
+{"_e":"metro:bundling:progress","_t":1783857017337,"id":"1","progress":0.7804303471234127,"total":1166,"current":1028}
+{"_e":"metro:bundling:progress","_t":1783857017957,"id":"1","progress":0.7804303471234127,"total":1166,"current":1029}
+{"_e":"metro:bundling:progress","_t":1783857018057,"id":"1","progress":0.7804303471234127,"total":1361,"current":1161}
+{"_e":"metro:bundling:progress","_t":1783857018732,"id":"1","progress":0.7804303471234127,"total":1374,"current":1164}
+{"_e":"metro:bundling:progress","_t":1783857019369,"id":"1","progress":0.7804303471234127,"total":1374,"current":1165}
+{"_e":"metro:bundling:progress","_t":1783857019987,"id":"1","progress":0.7804303471234127,"total":1375,"current":1166}
+{"_e":"metro:bundling:progress","_t":1783857020693,"id":"1","progress":0.7804303471234127,"total":1375,"current":1167}
+{"_e":"metro:bundling:progress","_t":1783857020793,"id":"1","progress":0.9072866276461999,"total":1411,"current":1344}
+{"_e":"metro:bundling:progress","_t":1783857021463,"id":"1","progress":0.9296534725729075,"total":1424,"current":1373}
+{"_e":"metro:bundling:progress","_t":1783857022129,"id":"1","progress":0.9310081586920843,"total":1424,"current":1374}
+{"_e":"metro:bundling:progress","_t":1783857022759,"id":"1","progress":0.9323638311134956,"total":1424,"current":1375}
+{"_e":"metro:bundling:progress","_t":1783857023397,"id":"1","progress":0.9323638311134956,"total":1425,"current":1375}
+{"_e":"metro:bundling:progress","_t":1783857023408,"id":"1","progress":0.9324104647583871,"total":1425,"current":1376}
+{"_e":"metro:bundling:progress","_t":1783857024075,"id":"1","progress":0.9698027084780069,"total":1446,"current":1424}
+{"_e":"metro:bundling:progress","_t":1783857025372,"id":"1","progress":0.9711652691930236,"total":1446,"current":1425}
+{"_e":"metro:bundling:progress","_t":1783857025986,"id":"1","progress":0.9711652691930236,"total":1447,"current":1425}
+{"_e":"metro:bundling:progress","_t":1783857025998,"id":"1","progress":0.9711850507854346,"total":1447,"current":1426}
+{"_e":"metro:bundling:progress","_t":1783857026675,"id":"1","progress":0.9876671272186205,"total":1455,"current":1446}
+{"_e":"metro:bundling:progress","_t":1783857027989,"id":"1","progress":0.9890336675287255,"total":1455,"current":1447}
+{"_e":"metro:bundling:progress","_t":1783857028572,"id":"1","progress":0.9890336675287255,"total":1461,"current":1447}
+{"_e":"metro:bundling:progress","_t":1783857028582,"id":"1","progress":0.9890336675287255,"total":1461,"current":1448}
+{"_e":"metro:bundling:progress","_t":1783857029174,"id":"1","progress":0.9890336675287255,"total":1468,"current":1455}
+{"_e":"metro:bundling:progress","_t":1783857030452,"id":"1","progress":0.9890336675287255,"total":1468,"current":1456}
+{"_e":"metro:bundling:progress","_t":1783857031050,"id":"1","progress":0.9890336675287255,"total":1470,"current":1461}
+{"_e":"metro:bundling:progress","_t":1783857031057,"id":"1","progress":0.9891452635475958,"total":1470,"current":1462}
+{"_e":"metro:bundling:progress","_t":1783857031643,"id":"1","progress":0.9972807626451942,"total":1470,"current":1468}
+{"_e":"metro:bundling:progress","_t":1783857032999,"id":"1","progress":0.9986399185524549,"total":1470,"current":1469}
+{"_e":"metro:bundling:progress","_t":1783857033659,"id":"1","progress":0.999,"total":1470,"current":1470}
+{"_e":"metro:bundling:done","_t":1783857035749,"id":"1","total":1470,"ms":40024.8767}
+{"_e":"metro:client_log","_t":1783857051495,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1783857060876,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}
+{"_e":"metro:server_log","_t":1783857255585,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:bundling:started","_t":1783857976941,"id":"6","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783857976941,"id":"6","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1783857976989,"id":"6","total":1,"ms":47.3339}
+{"_e":"metro:client_log","_t":1783857992081,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1783858002185,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}
+{"_e":"metro:server_log","_t":1783858102331,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"root:init","_t":1783859082777,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1783859082805,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1783859083475,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1783859100665,"atlas":false,"workers":8,"host":"::","port":8081}
