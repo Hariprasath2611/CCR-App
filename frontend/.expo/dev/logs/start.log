@@ -1155,3 +1155,87 @@
 {"_e":"metro:client_log","_t":1783703865879,"level":"error","data":["Sync payload failed for item d1pb6xpmsvj:","[AxiosError: Network Error]"]}
 {"_e":"metro:client_log","_t":1783703918114,"level":"error","data":["Sync payload failed for item 0hy8osgw40b9:","[AxiosError: Network Error]"]}
 {"_e":"metro:client_log","_t":1783703918154,"level":"error","data":["Sync payload failed for item d1pb6xpmsvj:","[AxiosError: Network Error]"]}
+{"_e":"root:init","_t":1783826846954,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1783826847033,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1783826847791,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1783826857842,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1783826889982,"id":"1","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783826889982,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783826889985,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783826891043,"id":"1","progress":0.010000000000000002,"total":1,"current":1}
+{"_e":"metro:bundling:progress","_t":1783826891146,"id":"1","progress":0.04000000000000001,"total":3,"current":2}
+{"_e":"metro:bundling:progress","_t":1783826891247,"id":"1","progress":0.04591836734693877,"total":14,"current":3}
+{"_e":"metro:bundling:progress","_t":1783826891400,"id":"1","progress":0.08163265306122448,"total":14,"current":4}
+{"_e":"metro:bundling:progress","_t":1783826891505,"id":"1","progress":0.08163265306122448,"total":114,"current":6}
+{"_e":"metro:bundling:progress","_t":1783826891678,"id":"1","progress":0.08163265306122448,"total":114,"current":7}
+{"_e":"metro:bundling:progress","_t":1783826891784,"id":"1","progress":0.08163265306122448,"total":115,"current":11}
+{"_e":"metro:bundling:progress","_t":1783826891886,"id":"1","progress":0.08163265306122448,"total":118,"current":14}
+{"_e":"metro:bundling:progress","_t":1783826891986,"id":"1","progress":0.08163265306122448,"total":130,"current":16}
+{"_e":"metro:bundling:progress","_t":1783826892088,"id":"1","progress":0.08163265306122448,"total":134,"current":21}
+{"_e":"metro:bundling:progress","_t":1783826892192,"id":"1","progress":0.08163265306122448,"total":144,"current":26}
+{"_e":"metro:bundling:progress","_t":1783826892303,"id":"1","progress":0.08163265306122448,"total":146,"current":28}
+{"_e":"metro:bundling:progress","_t":1783826892412,"id":"1","progress":0.08163265306122448,"total":152,"current":31}
+{"_e":"metro:bundling:progress","_t":1783826892530,"id":"1","progress":0.08163265306122448,"total":163,"current":36}
+{"_e":"metro:bundling:progress","_t":1783826892633,"id":"1","progress":0.08163265306122448,"total":237,"current":43}
+{"_e":"metro:bundling:progress","_t":1783826892733,"id":"1","progress":0.08163265306122448,"total":243,"current":51}
+{"_e":"metro:bundling:progress","_t":1783826892835,"id":"1","progress":0.08163265306122448,"total":269,"current":76}
+{"_e":"metro:bundling:progress","_t":1783826892933,"id":"1","progress":0.1111111111111111,"total":303,"current":101}
+{"_e":"metro:bundling:progress","_t":1783826893033,"id":"1","progress":0.1609741225598433,"total":329,"current":132}
+{"_e":"metro:bundling:progress","_t":1783826893133,"id":"1","progress":0.18334795156179268,"total":376,"current":161}
+{"_e":"metro:bundling:progress","_t":1783826893239,"id":"1","progress":0.18334795156179268,"total":423,"current":177}
+{"_e":"metro:bundling:progress","_t":1783826893340,"id":"1","progress":0.18334795156179268,"total":481,"current":197}
+{"_e":"metro:bundling:progress","_t":1783826893440,"id":"1","progress":0.18334795156179268,"total":512,"current":211}
+{"_e":"metro:bundling:progress","_t":1783826893546,"id":"1","progress":0.18334795156179268,"total":548,"current":228}
+{"_e":"metro:bundling:progress","_t":1783826893647,"id":"1","progress":0.19503208018758533,"total":591,"current":261}
+{"_e":"metro:bundling:progress","_t":1783826893747,"id":"1","progress":0.23027634509816125,"total":621,"current":298}
+{"_e":"metro:bundling:progress","_t":1783826893850,"id":"1","progress":0.23516656989403395,"total":664,"current":322}
+{"_e":"metro:bundling:progress","_t":1783826893952,"id":"1","progress":0.256593123700921,"total":687,"current":348}
+{"_e":"metro:bundling:progress","_t":1783826894052,"id":"1","progress":0.2937239103294355,"total":703,"current":381}
+{"_e":"metro:bundling:progress","_t":1783826894153,"id":"1","progress":0.2937239103294355,"total":747,"current":393}
+{"_e":"metro:bundling:progress","_t":1783826894257,"id":"1","progress":0.2937239103294355,"total":758,"current":410}
+{"_e":"metro:bundling:progress","_t":1783826894359,"id":"1","progress":0.326101108033241,"total":760,"current":434}
+{"_e":"metro:bundling:progress","_t":1783826894458,"id":"1","progress":0.33690778478423267,"total":777,"current":451}
+{"_e":"metro:bundling:progress","_t":1783826894562,"id":"1","progress":0.3554574587405864,"total":790,"current":471}
+{"_e":"metro:bundling:progress","_t":1783826894663,"id":"1","progress":0.3722050504637887,"total":813,"current":496}
+{"_e":"metro:bundling:progress","_t":1783826894764,"id":"1","progress":0.41812488238172313,"total":815,"current":527}
+{"_e":"metro:bundling:progress","_t":1783826894864,"id":"1","progress":0.458527127815899,"total":827,"current":560}
+{"_e":"metro:bundling:progress","_t":1783826894965,"id":"1","progress":0.48571694775720897,"total":848,"current":591}
+{"_e":"metro:bundling:progress","_t":1783826895065,"id":"1","progress":0.5292349782839164,"total":855,"current":622}
+{"_e":"metro:bundling:progress","_t":1783826895166,"id":"1","progress":0.5594553506510674,"total":861,"current":644}
+{"_e":"metro:bundling:progress","_t":1783826895266,"id":"1","progress":0.5850787211778506,"total":889,"current":680}
+{"_e":"metro:bundling:progress","_t":1783826895366,"id":"1","progress":0.5850787211778506,"total":937,"current":716}
+{"_e":"metro:bundling:progress","_t":1783826895467,"id":"1","progress":0.5850787211778506,"total":999,"current":740}
+{"_e":"metro:bundling:progress","_t":1783826895568,"id":"1","progress":0.5850787211778506,"total":1007,"current":769}
+{"_e":"metro:bundling:progress","_t":1783826895668,"id":"1","progress":0.6249858598515503,"total":1017,"current":804}
+{"_e":"metro:bundling:progress","_t":1783826895770,"id":"1","progress":0.667395131830072,"total":1027,"current":839}
+{"_e":"metro:bundling:progress","_t":1783826895871,"id":"1","progress":0.6859885787541519,"total":1048,"current":868}
+{"_e":"metro:bundling:progress","_t":1783826895971,"id":"1","progress":0.6970526841940378,"total":1066,"current":890}
+{"_e":"metro:bundling:progress","_t":1783826896071,"id":"1","progress":0.7652161760852477,"total":1070,"current":936}
+{"_e":"metro:bundling:progress","_t":1783826896171,"id":"1","progress":0.7827913939677406,"total":1102,"current":975}
+{"_e":"metro:bundling:progress","_t":1783826896271,"id":"1","progress":0.7827913939677406,"total":1136,"current":1004}
+{"_e":"metro:bundling:progress","_t":1783826896371,"id":"1","progress":0.8046684880105016,"total":1146,"current":1028}
+{"_e":"metro:bundling:progress","_t":1783826896471,"id":"1","progress":0.8046684880105016,"total":1175,"current":1050}
+{"_e":"metro:bundling:progress","_t":1783826896572,"id":"1","progress":0.8093981051666088,"total":1196,"current":1076}
+{"_e":"metro:bundling:progress","_t":1783826896674,"id":"1","progress":0.8406588129288859,"total":1203,"current":1103}
+{"_e":"metro:bundling:progress","_t":1783826896788,"id":"1","progress":0.8406588129288859,"total":1255,"current":1115}
+{"_e":"metro:bundling:progress","_t":1783826896892,"id":"1","progress":0.8406588129288859,"total":1307,"current":1129}
+{"_e":"metro:bundling:progress","_t":1783826896988,"id":"1","progress":0.8406588129288859,"total":1328,"current":1143}
+{"_e":"metro:bundling:progress","_t":1783826897089,"id":"1","progress":0.8406588129288859,"total":1365,"current":1172}
+{"_e":"metro:bundling:progress","_t":1783826897191,"id":"1","progress":0.8406588129288859,"total":1375,"current":1195}
+{"_e":"metro:bundling:progress","_t":1783826897292,"id":"1","progress":0.8406588129288859,"total":1388,"current":1218}
+{"_e":"metro:bundling:progress","_t":1783826897392,"id":"1","progress":0.8406588129288859,"total":1388,"current":1246}
+{"_e":"metro:bundling:progress","_t":1783826897498,"id":"1","progress":0.8406588129288859,"total":1388,"current":1266}
+{"_e":"metro:bundling:progress","_t":1783826897601,"id":"1","progress":0.8637747178367066,"total":1388,"current":1290}
+{"_e":"metro:bundling:progress","_t":1783826897701,"id":"1","progress":0.8746959267118678,"total":1390,"current":1300}
+{"_e":"metro:bundling:progress","_t":1783826897801,"id":"1","progress":0.9090447738524315,"total":1396,"current":1331}
+{"_e":"metro:bundling:progress","_t":1783826897903,"id":"1","progress":0.9264402849660597,"total":1414,"current":1361}
+{"_e":"metro:bundling:progress","_t":1783826898003,"id":"1","progress":0.9515811226451364,"total":1428,"current":1393}
+{"_e":"metro:bundling:progress","_t":1783826898103,"id":"1","progress":0.9725099076878869,"total":1445,"current":1425}
+{"_e":"metro:bundling:progress","_t":1783826898209,"id":"1","progress":0.9986306061174703,"total":1460,"current":1459}
+{"_e":"metro:bundling:progress","_t":1783826898791,"id":"1","progress":0.999,"total":1460,"current":1460}
+{"_e":"metro:bundling:progress","_t":1783826898906,"id":"1","progress":0.999,"total":1470,"current":1470}
+{"_e":"metro:bundling:done","_t":1783826899136,"id":"1","total":1470,"ms":9153.9937}
+{"_e":"metro:client_log","_t":1783826914267,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1783826924436,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1783826999271,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1783827022967,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
