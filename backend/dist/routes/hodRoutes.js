@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const hodController_1 = require("../controllers/hodController");
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
+router.get('/classes', auth_1.authenticateToken, hodController_1.getDepartmentClasses);
+router.post('/decision', auth_1.authenticateToken, hodController_1.submitDecision);
+router.get('/extra-hours', auth_1.authenticateToken, hodController_1.getExtraHoursRequests);
+exports.default = router;
