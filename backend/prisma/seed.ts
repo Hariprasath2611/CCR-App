@@ -68,11 +68,14 @@ async function main() {
   console.log('Creating users...');
   const userMap: Record<string, string> = {};
   for (const u of users) {
-    const createdUser = await prisma.user.upsert({
+    let createdUser = await prisma.user.findUnique({
       where: { email: u.email },
-      update: {},
-      create: u,
     });
+    if (!createdUser) {
+      createdUser = await prisma.user.create({
+        data: u,
+      });
+    }
     userMap[createdUser.name] = createdUser.id;
   }
 
@@ -109,11 +112,14 @@ async function main() {
 
   console.log('Creating syllabus nodes...');
   for (const node of syllabusNodes) {
-    await prisma.syllabusNode.upsert({
+    const existingNode = await prisma.syllabusNode.findUnique({
       where: { topicId: node.topicId },
-      update: {},
-      create: node,
     });
+    if (!existingNode) {
+      await prisma.syllabusNode.create({
+        data: node,
+      });
+    }
   }
 
   // 4. Seed Timetable Slots
