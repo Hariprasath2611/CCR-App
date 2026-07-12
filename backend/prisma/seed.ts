@@ -50,7 +50,7 @@ async function main() {
     {
       email: 'hod@ccms.edu',
       passwordHash,
-      name: 'Faculty HOD',
+      name: 'Dr. Suresh Babu',
       role: 'HOD',
       isClassCoordinator: false,
       department: 'Computer Science',
@@ -58,7 +58,7 @@ async function main() {
     {
       email: 'principal@ccms.edu',
       passwordHash,
-      name: 'Faculty Principal',
+      name: 'Dr. Ramesh',
       role: 'ADMIN',
       isClassCoordinator: false,
       department: 'Administration',

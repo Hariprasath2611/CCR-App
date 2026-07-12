@@ -113,7 +113,7 @@ export const LoginScreen = () => {
       return {
         role: 'HOD' as const,
         isCC: false,
-        name: 'Faculty HOD',
+        name: 'Dr. Suresh Babu',
         dept: 'Computer Science',
         label: 'Head of Department (CSE)',
         icon: 'account-tie',
@@ -126,7 +126,7 @@ export const LoginScreen = () => {
       return {
         role: 'ADMIN' as const,
         isCC: false,
-        name: 'Faculty Principal',
+        name: 'Dr. Ramesh',
         dept: 'Administration',
         label: 'Principal',
         icon: 'shield-crown',
@@ -148,7 +148,7 @@ export const LoginScreen = () => {
       return {
         role: 'ADMIN' as const,
         isCC: false,
-        name: 'Faculty Principal',
+        name: 'Dr. Ramesh',
         dept: 'Administration',
         label: 'Principal',
         icon: 'shield-crown',
@@ -162,7 +162,7 @@ export const LoginScreen = () => {
       return {
         role: 'HOD' as const,
         isCC: false,
-        name: 'Faculty HOD',
+        name: 'Dr. Suresh Babu',
         dept: 'Computer Science',
         label: 'Head of Department (CSE)',
         icon: 'account-tie',
