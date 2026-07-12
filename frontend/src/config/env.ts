@@ -2,9 +2,9 @@ import { Platform } from 'react-native';
 
 // Toggle this to true if you are testing on a physical device (e.g. via Expo Go).
 // Set to false if you are testing on an Android Emulator or iOS Simulator.
-const IS_PHYSICAL_DEVICE = false; 
+const IS_PHYSICAL_DEVICE = true; 
 
-const COMPUTER_IP = '10.81.179.139';
+const COMPUTER_IP = '10.94.149.134';
 
 const DEV_API_URL = IS_PHYSICAL_DEVICE
   ? `http://${COMPUTER_IP}:3000/v1`
