@@ -28,10 +28,10 @@ const MOCK_PLAN_REPORT = {
   submittedAt: '2026-07-05',
   overallCoverage: '71%',
   subjects: [
-    { code: 'CS8501', name: 'Theory of Computation', coverage: '80%', status: 'Submitted' },
-    { code: 'CS8502', name: 'Database Systems', coverage: '65%', status: 'Submitted' },
-    { code: 'CS8503', name: 'Computer Networks', coverage: '70%', status: 'Submitted' },
-    { code: 'CS8504', name: 'OS Principles', coverage: '68%', status: 'Pending' },
+    { code: 'CS8501', name: 'Theory of Computation', faculty: 'Dr. Meena Kumari', coverage: '80%', status: 'Submitted' },
+    { code: 'CS8502', name: 'Database Systems', faculty: 'Prof. Karthick D', coverage: '65%', status: 'Submitted' },
+    { code: 'CS8503', name: 'Computer Networks', faculty: 'Prof. Rajesh K', coverage: '70%', status: 'Submitted' },
+    { code: 'CS8504', name: 'OS Principles', faculty: 'Dr. Anita S', coverage: '68%', status: 'Pending' },
   ],
   ccRemarks: 'CS8504 faculty is running behind schedule due to lab sessions. Extra hour request raised.',
 };
@@ -88,6 +88,7 @@ export const RequestDetailsScreen = () => {
             subjects: reportData.subjects.map((s: SubjectProgress) => ({
               code: s.code,
               name: s.name,
+              faculty: s.faculty,
               coverage: `${s.coverage}%`,
               status: s.status,
             })),
@@ -179,6 +180,7 @@ export const RequestDetailsScreen = () => {
                 <View style={styles.subjectInfo}>
                   <Text style={styles.subjectCode}>{s.code}</Text>
                   <Text style={styles.subjectName}>{s.name}</Text>
+                  <Text style={{ fontSize: 12.5, color: Palette.textLight, marginTop: 2 }}>Faculty: {s.faculty || 'Unknown'}</Text>
                 </View>
                 <View style={styles.subjectRight}>
                   <Text style={[styles.coveragePct, { color: coverageColor(s.coverage) }]}>
