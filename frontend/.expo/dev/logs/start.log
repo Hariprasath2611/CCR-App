@@ -1536,3 +1536,36 @@
 {"_e":"metro:client_log","_t":1783866450382,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}
 {"_e":"metro:client_log","_t":1783866539978,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
 {"_e":"metro:server_log","_t":1783866637322,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"root:init","_t":1783867580945,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1783867580972,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1783867581515,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1783867594185,"atlas":false,"workers":8,"host":"::","port":8082}
+{"_e":"metro:bundling:started","_t":1783867623365,"id":"1","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783867623365,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783867623368,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1783867623468,"id":"1","progress":0.018880018646932,"total":262,"current":36}
+{"_e":"metro:bundling:progress","_t":1783867623568,"id":"1","progress":0.08353807260232514,"total":474,"current":137}
+{"_e":"metro:bundling:progress","_t":1783867623668,"id":"1","progress":0.2554444864392863,"total":554,"current":280}
+{"_e":"metro:bundling:progress","_t":1783867623768,"id":"1","progress":0.4033488256608809,"total":718,"current":456}
+{"_e":"metro:bundling:progress","_t":1783867623868,"id":"1","progress":0.5000087533481556,"total":956,"current":676}
+{"_e":"metro:bundling:progress","_t":1783867623973,"id":"1","progress":0.6597611243167951,"total":1028,"current":835}
+{"_e":"metro:bundling:progress","_t":1783867624090,"id":"1","progress":0.7799742563266848,"total":1164,"current":1028}
+{"_e":"metro:bundling:progress","_t":1783867624189,"id":"1","progress":0.7799742563266848,"total":1384,"current":1186}
+{"_e":"metro:bundling:progress","_t":1783867624289,"id":"1","progress":0.9683106674382715,"total":1440,"current":1417}
+{"_e":"metro:bundling:done","_t":1783867624384,"id":"1","total":1440,"ms":1019.1087}
+{"_e":"metro:client_log","_t":1783867638063,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1783867648155,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1783867694384,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1783867815807,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[Error: No refresh token available]"]}
+{"_e":"metro:client_log","_t":1783867815943,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[Error: No refresh token available]"]}
+{"_e":"metro:client_log","_t":1783867819998,"level":"error","data":["Login error details:","[Error: No refresh token available]"]}
+{"_e":"metro:bundling:started","_t":1783867826719,"id":"8","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1783867826719,"id":"8","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1783867826761,"id":"8","total":1,"ms":42.052}
+{"_e":"metro:client_log","_t":1783867832440,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[Error: No refresh token available]"]}
+{"_e":"metro:client_log","_t":1783867832658,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[Error: No refresh token available]"]}
+{"_e":"metro:client_log","_t":1783867853150,"level":"error","data":["Login error details:","[Error: No refresh token available]"]}
+{"_e":"metro:server_log","_t":1783867937132,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:client_log","_t":1783868039707,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[Error: No refresh token available]"]}
+{"_e":"metro:client_log","_t":1783868039786,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[Error: No refresh token available]"]}
+{"_e":"metro:server_log","_t":1783868223669,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
