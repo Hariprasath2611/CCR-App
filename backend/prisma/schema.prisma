@@ -69,7 +69,14 @@ model ProgressLog {
   reasonsForPending   String?
   extraHoursRequested Boolean  @default(false)
   submittedAt         DateTime @default(now())
+  
+  // New fields for JEC weekly syllabus completion report
+  periodsPlanned      Int?
+  periodsHandled      Int?
+  periodsRequired     Int?
+  topicsCoveredText   String?
 }
+
 
 model ExtraHourRequest {
   id            String   @id @map("_id")

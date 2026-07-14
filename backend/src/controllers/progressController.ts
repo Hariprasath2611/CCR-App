@@ -16,6 +16,10 @@ export const submitProgress = async (req: AuthenticatedRequest, res: Response) =
     reasonsForPending,
     extraHoursRequested,
     submittedAt,
+    periodsPlanned,
+    periodsHandled,
+    periodsRequired,
+    topicsCoveredText,
   } = req.body;
 
   if (!id || !facultyId || !subjectCode || !classId || academicWeekNumber === undefined || !completedTopicIds) {
@@ -25,6 +29,10 @@ export const submitProgress = async (req: AuthenticatedRequest, res: Response) =
   try {
     const completedStr = Array.isArray(completedTopicIds) ? completedTopicIds.join(',') : completedTopicIds;
     const pendingStr = Array.isArray(pendingTopicIds) ? pendingTopicIds.join(',') : '';
+
+    const pPlanned = periodsPlanned !== undefined ? parseInt(periodsPlanned) : null;
+    const pHandled = periodsHandled !== undefined ? parseInt(periodsHandled) : null;
+    const pRequired = periodsRequired !== undefined ? parseInt(periodsRequired) : null;
 
     const log = await prisma.progressLog.upsert({
       where: { id },
@@ -38,6 +46,10 @@ export const submitProgress = async (req: AuthenticatedRequest, res: Response) =
         reasonsForPending: reasonsForPending || null,
         extraHoursRequested: !!extraHoursRequested,
         submittedAt: submittedAt ? new Date(submittedAt) : new Date(),
+        periodsPlanned: pPlanned,
+        periodsHandled: pHandled,
+        periodsRequired: pRequired,
+        topicsCoveredText: topicsCoveredText || null,
       },
       create: {
         id,
@@ -50,6 +62,10 @@ export const submitProgress = async (req: AuthenticatedRequest, res: Response) =
         reasonsForPending: reasonsForPending || null,
         extraHoursRequested: !!extraHoursRequested,
         submittedAt: submittedAt ? new Date(submittedAt) : new Date(),
+        periodsPlanned: pPlanned,
+        periodsHandled: pHandled,
+        periodsRequired: pRequired,
+        topicsCoveredText: topicsCoveredText || null,
       },
     });
 
@@ -59,3 +75,4 @@ export const submitProgress = async (req: AuthenticatedRequest, res: Response) =
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
+

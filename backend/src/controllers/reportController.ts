@@ -71,11 +71,35 @@ export const getWeeklyReport = async (req: AuthenticatedRequest, res: Response) 
         orderBy: { academicWeekNumber: 'desc' },
       });
 
+      // Find the weekly plan for this subject and week to display "Topics planned for this week"
+      const weeklyPlan = await prisma.weeklyPlan.findFirst({
+        where: {
+          subjectCode: code,
+          academicWeekNumber: weekNum,
+        },
+      });
+
+      let plannedTopicsText = '';
+      if (weeklyPlan && weeklyPlan.targetTopicIds) {
+        const topicIds = weeklyPlan.targetTopicIds.split(',').filter(Boolean);
+        const nodes = await prisma.syllabusNode.findMany({
+          where: {
+            subjectCode: code,
+            topicId: { in: topicIds },
+          },
+        });
+        plannedTopicsText = nodes.map(n => n.topicTitle).join(', ');
+      }
+
       let completedTopicsCount = 0;
       let status = 'Pending';
       let coverage = 0;
       let reasonsForPending = '';
       let extraHoursRequested = false;
+      let periodsPlanned = null;
+      let periodsHandled = null;
+      let periodsRequired = null;
+      let topicsCoveredText = '';
 
       if (latestLog) {
         // Parse completed topic ids
@@ -89,6 +113,10 @@ export const getWeeklyReport = async (req: AuthenticatedRequest, res: Response) 
         }
         reasonsForPending = latestLog.reasonsForPending || '';
         extraHoursRequested = latestLog.extraHoursRequested;
+        periodsPlanned = latestLog.periodsPlanned;
+        periodsHandled = latestLog.periodsHandled;
+        periodsRequired = latestLog.periodsRequired;
+        topicsCoveredText = latestLog.topicsCoveredText || '';
       }
 
       subjectsProgress.push({
@@ -101,6 +129,11 @@ export const getWeeklyReport = async (req: AuthenticatedRequest, res: Response) 
         totalTopicsCount,
         reasonsForPending,
         extraHoursRequested,
+        periodsPlanned,
+        periodsHandled,
+        periodsRequired,
+        topicsCoveredText,
+        plannedTopicsText: plannedTopicsText || 'Topics from syllabus schedule',
       });
     }
 
