@@ -19,12 +19,20 @@ import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
 type RouteParams = RouteProp<StaffStackParamList, 'WeeklyProgress'>;
 
+
 const progressSchema = z.object({
   unit: z.string().min(1, 'Please select the main unit'),
   tempUnit: z.string().optional(),
   topicsCovered: z.string().min(1, 'Please type the topics covered'),
   completedOnPlan: z.enum(['YES', 'NO']),
   reasonsForPending: z.string().optional(),
+  periodsPlanned: z.string().min(1, 'Please enter periods planned').refine((val) => !isNaN(parseInt(val)) && parseInt(val) >= 0, {
+    message: 'Must be a non-negative number',
+  }).transform((val) => parseInt(val)),
+  periodsHandled: z.string().min(1, 'Please enter periods handled').refine((val) => !isNaN(parseInt(val)) && parseInt(val) >= 0, {
+    message: 'Must be a non-negative number',
+  }).transform((val) => parseInt(val)),
+  periodsRequired: z.string().optional().transform((val) => val ? parseInt(val) : 0),
 }).refine((data) => {
   if (data.completedOnPlan === 'NO' && (!data.reasonsForPending || data.reasonsForPending.trim().length === 0)) {
     return false;
@@ -86,6 +94,9 @@ export const WeeklyProgressScreen = () => {
       topicsCovered: '',
       completedOnPlan: 'YES',
       reasonsForPending: '',
+      periodsPlanned: '4',
+      periodsHandled: '4',
+      periodsRequired: '0',
     },
   });
 
@@ -152,7 +163,11 @@ export const WeeklyProgressScreen = () => {
         completedCount,
         totalCount,
         data.reasonsForPending || '',
-        data.completedOnPlan === 'NO' // Treat as extra hours needed if not completed on plan
+        data.completedOnPlan === 'NO',
+        data.periodsPlanned,
+        data.periodsHandled,
+        data.periodsRequired || 0,
+        data.topicsCovered
       );
 
       // 3. Sync Queue logging
@@ -170,6 +185,9 @@ export const WeeklyProgressScreen = () => {
         pendingTopicIds,
         reasonsForPending: data.reasonsForPending || '',
         submittedAt: new Date().toISOString(),
+        periodsPlanned: data.periodsPlanned,
+        periodsHandled: data.periodsHandled,
+        periodsRequired: data.periodsRequired || 0,
       };
       await syncQueueRepo.enqueue('SUBMIT_PROGRESS', progressPayload);
 
@@ -182,8 +200,6 @@ export const WeeklyProgressScreen = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
   if (loading) {
     return (
       <View style={styles.centerContainer}>

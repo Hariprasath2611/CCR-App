@@ -11,6 +11,11 @@ export interface SubjectProgress {
   totalTopicsCount: number;
   reasonsForPending?: string;
   extraHoursRequested?: boolean;
+  periodsPlanned?: number | null;
+  periodsHandled?: number | null;
+  periodsRequired?: number | null;
+  topicsCoveredText?: string;
+  plannedTopicsText?: string;
 }
 
 export interface ConsolidatedReport {
@@ -39,7 +44,12 @@ interface ReportStoreState {
     completedTopics: number,
     totalTopics: number,
     reasonsForPending?: string,
-    extraHoursRequested?: boolean
+    extraHoursRequested?: boolean,
+    periodsPlanned?: number | null,
+    periodsHandled?: number | null,
+    periodsRequired?: number | null,
+    topicsCoveredText?: string,
+    plannedTopicsText?: string
   ) => void;
   compileWeeklyReport: (classId: string, weekNumber: number, ccRemarks: string, ccName: string) => Promise<string>;
   submitHODDecision: (reportId: string, decision: 'APPROVED' | 'RETURNED' | 'REJECTED', remarks: string) => Promise<void>;
@@ -79,7 +89,20 @@ export const useReportStore = create<ReportStoreState>((set, get) => ({
     }
   },
 
-  addProgressLog: (classId, weekNumber, subjectCode, completedTopics, totalTopics, reasonsForPending, extraHoursRequested) => {
+  addProgressLog: (
+    classId,
+    weekNumber,
+    subjectCode,
+    completedTopics,
+    totalTopics,
+    reasonsForPending,
+    extraHoursRequested,
+    periodsPlanned,
+    periodsHandled,
+    periodsRequired,
+    topicsCoveredText,
+    plannedTopicsText
+  ) => {
     const key = `${classId}_${weekNumber}`;
     set((state) => {
       const currentList = state.subjectProgressList[key] || [
@@ -100,6 +123,11 @@ export const useReportStore = create<ReportStoreState>((set, get) => ({
             totalTopicsCount: totalTopics,
             reasonsForPending,
             extraHoursRequested,
+            periodsPlanned,
+            periodsHandled,
+            periodsRequired,
+            topicsCoveredText,
+            plannedTopicsText,
           };
         }
         return item;
