@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Alert,
   StyleSheet,
   View,
   ScrollView,
@@ -75,6 +76,7 @@ interface SubjectProgressInfo {
 
 export const DeptSummaryScreen = () => {
   const subjectProgressList = useReportStore((state) => state.subjectProgressList);
+  const reports = useReportStore((state) => state.reports);
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedDept, setSelectedDept] = useState<DeptInfo | null>(null);
@@ -84,102 +86,46 @@ export const DeptSummaryScreen = () => {
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [deptTab, setDeptTab] = useState<'years' | 'subjects'>('years');
 
-  const getAllSubjectsForDept = (deptCode: string) => {
-    return [1, 2, 3, 4].flatMap((yearNum) => {
-      const subjects = getMockSubjectsForDept(deptCode, yearNum);
-      return subjects.map((s) => ({
-        ...s,
-        year: `${yearNum}${yearNum === 1 ? 'st' : yearNum === 2 ? 'nd' : yearNum === 3 ? 'rd' : 'th'} Year`,
-        topics: 8 + (s.code.charCodeAt(s.code.length - 1) % 4),
-      }));
-    });
-  };
+  const dynamicDepartments = DEPARTMENTS.map((dept) => {
+    const deptReports = reports.filter(r => r.classId.toLowerCase().includes(dept.code.toLowerCase()));
+    const totalClasses = new Set(deptReports.map(r => r.classId)).size;
+    const avgCoverage = deptReports.length > 0
+      ? Math.round(deptReports.reduce((sum, r) => sum + r.overallCoverage, 0) / deptReports.length)
+      : 0;
 
-  // Helper to generate classes list for a selected dept & year
-  const getClassesForDeptAndYear = (deptId: string, year: string): ClassProgressInfo[] => {
-    if (deptId === 'CSE') {
-      if (year === '2nd Year') {
-        return [
-          { classId: '2nd Year CSE-A', name: '2nd Year CSE-A', coverage: 80, pendingCount: 0 },
-          { classId: 'CSE-B', name: '2nd Year CSE-B', coverage: 65, pendingCount: 1 },
-        ];
-      } else if (year === '3rd Year') {
-        return [
-          { classId: '3rd Year CSE-A', name: '3rd Year CSE-A', coverage: 82, pendingCount: 0 },
-          { classId: '3rd Year CSE-B', name: '3rd Year CSE-B', coverage: 75, pendingCount: 0 },
-        ];
-      } else if (year === '4th Year') {
-        return [
-          { classId: '4th Year CSE-A', name: '4th Year CSE-A', coverage: 90, pendingCount: 0 },
-          { classId: '4th Year CSE-B', name: '4th Year CSE-B', coverage: 85, pendingCount: 0 },
-        ];
-      } else {
-        return [
-          { classId: '1st Year CSE-A', name: '1st Year CSE-A', coverage: 75, pendingCount: 0 },
-          { classId: '1st Year CSE-B', name: '1st Year CSE-B', coverage: 78, pendingCount: 0 },
-        ];
-      }
-    }
-
-    if (deptId === 'CSBS') {
-      if (year === '2nd Year') {
-        return [{ classId: '2nd Year CSBS', name: '2nd Year CSBS', coverage: 70, pendingCount: 0 }];
-      } else if (year === '3rd Year') {
-        return [{ classId: '3rd Year CSBS', name: '3rd Year CSBS', coverage: 60, pendingCount: 2 }];
-      } else if (year === '4th Year') {
-        return [{ classId: '4th Year CSBS', name: '4th Year CSBS', coverage: 78, pendingCount: 1 }];
-      } else {
-        return [{ classId: '1st Year CSBS', name: '1st Year CSBS', coverage: 70, pendingCount: 0 }];
-      }
-    }
-
-    // Default mock generator for other departments
-    const code = deptId;
-    return [
-      { classId: `${year} ${code}-A`, name: `${year} ${code}-A`, coverage: 77, pendingCount: 0 },
-      { classId: `${year} ${code}-B`, name: `${year} ${code}-B`, coverage: 74, pendingCount: 1 },
-    ];
-  };
-
-  // Helper to generate subject syllabus coverage for any class
-  // Helper to generate dynamic mock subjects for any department code and year
-  const getMockSubjectsForDept = (deptCode: string, year: number): { code: string; name: string; faculty: string }[] => {
-    const faculties = [
-      'Dr. Sundaram A', 'Prof. Priyadharshini M', 'Dr. Suresh Babu', 'Prof. Divya R',
-      'Dr. Vignesh K', 'Prof. Archana S', 'Dr. Ganesan V', 'Prof. Anandhi T',
-      'Dr. Meena Kumari', 'Prof. Karthick D', 'Prof. Rajesh K', 'Dr. Anita S'
-    ];
-    
-    const deptSubjectTemplates: Record<string, string[]> = {
-      AERO: ['Aerodynamics', 'Aircraft Structures', 'Propulsion', 'Control Engineering', 'Flight Dynamics', 'Avionics'],
-      CIVIL: ['Structural Analysis', 'Foundation Engineering', 'Environmental Engineering', 'Reinforced Concrete Elements', 'Surveying', 'Hydraulics'],
-      CSE: ['Theory of Computation', 'Database Systems', 'Computer Networks', 'OS Principles', 'Compiler Design', 'Software Engineering'],
-      'CSE-AIML': ['Artificial Intelligence', 'Machine Learning', 'Deep Learning', 'Data Science & Visualisation', 'Natural Language Processing', 'Computer Vision'],
-      CCE: ['Digital Communication Systems', 'Computer Communication Networks', 'Information Theory and Coding', 'Java Programming', 'Signals & Systems', 'Electromagnetics'],
-      CSBS: ['Design & Analysis of Algorithms', 'Business Communication', 'Fundamentals of Management', 'Software Testing', 'Financial Accounting', 'Human Resource Management'],
-      ECE: ['Digital Communication', 'Discrete-Time Signal Processing', 'Computer Architecture & Org', 'Transmission Lines & Wave Guides', 'Microprocessors', 'VLSI Design'],
-      EEE: ['Power System Analysis', 'Microprocessors & Microcontrollers', 'Power Electronics', 'Transmission & Distribution', 'Electrical Machines', 'Control Systems'],
-      EIE: ['Industrial Instrumentation', 'Process Control', 'Analytical Instruments', 'Microprocessors and Applications', 'Transducer Engineering', 'Logic and Distributed Control'],
-      MECH: ['Design of Machine Elements', 'Dynamics of Machines', 'Metrology & Measurements', 'Thermal Engineering', 'Fluid Mechanics', 'Kinematics of Machinery'],
-      RA: ['Robot Kinematics & Dynamics', 'Sensors and Transducers', 'Control Systems for Robotics', 'Embedded Systems Design', 'Robotic Vision', 'Industrial Automation'],
-      IT: ['Web Technology', 'Computer Network & Admin', 'Software Product Engineering', 'Data Mining & Warehousing', 'Mobile Computing', 'Object Oriented Analysis & Design'],
-      'ME-VLSI': ['ASIC and FPGA Design', 'CAD for VLSI Circuits', 'Testing of VLSI Circuits', 'Low Power VLSI Design', 'DSP Structures for VLSI', 'RF IC Design'],
-      MBA: ['Marketing Management', 'Financial Management', 'Human Resource Management', 'Operations Management', 'Organizational Behavior', 'Strategic Management'],
-      MCA: ['Advanced Java Programming', 'Cloud Computing Technologies', 'Mobile Application Development', 'Cyber Security & Forensics', 'Web Application Development', 'Data Structures using C++'],
-      TEXTILE: ['Yarn Manufacture', 'Fabric Manufacture', 'Textile Chemical Processing', 'Fiber Science & Technology', 'Textile Testing', 'Garment Technology'],
+    return {
+      ...dept,
+      classesCount: totalClasses,
+      coverage: avgCoverage,
     };
+  });
 
-    const templates = deptSubjectTemplates[deptCode] || ['Core Course I', 'Core Course II', 'Core Course III', 'Core Course IV'];
-    const yearRoman = ['I', 'II', 'III', 'IV'][year - 1] || 'III';
+  const getAllSubjectsForDept = (deptCode: string) => {
+    return [];
+  };
+
+  // Helper to generate classes list for a selected dept & year dynamically from reports
+  const getClassesForDeptAndYear = (deptId: string, year: string): ClassProgressInfo[] => {
+    const deptReports = reports.filter(
+      (r) => r.classId.toLowerCase().includes(deptId.toLowerCase()) && r.classId.toLowerCase().includes(year.toLowerCase())
+    );
     
-    return [0, 1, 2, 3].map((idx) => {
-      const templateName = templates[idx % templates.length];
-      const name = year === 1 ? `Fundamentals of ${templateName}` : `${templateName} ${yearRoman}`;
-      const codeNum = 8000 + (year * 100) + (idx + 1) * 10;
-      const code = `${deptCode}${codeNum}`;
-      const faculty = faculties[(deptCode.charCodeAt(0) + year + idx) % faculties.length];
-      return { code, name, faculty };
-    });
+    const classMap: Record<string, ClassProgressInfo> = {};
+    for (const report of deptReports) {
+      if (!classMap[report.classId]) {
+        classMap[report.classId] = {
+          classId: report.classId,
+          name: report.classId,
+          coverage: report.overallCoverage,
+          pendingCount: report.status === 'SUBMITTED_TO_HOD' ? 1 : 0,
+        };
+      }
+    }
+    return Object.values(classMap);
+  };
+
+  const getMockSubjectsForDept = (deptCode: string, year: number): { code: string; name: string; faculty: string }[] => {
+    return [];
   };
 
   // Helper to generate subject syllabus coverage for any class
@@ -188,40 +134,17 @@ export const DeptSummaryScreen = () => {
     const storeKey = `${classId}_${week}`;
 
     if (subjectProgressList[storeKey]) {
-      return subjectProgressList[storeKey];
-    }
-
-    // Fallback dynamic generator if class is not in the central store
-    let dept = selectedDept?.code || 'CSE';
-    let yearNum = 3;
-
-    if (classId.includes('1st Year')) yearNum = 1;
-    else if (classId.includes('2nd Year')) yearNum = 2;
-    else if (classId.includes('3rd Year')) yearNum = 3;
-    else if (classId.includes('4th Year')) yearNum = 4;
-
-    const subjectsList = getMockSubjectsForDept(dept, yearNum);
-
-    return subjectsList.map((s, idx) => {
-      let coverage = Math.min(60 + (idx * 8) + (yearNum * 2), 95);
-      if (classId.includes('-A')) {
-        coverage = Math.min(78 + (idx * 4), 98);
-      } else if (classId.includes('-B')) {
-        coverage = Math.min(68 + (idx * 5), 92);
-      }
-      
-      const totalTopics = 8 + idx;
-      const completedTopics = Math.round((coverage / 100) * totalTopics);
-      return {
+      return subjectProgressList[storeKey].map(s => ({
         code: s.code,
         name: s.name,
         faculty: s.faculty,
-        coverage,
-        status: coverage >= 70 ? 'Submitted' : 'Pending',
-        completedTopicsCount: completedTopics,
-        totalTopicsCount: totalTopics,
-      };
-    });
+        coverage: s.coverage,
+        status: s.status,
+        completedTopicsCount: s.completedTopicsCount,
+        totalTopicsCount: s.totalTopicsCount,
+      }));
+    }
+    return [];
   };
 
   const activeClasses = selectedDept && selectedYear ? getClassesForDeptAndYear(selectedDept.id, selectedYear) : [];
@@ -241,37 +164,15 @@ export const DeptSummaryScreen = () => {
   const handleClassSelect = (cls: ClassProgressInfo) => {
     setSelectedClass(cls);
     
-    // Generate subjects progress
-    const subjects = getSubjectsProgressForClass(cls.classId);
-    
-    // Map to ConsolidatedReport format
-    const mockReport: ConsolidatedReport = {
-      id: `report-${cls.classId}`,
-      classId: cls.classId,
-      weekNumber: 12,
-      overallCoverage: cls.coverage,
-      submittedBy: 'Prof. Anitha K (Class Coordinator)',
-      submittedAt: '2026-07-08',
-      ccRemarks: cls.pendingCount > 0 
-        ? 'Some lab sessions are slightly behind due to public holidays. Extra hours will be arranged.' 
-        : 'All topics completed successfully as per the syllabus plan.',
-      status: cls.pendingCount > 0 ? 'SUBMITTED_TO_HOD' : 'SENT_TO_ADMIN',
-      subjects: subjects.map(s => ({
-        code: s.code,
-        name: s.name,
-        faculty: s.faculty,
-        coverage: s.coverage,
-        status: s.status,
-        completedTopicsCount: s.completedTopicsCount,
-        totalTopicsCount: s.totalTopicsCount,
-        reasonsForPending: s.status === 'Pending' ? 'Lab hours clashing with internal assessments.' : undefined,
-        extraHoursRequested: s.status === 'Pending' ? true : undefined,
-      })),
-      hodRemarks: 'Reviewed syllabus coverage and verified logs. Found correct.',
-      approvedAt: '2026-07-09',
-    };
-    
-    setSelectedReport(mockReport);
+    const week = 12;
+    const existingReport = reports.find((r) => r.classId === cls.classId && r.weekNumber === week);
+
+    if (!existingReport) {
+      Alert.alert('No Report Available', `No consolidated syllabus report is available for ${cls.classId} for Week ${week}.`);
+      return;
+    }
+
+    setSelectedReport(existingReport);
     setDetailModalVisible(true);
   };
 
@@ -325,7 +226,7 @@ export const DeptSummaryScreen = () => {
       {/* ── STEP 1: Departments Grid ── */}
       {step === 1 && (
         <FlatList
-          data={DEPARTMENTS}
+          data={dynamicDepartments}
           keyExtractor={(item) => item.id}
           numColumns={2}
           contentContainerStyle={styles.listContainer}
@@ -394,7 +295,11 @@ export const DeptSummaryScreen = () => {
           {deptTab === 'years' ? (
             <View style={styles.yearsGrid}>
               {YEARS.map((year, idx) => {
-                const yearCoverage = Math.round(selectedDept.coverage + (idx * 2) - 4); // Simulated variations
+                const yearClasses = getClassesForDeptAndYear(selectedDept.code, year);
+                const yearClassesCount = yearClasses.length;
+                const yearCoverage = yearClassesCount > 0
+                  ? Math.round(yearClasses.reduce((sum, c) => sum + c.coverage, 0) / yearClassesCount)
+                  : 0;
                 const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B'];
                 const yearColor = colors[idx] || Palette.primary;
                 return (
@@ -411,7 +316,7 @@ export const DeptSummaryScreen = () => {
                       <Text style={styles.yearTitle}>{year}</Text>
                     </View>
                     <View style={styles.yearCardStats}>
-                      <Text style={styles.yearClassesMuted}>3 Classes Mapped</Text>
+                      <Text style={styles.yearClassesMuted}>{yearClassesCount} Classes Mapped</Text>
                       <Text style={[styles.yearPercent, { color: yearColor }]}>{yearCoverage}% Avg</Text>
                     </View>
                     <ProgressBar progress={yearCoverage / 100} color={yearColor} style={styles.yearProgressBar} />

@@ -46,57 +46,13 @@ interface ReportStoreState {
   getReportById: (reportId: string) => ConsolidatedReport | undefined;
 }
 
-const INITIAL_SUBJECTS_PROGRESS: Record<string, SubjectProgress[]> = {
-  'CSE-B_11': [
-    { code: 'CS8501', name: 'Theory of Computation', faculty: 'Dr. Meena Kumari', coverage: 70, status: 'Submitted', completedTopicsCount: 7, totalTopicsCount: 10 },
-    { code: 'CS8502', name: 'Database Systems', faculty: 'Prof. Karthick D', coverage: 55, status: 'Submitted', completedTopicsCount: 5, totalTopicsCount: 9 },
-    { code: 'CS8503', name: 'Computer Networks', faculty: 'Prof. Rajesh K', coverage: 60, status: 'Submitted', completedTopicsCount: 6, totalTopicsCount: 10 },
-    { code: 'CS8504', name: 'OS Principles', faculty: 'Dr. Anita S', coverage: 58, status: 'Submitted', completedTopicsCount: 5, totalTopicsCount: 8 },
-  ],
-  'CSE-B_12': [
-    { code: 'CS8501', name: 'Theory of Computation', faculty: 'Dr. Meena Kumari', coverage: 80, status: 'Submitted', completedTopicsCount: 8, totalTopicsCount: 10 },
-    { code: 'CS8502', name: 'Database Systems', faculty: 'Prof. Karthick D', coverage: 65, status: 'Submitted', completedTopicsCount: 6, totalTopicsCount: 9 },
-    { code: 'CS8503', name: 'Computer Networks', faculty: 'Prof. Rajesh K', coverage: 70, status: 'Submitted', completedTopicsCount: 7, totalTopicsCount: 10 },
-    { code: 'CS8504', name: 'OS Principles', faculty: 'Dr. Anita S', coverage: 60, status: 'Pending', completedTopicsCount: 5, totalTopicsCount: 8, reasonsForPending: 'Lab hours clashed with exams.', extraHoursRequested: true },
-  ],
-  'CSE-B_13': [
-    { code: 'CS8501', name: 'Theory of Computation', faculty: 'Dr. Meena Kumari', coverage: 80, status: 'Pending', completedTopicsCount: 8, totalTopicsCount: 10 },
-    { code: 'CS8502', name: 'Database Systems', faculty: 'Prof. Karthick D', coverage: 65, status: 'Pending', completedTopicsCount: 6, totalTopicsCount: 9 },
-    { code: 'CS8503', name: 'Computer Networks', faculty: 'Prof. Rajesh K', coverage: 70, status: 'Pending', completedTopicsCount: 7, totalTopicsCount: 10 },
-    { code: 'CS8504', name: 'OS Principles', faculty: 'Dr. Anita S', coverage: 60, status: 'Pending', completedTopicsCount: 5, totalTopicsCount: 8 },
-  ],
-};
+const INITIAL_SUBJECTS_PROGRESS: Record<string, SubjectProgress[]> = {};
 
-const INITIAL_REPORTS: ConsolidatedReport[] = [
-  {
-    id: 'sample-report-001',
-    classId: 'CSE-B',
-    weekNumber: 11,
-    overallCoverage: 61,
-    submittedBy: 'Dr. Meena Kumari (Class Coordinator)',
-    submittedAt: '2026-06-28',
-    ccRemarks: 'All subjects are progressing well. Database systems lab coverage is slightly behind due to holidays.',
-    status: 'SENT_TO_ADMIN',
-    subjects: INITIAL_SUBJECTS_PROGRESS['CSE-B_11'],
-    hodRemarks: 'Reviewed and found correct. Forwarded to principal.',
-    approvedAt: '2026-06-29',
-  },
-  {
-    id: 'sample-report-002',
-    classId: 'CSE-B',
-    weekNumber: 12,
-    overallCoverage: 69,
-    submittedBy: 'Dr. Meena Kumari (Class Coordinator)',
-    submittedAt: '2026-07-05',
-    ccRemarks: 'CS8504 faculty is running behind schedule due to lab sessions. Extra hour request raised.',
-    status: 'SUBMITTED_TO_HOD',
-    subjects: INITIAL_SUBJECTS_PROGRESS['CSE-B_12'],
-  },
-];
+const INITIAL_REPORTS: ConsolidatedReport[] = [];
 
 export const useReportStore = create<ReportStoreState>((set, get) => ({
-  reports: INITIAL_REPORTS,
-  subjectProgressList: INITIAL_SUBJECTS_PROGRESS,
+  reports: [],
+  subjectProgressList: {},
 
   fetchReports: async () => {
     try {

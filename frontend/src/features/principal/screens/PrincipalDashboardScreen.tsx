@@ -20,7 +20,7 @@ export const PrincipalDashboardScreen = () => {
 
   // Dynamic statistics calculations
   const totalDepartments = DEPARTMENTS.length;
-  const totalClasses = 48; // Standard mockup
+  const totalClasses = new Set(reports.map(r => r.classId)).size;
   const reportsSubmitted = reports.length;
   const pendingApproval = reports.filter((r) => r.status === 'SUBMITTED_TO_HOD').length;
   const approvedReports = reports.filter((r) => r.status === 'SENT_TO_ADMIN').length;

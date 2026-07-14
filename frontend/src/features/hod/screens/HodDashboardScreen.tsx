@@ -19,22 +19,7 @@ interface ClassData {
   pendingCount: number;
 }
 
-const CLASSES_DATA: ClassData[] = [
-  // 2nd Year
-  { classId: '2nd Year CSE-A', name: '2nd Year CSE-A', year: '2nd Year', coverage: 80, pendingCount: 0 },
-  { classId: 'CSE-B', name: '2nd Year CSE-B', year: '2nd Year', coverage: 65, pendingCount: 1 },
-  { classId: '2nd Year CSBS', name: '2nd Year CSBS', year: '2nd Year', coverage: 70, pendingCount: 0 },
-
-  // 3rd Year
-  { classId: '3rd Year CSE-A', name: '3rd Year CSE-A', year: '3rd Year', coverage: 82, pendingCount: 0 },
-  { classId: '3rd Year CSE-B', name: '3rd Year CSE-B', year: '3rd Year', coverage: 75, pendingCount: 0 },
-  { classId: '3rd Year CSBS', name: '3rd Year CSBS', year: '3rd Year', coverage: 60, pendingCount: 2 },
-
-  // 4th Year
-  { classId: '4th Year CSE-A', name: '4th Year CSE-A', year: '4th Year', coverage: 90, pendingCount: 0 },
-  { classId: '4th Year CSE-B', name: '4th Year CSE-B', year: '4th Year', coverage: 85, pendingCount: 0 },
-  { classId: '4th Year CSBS', name: '4th Year CSBS', year: '4th Year', coverage: 78, pendingCount: 1 },
-];
+const CLASSES_DATA: ClassData[] = [];
 
 export const HodDashboardScreen = () => {
   const { user, logout } = useAuthStore();
@@ -51,7 +36,7 @@ export const HodDashboardScreen = () => {
   // Filter pending reports that are submitted to the HOD
   const pendingReportsList = reports.filter((r) => r.status === 'SUBMITTED_TO_HOD');
   const PENDING_REPORTS = pendingReportsList.length;
-  const PENDING_EXTRA_HOURS = 3;
+  const PENDING_EXTRA_HOURS = 0;
 
   const initials = user?.name
     ? user.name.split(' ').map((w) => w[0]).join('').substring(0, 2).toUpperCase()

@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Dimensi
 import { Text, Card, Avatar, ProgressBar, ActivityIndicator, Button } from 'react-native-paper';
 import { useAuthStore } from '../../auth/store/useAuthStore';
 import { SyllabusRepository } from '@database/repositories/SyllabusRepository';
+import { TimetableRepository } from '@database/repositories/TimetableRepository';
 import { Palette } from '@theme/colors';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -19,33 +20,62 @@ interface SubjectInfo {
   color: string;
 }
 
-const HANDLED_SUBJECTS: SubjectInfo[] = [
-  { code: 'CS8501', name: 'Object Oriented Programming', year: '2nd Year CSE', shortName: 'OOPS', color: '#0F52BA' },
-  { code: 'CS8502', name: 'Java Programming', year: '3rd Year CSE', shortName: 'Java', color: '#1B9CFC' },
-  { code: 'CS8503', name: 'Database Management Systems', year: '4th Year CSE', shortName: 'DBMS', color: '#8B5CF6' },
-  { code: 'CS8504', name: 'OS Principles', year: 'Academic Course', shortName: 'OS', color: '#10B981' },
-];
-
 export const StaffDashboardScreen = () => {
   const { user } = useAuthStore();
   const navigation = useNavigation<NativeStackNavigationProp<StaffStackParamList>>();
   
   // Local state
+  const [handledSubjects, setHandledSubjects] = useState<SubjectInfo[]>([]);
   const [syllabusProgress, setSyllabusProgress] = useState<Record<string, { completed: number; total: number; percent: number }>>({});
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   // Repository
   const syllabusRepo = new SyllabusRepository();
+  const timetableRepo = new TimetableRepository();
 
   const loadData = async () => {
     try {
       setLoading(true);
+      const slots = await timetableRepo.getTimetable();
+      
+      const subjectMap: Record<string, SubjectInfo> = {};
+      const colors = ['#0F52BA', '#1B9CFC', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444'];
+      let colorIdx = 0;
+
+      for (const slot of slots) {
+        if (!subjectMap[slot.subject_code]) {
+          let year = 'Academic Course';
+          if (slot.class_section.includes('1st')) year = '1st Year CSE';
+          else if (slot.class_section.includes('2nd') || slot.class_section === 'CSE-B') year = '2nd Year CSE';
+          else if (slot.class_section.includes('3rd')) year = '3rd Year CSE';
+          else if (slot.class_section.includes('4th')) year = '4th Year CSE';
+
+          let shortName = slot.subject_name.split(' ').map(w => w[0]).join('').toUpperCase();
+          if (slot.subject_code === 'CS8501') shortName = 'TOC';
+          if (slot.subject_code === 'CS8502') shortName = 'DBMS';
+          if (slot.subject_code === 'CS8503') shortName = 'CN';
+          if (slot.subject_code === 'CS8504') shortName = 'OS';
+
+          subjectMap[slot.subject_code] = {
+            code: slot.subject_code,
+            name: slot.subject_name,
+            year: `${year} (${slot.class_section})`,
+            shortName,
+            color: colors[colorIdx % colors.length],
+          };
+          colorIdx++;
+        }
+      }
+
+      const subjects = Object.values(subjectMap);
+      setHandledSubjects(subjects);
+
       const progressMap: Record<string, { completed: number; total: number; percent: number }> = {};
-      for (const subject of HANDLED_SUBJECTS) {
+      for (const subject of subjects) {
         const nodes = await syllabusRepo.getSyllabusBySubject(subject.code);
         const completed = nodes.filter((n) => n.is_completed === 1).length;
-        const total = nodes.length || 5; // Default if empty
+        const total = nodes.length || 5;
         progressMap[subject.code] = {
           completed,
           total,
@@ -133,7 +163,7 @@ export const StaffDashboardScreen = () => {
         </View>
       ) : (
         <View style={styles.subjectsContainer}>
-          {HANDLED_SUBJECTS.map((subj) => {
+          {handledSubjects.map((subj) => {
             const prog = syllabusProgress[subj.code] || { completed: 0, total: 5, percent: 0 };
             const percentLabel = Math.round(prog.percent * 100);
             

@@ -23,71 +23,10 @@ export const FacultyProgressScreen = () => {
   const classId = route.params?.classId || 'CSE-B';
   const selectedWeek = '12'; // Default week
 
-  // Helper to generate dynamic mock subjects for any class
+  // Helper to fetch subjects from class store progress list
   const getSubjectsProgressForClass = (clsId: string, week: string) => {
     const storeKey = `${clsId}_${week}`;
-    if (subjectProgressList[storeKey] && subjectProgressList[storeKey].length > 0) {
-      return subjectProgressList[storeKey];
-    }
-
-    // Determine dept code (e.g. CSE, CSBS, etc.)
-    let deptCode = 'CSE';
-    if (clsId.includes('CSBS')) deptCode = 'CSBS';
-    else if (clsId.includes('AERO')) deptCode = 'AERO';
-    else if (clsId.includes('CIVIL')) deptCode = 'CIVIL';
-    else if (clsId.includes('ECE')) deptCode = 'ECE';
-    else if (clsId.includes('EEE')) deptCode = 'EEE';
-    else if (clsId.includes('IT')) deptCode = 'IT';
-    else if (clsId.includes('MECH')) deptCode = 'MECH';
-
-    // Determine year
-    let yearNum = 3;
-    if (clsId.includes('1st Year') || clsId.includes('1st')) yearNum = 1;
-    else if (clsId.includes('2nd Year') || clsId.includes('2nd')) yearNum = 2;
-    else if (clsId.includes('3rd Year') || clsId.includes('3rd')) yearNum = 3;
-    else if (clsId.includes('4th Year') || clsId.includes('4th')) yearNum = 4;
-
-    const templates = [
-      'Theory of Computation', 'Database Systems', 'Computer Networks', 'OS Principles',
-      'Compiler Design', 'Software Engineering', 'Aerodynamics', 'Aircraft Structures',
-      'Propulsion', 'Control Engineering', 'Design of Machine Elements', 'Dynamics of Machines'
-    ];
-    const faculties = [
-      'Dr. Meena Kumari', 'Prof. Karthick D', 'Prof. Rajesh K', 'Dr. Anita S',
-      'Dr. Sundaram A', 'Prof. Priyadharshini M', 'Dr. Suresh Babu', 'Prof. Divya R'
-    ];
-
-    const yearRoman = ['I', 'II', 'III', 'IV'][yearNum - 1] || 'III';
-
-    return [0, 1, 2, 3].map((idx) => {
-      const templateName = templates[idx % templates.length];
-      const name = yearNum === 1 ? `Fundamentals of ${templateName}` : `${templateName} ${yearRoman}`;
-      const codeNum = 8000 + (yearNum * 100) + (idx + 1) * 10;
-      const code = `${deptCode}${codeNum}`;
-      const faculty = faculties[(deptCode.charCodeAt(0) + yearNum + idx) % faculties.length];
-      
-      let coverage = Math.min(60 + (idx * 8) + (yearNum * 2), 95);
-      if (clsId.includes('-A')) {
-        coverage = Math.min(78 + (idx * 4), 98);
-      } else if (clsId.includes('-B') || clsId === 'CSE-B') {
-        coverage = Math.min(68 + (idx * 5), 92);
-      }
-
-      const totalTopics = 8 + idx;
-      const completedTopics = Math.round((coverage / 100) * totalTopics);
-
-      return {
-        code,
-        name,
-        faculty,
-        coverage,
-        status: 'Submitted' as const,
-        completedTopicsCount: completedTopics,
-        totalTopicsCount: totalTopics,
-        reasonsForPending: coverage < 70 ? 'Practical labs delayed due to revision sessions.' : undefined,
-        extraHoursRequested: coverage < 70 ? true : undefined,
-      };
-    });
+    return subjectProgressList[storeKey] || [];
   };
 
   const progressList = getSubjectsProgressForClass(classId, selectedWeek);
@@ -100,39 +39,13 @@ export const FacultyProgressScreen = () => {
   );
   const PENDING_REPORTS = classPendingReports.length;
   
-  // Mock slot request for this class
-  const PENDING_EXTRA_HOURS = classId === 'CSE-B' ? 1 : 0;
+  // Real slot request for this class
+  const PENDING_EXTRA_HOURS = 0;
 
-  // Find or construct ConsolidatedReport
+  // Find ConsolidatedReport
   const existingReport = reports.find(
     (r) => r.classId === classId && r.weekNumber === parseInt(selectedWeek)
   );
-
-  const averageCoverage = progressList.length > 0
-    ? Math.round(progressList.reduce((sum, s) => sum + s.coverage, 0) / progressList.length)
-    : 0;
-
-  const reportToShow: ConsolidatedReport = existingReport || {
-    id: `provisional-${classId}-W${selectedWeek}`,
-    classId,
-    weekNumber: parseInt(selectedWeek),
-    overallCoverage: averageCoverage,
-    submittedBy: 'Class Coordinator',
-    submittedAt: new Date().toISOString().split('T')[0],
-    ccRemarks: 'Provisional course coverage data based on latest faculty logs.',
-    status: 'SUBMITTED_TO_HOD',
-    subjects: progressList.map((s) => ({
-      code: s.code,
-      name: s.name,
-      faculty: s.faculty,
-      coverage: s.coverage,
-      status: s.status,
-      completedTopicsCount: s.completedTopicsCount,
-      totalTopicsCount: s.totalTopicsCount,
-      reasonsForPending: s.reasonsForPending || (s.coverage < 60 ? 'Topics not completed' : undefined),
-      extraHoursRequested: s.extraHoursRequested,
-    })),
-  };
 
   const getStatusLabel = (status: string) => {
     if (status === 'Submitted') {
@@ -237,7 +150,15 @@ export const FacultyProgressScreen = () => {
         </>
       ) : (
         <View style={{ marginBottom: 20 }}>
-          <WeeklyCourseCoverageReportCard report={reportToShow} showDownloadButton={false} />
+          {existingReport ? (
+            <WeeklyCourseCoverageReportCard report={existingReport} showDownloadButton={false} />
+          ) : (
+            <Card style={styles.emptyCard}>
+              <Card.Content>
+                <Text style={styles.emptyText}>No consolidated report has been compiled for this class this week.</Text>
+              </Card.Content>
+            </Card>
+          )}
         </View>
       )}
 

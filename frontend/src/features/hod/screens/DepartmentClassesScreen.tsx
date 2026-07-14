@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { Alert, StyleSheet, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { Text, Card, ProgressBar, Badge, Button, Portal, Modal, Divider } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
@@ -18,24 +18,7 @@ interface ClassData {
   pendingCount: number;
 }
 
-const DEPT_SUBJECTS_LIST: Record<string, string[]> = {
-  AERO: ['Aerodynamics', 'Aircraft Structures', 'Propulsion', 'Control Engineering', 'Flight Dynamics', 'Avionics'],
-  CIVIL: ['Structural Analysis', 'Foundation Engineering', 'Environmental Engineering', 'Reinforced Concrete Elements', 'Surveying', 'Hydraulics'],
-  CSE: ['Theory of Computation', 'Database Systems', 'Computer Networks', 'OS Principles', 'Compiler Design', 'Software Engineering'],
-  'CSE-AIML': ['Artificial Intelligence', 'Machine Learning', 'Deep Learning', 'Data Science & Visualisation', 'Natural Language Processing', 'Computer Vision'],
-  CCE: ['Digital Communication Systems', 'Computer Communication Networks', 'Information Theory and Coding', 'Java Programming', 'Signals & Systems', 'Electromagnetics'],
-  CSBS: ['Design & Analysis of Algorithms', 'Business Communication', 'Fundamentals of Management', 'Software Testing', 'Financial Accounting', 'Human Resource Management'],
-  ECE: ['Digital Communication', 'Discrete-Time Signal Processing', 'Computer Architecture & Org', 'Transmission Lines & Wave Guides', 'Microprocessors', 'VLSI Design'],
-  EEE: ['Power System Analysis', 'Microprocessors & Microcontrollers', 'Power Electronics', 'Transmission & Distribution', 'Electrical Machines', 'Control Systems'],
-  EIE: ['Industrial Instrumentation', 'Process Control', 'Analytical Instruments', 'Microprocessors and Applications', 'Transducer Engineering', 'Logic and Distributed Control'],
-  MECH: ['Design of Machine Elements', 'Dynamics of Machines', 'Metrology & Measurements', 'Thermal Engineering', 'Fluid Mechanics', 'Kinematics of Machinery'],
-  RA: ['Robot Kinematics & Dynamics', 'Sensors and Transducers', 'Control Systems for Robotics', 'Embedded Systems Design', 'Robotic Vision', 'Industrial Automation'],
-  IT: ['Web Technology', 'Computer Network & Admin', 'Software Product Engineering', 'Data Mining & Warehousing', 'Mobile Computing', 'Object Oriented Analysis & Design'],
-  'ME-VLSI': ['ASIC and FPGA Design', 'CAD for VLSI Circuits', 'Testing of VLSI Circuits', 'Low Power VLSI Design', 'DSP Structures for VLSI', 'RF IC Design'],
-  MBA: ['Marketing Management', 'Financial Management', 'Human Resource Management', 'Operations Management', 'Organizational Behavior', 'Strategic Management'],
-  MCA: ['Advanced Java Programming', 'Cloud Computing Technologies', 'Mobile Application Development', 'Cyber Security & Forensics', 'Web Application Development', 'Data Structures using C++'],
-  TEXTILE: ['Yarn Manufacture', 'Fabric Manufacture', 'Textile Chemical Processing', 'Fiber Science & Technology', 'Textile Testing', 'Garment Technology'],
-};
+// DEPT_SUBJECTS_LIST removed
 
 export const DepartmentClassesScreen = () => {
   const navigation = useNavigation<any>();
@@ -64,19 +47,24 @@ export const DepartmentClassesScreen = () => {
 
   const deptCode = getDeptCode(user?.department || 'Computer Science Engineering');
 
-  // Dynamic Class mock builder based on HOD's department
+  // Dynamic Class builder based on existing consolidated reports
   const getClassesForDept = (code: string): ClassData[] => {
-    return [
-      { classId: `1st Year ${code}-A`, name: `1st Year ${code}-A`, year: '1st Year', coverage: 78, pendingCount: 0 },
-      { classId: `1st Year ${code}-B`, name: `1st Year ${code}-B`, year: '1st Year', coverage: 74, pendingCount: 0 },
-      { classId: `2nd Year ${code}-A`, name: `2nd Year ${code}-A`, year: '2nd Year', coverage: 82, pendingCount: 0 },
-      // Keep CSE-B as in existing store
-      { classId: code === 'CSE' ? 'CSE-B' : `2nd Year ${code}-B`, name: `2nd Year ${code}-B`, year: '2nd Year', coverage: 65, pendingCount: 1 },
-      { classId: `3rd Year ${code}-A`, name: `3rd Year ${code}-A`, year: '3rd Year', coverage: 85, pendingCount: 0 },
-      { classId: `3rd Year ${code}-B`, name: `3rd Year ${code}-B`, year: '3rd Year', coverage: 79, pendingCount: 0 },
-      { classId: `4th Year ${code}-A`, name: `4th Year ${code}-A`, year: '4th Year', coverage: 90, pendingCount: 0 },
-      { classId: `4th Year ${code}-B`, name: `4th Year ${code}-B`, year: '4th Year', coverage: 88, pendingCount: 0 },
-    ];
+    // Return classes that actually have reports in the store
+    const classMap: Record<string, ClassData> = {};
+    for (const report of reports) {
+      if (report.classId.includes(code)) {
+        if (!classMap[report.classId]) {
+          classMap[report.classId] = {
+            classId: report.classId,
+            name: report.classId,
+            year: report.classId.includes('1st') ? '1st Year' : report.classId.includes('2nd') ? '2nd Year' : report.classId.includes('3rd') ? '3rd Year' : '4th Year',
+            coverage: report.overallCoverage,
+            pendingCount: report.status === 'SUBMITTED_TO_HOD' ? 1 : 0,
+          };
+        }
+      }
+    }
+    return Object.values(classMap);
   };
 
   const allDeptClasses = getClassesForDept(deptCode);
@@ -84,121 +72,25 @@ export const DepartmentClassesScreen = () => {
 
   // Dynamic Subjects list builder for HOD department
   const getMockSubjectsForDept = (code: string) => {
-    const templates = DEPT_SUBJECTS_LIST[code] || ['Core Course I', 'Core Course II', 'Core Course III', 'Core Course IV'];
-    const faculties = [
-      'Dr. Sundaram A', 'Prof. Priyadharshini M', 'Dr. Suresh Babu', 'Prof. Divya R',
-      'Dr. Vignesh K', 'Prof. Archana S', 'Dr. Ganesan V', 'Prof. Anandhi T',
-      'Dr. Meena Kumari', 'Prof. Karthick D', 'Prof. Rajesh K', 'Dr. Anita S'
-    ];
-
-    return [1, 2, 3, 4].flatMap((yearNum) => {
-      const yearRoman = ['I', 'II', 'III', 'IV'][yearNum - 1] || 'III';
-      return [0, 1, 2, 3].map((idx) => {
-        const templateName = templates[idx % templates.length];
-        const name = yearNum === 1 ? `Fundamentals of ${templateName}` : `${templateName} ${yearRoman}`;
-        const codeNum = 8000 + (yearNum * 100) + (idx + 1) * 10;
-        const subCode = `${code}${codeNum}`;
-        const faculty = faculties[(code.charCodeAt(0) + yearNum + idx) % faculties.length];
-        return {
-          code: subCode,
-          name,
-          faculty,
-          year: `${yearNum}${yearNum === 1 ? 'st' : yearNum === 2 ? 'nd' : yearNum === 3 ? 'rd' : 'th'} Year`,
-          topics: 8 + (idx % 3),
-        };
-      });
-    });
+    return [];
   };
 
   const departmentSubjects = getMockSubjectsForDept(deptCode);
 
   const getMockSubjectsForClass = (classId: string, dCode: string) => {
-    let yearNum = 3;
-    if (classId.includes('1st Year') || classId.includes('1st')) yearNum = 1;
-    else if (classId.includes('2nd Year') || classId.includes('2nd')) yearNum = 2;
-    else if (classId.includes('3rd Year') || classId.includes('3rd')) yearNum = 3;
-    else if (classId.includes('4th Year') || classId.includes('4th')) yearNum = 4;
-
-    const templates = DEPT_SUBJECTS_LIST[dCode] || ['Core Course I', 'Core Course II', 'Core Course III', 'Core Course IV'];
-    const faculties = [
-      'Dr. Sundaram A', 'Prof. Priyadharshini M', 'Dr. Suresh Babu', 'Prof. Divya R',
-      'Dr. Vignesh K', 'Prof. Archana S', 'Dr. Ganesan V', 'Prof. Anandhi T',
-      'Dr. Meena Kumari', 'Prof. Karthick D', 'Prof. Rajesh K', 'Dr. Anita S'
-    ];
-
-    const yearRoman = ['I', 'II', 'III', 'IV'][yearNum - 1] || 'III';
-
-    return [0, 1, 2, 3].map((idx) => {
-      const templateName = templates[idx % templates.length];
-      const name = yearNum === 1 ? `Fundamentals of ${templateName}` : `${templateName} ${yearRoman}`;
-      const codeNum = 8000 + (yearNum * 100) + (idx + 1) * 10;
-      const subCode = `${dCode}${codeNum}`;
-      const faculty = faculties[(dCode.charCodeAt(0) + yearNum + idx) % faculties.length];
-      
-      let coverage = Math.min(60 + (idx * 8) + (yearNum * 2), 95);
-      if (classId.includes('-A')) {
-        coverage = Math.min(78 + (idx * 4), 98);
-      } else if (classId.includes('-B') || classId === 'CSE-B') {
-        coverage = Math.min(68 + (idx * 5), 92);
-      }
-
-      const totalTopics = 8 + idx;
-      const completedTopics = Math.round((coverage / 100) * totalTopics);
-
-      return {
-        code: subCode,
-        name,
-        faculty,
-        coverage,
-        status: 'Submitted' as const,
-        completedTopicsCount: completedTopics,
-        totalTopicsCount: totalTopics,
-        reasonsForPending: coverage < 70 ? 'Lab hours clashing with internal exams.' : undefined,
-        extraHoursRequested: coverage < 70 ? true : undefined,
-      };
-    });
+    return [];
   };
 
   const handleOpenSpreadsheet = (cls: ClassData) => {
     const week = 12;
-    const storeKey = `${cls.classId}_${week}`;
-    const progressList = subjectProgressList[storeKey] || [];
-
-    // Fallback: build provisional subject logs if not in central store
-    const subjectsToShow = progressList.length > 0 ? progressList.map(s => ({
-      code: s.code,
-      name: s.name,
-      faculty: s.faculty,
-      coverage: s.coverage,
-      status: s.status,
-      completedTopicsCount: s.completedTopicsCount,
-      totalTopicsCount: s.totalTopicsCount,
-      reasonsForPending: s.reasonsForPending,
-      extraHoursRequested: s.extraHoursRequested,
-    })) : getMockSubjectsForClass(cls.classId, deptCode);
-
-    const averageCoverage = subjectsToShow.length > 0
-      ? Math.round(subjectsToShow.reduce((sum, s) => sum + s.coverage, 0) / subjectsToShow.length)
-      : cls.coverage;
-
     const existingReport = reports.find((r) => r.classId === cls.classId && r.weekNumber === week);
 
-    const mockReport: ConsolidatedReport = existingReport || {
-      id: `report-${cls.classId}-W${week}`,
-      classId: cls.classId,
-      weekNumber: week,
-      overallCoverage: averageCoverage,
-      submittedBy: 'Class Coordinator',
-      submittedAt: '2026-07-08',
-      ccRemarks: cls.pendingCount > 0
-        ? 'Some lab hours clashing with internal assessments. Extra hours compensatory slots request raised.'
-        : 'All topics are completed as per the mapped syllabus schedule.',
-      status: cls.pendingCount > 0 ? 'SUBMITTED_TO_HOD' : 'SENT_TO_ADMIN',
-      subjects: subjectsToShow,
-      hodRemarks: 'Reviewed and verified with department logbooks.',
-    };
+    if (!existingReport) {
+      Alert.alert('No Report Available', `No consolidated syllabus report is available for ${cls.classId} for Week ${week}.`);
+      return;
+    }
 
-    setSelectedReport(mockReport);
+    setSelectedReport(existingReport);
     setModalVisible(true);
   };
 

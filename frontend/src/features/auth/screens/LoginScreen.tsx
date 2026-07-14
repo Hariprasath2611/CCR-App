@@ -224,33 +224,8 @@ export const LoginScreen = () => {
       login(userSession, accessToken, refreshToken);
     } catch (error: any) {
       console.error('Login error details:', error);
-      const roleInfo = detectRole(email);
-      const mockUser: UserSession = {
-        id: `mock-${roleInfo.role.toLowerCase()}-${Date.now()}`,
-        name: roleInfo.name,
-        email: email.toLowerCase().trim(),
-        role: roleInfo.role,
-        isClassCoordinator: roleInfo.isCC,
-        department: roleInfo.dept,
-        assignedClassId: roleInfo.isCC ? 'CSE-B' : undefined,
-      };
-
-      Alert.alert(
-        'Server Unreachable / Auth Failed',
-        'Could not authenticate with the server. Would you like to log in using Offline Mode for testing?',
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Log In Offline',
-            onPress: () => {
-              login(mockUser, 'mock-access-token', 'mock-refresh-token');
-            },
-          },
-        ]
-      );
+      const errMsg = error.response?.data?.error || error.message || 'Could not authenticate with the server. Please check your credentials and connection.';
+      Alert.alert('Login Failed', errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -424,9 +399,6 @@ export const LoginScreen = () => {
           </View>
 
           {/* Bottom subtle guidance for tester */}
-          <Text style={styles.guidanceText}>
-            Tip: Type "principal", "hod", or "cc" in email to test different portal roles.
-          </Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

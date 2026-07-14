@@ -18,36 +18,6 @@ const decisionSchema = z.object({
 
 type DecisionFormData = z.infer<typeof decisionSchema>;
 
-// ─── Mock data structures ────────────────────────────────────────────────────
-const MOCK_PLAN_REPORT = {
-  id: 'sample-report-001',
-  type: 'CC Consolidated Report',
-  week: 'Week 12',
-  section: 'CSE – Section B',
-  submittedBy: 'Dr. Meena Kumari (Class Coordinator)',
-  submittedAt: '2026-07-05',
-  overallCoverage: '71%',
-  subjects: [
-    { code: 'CS8501', name: 'Theory of Computation', faculty: 'Dr. Meena Kumari', coverage: '80%', status: 'Submitted' },
-    { code: 'CS8502', name: 'Database Systems', faculty: 'Prof. Karthick D', coverage: '65%', status: 'Submitted' },
-    { code: 'CS8503', name: 'Computer Networks', faculty: 'Prof. Rajesh K', coverage: '70%', status: 'Submitted' },
-    { code: 'CS8504', name: 'OS Principles', faculty: 'Dr. Anita S', coverage: '68%', status: 'Pending' },
-  ],
-  ccRemarks: 'CS8504 faculty is running behind schedule due to lab sessions. Extra hour request raised.',
-};
-
-const MOCK_EXTRA_HOUR = {
-  id: 'sample-extra-001',
-  type: 'Extra Hour Request',
-  faculty: 'Prof. Karthick D',
-  subject: 'CS8503 – Computer Networks',
-  section: 'CSE – Section B',
-  requestedDate: '2026-07-10',
-  period: 'Period 6 (02:30 PM)',
-  reason:
-    'Unit IV – Transport Layer topics (Flow Control & Congestion) are pending due to the University exam schedule clash on Week 11. Requesting compensatory class to meet syllabus deadline.',
-};
-
 // ─── Helper: Coverage chip color ─────────────────────────────────────────────
 const coverageColor = (pct: string) => {
   const val = parseInt(pct);
@@ -74,7 +44,7 @@ export const RequestDetailsScreen = () => {
   const reportData = isExtraHour ? null : getReportById(requestId);
 
   const data = isExtraHour 
-    ? MOCK_EXTRA_HOUR 
+    ? null 
     : (reportData 
         ? {
             id: reportData.id,
@@ -93,7 +63,7 @@ export const RequestDetailsScreen = () => {
               status: s.status,
             })),
           }
-        : MOCK_PLAN_REPORT
+        : null
       );
 
   const planData = isExtraHour ? null : (data as any);
@@ -145,6 +115,17 @@ export const RequestDetailsScreen = () => {
       ]
     );
   };
+
+  if (!data) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: Palette.textDark, textAlign: 'center' }}>No Request Details Found</Text>
+        <Text style={{ marginTop: 8, color: Palette.textLight, textAlign: 'center' }}>
+          This request could not be found or has already been processed.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -431,5 +412,12 @@ const styles = StyleSheet.create({
   actionBtn: {
     flex: 1,
     borderRadius: 10,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Palette.background,
+    padding: 24,
   },
 });
