@@ -46,11 +46,19 @@ const progressSchema = z.object({
 type ProgressFormData = z.infer<typeof progressSchema>;
 
 const SUBJECT_NAMES: Record<string, string> = {
-  'CS8501': 'Theory of Computation (OOPS)',
-  'CS8502': 'Database Systems (Java)',
-  'CS8503': 'Computer Networks (DBMS)',
-  'CS8504': 'OS Principles',
+  'CS3591': 'Computer Networks',
+  'CS3501': 'Compiler Design',
+  'CB3491': 'Cryptography and Cyber Security',
+  'CS3551': 'Distributed Computing',
+  'CCS375': 'Web Technologies',
+  'CCS370': 'UI and UX Design',
+  'MX3084': 'Disaster Management',
 };
+
+const WEEK_OPTIONS = Array.from({ length: 16 }, (_, i) => ({
+  label: `Week ${i + 1}`,
+  value: (i + 1).toString(),
+}));
 
 const UNIT_OPTIONS = [
   { label: 'Unit 1', value: 'Unit 1' },
@@ -76,8 +84,11 @@ export const WeeklyProgressScreen = () => {
   const navigation = useNavigation();
 
   // Safeguards for route parameters
-  const subjectCode = route.params?.subjectCode || 'CS8502';
+  const subjectCode = route.params?.subjectCode || 'CS3591';
   const weekNumber = route.params?.weekNumber || 12;
+
+  const [selectedWeek, setSelectedWeek] = useState(weekNumber.toString());
+  const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
 
   const [syllabusNodes, setSyllabusNodes] = useState<SQLiteSyllabusNode[]>([]);
   const [loading, setLoading] = useState(true);
@@ -155,10 +166,12 @@ export const WeeklyProgressScreen = () => {
       const totalCount = updatedNodes.length || 5;
       const completedCount = updatedNodes.filter((n) => n.is_completed === 1).length;
 
+      const finalWeekNumber = parseInt(selectedWeek);
+
       // 2. Update Consolidated Report Store
       addProgressLog(
         classId,
-        weekNumber,
+        finalWeekNumber,
         subjectCode,
         completedCount,
         totalCount,
@@ -172,11 +185,11 @@ export const WeeklyProgressScreen = () => {
 
       // 3. Sync Queue logging
       const progressPayload = {
-        id: `progress_${subjectCode}_W${weekNumber}_${Date.now()}`,
+        id: `progress_${subjectCode}_W${finalWeekNumber}_${Date.now()}`,
         facultyId: user?.id,
         subjectCode,
         classId,
-        academicWeekNumber: weekNumber,
+        academicWeekNumber: finalWeekNumber,
         unitSelected: data.unit,
         temporaryUnit: data.tempUnit !== 'None' ? data.tempUnit : null,
         topicsCoveredText: data.topicsCovered,
@@ -184,7 +197,7 @@ export const WeeklyProgressScreen = () => {
         completedTopicIds,
         pendingTopicIds,
         reasonsForPending: data.reasonsForPending || '',
-        submittedAt: new Date().toISOString(),
+        submittedAt: logDate,
         periodsPlanned: data.periodsPlanned,
         periodsHandled: data.periodsHandled,
         periodsRequired: data.periodsRequired || 0,
@@ -222,10 +235,32 @@ export const WeeklyProgressScreen = () => {
           <Text style={styles.headingText}>Course Coverage</Text>
           <Text style={styles.subjectName}>{SUBJECT_NAMES[subjectCode] || 'Subject Course'}</Text>
           <Text style={styles.weekLabel}>
-            Code: {subjectCode} · Class: {user?.assignedClassId || 'CSE-B'} · Week {weekNumber}
+            Code: {subjectCode} · Class: {user?.assignedClassId || 'CSE-B'}
           </Text>
         </View>
       </View>
+
+      {/* ── REPORT DETAILS SECTION ── */}
+      <Card style={{ backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 20, borderWidth: 1, borderColor: '#F1F5F9' }}>
+        <View style={{ marginBottom: 12 }}>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: Palette.textDark, marginBottom: 6 }}>Academic Report Week</Text>
+          <AppDropdown
+            label="Select Week"
+            value={selectedWeek}
+            options={WEEK_OPTIONS}
+            onSelect={(val) => setSelectedWeek(val)}
+          />
+        </View>
+        <View>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: Palette.textDark, marginBottom: 6 }}>Log Date</Text>
+          <AppTextInput
+            label="Completion Date (YYYY-MM-DD)"
+            value={logDate}
+            onChangeText={setLogDate}
+            placeholder="YYYY-MM-DD"
+          />
+        </View>
+      </Card>
 
       {/* Main Unit Selector */}
       <Controller
