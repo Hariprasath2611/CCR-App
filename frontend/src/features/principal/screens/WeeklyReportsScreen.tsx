@@ -48,7 +48,10 @@ export const WeeklyReportsScreen = () => {
     const totalHours = rep.subjects.reduce((sum, s) => sum + (s.completedTopicsCount * 1.5), 0);
 
     const tableRowsHtml = rep.subjects.map((subj, index) => {
-      const topics = getBriefTopics(subj.code);
+      const actualTopicsText = subj.topicsCoveredText || '';
+      const topics = actualTopicsText
+        ? actualTopicsText.split(/[,\n]/).map(t => t.trim()).filter(Boolean)
+        : getBriefTopics(subj.code);
       const completedHours = Math.round(subj.completedTopicsCount * 1.5);
       const isCompleted = subj.coverage >= 60;
 
