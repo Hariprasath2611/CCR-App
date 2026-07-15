@@ -15,6 +15,7 @@ export interface SQLiteTimetableItem {
   subject_name: string;
   class_section: string;
   room_no: string;
+  faculty_name?: string;
 }
 
 export interface SQLiteSyllabusNode {

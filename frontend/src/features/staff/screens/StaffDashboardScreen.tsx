@@ -39,11 +39,12 @@ export const StaffDashboardScreen = () => {
       setLoading(true);
       const slots = await timetableRepo.getTimetable();
       
+      const filteredSlots = user?.role === 'ADMIN' ? slots : slots.filter((s) => s.faculty_name === user?.name);
       const subjectMap: Record<string, SubjectInfo> = {};
       const colors = ['#0F52BA', '#1B9CFC', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444'];
       let colorIdx = 0;
 
-      for (const slot of slots) {
+      for (const slot of filteredSlots) {
         if (!subjectMap[slot.subject_code]) {
           let year = 'Academic Course';
           if (slot.class_section.includes('1st')) year = '1st Year CSE';

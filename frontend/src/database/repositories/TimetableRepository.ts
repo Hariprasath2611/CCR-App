@@ -11,8 +11,8 @@ export class TimetableRepository extends BaseRepository {
       // Batch insert new slots
       for (const slot of slots) {
         await db.runAsync(
-          `INSERT INTO timetable (id, day_of_week, period, subject_code, subject_name, class_section, room_no)
-           VALUES (?, ?, ?, ?, ?, ?, ?);`,
+          `INSERT INTO timetable (id, day_of_week, period, subject_code, subject_name, class_section, room_no, faculty_name)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
           [
             slot.id,
             slot.day_of_week,
@@ -21,6 +21,7 @@ export class TimetableRepository extends BaseRepository {
             slot.subject_name,
             slot.class_section,
             slot.room_no,
+            slot.faculty_name || null,
           ]
         );
       }

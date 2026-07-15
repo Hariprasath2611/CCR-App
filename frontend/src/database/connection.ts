@@ -11,6 +11,14 @@ export const getDBConnection = async (): Promise<SQLite.SQLiteDatabase> => {
   const db = await SQLite.openDatabaseAsync(ENV.DB_NAME);
   dbInstance = db;
 
+  // Check if faculty_name column exists in timetable table, if not, drop it to recreate it with the correct schema
+  try {
+    await db.runAsync('SELECT faculty_name FROM timetable LIMIT 1;');
+  } catch (e) {
+    console.log('Migrating timetable table to add faculty_name column...');
+    await db.runAsync('DROP TABLE IF EXISTS timetable;');
+  }
+
   // Run initial migrations / schema creation
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS sync_queue (
@@ -29,7 +37,8 @@ export const getDBConnection = async (): Promise<SQLite.SQLiteDatabase> => {
       subject_code TEXT NOT NULL,
       subject_name TEXT NOT NULL,
       class_section TEXT NOT NULL,
-      room_no TEXT NOT NULL
+      room_no TEXT NOT NULL,
+      faculty_name TEXT
     );
 
     CREATE TABLE IF NOT EXISTS syllabus_progress (
@@ -142,47 +151,47 @@ export const getDBConnection = async (): Promise<SQLite.SQLiteDatabase> => {
       await db.withTransactionAsync(async () => {
         const seedSlots = [
           // Monday
-          { id: 't1', day_of_week: 'Monday', period: 1, subject_code: 'CS3591', subject_name: 'Computer Networks', class_section: '3rd Year CSE-A', room_no: 'LH-302' },
-          { id: 't2', day_of_week: 'Monday', period: 2, subject_code: 'CS3501', subject_name: 'Compiler Design', class_section: '3rd Year CSE-A', room_no: 'LH-303' },
-          { id: 't3', day_of_week: 'Monday', period: 3, subject_code: 'CB3491', subject_name: 'Cryptography and Cyber Security', class_section: '3rd Year CSE-A', room_no: 'LH-304' },
-          { id: 't4', day_of_week: 'Monday', period: 4, subject_code: 'CS3551', subject_name: 'Distributed Computing', class_section: '3rd Year CSE-A', room_no: 'LH-305' },
-          { id: 't5', day_of_week: 'Monday', period: 5, subject_code: 'CCS375', subject_name: 'Web Technologies', class_section: '3rd Year CSE-A', room_no: 'LH-306' },
-          { id: 't6', day_of_week: 'Monday', period: 6, subject_code: 'CCS370', subject_name: 'UI and UX Design', class_section: '3rd Year CSE-A', room_no: 'LH-307' },
+          { id: 't1', day_of_week: 'Monday', period: 1, subject_code: 'CS3591', subject_name: 'Computer Networks', class_section: '3rd Year CSE-A', room_no: 'LH-302', faculty_name: 'Ms.E Uva Shakthi' },
+          { id: 't2', day_of_week: 'Monday', period: 2, subject_code: 'CS3501', subject_name: 'Compiler Design', class_section: '3rd Year CSE-A', room_no: 'LH-303', faculty_name: 'Mr.J Lin Eby Chandra' },
+          { id: 't3', day_of_week: 'Monday', period: 3, subject_code: 'CB3491', subject_name: 'Cryptography and Cyber Security', class_section: '3rd Year CSE-A', room_no: 'LH-304', faculty_name: 'Mr.S Faizal Mukthar Hussain' },
+          { id: 't4', day_of_week: 'Monday', period: 4, subject_code: 'CS3551', subject_name: 'Distributed Computing', class_section: '3rd Year CSE-A', room_no: 'LH-305', faculty_name: 'Ms.R Rajalakshmi' },
+          { id: 't5', day_of_week: 'Monday', period: 5, subject_code: 'CCS375', subject_name: 'Web Technologies', class_section: '3rd Year CSE-A', room_no: 'LH-306', faculty_name: 'Ms.P Divya' },
+          { id: 't6', day_of_week: 'Monday', period: 6, subject_code: 'CCS370', subject_name: 'UI and UX Design', class_section: '3rd Year CSE-A', room_no: 'LH-307', faculty_name: 'Ms.Punitha EM' },
           // Tuesday
-          { id: 't7', day_of_week: 'Tuesday', period: 1, subject_code: 'CCS370', subject_name: 'UI and UX Design', class_section: '3rd Year CSE-A', room_no: 'LH-307' },
-          { id: 't8', day_of_week: 'Tuesday', period: 2, subject_code: 'MX3084', subject_name: 'Disaster Management', class_section: '3rd Year CSE-A', room_no: 'LH-308' },
-          { id: 't9', day_of_week: 'Tuesday', period: 3, subject_code: 'CS3591', subject_name: 'Computer Networks', class_section: '3rd Year CSE-A', room_no: 'LH-302' },
-          { id: 't10', day_of_week: 'Tuesday', period: 4, subject_code: 'CS3501', subject_name: 'Compiler Design', class_section: '3rd Year CSE-A', room_no: 'LH-303' },
-          { id: 't11', day_of_week: 'Tuesday', period: 5, subject_code: 'CB3491', subject_name: 'Cryptography and Cyber Security', class_section: '3rd Year CSE-A', room_no: 'LH-304' },
-          { id: 't12', day_of_week: 'Tuesday', period: 6, subject_code: 'CS3551', subject_name: 'Distributed Computing', class_section: '3rd Year CSE-A', room_no: 'LH-305' },
+          { id: 't7', day_of_week: 'Tuesday', period: 1, subject_code: 'CCS370', subject_name: 'UI and UX Design', class_section: '3rd Year CSE-A', room_no: 'LH-307', faculty_name: 'Ms.Punitha EM' },
+          { id: 't8', day_of_week: 'Tuesday', period: 2, subject_code: 'MX3084', subject_name: 'Disaster Management', class_section: '3rd Year CSE-A', room_no: 'LH-308', faculty_name: 'Ms.Arun Kamala' },
+          { id: 't9', day_of_week: 'Tuesday', period: 3, subject_code: 'CS3591', subject_name: 'Computer Networks', class_section: '3rd Year CSE-A', room_no: 'LH-302', faculty_name: 'Ms.E Uva Shakthi' },
+          { id: 't10', day_of_week: 'Tuesday', period: 4, subject_code: 'CS3501', subject_name: 'Compiler Design', class_section: '3rd Year CSE-A', room_no: 'LH-303', faculty_name: 'Mr.J Lin Eby Chandra' },
+          { id: 't11', day_of_week: 'Tuesday', period: 5, subject_code: 'CB3491', subject_name: 'Cryptography and Cyber Security', class_section: '3rd Year CSE-A', room_no: 'LH-304', faculty_name: 'Mr.S Faizal Mukthar Hussain' },
+          { id: 't12', day_of_week: 'Tuesday', period: 6, subject_code: 'CS3551', subject_name: 'Distributed Computing', class_section: '3rd Year CSE-A', room_no: 'LH-305', faculty_name: 'Ms.R Rajalakshmi' },
           // Wednesday
-          { id: 't13', day_of_week: 'Wednesday', period: 1, subject_code: 'CS3551', subject_name: 'Distributed Computing', class_section: '3rd Year CSE-A', room_no: 'LH-305' },
-          { id: 't14', day_of_week: 'Wednesday', period: 2, subject_code: 'CCS375', subject_name: 'Web Technologies', class_section: '3rd Year CSE-A', room_no: 'LH-306' },
-          { id: 't15', day_of_week: 'Wednesday', period: 3, subject_code: 'CCS370', subject_name: 'UI and UX Design', class_section: '3rd Year CSE-A', room_no: 'LH-307' },
-          { id: 't16', day_of_week: 'Wednesday', period: 4, subject_code: 'MX3084', subject_name: 'Disaster Management', class_section: '3rd Year CSE-A', room_no: 'LH-308' },
-          { id: 't17', day_of_week: 'Wednesday', period: 5, subject_code: 'CS3591', subject_name: 'Computer Networks', class_section: '3rd Year CSE-A', room_no: 'LH-302' },
-          { id: 't18', day_of_week: 'Wednesday', period: 6, subject_code: 'CS3501', subject_name: 'Compiler Design', class_section: '3rd Year CSE-A', room_no: 'LH-303' },
+          { id: 't13', day_of_week: 'Wednesday', period: 1, subject_code: 'CS3551', subject_name: 'Distributed Computing', class_section: '3rd Year CSE-A', room_no: 'LH-305', faculty_name: 'Ms.R Rajalakshmi' },
+          { id: 't14', day_of_week: 'Wednesday', period: 2, subject_code: 'CCS375', subject_name: 'Web Technologies', class_section: '3rd Year CSE-A', room_no: 'LH-306', faculty_name: 'Ms.P Divya' },
+          { id: 't15', day_of_week: 'Wednesday', period: 3, subject_code: 'CCS370', subject_name: 'UI and UX Design', class_section: '3rd Year CSE-A', room_no: 'LH-307', faculty_name: 'Ms.Punitha EM' },
+          { id: 't16', day_of_week: 'Wednesday', period: 4, subject_code: 'MX3084', subject_name: 'Disaster Management', class_section: '3rd Year CSE-A', room_no: 'LH-308', faculty_name: 'Ms.Arun Kamala' },
+          { id: 't17', day_of_week: 'Wednesday', period: 5, subject_code: 'CS3591', subject_name: 'Computer Networks', class_section: '3rd Year CSE-A', room_no: 'LH-302', faculty_name: 'Ms.E Uva Shakthi' },
+          { id: 't18', day_of_week: 'Wednesday', period: 6, subject_code: 'CS3501', subject_name: 'Compiler Design', class_section: '3rd Year CSE-A', room_no: 'LH-303', faculty_name: 'Mr.J Lin Eby Chandra' },
           // Thursday
-          { id: 't19', day_of_week: 'Thursday', period: 1, subject_code: 'CS3501', subject_name: 'Compiler Design', class_section: '3rd Year CSE-A', room_no: 'LH-303' },
-          { id: 't20', day_of_week: 'Thursday', period: 2, subject_code: 'CB3491', subject_name: 'Cryptography and Cyber Security', class_section: '3rd Year CSE-A', room_no: 'LH-304' },
-          { id: 't21', day_of_week: 'Thursday', period: 3, subject_code: 'CS3551', subject_name: 'Distributed Computing', class_section: '3rd Year CSE-A', room_no: 'LH-305' },
-          { id: 't22', day_of_week: 'Thursday', period: 4, subject_code: 'CCS375', subject_name: 'Web Technologies', class_section: '3rd Year CSE-A', room_no: 'LH-306' },
-          { id: 't23', day_of_week: 'Thursday', period: 5, subject_code: 'CCS370', subject_name: 'UI and UX Design', class_section: '3rd Year CSE-A', room_no: 'LH-307' },
-          { id: 't24', day_of_week: 'Thursday', period: 6, subject_code: 'CS3591', subject_name: 'Computer Networks', class_section: '3rd Year CSE-A', room_no: 'LH-302' },
+          { id: 't19', day_of_week: 'Thursday', period: 1, subject_code: 'CS3501', subject_name: 'Compiler Design', class_section: '3rd Year CSE-A', room_no: 'LH-303', faculty_name: 'Mr.J Lin Eby Chandra' },
+          { id: 't20', day_of_week: 'Thursday', period: 2, subject_code: 'CB3491', subject_name: 'Cryptography and Cyber Security', class_section: '3rd Year CSE-A', room_no: 'LH-304', faculty_name: 'Mr.S Faizal Mukthar Hussain' },
+          { id: 't21', day_of_week: 'Thursday', period: 3, subject_code: 'CS3551', subject_name: 'Distributed Computing', class_section: '3rd Year CSE-A', room_no: 'LH-305', faculty_name: 'Ms.R Rajalakshmi' },
+          { id: 't22', day_of_week: 'Thursday', period: 4, subject_code: 'CCS375', subject_name: 'Web Technologies', class_section: '3rd Year CSE-A', room_no: 'LH-306', faculty_name: 'Ms.P Divya' },
+          { id: 't23', day_of_week: 'Thursday', period: 5, subject_code: 'CCS370', subject_name: 'UI and UX Design', class_section: '3rd Year CSE-A', room_no: 'LH-307', faculty_name: 'Ms.Punitha EM' },
+          { id: 't24', day_of_week: 'Thursday', period: 6, subject_code: 'CS3591', subject_name: 'Computer Networks', class_section: '3rd Year CSE-A', room_no: 'LH-302', faculty_name: 'Ms.E Uva Shakthi' },
           // Friday
-          { id: 't25', day_of_week: 'Friday', period: 1, subject_code: 'CB3491', subject_name: 'Cryptography and Cyber Security', class_section: '3rd Year CSE-A', room_no: 'LH-304' },
-          { id: 't26', day_of_week: 'Friday', period: 2, subject_code: 'CS3551', subject_name: 'Distributed Computing', class_section: '3rd Year CSE-A', room_no: 'LH-305' },
-          { id: 't27', day_of_week: 'Friday', period: 3, subject_code: 'CCS375', subject_name: 'Web Technologies', class_section: '3rd Year CSE-A', room_no: 'LH-306' },
-          { id: 't28', day_of_week: 'Friday', period: 4, subject_code: 'CCS370', subject_name: 'UI and UX Design', class_section: '3rd Year CSE-A', room_no: 'LH-307' },
-          { id: 't29', day_of_week: 'Friday', period: 5, subject_code: 'CS3591', subject_name: 'Computer Networks', class_section: '3rd Year CSE-A', room_no: 'LH-302' },
-          { id: 't30', day_of_week: 'Friday', period: 6, subject_code: 'CS3501', subject_name: 'Compiler Design', class_section: '3rd Year CSE-A', room_no: 'LH-303' },
+          { id: 't25', day_of_week: 'Friday', period: 1, subject_code: 'CB3491', subject_name: 'Cryptography and Cyber Security', class_section: '3rd Year CSE-A', room_no: 'LH-304', faculty_name: 'Mr.S Faizal Mukthar Hussain' },
+          { id: 't26', day_of_week: 'Friday', period: 2, subject_code: 'CS3551', subject_name: 'Distributed Computing', class_section: '3rd Year CSE-A', room_no: 'LH-305', faculty_name: 'Ms.R Rajalakshmi' },
+          { id: 't27', day_of_week: 'Friday', period: 3, subject_code: 'CCS375', subject_name: 'Web Technologies', class_section: '3rd Year CSE-A', room_no: 'LH-306', faculty_name: 'Ms.P Divya' },
+          { id: 't28', day_of_week: 'Friday', period: 4, subject_code: 'CCS370', subject_name: 'UI and UX Design', class_section: '3rd Year CSE-A', room_no: 'LH-307', faculty_name: 'Ms.Punitha EM' },
+          { id: 't29', day_of_week: 'Friday', period: 5, subject_code: 'CS3591', subject_name: 'Computer Networks', class_section: '3rd Year CSE-A', room_no: 'LH-302', faculty_name: 'Ms.E Uva Shakthi' },
+          { id: 't30', day_of_week: 'Friday', period: 6, subject_code: 'CS3501', subject_name: 'Compiler Design', class_section: '3rd Year CSE-A', room_no: 'LH-303', faculty_name: 'Mr.J Lin Eby Chandra' },
         ];
 
         for (const slot of seedSlots) {
           await db.runAsync(
-            `INSERT OR IGNORE INTO timetable (id, day_of_week, period, subject_code, subject_name, class_section, room_no)
-             VALUES (?, ?, ?, ?, ?, ?, ?);`,
-            [slot.id, slot.day_of_week, slot.period, slot.subject_code, slot.subject_name, slot.class_section, slot.room_no]
+            `INSERT OR IGNORE INTO timetable (id, day_of_week, period, subject_code, subject_name, class_section, room_no, faculty_name)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
+            [slot.id, slot.day_of_week, slot.period, slot.subject_code, slot.subject_name, slot.class_section, slot.room_no, slot.faculty_name]
           );
         }
       });
