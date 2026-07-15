@@ -200,6 +200,8 @@ export const WeeklyProgressScreen = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
   if (loading) {
     return (
       <View style={styles.centerContainer}>
@@ -273,6 +275,40 @@ export const WeeklyProgressScreen = () => {
         )}
       />
 
+      {/* Periods Planned and Handled Inputs */}
+      <View style={styles.periodsRow}>
+        <View style={styles.periodCol}>
+          <Controller
+            control={control}
+            name="periodsPlanned"
+            render={({ field: { onChange, value } }) => (
+              <AppTextInput
+                label="No. of Periods Planned"
+                value={value !== undefined ? value.toString() : ''}
+                onChangeText={onChange}
+                error={errors.periodsPlanned?.message}
+                keyboardType="numeric"
+              />
+            )}
+          />
+        </View>
+        <View style={styles.periodCol}>
+          <Controller
+            control={control}
+            name="periodsHandled"
+            render={({ field: { onChange, value } }) => (
+              <AppTextInput
+                label="No. of Periods Handled"
+                value={value !== undefined ? value.toString() : ''}
+                onChangeText={onChange}
+                error={errors.periodsHandled?.message}
+                keyboardType="numeric"
+              />
+            )}
+          />
+        </View>
+      </View>
+
       {/* Completed Based on Plan Toggle */}
       <Text style={styles.radioGroupLabel}>Completed based on plan?</Text>
       <View style={styles.radioRow}>
@@ -303,23 +339,40 @@ export const WeeklyProgressScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Conditional Reason for Pending Topics Typing Box */}
+      {/* Conditional Reason for Pending Topics & Deviation Periods */}
       {completedOnPlan === 'NO' && (
-        <Controller
-          control={control}
-          name="reasonsForPending"
-          render={({ field: { onChange, value } }) => (
-            <AppTextInput
-              label="Reason for pending topics"
-              value={value || ''}
-              onChangeText={onChange}
-              error={errors.reasonsForPending?.message}
-              multiline
-              numberOfLines={3}
-              style={styles.textInputReason}
-            />
-          )}
-        />
+        <View style={styles.deviationBlock}>
+          <Controller
+            control={control}
+            name="reasonsForPending"
+            render={({ field: { onChange, value } }) => (
+              <AppTextInput
+                label="Reason for pending topics"
+                value={value || ''}
+                onChangeText={onChange}
+                error={errors.reasonsForPending?.message}
+                multiline
+                numberOfLines={3}
+                style={styles.textInputReason}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="periodsRequired"
+            render={({ field: { onChange, value } }) => (
+              <AppTextInput
+                label="Periods Required to Complete Deviation"
+                value={value !== undefined ? value.toString() : ''}
+                onChangeText={onChange}
+                error={errors.periodsRequired?.message}
+                keyboardType="numeric"
+                style={styles.textInputPeriods}
+              />
+            )}
+          />
+        </View>
       )}
 
       <AppButton
@@ -446,6 +499,26 @@ const styles = StyleSheet.create({
   },
   textInputReason: {
     marginTop: 8,
+  },
+  textInputPeriods: {
+    marginTop: 12,
+  },
+  periodsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
+  periodCol: {
+    flex: 0.48,
+  },
+  deviationBlock: {
+    marginTop: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: Palette.error,
+    paddingLeft: 12,
+    backgroundColor: '#FEF2F2',
+    borderRadius: 8,
+    paddingBottom: 8,
   },
   submitBtn: {
     marginTop: 24,
