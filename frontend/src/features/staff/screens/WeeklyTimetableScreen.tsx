@@ -4,6 +4,7 @@ import { Text, Card, ActivityIndicator } from 'react-native-paper';
 import { TimetableRepository } from '@database/repositories/TimetableRepository';
 import { SQLiteTimetableItem } from '@database/types';
 import { Palette } from '@theme/colors';
+import { useAuthStore } from '../../auth/store/useAuthStore';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StaffStackParamList } from '@navigation/types';
@@ -13,6 +14,7 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
 export const WeeklyTimetableScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<StaffStackParamList>>();
+  const { user } = useAuthStore();
   const [selectedDay, setSelectedDay] = useState('Monday');
   const [slots, setSlots] = useState<SQLiteTimetableItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +25,8 @@ export const WeeklyTimetableScreen = () => {
     try {
       setLoading(true);
       const data = await timetableRepo.getTimetable();
-      setSlots(data);
+      const mySlots = user?.role === 'ADMIN' ? data : data.filter((s) => s.faculty_name === user?.name);
+      setSlots(mySlots);
     } catch (err) {
       console.error('Failed to load timetable:', err);
     } finally {

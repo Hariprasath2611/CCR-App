@@ -70,8 +70,14 @@ export const getDBConnection = async (): Promise<SQLite.SQLiteDatabase> => {
       await db.runAsync('DELETE FROM timetable;');
       await db.runAsync('DELETE FROM weekly_plans;');
     }
+
+    const checkNull = await db.getFirstAsync<{ count: number }>("SELECT COUNT(*) as count FROM timetable WHERE faculty_name IS NULL OR faculty_name = '';");
+    if (checkNull && checkNull.count > 0) {
+      console.log('Clearing timetable to add faculty names...');
+      await db.runAsync('DELETE FROM timetable;');
+    }
   } catch (e) {
-    console.error('Error clearing old offline data:', e);
+    console.error('Error checking null faculty_name or old database:', e);
   }
 
   // Database Seeding for Syllabus Progress (Topics)
