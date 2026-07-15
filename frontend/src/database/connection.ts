@@ -76,6 +76,14 @@ export const getDBConnection = async (): Promise<SQLite.SQLiteDatabase> => {
       console.log('Clearing timetable to add faculty names...');
       await db.runAsync('DELETE FROM timetable;');
     }
+
+    const checkNewSyllabus = await db.getFirstAsync<{ count: number }>("SELECT COUNT(*) as count FROM syllabus_progress WHERE subject_code = 'CS3591';");
+    if (!checkNewSyllabus || checkNewSyllabus.count === 0) {
+      console.log('Clearing old syllabus progress to seed new subjects...');
+      await db.runAsync('DELETE FROM syllabus_progress;');
+      await db.runAsync('DELETE FROM timetable;');
+      await db.runAsync('DELETE FROM weekly_plans;');
+    }
   } catch (e) {
     console.error('Error checking null faculty_name or old database:', e);
   }
