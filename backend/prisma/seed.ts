@@ -226,32 +226,6 @@ async function main() {
     });
   }
 
-  // 6. Seed a ConsolidatedReport for Week 12 consolidated progress tracking representation
-  console.log('Creating consolidated reports for CC/HOD testing...');
-  const subjectsJson = JSON.stringify([
-    { code: 'CS3591', name: 'Computer Networks', faculty: 'Ms.E Uva Shakthi', coverage: 80, status: 'Submitted', completedTopicsCount: 4, totalTopicsCount: 5 },
-    { code: 'CS3501', name: 'Compiler Design', faculty: 'Mr.J Lin Eby Chandra', coverage: 60, status: 'Submitted', completedTopicsCount: 3, totalTopicsCount: 5 },
-    { code: 'CB3491', name: 'Cryptography and Cyber Security', faculty: 'Mr.S Faizal Mukthar Hussain', coverage: 80, status: 'Submitted', completedTopicsCount: 4, totalTopicsCount: 5 },
-    { code: 'CS3551', name: 'Distributed Computing', faculty: 'Ms.R Rajalakshmi', coverage: 80, status: 'Submitted', completedTopicsCount: 4, totalTopicsCount: 5 },
-    { code: 'CCS375', name: 'Web Technologies', faculty: 'Ms.P Divya', coverage: 60, status: 'Submitted', completedTopicsCount: 3, totalTopicsCount: 5 },
-    { code: 'CCS370', name: 'UI and UX Design', faculty: 'Ms.Punitha EM', coverage: 80, status: 'Submitted', completedTopicsCount: 4, totalTopicsCount: 5 },
-    { code: 'MX3084', name: 'Disaster Management', faculty: 'Ms.Arun Kamala', coverage: 50, status: 'Pending', completedTopicsCount: 2, totalTopicsCount: 5, reasonsForPending: 'Compensatory slots clashing with internal exams.', extraHoursRequested: true },
-  ]);
-
-  await prisma.consolidatedReport.create({
-    data: {
-      id: 'report-3rd-Year-CSE-A-W12',
-      classId: '3rd Year CSE-A',
-      weekNumber: 12,
-      overallCoverage: 71,
-      submittedBy: 'Ms.Punitha EM (Class Coordinator)',
-      submittedAt: '2026-07-12',
-      ccRemarks: 'MX3084 faculty requires extra compensatory slots due to clash with internals.',
-      status: 'SUBMITTED_TO_HOD',
-      subjectsJson,
-    }
-  });
-
   console.log('Seeding complete successfully.');
 }
 

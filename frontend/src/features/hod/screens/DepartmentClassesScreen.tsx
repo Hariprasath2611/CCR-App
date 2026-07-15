@@ -102,12 +102,21 @@ export const DepartmentClassesScreen = () => {
     const displayDept = rep.classId.includes('CSE') ? 'Computer Science and Engineering' : 'Computer Science and Business Systems (CSBS)';
 
     const getDates = (week: number) => {
-      const startDay = 20 + (week - 5) * 7;
-      const startMonth = 5;
-      const endDay = startDay + 5;
+      const baseDate = new Date(2024, 4, 20); // 20 May 2024 (months are 0-indexed)
+      const weeksDiff = week - 5;
+      const startDate = new Date(baseDate.getTime() + weeksDiff * 7 * 24 * 60 * 60 * 1000);
+      const endDate = new Date(startDate.getTime() + 5 * 24 * 60 * 60 * 1000);
+
+      const formatDate = (d: Date) => {
+        const dd = d.getDate().toString().padStart(2, '0');
+        const mm = (d.getMonth() + 1).toString().padStart(2, '0');
+        const yyyy = d.getFullYear();
+        return `${dd}.${mm}.${yyyy}`;
+      };
+
       return {
-        from: `${startDay.toString().padStart(2, '0')}.0${startMonth}.2024`,
-        to: `${endDay.toString().padStart(2, '0')}.0${startMonth}.2024`,
+        from: formatDate(startDate),
+        to: formatDate(endDate),
       };
     };
 
