@@ -1640,3 +1640,54 @@
 {"_e":"metro:client_log","_t":1784099980961,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
 {"_e":"metro:client_log","_t":1784100008743,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[AxiosError: Network Error]"]}
 {"_e":"metro:client_log","_t":1784100018889,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}
+{"_e":"root:init","_t":1784102867761,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1784102867801,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1784102868997,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1784102887423,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1784102915032,"id":"1","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784102915033,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784102915039,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784102915139,"id":"1","progress":0.011317338162064282,"total":235,"current":25}
+{"_e":"metro:bundling:progress","_t":1784102915241,"id":"1","progress":0.09320104474852073,"total":416,"current":127}
+{"_e":"metro:bundling:progress","_t":1784102915340,"id":"1","progress":0.19632193497136863,"total":571,"current":253}
+{"_e":"metro:bundling:progress","_t":1784102915440,"id":"1","progress":0.3885106601743524,"total":738,"current":460}
+{"_e":"metro:bundling:progress","_t":1784102915540,"id":"1","progress":0.4491252383306263,"total":952,"current":638}
+{"_e":"metro:bundling:progress","_t":1784102915640,"id":"1","progress":0.6662005949964512,"total":1061,"current":866}
+{"_e":"metro:bundling:progress","_t":1784102915740,"id":"1","progress":0.7979106173462945,"total":1246,"current":1113}
+{"_e":"metro:bundling:progress","_t":1784102915840,"id":"1","progress":0.9114641166921855,"total":1413,"current":1349}
+{"_e":"metro:bundling:done","_t":1784102915955,"id":"1","total":1413,"ms":922.1614}
+{"_e":"metro:client_log","_t":1784102929904,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784102940019,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784102954566,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784103009506,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
+{"_e":"metro:server_log","_t":1784103277336,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:bundling:started","_t":1784103617787,"id":"6","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784103617787,"id":"6","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784103617829,"id":"6","total":1,"ms":41.8543}
+{"_e":"metro:client_log","_t":1784103631873,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784103642030,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784103645204,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784103817921,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[Error: No refresh token available]"]}
+{"_e":"metro:client_log","_t":1784103818064,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[Error: No refresh token available]"]}
+{"_e":"metro:bundling:started","_t":1784103825105,"id":"c","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784103825106,"id":"c","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784103825147,"id":"c","total":1,"ms":41.6314}
+{"_e":"metro:client_log","_t":1784103829758,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[Error: No refresh token available]"]}
+{"_e":"metro:client_log","_t":1784103829946,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[Error: No refresh token available]"]}
+{"_e":"metro:server_log","_t":1784104198297,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:client_log","_t":1784104316982,"level":"log","data":["Clearing old offline mock data..."]}
+{"_e":"metro:client_log","_t":1784104316996,"level":"log","data":["Clearing old offline mock data..."]}
+{"_e":"metro:client_log","_t":1784104317109,"level":"error","data":["Error seeding syllabus:","[Error: Call to function 'NativeDatabase.execAsync' has been rejected.\n→ Caused by: cannot start a transaction within a transaction]"]}
+{"_e":"metro:client_log","_t":1784104317181,"level":"log","data":["Syllabus data successfully seeded."]}
+{"_e":"metro:client_log","_t":1784104317690,"level":"error","data":["Error seeding timetable:","[Error: Call to function 'NativeDatabase.execAsync' has been rejected.\n→ Caused by: cannot rollback - no transaction is active]"]}
+{"_e":"metro:client_log","_t":1784104327777,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784104337837,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784104593503,"level":"log","data":["Migrating timetable table to add faculty_name column..."]}
+{"_e":"metro:client_log","_t":1784104593633,"level":"log","data":["Timetable data successfully seeded."]}
+{"_e":"metro:bundling:started","_t":1784104711208,"id":"j","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784104711208,"id":"j","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784104711210,"id":"j","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784104711316,"id":"j","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784104711877,"id":"j","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784104711978,"id":"j","total":1,"ms":769.5073}
+{"_e":"metro:client_log","_t":1784104726195,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}

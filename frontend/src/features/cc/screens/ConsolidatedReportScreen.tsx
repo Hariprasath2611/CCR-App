@@ -16,10 +16,16 @@ export const ConsolidatedReportScreen = () => {
   const route = useRoute<RouteParams>();
   const navigation = useNavigation<CCNav>();
   
-  const classId = route.params?.classId || 'CSE-B';
+  const classId = route.params?.classId || '3rd Year CSE-A';
   const weekNumber = route.params?.weekNumber || 13;
 
   const subjectProgressList = useReportStore((state) => state.subjectProgressList);
+  const fetchWeeklyProgress = useReportStore((state) => state.fetchWeeklyProgress);
+
+  React.useEffect(() => {
+    fetchWeeklyProgress(classId, weekNumber);
+  }, [classId, weekNumber]);
+
   const subjects = subjectProgressList[`${classId}_${weekNumber}`] || [];
 
   const completedSubmissions = subjects.filter((s) => s.status === 'Submitted').length;

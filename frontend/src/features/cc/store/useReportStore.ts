@@ -106,10 +106,13 @@ export const useReportStore = create<ReportStoreState>((set, get) => ({
     const key = `${classId}_${weekNumber}`;
     set((state) => {
       const currentList = state.subjectProgressList[key] || [
-        { code: 'CS8501', name: 'Theory of Computation', faculty: 'Dr. Meena Kumari', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 10 },
-        { code: 'CS8502', name: 'Database Systems', faculty: 'Prof. Karthick D', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 9 },
-        { code: 'CS8503', name: 'Computer Networks', faculty: 'Prof. Rajesh K', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 10 },
-        { code: 'CS8504', name: 'OS Principles', faculty: 'Dr. Anita S', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 8 },
+        { code: 'CS3591', name: 'Computer Networks', faculty: 'Ms.E Uva Shakthi', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
+        { code: 'CS3501', name: 'Compiler Design', faculty: 'Mr.J Lin Eby Chandra', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
+        { code: 'CB3491', name: 'Cryptography and Cyber Security', faculty: 'Mr.S Faizal Mukthar Hussain', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
+        { code: 'CS3551', name: 'Distributed Computing', faculty: 'Ms.R Rajalakshmi', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
+        { code: 'CCS375', name: 'Web Technologies', faculty: 'Ms.P Divya', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
+        { code: 'CCS370', name: 'UI and UX Design', faculty: 'Ms.Punitha EM', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
+        { code: 'MX3084', name: 'Disaster Management', faculty: 'Ms.Arun Kamala', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
       ];
 
       const updatedList = currentList.map((item) => {

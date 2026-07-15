@@ -45,16 +45,15 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
   // Topics completed lookup
   const getBriefTopics = (code: string): string[] => {
     const lookup: Record<string, string[]> = {
-      CS8501: ['Finite Automata (DFA, NFA)', 'Regular Expressions', 'Context-Free Grammars'],
-      CS8502: ['Relational Model - Concepts', 'Keys - Super Key, Candidate Key', 'ER Model - Basics'],
-      CS8503: ['OSI & TCP/IP Network Models', 'Physical Layer Transmission', 'Data Link Layer & Framing'],
-      CS8504: ['Process Scheduling & Threads', 'CPU Scheduling Algorithms', 'Deadlocks & Thread Sync'],
-      CS3352: ['Relational Model - Concepts', 'Keys - Super Key, Candidate Key', 'ER Model - Basics'],
-      CS3351: ['OS - Introduction', 'Process Management', 'CPU Scheduling - FCFS'],
-      CS3353: ['Network Models - OSI & TCP/IP', 'Physical Layer', 'Data Link Layer'],
-      CS3354: ['Software Process Models', 'Waterfall Model', 'Agile Model'],
+      CS3591: ['OSI & TCP/IP Network Models', 'Data Link Layer & Framing', 'Routing Algorithms'],
+      CS3501: ['Lexical Analysis & DFA', 'Syntax Analysis & Parsers', 'Syntax Directed Translation'],
+      CB3491: ['Symmetric Key Encryption', 'Public Key Cryptography', 'Firewalls & Cyber Security'],
+      CS3551: ['Message Passing IPC', 'Distributed File Systems', 'Mutual Exclusion Algorithms'],
+      CCS375: ['HTML5 structure & CSS3 styling', 'JavaScript DOM manipulation', 'React Component Architecture'],
+      CCS370: ['User Research & Personas', 'Wireframing & Prototyping', 'Usability Testing Methods'],
+      MX3084: ['Natural Hazards & Cyclones', 'Mitigation Systems & Plans', 'Risk Assessment Strategies'],
     };
-    return lookup[code] || ['Topic Node 1', 'Topic Node 2', 'Topic Node 3'];
+    return lookup[code] || ['Unit syllabus topics covered', 'Weekly planned sub-topics', 'Class presentation session'];
   };
 
   // Calculate sum completed hours

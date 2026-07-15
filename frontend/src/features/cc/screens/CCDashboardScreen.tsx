@@ -17,9 +17,15 @@ export const CCDashboardScreen = () => {
   
   const reports = useReportStore((state) => state.reports);
   const subjectProgressList = useReportStore((state) => state.subjectProgressList);
+  const fetchWeeklyProgress = useReportStore((state) => state.fetchWeeklyProgress);
 
-  const classId = user?.assignedClassId || 'CSE-B';
+  const classId = user?.assignedClassId || '3rd Year CSE-A';
   const selectedWeek = '12'; // Default consolidated view week
+
+  React.useEffect(() => {
+    fetchWeeklyProgress(classId, parseInt(selectedWeek));
+  }, [classId, selectedWeek]);
+
   const currentProgress = subjectProgressList[`${classId}_${selectedWeek}`] || [];
 
   const averageCoverage = currentProgress.length > 0 
