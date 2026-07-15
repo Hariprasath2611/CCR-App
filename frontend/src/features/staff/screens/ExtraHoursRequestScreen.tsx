@@ -11,6 +11,7 @@ import { DatePickerField } from '@components/common/DatePickerField';
 import { SyncQueueRepository } from '@database/repositories/SyncQueueRepository';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { Palette } from '@theme/colors';
+import { syncEngine } from '@features/sync/syncEngine';
 
 const requestSchema = z.object({
   subjectCode: z.string().min(1, 'Subject code is required'),
@@ -52,6 +53,11 @@ export const ExtraHoursRequestScreen = () => {
 
       // Add request payload directly to Sync Queue
       await syncQueueRepo.enqueue('REQUEST_EXTRA_HOURS', extraHourPayload);
+
+      // Trigger background sync immediately to send the log to MongoDB
+      syncEngine.triggerSync().catch((err) => {
+        console.error('Trigger sync after submission failed:', err);
+      });
 
       Alert.alert('Success', 'Extra Teaching Hour Request Logged (Offline Sync Enqueued)!');
       setValue('subjectCode', '');

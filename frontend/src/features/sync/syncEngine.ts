@@ -14,6 +14,14 @@ class SyncEngine {
         this.triggerSync();
       }
     });
+
+    // Run periodic sync checks every 10 seconds to process any queued logs
+    setInterval(() => {
+      this.triggerSync();
+    }, 10000);
+
+    // Run once on startup
+    this.triggerSync();
   }
 
   public async triggerSync(): Promise<void> {

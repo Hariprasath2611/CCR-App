@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text, Avatar, Button } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { useReportStore, ConsolidatedReport } from '../store/useReportStore';
@@ -14,6 +14,7 @@ type CCNav = NativeStackNavigationProp<CCStackParamList>;
 export const CCDashboardScreen = () => {
   const { user } = useAuthStore();
   const navigation = useNavigation<any>();
+  const isFocused = useIsFocused();
   
   const reports = useReportStore((state) => state.reports);
   const subjectProgressList = useReportStore((state) => state.subjectProgressList);
@@ -23,8 +24,10 @@ export const CCDashboardScreen = () => {
   const selectedWeek = '12'; // Default consolidated view week
 
   React.useEffect(() => {
-    fetchWeeklyProgress(classId, parseInt(selectedWeek));
-  }, [classId, selectedWeek]);
+    if (isFocused) {
+      fetchWeeklyProgress(classId, parseInt(selectedWeek));
+    }
+  }, [classId, selectedWeek, isFocused]);
 
   const currentProgress = subjectProgressList[`${classId}_${selectedWeek}`] || [];
 

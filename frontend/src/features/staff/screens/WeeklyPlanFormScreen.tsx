@@ -13,6 +13,7 @@ import { SyncQueueRepository } from '@database/repositories/SyncQueueRepository'
 import { SQLiteSyllabusNode } from '@database/types';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { Palette } from '@theme/colors';
+import { syncEngine } from '@features/sync/syncEngine';
 
 const planSchema = z.object({
   weekNo: z.string().min(1, 'Academic week number is required'),
@@ -98,6 +99,11 @@ export const WeeklyPlanFormScreen = () => {
 
       // Add to sync queue for background execution
       await syncQueueRepo.enqueue('CREATE_PLAN', planPayload);
+
+      // Trigger background sync immediately to send the log to MongoDB
+      syncEngine.triggerSync().catch((err) => {
+        console.error('Trigger sync after submission failed:', err);
+      });
 
       // Save locally to DB as a non-draft
       await planRepo.savePlanDraft(

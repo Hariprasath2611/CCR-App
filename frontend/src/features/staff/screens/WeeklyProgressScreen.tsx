@@ -14,6 +14,7 @@ import { SQLiteSyllabusNode } from '@database/types';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { useReportStore } from '@features/cc/store/useReportStore';
 import { Palette } from '@theme/colors';
+import { syncEngine } from '@features/sync/syncEngine';
 import { StaffStackParamList } from '@navigation/types';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -203,6 +204,11 @@ export const WeeklyProgressScreen = () => {
         periodsRequired: data.periodsRequired || 0,
       };
       await syncQueueRepo.enqueue('SUBMIT_PROGRESS', progressPayload);
+
+      // Trigger background sync immediately to send the log to MongoDB
+      syncEngine.triggerSync().catch((err) => {
+        console.error('Trigger sync after submission failed:', err);
+      });
 
       Alert.alert('Success', 'Course coverage successfully logged and synchronized!', [
         { text: 'OK', onPress: () => navigation.goBack() }

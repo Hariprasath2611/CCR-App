@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { Text, Card, List, Button, Divider, ProgressBar } from 'react-native-paper';
-import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
+import { useRoute, useNavigation, RouteProp, useIsFocused } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useReportStore, ConsolidatedReport } from '../store/useReportStore';
 import { CCStackParamList } from '@navigation/types';
@@ -15,6 +15,7 @@ type CCNav = NativeStackNavigationProp<CCStackParamList>;
 export const ConsolidatedReportScreen = () => {
   const route = useRoute<RouteParams>();
   const navigation = useNavigation<CCNav>();
+  const isFocused = useIsFocused();
   
   const classId = route.params?.classId || '3rd Year CSE-A';
   const weekNumber = route.params?.weekNumber || 13;
@@ -23,8 +24,10 @@ export const ConsolidatedReportScreen = () => {
   const fetchWeeklyProgress = useReportStore((state) => state.fetchWeeklyProgress);
 
   React.useEffect(() => {
-    fetchWeeklyProgress(classId, weekNumber);
-  }, [classId, weekNumber]);
+    if (isFocused) {
+      fetchWeeklyProgress(classId, weekNumber);
+    }
+  }, [classId, weekNumber, isFocused]);
 
   const subjects = subjectProgressList[`${classId}_${weekNumber}`] || [];
 

@@ -12,6 +12,7 @@ import { SyncQueueRepository } from '@database/repositories/SyncQueueRepository'
 import { SQLiteSyllabusNode } from '@database/types';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { Palette } from '@theme/colors';
+import { syncEngine } from '@features/sync/syncEngine';
 
 const progressSchema = z.object({
   subjectCode: z.string().min(1, 'Subject code is required'),
@@ -95,6 +96,11 @@ export const ProgressLogScreen = () => {
 
       // Add to sync queue for background syncing
       await syncQueueRepo.enqueue('SUBMIT_PROGRESS', progressPayload);
+
+      // Trigger background sync immediately to send the log to MongoDB
+      syncEngine.triggerSync().catch((err) => {
+        console.error('Trigger sync after submission failed:', err);
+      });
 
       // Locally update SQLite syllabus table checkbox status
       for (const node of syllabusNodes) {
