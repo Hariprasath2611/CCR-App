@@ -57,69 +57,95 @@ export const LoginScreen = () => {
     }
 
     // Explicit mapping for seeded users to match database exactly
-    if (emailLower === 'meena@ccms.edu') {
+    if (emailLower === 'punitha@ccms.edu') {
       return {
         role: 'STAFF' as const,
         isCC: true,
-        name: 'Dr. Meena Kumari',
+        name: 'Ms.Punitha EM',
         dept: 'Computer Science',
-        label: 'Class Coordinator (CSE-B)',
+        label: 'Class Coordinator (3rd Year CSE-A)',
         icon: 'shield-star',
         color: '#3B82F6',
         bgColor: '#EFF6FF',
         borderColor: '#BFDBFE',
       };
     }
-    if (emailLower === 'karthick@ccms.edu') {
-      return {
-        role: 'STAFF' as const,
-        isCC: false,
-        name: 'Prof. Karthick D',
-        dept: 'Computer Science',
-        label: 'Subject Teacher (CSE)',
-        icon: 'book-open-variant',
-        color: '#0F52BA',
-        bgColor: '#EFF6FF',
-        borderColor: '#BFDBFE',
-      };
-    }
-    if (emailLower === 'rajesh@ccms.edu') {
-      return {
-        role: 'STAFF' as const,
-        isCC: false,
-        name: 'Prof. Rajesh K',
-        dept: 'Computer Science',
-        label: 'Subject Teacher (CSE)',
-        icon: 'book-open-variant',
-        color: '#0F52BA',
-        bgColor: '#EFF6FF',
-        borderColor: '#BFDBFE',
-      };
-    }
-    if (emailLower === 'anita@ccms.edu') {
-      return {
-        role: 'STAFF' as const,
-        isCC: false,
-        name: 'Dr. Anita S',
-        dept: 'Computer Science',
-        label: 'Subject Teacher (CSE)',
-        icon: 'book-open-variant',
-        color: '#0F52BA',
-        bgColor: '#EFF6FF',
-        borderColor: '#BFDBFE',
-      };
-    }
-    if (emailLower === 'hod@ccms.edu') {
+    if (emailLower === 'linebychandra@ccms.edu') {
       return {
         role: 'HOD' as const,
         isCC: false,
-        name: 'Dr. Suresh Babu',
+        name: 'Mr.J Lin Eby Chandra',
         dept: 'Computer Science',
         label: 'Head of Department (CSE)',
         icon: 'account-tie',
         color: '#10B981',
         bgColor: '#ECFDF5',
         borderColor: '#A7F3D0',
+      };
+    }
+    if (emailLower === 'uvashakthi@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Ms.E Uva Shakthi',
+        dept: 'Computer Science',
+        label: 'Subject Teacher (CSE)',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+    if (emailLower === 'faizal@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mr.S Faizal Mukthar Hussain',
+        dept: 'Computer Science',
+        label: 'Subject Teacher (CSE)',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+    if (emailLower === 'rajalakshmi@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Ms.R Rajalakshmi',
+        dept: 'Computer Science',
+        label: 'Subject Teacher (CSE)',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+    if (emailLower === 'divya@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Ms.P Divya',
+        dept: 'Computer Science',
+        label: 'Subject Teacher (CSE)',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+    if (emailLower === 'arunkamala@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Ms.Arun Kamala',
+        dept: 'Computer Science',
+        label: 'Subject Teacher (CSE)',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
       };
     }
     if (emailLower === 'principal@ccms.edu') {
