@@ -54,88 +54,89 @@ export const getWeeklyReport = async (req: AuthenticatedRequest, res: Response) 
       }
     }
 
-    const subjectsProgress: any[] = [];
-    for (const [code, info] of uniqueSubjects.entries()) {
-      // Find total syllabus nodes for this subject
-      const totalTopicsCount = await prisma.syllabusNode.count({
-        where: { subjectCode: code },
-      });
+    const subjectsProgress = await Promise.all(
+      Array.from(uniqueSubjects.entries()).map(async ([code, info]) => {
+        // Find total syllabus nodes for this subject
+        const totalTopicsCount = await prisma.syllabusNode.count({
+          where: { subjectCode: code },
+        });
 
-      // Find the latest progress log for this week or prior weeks to represent cumulative progress
-      const latestLog = await prisma.progressLog.findFirst({
-        where: {
-          classId,
-          subjectCode: code,
-          academicWeekNumber: { lte: weekNum },
-        },
-        orderBy: { academicWeekNumber: 'desc' },
-      });
+        // Find the latest progress log for this week or prior weeks to represent cumulative progress
+        const latestLog = await prisma.progressLog.findFirst({
+          where: {
+            classId,
+            subjectCode: code,
+            academicWeekNumber: { lte: weekNum },
+          },
+          orderBy: { academicWeekNumber: 'desc' },
+        });
 
-      // Find the weekly plan for this subject and week to display "Topics planned for this week"
-      const weeklyPlan = await prisma.weeklyPlan.findFirst({
-        where: {
-          subjectCode: code,
-          academicWeekNumber: weekNum,
-        },
-      });
-
-      let plannedTopicsText = '';
-      if (weeklyPlan && weeklyPlan.targetTopicIds) {
-        const topicIds = weeklyPlan.targetTopicIds.split(',').filter(Boolean);
-        const nodes = await prisma.syllabusNode.findMany({
+        // Find the weekly plan for this subject and week to display "Topics planned for this week"
+        const weeklyPlan = await prisma.weeklyPlan.findFirst({
           where: {
             subjectCode: code,
-            topicId: { in: topicIds },
+            academicWeekNumber: weekNum,
           },
         });
-        plannedTopicsText = nodes.map(n => n.topicTitle).join(', ');
-      }
 
-      let completedTopicsCount = 0;
-      let status = 'Pending';
-      let coverage = 0;
-      let reasonsForPending = '';
-      let extraHoursRequested = false;
-      let periodsPlanned = null;
-      let periodsHandled = null;
-      let periodsRequired = null;
-      let topicsCoveredText = '';
-
-      if (latestLog) {
-        // Parse completed topic ids
-        const completedArr = latestLog.completedTopicIds.split(',').filter(Boolean);
-        completedTopicsCount = completedArr.length;
-        coverage = totalTopicsCount > 0 ? Math.round((completedTopicsCount / totalTopicsCount) * 100) : 0;
-        
-        // If they submitted a log exactly for this week, set status to Submitted
-        if (latestLog.academicWeekNumber === weekNum) {
-          status = 'Submitted';
+        let plannedTopicsText = '';
+        if (weeklyPlan && weeklyPlan.targetTopicIds) {
+          const topicIds = weeklyPlan.targetTopicIds.split(',').filter(Boolean);
+          const nodes = await prisma.syllabusNode.findMany({
+            where: {
+              subjectCode: code,
+              topicId: { in: topicIds },
+            },
+          });
+          plannedTopicsText = nodes.map(n => n.topicTitle).join(', ');
         }
-        reasonsForPending = latestLog.reasonsForPending || '';
-        extraHoursRequested = latestLog.extraHoursRequested;
-        periodsPlanned = latestLog.periodsPlanned;
-        periodsHandled = latestLog.periodsHandled;
-        periodsRequired = latestLog.periodsRequired;
-        topicsCoveredText = latestLog.topicsCoveredText || '';
-      }
 
-      subjectsProgress.push({
-        code,
-        name: info.name,
-        faculty: info.facultyName,
-        coverage,
-        status,
-        completedTopicsCount,
-        totalTopicsCount,
-        reasonsForPending,
-        extraHoursRequested,
-        periodsPlanned,
-        periodsHandled,
-        periodsRequired,
-        topicsCoveredText,
-        plannedTopicsText: plannedTopicsText || 'Topics from syllabus schedule',
-      });
-    }
+        let completedTopicsCount = 0;
+        let status = 'Pending';
+        let coverage = 0;
+        let reasonsForPending = '';
+        let extraHoursRequested = false;
+        let periodsPlanned = null;
+        let periodsHandled = null;
+        let periodsRequired = null;
+        let topicsCoveredText = '';
+
+        if (latestLog) {
+          // Parse completed topic ids
+          const completedArr = latestLog.completedTopicIds.split(',').filter(Boolean);
+          completedTopicsCount = completedArr.length;
+          coverage = totalTopicsCount > 0 ? Math.round((completedTopicsCount / totalTopicsCount) * 100) : 0;
+          
+          // If they submitted a log exactly for this week, set status to Submitted
+          if (latestLog.academicWeekNumber === weekNum) {
+            status = 'Submitted';
+          }
+          reasonsForPending = latestLog.reasonsForPending || '';
+          extraHoursRequested = latestLog.extraHoursRequested;
+          periodsPlanned = latestLog.periodsPlanned;
+          periodsHandled = latestLog.periodsHandled;
+          periodsRequired = latestLog.periodsRequired;
+          topicsCoveredText = latestLog.topicsCoveredText || '';
+        }
+
+        return {
+          code,
+          name: info.name,
+          faculty: info.facultyName,
+          coverage,
+          status,
+          completedTopicsCount,
+          totalTopicsCount,
+          reasonsForPending,
+          extraHoursRequested,
+          periodsPlanned,
+          periodsHandled,
+          periodsRequired,
+          topicsCoveredText,
+          plannedTopicsText: plannedTopicsText || 'Topics from syllabus schedule',
+        };
+      })
+    );
 
     // Calculate dynamic overall coverage
     const totalCoverage = subjectsProgress.reduce((sum, s) => sum + s.coverage, 0);
