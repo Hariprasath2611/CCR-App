@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
+import { AuthenticatedRequest } from '../middleware/auth';
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_ccms_key_12345';
@@ -88,5 +89,44 @@ export const refresh = async (req: Request, res: Response) => {
     });
   } catch (error) {
     return res.status(401).json({ error: 'Invalid or expired refresh token' });
+  }
+};
+
+export const changePassword = async (req: AuthenticatedRequest, res: Response) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: 'Current password and new password are required' });
+  }
+
+  const userId = req.user?.id;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const passwordMatch = bcrypt.compareSync(currentPassword, user.passwordHash);
+    if (!passwordMatch) {
+      return res.status(400).json({ error: 'Incorrect current password' });
+    }
+
+    const newPasswordHash = bcrypt.hashSync(newPassword, 10);
+    await prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash: newPasswordHash },
+    });
+
+    return res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Change password error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };

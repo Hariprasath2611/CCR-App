@@ -1569,3 +1569,36 @@
 {"_e":"metro:client_log","_t":1783868039707,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[Error: No refresh token available]"]}
 {"_e":"metro:client_log","_t":1783868039786,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[Error: No refresh token available]"]}
 {"_e":"metro:server_log","_t":1783868223669,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"root:init","_t":1784097966813,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1784097966845,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1784097967699,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1784097980715,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1784098009523,"id":"1","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784098009523,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784098009526,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784098009626,"id":"1","progress":0.006091612135633552,"total":205,"current":16}
+{"_e":"metro:bundling:progress","_t":1784098009726,"id":"1","progress":0.15031660602808936,"total":423,"current":164}
+{"_e":"metro:bundling:progress","_t":1784098009826,"id":"1","progress":0.22269915414720362,"total":623,"current":294}
+{"_e":"metro:bundling:progress","_t":1784098009926,"id":"1","progress":0.37548920427693766,"total":736,"current":451}
+{"_e":"metro:bundling:progress","_t":1784098010027,"id":"1","progress":0.4193220082532912,"total":837,"current":542}
+{"_e":"metro:bundling:progress","_t":1784098010128,"id":"1","progress":0.5053565643944653,"total":882,"current":627}
+{"_e":"metro:bundling:progress","_t":1784098010228,"id":"1","progress":0.5772783516698861,"total":945,"current":718}
+{"_e":"metro:bundling:progress","_t":1784098010328,"id":"1","progress":0.6194416007534952,"total":1019,"current":802}
+{"_e":"metro:bundling:progress","_t":1784098010428,"id":"1","progress":0.6745758207442965,"total":1041,"current":855}
+{"_e":"metro:bundling:progress","_t":1784098010528,"id":"1","progress":0.7947738621165498,"total":1106,"current":986}
+{"_e":"metro:bundling:progress","_t":1784098010629,"id":"1","progress":0.7947738621165498,"total":1178,"current":1031}
+{"_e":"metro:bundling:progress","_t":1784098010729,"id":"1","progress":0.7947738621165498,"total":1275,"current":1113}
+{"_e":"metro:bundling:progress","_t":1784098010830,"id":"1","progress":0.7947738621165498,"total":1362,"current":1145}
+{"_e":"metro:bundling:progress","_t":1784098010939,"id":"1","progress":0.7947738621165498,"total":1389,"current":1193}
+{"_e":"metro:bundling:progress","_t":1784098011051,"id":"1","progress":0.8912226821652132,"total":1394,"current":1316}
+{"_e":"metro:bundling:progress","_t":1784098011151,"id":"1","progress":0.9364806401969838,"total":1425,"current":1379}
+{"_e":"metro:bundling:progress","_t":1784098011252,"id":"1","progress":0.9511276437453502,"total":1455,"current":1419}
+{"_e":"metro:bundling:progress","_t":1784098011353,"id":"1","progress":0.9850900087926326,"total":1470,"current":1459}
+{"_e":"metro:bundling:progress","_t":1784098011762,"id":"1","progress":0.9864408348373362,"total":1470,"current":1460}
+{"_e":"metro:bundling:progress","_t":1784098011867,"id":"1","progress":0.9972807626451942,"total":1470,"current":1468}
+{"_e":"metro:bundling:done","_t":1784098011996,"id":"1","total":1470,"ms":2473.3386}
+{"_e":"metro:client_log","_t":1784098025389,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784098035515,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784098041884,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784098223257,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
+{"_e":"metro:server_log","_t":1784098378386,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
