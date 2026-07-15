@@ -1602,3 +1602,41 @@
 {"_e":"metro:client_log","_t":1784098041884,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
 {"_e":"metro:client_log","_t":1784098223257,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
 {"_e":"metro:server_log","_t":1784098378386,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"root:init","_t":1784099348570,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1784099348593,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1784099349053,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1784099360064,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1784099392550,"id":"1","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784099392550,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784099392552,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784099392652,"id":"1","progress":0.03234822214171109,"total":278,"current":50}
+{"_e":"metro:bundling:progress","_t":1784099392752,"id":"1","progress":0.17720385488754326,"total":544,"current":229}
+{"_e":"metro:bundling:progress","_t":1784099392852,"id":"1","progress":0.3883151676753332,"total":743,"current":463}
+{"_e":"metro:bundling:progress","_t":1784099392952,"id":"1","progress":0.553350429809376,"total":898,"current":668}
+{"_e":"metro:bundling:progress","_t":1784099393052,"id":"1","progress":0.7519301513131933,"total":1129,"current":979}
+{"_e":"metro:bundling:progress","_t":1784099393152,"id":"1","progress":0.7519301513131933,"total":1400,"current":1197}
+{"_e":"metro:bundling:done","_t":1784099393294,"id":"1","total":1400,"ms":744.1603}
+{"_e":"metro:client_log","_t":1784099407581,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784099417725,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784099462371,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
+{"_e":"root:init","_t":1784099826319,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1784099826341,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1784099826779,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1784099838633,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1784099873046,"id":"1","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784099873046,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784099873049,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784099873149,"id":"1","progress":0.058667879934387754,"total":289,"current":70}
+{"_e":"metro:bundling:progress","_t":1784099873251,"id":"1","progress":0.19053917863441674,"total":504,"current":220}
+{"_e":"metro:bundling:progress","_t":1784099873351,"id":"1","progress":0.36110175911118586,"total":654,"current":393}
+{"_e":"metro:bundling:progress","_t":1784099873451,"id":"1","progress":0.48640847453926106,"total":856,"current":597}
+{"_e":"metro:bundling:progress","_t":1784099873551,"id":"1","progress":0.6600575534948118,"total":1029,"current":836}
+{"_e":"metro:bundling:progress","_t":1784099873651,"id":"1","progress":0.7837540877072563,"total":1238,"current":1096}
+{"_e":"metro:bundling:progress","_t":1784099873751,"id":"1","progress":0.8515727916281932,"total":1425,"current":1315}
+{"_e":"metro:bundling:done","_t":1784099873848,"id":"1","total":1425,"ms":801.9205}
+{"_e":"metro:client_log","_t":1784099887855,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784099897971,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784099914374,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784099980961,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784100008743,"level":"error","data":["Sync payload failed for item kzymoyt6jh:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784100018889,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}
