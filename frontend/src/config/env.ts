@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 const IS_PHYSICAL_DEVICE = true; 
 const USE_ADB_REVERSE = true; 
 
-const COMPUTER_IP = '192.168.138.134';
+const COMPUTER_IP = '10.81.179.213';
 
 const DEV_API_URL = USE_ADB_REVERSE
   ? 'http://localhost:3000/v1'
