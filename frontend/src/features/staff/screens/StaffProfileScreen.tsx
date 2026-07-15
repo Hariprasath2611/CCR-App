@@ -1,12 +1,55 @@
-import React from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
-import { Text, Card, Avatar, Button, Divider, List } from 'react-native-paper';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, Card, Avatar, Button, Divider, List, Dialog, Portal, TextInput } from 'react-native-paper';
 import { useAuthStore } from '../../auth/store/useAuthStore';
 import { Palette } from '@theme/colors';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { apiClient } from '@services/api/apiClient';
 
 export const StaffProfileScreen = () => {
   const { user, logout } = useAuthStore();
+
+  const [changePasswordVisible, setChangePasswordVisible] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleChangePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      Alert.alert('Validation Error', 'All fields are required.');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      Alert.alert('Validation Error', 'New password and confirm password do not match.');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      Alert.alert('Validation Error', 'New password must be at least 6 characters long.');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await apiClient.post('/auth/change-password', {
+        currentPassword,
+        newPassword,
+      });
+
+      Alert.alert('Success', 'Password changed successfully!');
+      setChangePasswordVisible(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.error || 'Failed to change password. Please try again.';
+      Alert.alert('Error', errorMsg);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const getInitials = (name?: string) => {
     if (!name) return 'PF';
@@ -130,6 +173,17 @@ export const StaffProfileScreen = () => {
             titleStyle={styles.listTitle}
             descriptionStyle={styles.listDesc}
           />
+          <Divider style={styles.divider} />
+          <TouchableOpacity onPress={() => setChangePasswordVisible(true)}>
+            <List.Item
+              title="Change Password"
+              description="Update your account login security password"
+              left={(props) => <List.Icon {...props} icon="lock-reset" color={Palette.primary} />}
+              right={(props) => <List.Icon {...props} icon="chevron-right" color={Palette.textLight} />}
+              titleStyle={styles.listTitle}
+              descriptionStyle={styles.listDesc}
+            />
+          </TouchableOpacity>
         </Card.Content>
       </Card>
 
@@ -144,6 +198,57 @@ export const StaffProfileScreen = () => {
       >
         Sign Out Account
       </Button>
+
+      {/* ── CHANGE PASSWORD DIALOG ── */}
+      <Portal>
+        <Dialog visible={changePasswordVisible} onDismiss={() => {
+          setChangePasswordVisible(false);
+          setCurrentPassword('');
+          setNewPassword('');
+          setConfirmPassword('');
+        }}>
+          <Dialog.Title>Change Password</Dialog.Title>
+          <Dialog.Content>
+            <TextInput
+              label="Current Password"
+              value={currentPassword}
+              onChangeText={setCurrentPassword}
+              secureTextEntry
+              mode="outlined"
+              activeOutlineColor={Palette.primary}
+              style={{ marginBottom: 12 }}
+            />
+            <TextInput
+              label="New Password"
+              value={newPassword}
+              onChangeText={setNewPassword}
+              secureTextEntry
+              mode="outlined"
+              activeOutlineColor={Palette.primary}
+              style={{ marginBottom: 12 }}
+            />
+            <TextInput
+              label="Confirm New Password"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry
+              mode="outlined"
+              activeOutlineColor={Palette.primary}
+            />
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => {
+              setChangePasswordVisible(false);
+              setCurrentPassword('');
+              setNewPassword('');
+              setConfirmPassword('');
+            }} textColor={Palette.textLight}>Cancel</Button>
+            <Button loading={submitting} disabled={submitting} onPress={handleChangePassword} textColor={Palette.primary}>
+              Update
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </ScrollView>
   );
 };
