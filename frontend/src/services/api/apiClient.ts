@@ -4,7 +4,7 @@ import { requestInterceptor, responseErrorInterceptor } from '@services/api/inte
 
 export const apiClient = axios.create({
   baseURL: ENV.API_URL,
-  timeout: 10000,
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
