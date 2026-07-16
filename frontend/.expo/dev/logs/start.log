@@ -2197,3 +2197,12 @@
 {"_e":"metro:bundling:progress","_t":1784209700490,"id":"1","progress":0.9986472778010733,"total":1478,"current":1477}
 {"_e":"metro:bundling:progress","_t":1784209701099,"id":"1","progress":0.999,"total":1478,"current":1478}
 {"_e":"metro:bundling:done","_t":1784209705331,"id":"1","total":1478,"ms":72135.9341}
+{"_e":"metro:server_log","_t":1784209801141,"level":"info","data":["Launching DevTools..."]}
+{"_e":"metro:server_log","_t":1784209802771,"level":"info","data":["Launching DevTools..."]}
+{"_e":"metro:server_log","_t":1784209803524,"level":"info","data":["Launching DevTools..."]}
+{"_e":"metro:bundling:started","_t":1784210072004,"id":"3","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784210072004,"id":"3","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784210072004,"id":"3","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784210072547,"id":"3","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784210075318,"id":"3","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784210075356,"id":"3","total":1,"ms":3352.7839}
