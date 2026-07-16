@@ -35,7 +35,7 @@ export const WeeklyPlanFormScreen = () => {
   const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<PlanFormData>({
     resolver: zodResolver(planSchema),
     defaultValues: {
-      weekNo: '',
+      weekNo: '12',
       subjectCode: '',
     },
   });
@@ -133,25 +133,6 @@ export const WeeklyPlanFormScreen = () => {
       <Card style={styles.formCard}>
         <Card.Title title="Weekly Plan Planner" subtitle="Design weekly syllabus completion targets" />
         <Card.Content>
-          <Controller
-            control={control}
-            name="weekNo"
-            render={({ field: { onChange, value } }) => (
-              <AppDropdown
-                label="Academic Week"
-                value={value}
-                options={[
-                  { label: 'Week 11', value: '11' },
-                  { label: 'Week 12', value: '12' },
-                  { label: 'Week 13', value: '13' },
-                  { label: 'Week 14', value: '14' },
-                ]}
-                onSelect={onChange}
-                error={errors.weekNo?.message}
-              />
-            )}
-          />
-
           <Controller
             control={control}
             name="subjectCode"

@@ -110,7 +110,6 @@ export const WeeklyProgressScreen = () => {
   const weekNumber = route.params?.weekNumber || 12;
 
   const [selectedWeek, setSelectedWeek] = useState(weekNumber.toString());
-  const [logDate, setLogDate] = useState(getTodayDDMMYYYY());
 
   const [syllabusNodes, setSyllabusNodes] = useState<SQLiteSyllabusNode[]>([]);
   const [loading, setLoading] = useState(true);
@@ -130,8 +129,8 @@ export const WeeklyProgressScreen = () => {
       periodsPlanned: '4',
       periodsHandled: '4',
       periodsRequired: '0',
-      fromDate: getTodayDDMMYYYY(),
-      toDate: getTodayDDMMYYYY(),
+      fromDate: '',
+      toDate: '',
       cumulativePercent: '',
     },
   });
@@ -278,15 +277,6 @@ export const WeeklyProgressScreen = () => {
       </View>
       {/* ── REPORT DETAILS SECTION ── */}
       <Card style={{ backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 20, borderWidth: 1, borderColor: '#F1F5F9' }}>
-        <View style={{ marginBottom: 12 }}>
-          <Text style={{ fontSize: 13, fontWeight: '700', color: Palette.textDark, marginBottom: 6 }}>Academic Report Week</Text>
-          <AppDropdown
-            label="Select Week"
-            value={selectedWeek}
-            options={WEEK_OPTIONS}
-            onSelect={(val) => setSelectedWeek(val)}
-          />
-        </View>
         <View style={{ marginBottom: 12 }}>
           <Text style={{ fontSize: 13, fontWeight: '700', color: Palette.textDark, marginBottom: 6 }}>Log Date</Text>
           <DatePickerField
