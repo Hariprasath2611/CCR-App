@@ -13,9 +13,19 @@ import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { Palette } from '@theme/colors';
 import { syncEngine } from '@features/sync/syncEngine';
 
+const ddmmToYyyymmdd = (dateStr: string): string => {
+  if (!dateStr) return '';
+  const parts = dateStr.split('/');
+  if (parts.length === 3) {
+    const [dd, mm, yyyy] = parts;
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  return dateStr;
+};
+
 const requestSchema = z.object({
   subjectCode: z.string().min(1, 'Subject code is required'),
-  requestedDate: z.string().min(10, 'Use YYYY-MM-DD format'),
+  requestedDate: z.string().min(10, 'Use DD/MM/YYYY format').regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Must be in DD/MM/YYYY format'),
   period: z.string().min(1, 'Period slot selection is required'),
   reason: z.string().min(10, 'Reason must be at least 10 characters long'),
 });
@@ -45,7 +55,7 @@ export const ExtraHoursRequestScreen = () => {
         facultyId: user?.id,
         subjectCode: data.subjectCode,
         classId: user?.assignedClassId || 'CSE-B',
-        requestedDate: data.requestedDate,
+        requestedDate: ddmmToYyyymmdd(data.requestedDate),
         period: parseInt(data.period),
         reason: data.reason,
         status: 'PENDING',
@@ -100,7 +110,7 @@ export const ExtraHoursRequestScreen = () => {
             name="requestedDate"
             render={({ field: { onChange, value } }) => (
               <DatePickerField
-                label="Requested Date (YYYY-MM-DD)"
+                label="Requested Date (DD/MM/YYYY)"
                 value={value}
                 onChange={onChange}
                 error={errors.requestedDate?.message}

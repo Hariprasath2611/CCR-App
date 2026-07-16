@@ -16,6 +16,9 @@ export interface SubjectProgress {
   periodsRequired?: number | null;
   topicsCoveredText?: string;
   plannedTopicsText?: string;
+  fromDate?: string;
+  toDate?: string;
+  cumulativePercent?: string;
 }
 
 export interface ConsolidatedReport {
@@ -49,7 +52,10 @@ interface ReportStoreState {
     periodsHandled?: number | null,
     periodsRequired?: number | null,
     topicsCoveredText?: string,
-    plannedTopicsText?: string
+    plannedTopicsText?: string,
+    fromDate?: string,
+    toDate?: string,
+    cumulativePercent?: string
   ) => void;
   compileWeeklyReport: (classId: string, weekNumber: number, ccRemarks: string, ccName: string) => Promise<string>;
   submitHODDecision: (reportId: string, decision: 'APPROVED' | 'RETURNED' | 'REJECTED', remarks: string) => Promise<void>;
@@ -101,7 +107,10 @@ export const useReportStore = create<ReportStoreState>((set, get) => ({
     periodsHandled,
     periodsRequired,
     topicsCoveredText,
-    plannedTopicsText
+    plannedTopicsText,
+    fromDate,
+    toDate,
+    cumulativePercent
   ) => {
     const key = `${classId}_${weekNumber}`;
     set((state) => {
@@ -117,7 +126,19 @@ export const useReportStore = create<ReportStoreState>((set, get) => ({
 
       const updatedList = currentList.map((item) => {
         if (item.code === subjectCode) {
-          const coveragePct = Math.round((completedTopics / totalTopics) * 100);
+          let coveragePct = Math.round((completedTopics / totalTopics) * 100);
+          if (cumulativePercent) {
+            const pctMatch = cumulativePercent.match(/(\d+)\s*%/);
+            if (pctMatch) {
+              coveragePct = parseInt(pctMatch[1]);
+            } else {
+              const numMatch = cumulativePercent.match(/(\d+)/);
+              if (numMatch) {
+                coveragePct = parseInt(numMatch[1]);
+              }
+            }
+          }
+
           return {
             ...item,
             coverage: coveragePct,
@@ -131,6 +152,9 @@ export const useReportStore = create<ReportStoreState>((set, get) => ({
             periodsRequired,
             topicsCoveredText,
             plannedTopicsText,
+            fromDate,
+            toDate,
+            cumulativePercent,
           };
         }
         return item;

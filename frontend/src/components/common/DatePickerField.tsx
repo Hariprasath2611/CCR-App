@@ -4,7 +4,7 @@ import { AppTextInput } from './AppTextInput';
 
 interface DatePickerFieldProps {
   label: string;
-  value: string; // expects YYYY-MM-DD
+  value: string; // expects DD/MM/YYYY
   onChange: (dateStr: string) => void;
   error?: string;
   style?: any;
@@ -17,7 +17,7 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
   error,
   style,
 }) => {
-  // Simple auto-formatting helper for dates (e.g. YYYY-MM-DD)
+  // Simple auto-formatting helper for dates (e.g. DD/MM/YYYY)
   const handleTextChange = (text: string) => {
     let clean = text.replace(/[^0-9]/g, '');
     if (clean.length > 8) {
@@ -25,11 +25,11 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
     }
     
     let formatted = clean;
-    if (clean.length > 4) {
-      formatted = `${clean.substring(0, 4)}-${clean.substring(4, 6)}`;
+    if (clean.length > 2) {
+      formatted = `${clean.substring(0, 2)}/${clean.substring(2, 4)}`;
     }
-    if (clean.length > 6) {
-      formatted = `${clean.substring(0, 4)}-${clean.substring(4, 6)}-${clean.substring(6, 8)}`;
+    if (clean.length > 4) {
+      formatted = `${clean.substring(0, 2)}/${clean.substring(2, 4)}/${clean.substring(4, 8)}`;
     }
     
     onChange(formatted);

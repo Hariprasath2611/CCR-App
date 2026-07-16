@@ -20,6 +20,9 @@ export const submitProgress = async (req: AuthenticatedRequest, res: Response) =
     periodsHandled,
     periodsRequired,
     topicsCoveredText,
+    fromDate,
+    toDate,
+    cumulativePercent,
   } = req.body;
 
   if (!id || !facultyId || !subjectCode || !classId || academicWeekNumber === undefined || !completedTopicIds) {
@@ -50,6 +53,9 @@ export const submitProgress = async (req: AuthenticatedRequest, res: Response) =
         periodsHandled: pHandled,
         periodsRequired: pRequired,
         topicsCoveredText: topicsCoveredText || null,
+        fromDate: fromDate || null,
+        toDate: toDate || null,
+        cumulativePercent: cumulativePercent || null,
       },
       create: {
         id,
@@ -66,6 +72,9 @@ export const submitProgress = async (req: AuthenticatedRequest, res: Response) =
         periodsHandled: pHandled,
         periodsRequired: pRequired,
         topicsCoveredText: topicsCoveredText || null,
+        fromDate: fromDate || null,
+        toDate: toDate || null,
+        cumulativePercent: cumulativePercent || null,
       },
     });
 
