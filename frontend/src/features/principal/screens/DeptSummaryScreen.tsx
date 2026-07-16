@@ -24,6 +24,7 @@ import { Palette } from '@theme/colors';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+import { generateReportHTML } from '@services/api/reportPdfTemplate';
 
 const { width } = Dimensions.get('window');
 

@@ -1,9 +1,14 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { InternalAxiosRequestConfig, AxiosError } from 'axios';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { ENV } from '@config/env';
 import axios from 'axios';
 
 export const requestInterceptor = async (config: InternalAxiosRequestConfig) => {
+  const customUrl = await AsyncStorage.getItem('CUSTOM_API_URL');
+  if (customUrl) {
+    config.baseURL = customUrl;
+  }
   const token = useAuthStore.getState().accessToken;
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -22,9 +27,13 @@ export const responseErrorInterceptor = async (error: AxiosError) => {
         throw new Error('No refresh token available');
       }
 
+      // Fetch dynamic API URL
+      const customUrl = await AsyncStorage.getItem('CUSTOM_API_URL');
+      const apiBaseUrl = customUrl || ENV.API_URL;
+
       // Fetch fresh tokens
       const response = await axios.post<{ accessToken: string; refreshToken: string }>(
-        `${ENV.API_URL}/auth/refresh`,
+        `${apiBaseUrl}/auth/refresh`,
         { token: refreshToken }
       );
 

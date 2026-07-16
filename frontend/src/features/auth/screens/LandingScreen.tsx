@@ -1,11 +1,13 @@
-import React from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Image, TouchableOpacity, Dimensions, Modal, TextInput, Alert } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@navigation/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ENV } from '@config/env';
 
 const { width, height } = Dimensions.get('window');
 
@@ -26,14 +28,68 @@ const DotGrid = () => (
 
 export const LandingScreen = () => {
   const navigation = useNavigation<NavigationProp>();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [serverUrl, setServerUrl] = useState('');
 
   // Size of the central logo
   const emblemSize = width * 0.72;
   const logoWidth = emblemSize * 0.95;
   const logoHeight = logoWidth * (213 / 244); // Aspect ratio of logo-removebg-preview.png (244x213)
 
+  useEffect(() => {
+    const loadSettings = async () => {
+      const customUrl = await AsyncStorage.getItem('CUSTOM_API_URL');
+      setServerUrl(customUrl || ENV.API_URL);
+    };
+    loadSettings();
+  }, [modalVisible]);
+
+  const handleSave = async () => {
+    let trimmed = serverUrl.trim();
+    if (!trimmed) {
+      Alert.alert('Error', 'Please enter a valid URL');
+      return;
+    }
+    if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+      Alert.alert('Error', 'URL must start with http:// or https://');
+      return;
+    }
+
+    if (trimmed.endsWith('/')) {
+      trimmed = trimmed.substring(0, trimmed.length - 1);
+    }
+
+    try {
+      await AsyncStorage.setItem('CUSTOM_API_URL', trimmed);
+      Alert.alert('Success', 'Server URL updated successfully!\n\nEndpoint: ' + trimmed);
+      setModalVisible(false);
+    } catch (e) {
+      Alert.alert('Error', 'Failed to save settings');
+    }
+  };
+
+  const handleReset = async () => {
+    try {
+      await AsyncStorage.removeItem('CUSTOM_API_URL');
+      setServerUrl(ENV.API_URL);
+      Alert.alert('Success', 'Reset to default Server URL.');
+      setModalVisible(false);
+    } catch (e) {
+      Alert.alert('Error', 'Failed to reset settings');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      {/* Settings cog icon button in the top right corner */}
+      <TouchableOpacity
+        style={styles.settingsButton}
+        onPress={() => setModalVisible(true)}
+        activeOpacity={0.7}
+      >
+        <MaterialCommunityIcons name="cog" size={24} color="#0B41CD" />
+      </TouchableOpacity>
+
       {/* Decorative Dot Grids (Top Right and Top Left subtle overlays) */}
       <DotGrid />
       <View style={[styles.dotGridLeft, { top: height * 0.12 }]}>
@@ -104,6 +160,65 @@ export const LandingScreen = () => {
           </View>
         </TouchableOpacity>
       </View>
+
+      {/* Premium Server Config Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <MaterialCommunityIcons name="server" size={28} color="#0B41CD" />
+              <Text style={styles.modalTitle}>Server Settings</Text>
+            </View>
+            
+            <Text style={styles.modalDescription}>
+              Configure the API Endpoint for the Course Completion Monitoring System backend database.
+            </Text>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>API BASE URL</Text>
+              <TextInput
+                style={styles.textInput}
+                value={serverUrl}
+                onChangeText={setServerUrl}
+                placeholder="https://your-server-url.com/v1"
+                placeholderTextColor="#A0AEC0"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.resetButton]}
+                onPress={handleReset}
+              >
+                <Text style={styles.resetButtonText}>RESET</Text>
+              </TouchableOpacity>
+              
+              <View style={styles.rightActions}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.cancelButtonText}>CANCEL</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.saveButton]}
+                  onPress={handleSave}
+                >
+                  <Text style={styles.saveButtonText}>SAVE</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -306,5 +421,118 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  settingsButton: {
+    position: 'absolute',
+    top: 50,
+    right: 25,
+    zIndex: 10,
+    backgroundColor: '#FFFFFF',
+    padding: 10,
+    borderRadius: 20,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    width: '100%',
+    maxWidth: 400,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 15,
+    elevation: 10,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#102A43',
+    marginLeft: 10,
+  },
+  modalDescription: {
+    fontSize: 13,
+    color: '#64748B',
+    lineHeight: 18,
+    marginBottom: 20,
+  },
+  inputContainer: {
+    marginBottom: 24,
+  },
+  inputLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#486581',
+    marginBottom: 8,
+    letterSpacing: 1,
+  },
+  textInput: {
+    backgroundColor: '#F0F4F8',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: '#102A43',
+    borderWidth: 1,
+    borderColor: '#D9E2EC',
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  rightActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  modalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  resetButton: {
+    backgroundColor: 'transparent',
+    paddingHorizontal: 8,
+  },
+  resetButtonText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#EF4444',
+    letterSpacing: 0.5,
+  },
+  cancelButton: {
+    backgroundColor: 'transparent',
+    marginRight: 8,
+  },
+  cancelButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#627D98',
+  },
+  saveButton: {
+    backgroundColor: '#0B41CD',
+  },
+  saveButtonText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FFFFFF',
   },
 });

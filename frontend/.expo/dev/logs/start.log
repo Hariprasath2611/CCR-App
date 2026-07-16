@@ -1691,3 +1691,154 @@
 {"_e":"metro:bundling:progress","_t":1784104711877,"id":"j","progress":0,"total":1,"current":0}
 {"_e":"metro:bundling:done","_t":1784104711978,"id":"j","total":1,"ms":769.5073}
 {"_e":"metro:client_log","_t":1784104726195,"level":"error","data":["Sync payload failed for item mmc5r11n9p:","[AxiosError: Network Error]"]}
+{"_e":"root:init","_t":1784105482230,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1784105482249,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1784105482814,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1784105496502,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1784105523982,"id":"1","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784105523982,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784105523985,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784105524085,"id":"1","progress":0.02203369140625,"total":256,"current":38}
+{"_e":"metro:bundling:progress","_t":1784105524186,"id":"1","progress":0.14963843587529002,"total":486,"current":188}
+{"_e":"metro:bundling:progress","_t":1784105524285,"id":"1","progress":0.2403498400724675,"total":667,"current":327}
+{"_e":"metro:bundling:progress","_t":1784105524386,"id":"1","progress":0.4076941476023301,"total":805,"current":514}
+{"_e":"metro:bundling:progress","_t":1784105524485,"id":"1","progress":0.4791680848724139,"total":874,"current":605}
+{"_e":"metro:bundling:progress","_t":1784105524586,"id":"1","progress":0.6503642039542142,"total":930,"current":750}
+{"_e":"metro:bundling:progress","_t":1784105524685,"id":"1","progress":0.6503642039542142,"total":1028,"current":827}
+{"_e":"metro:bundling:progress","_t":1784105524785,"id":"1","progress":0.7239359848498182,"total":1066,"current":907}
+{"_e":"metro:bundling:progress","_t":1784105524885,"id":"1","progress":0.8218031231781187,"total":1102,"current":999}
+{"_e":"metro:bundling:progress","_t":1784105524985,"id":"1","progress":0.8218031231781187,"total":1175,"current":1031}
+{"_e":"metro:bundling:progress","_t":1784105525086,"id":"1","progress":0.8218031231781187,"total":1321,"current":1122}
+{"_e":"metro:bundling:progress","_t":1784105525187,"id":"1","progress":0.8218031231781187,"total":1391,"current":1191}
+{"_e":"metro:bundling:progress","_t":1784105525287,"id":"1","progress":0.9008905486929044,"total":1416,"current":1344}
+{"_e":"metro:bundling:progress","_t":1784105525387,"id":"1","progress":0.9589366574266971,"total":1446,"current":1416}
+{"_e":"metro:bundling:progress","_t":1784105525495,"id":"1","progress":0.9891452635475958,"total":1470,"current":1462}
+{"_e":"metro:bundling:progress","_t":1784105525954,"id":"1","progress":0.990498866213152,"total":1470,"current":1463}
+{"_e":"metro:bundling:progress","_t":1784105526053,"id":"1","progress":0.9918644405718336,"total":1472,"current":1466}
+{"_e":"metro:bundling:progress","_t":1784105526171,"id":"1","progress":0.9972918089614502,"total":1476,"current":1474}
+{"_e":"metro:bundling:done","_t":1784105526276,"id":"1","total":1476,"ms":2294.335}
+{"_e":"metro:client_log","_t":1784105531305,"level":"error","data":["Sync payload failed for item rjg66w0ier:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784105682402,"level":"error","data":["fetchWeeklyProgress error:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784105861802,"level":"error","data":["fetchWeeklyProgress error:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784105862499,"level":"error","data":["Sync payload failed for item rjg66w0ier:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784105862551,"level":"error","data":["Sync payload failed for item w3on8rq0v1k:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784105955275,"level":"error","data":["Progress submit failed:","[Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.\n→ Caused by: java.lang.NullPointerException: java.lang.NullPointerException]"]}
+{"_e":"metro:bundling:started","_t":1784105976018,"id":"8","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784105976018,"id":"8","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784105976054,"id":"8","total":1,"ms":36.585}
+{"_e":"metro:client_log","_t":1784105979825,"level":"error","data":["Sync payload failed for item rjg66w0ier:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784105979935,"level":"error","data":["Sync payload failed for item w3on8rq0v1k:","[AxiosError: Network Error]"]}
+{"_e":"metro:client_log","_t":1784106005585,"level":"error","data":["fetchWeeklyProgress error:","[AxiosError: Network Error]"]}
+{"_e":"metro:server_log","_t":1784106147071,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:bundling:started","_t":1784106251630,"id":"c","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784106251630,"id":"c","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784106251662,"id":"c","total":1,"ms":32.2326}
+{"_e":"metro:client_log","_t":1784106459128,"level":"log","data":["Clearing old syllabus progress to seed new subjects..."]}
+{"_e":"metro:client_log","_t":1784106459173,"level":"log","data":["Clearing old syllabus progress to seed new subjects..."]}
+{"_e":"metro:client_log","_t":1784106459248,"level":"error","data":["Error seeding syllabus:","[Error: Call to function 'NativeDatabase.execAsync' has been rejected.\n→ Caused by: cannot start a transaction within a transaction]"]}
+{"_e":"metro:client_log","_t":1784106459496,"level":"log","data":["Syllabus data successfully seeded."]}
+{"_e":"metro:client_log","_t":1784106459631,"level":"error","data":["Error seeding timetable:","[Error: Call to function 'NativeDatabase.execAsync' has been rejected.\n→ Caused by: cannot rollback - no transaction is active]"]}
+{"_e":"metro:bundling:started","_t":1784106577566,"id":"f","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784106577566,"id":"f","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784106577602,"id":"f","total":1,"ms":35.8243}
+{"_e":"metro:client_log","_t":1784106582150,"level":"log","data":["Clearing old syllabus progress to seed new subjects..."]}
+{"_e":"metro:client_log","_t":1784106582304,"level":"log","data":["Syllabus data successfully seeded."]}
+{"_e":"metro:client_log","_t":1784106582397,"level":"log","data":["Timetable data successfully seeded."]}
+{"_e":"metro:bundling:started","_t":1784106822183,"id":"g","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784106822183,"id":"g","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784106822218,"id":"g","total":1,"ms":35.3877}
+{"_e":"metro:server_log","_t":1784106920415,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:bundling:started","_t":1784106949909,"id":"h","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784106949910,"id":"h","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784106949943,"id":"h","total":1,"ms":33.4731}
+{"_e":"metro:server_log","_t":1784107102613,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:bundling:started","_t":1784107370691,"id":"i","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784107370692,"id":"i","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784107370723,"id":"i","total":1,"ms":31.8228}
+{"_e":"metro:client_log","_t":1784107388621,"level":"error","data":["fetchWeeklyProgress error:","[AxiosError: Network Error]"]}
+{"_e":"metro:bundling:started","_t":1784107570629,"id":"k","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784107570629,"id":"k","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784107570667,"id":"k","total":1,"ms":37.1896}
+{"_e":"metro:client_log","_t":1784107576628,"level":"error","data":["fetchWeeklyProgress error:","[AxiosError: Request failed with status code 403]"]}
+{"_e":"metro:server_log","_t":1784107722284,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:bundling:started","_t":1784107928074,"id":"m","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784107928074,"id":"m","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784107928115,"id":"m","total":1,"ms":41.4223}
+{"_e":"metro:client_log","_t":1784107943812,"level":"error","data":["fetchWeeklyProgress error:","[AxiosError: Network Error]"]}
+{"_e":"metro:bundling:started","_t":1784108463236,"id":"o","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784108463236,"id":"o","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784108463270,"id":"o","total":1,"ms":33.4791}
+{"_e":"metro:bundling:started","_t":1784108736262,"id":"p","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784108736262,"id":"p","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784108736300,"id":"p","total":1,"ms":37.5401}
+{"_e":"metro:client_log","_t":1784108775261,"level":"error","data":["fetchWeeklyProgress error:","[AxiosError: Network Error]"]}
+{"_e":"metro:bundling:started","_t":1784108898520,"id":"q","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784108898520,"id":"q","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784108898552,"id":"q","total":1,"ms":32.0898}
+{"_e":"metro:client_log","_t":1784109019266,"level":"error","data":["fetchWeeklyProgress error:","[AxiosError: Network Error]"]}
+{"_e":"metro:server_log","_t":1784109156233,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:bundling:started","_t":1784109216531,"id":"s","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784109216531,"id":"s","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784109216564,"id":"s","total":1,"ms":33.1536}
+{"_e":"metro:bundling:started","_t":1784109233689,"id":"t","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784109233689,"id":"t","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1784109233737,"id":"t","total":1,"ms":47.8792}
+{"_e":"root:init","_t":1784188754663,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1784188754708,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1784188756021,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1784188777987,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1784188809428,"id":"1","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784188809429,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784188811032,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784188812296,"id":"1","progress":0.010000000000000002,"total":1,"current":1}
+{"_e":"metro:bundling:progress","_t":1784188812583,"id":"1","progress":0.010000000000000002,"total":3,"current":1}
+{"_e":"metro:bundling:progress","_t":1784188813441,"id":"1","progress":0.04000000000000001,"total":3,"current":2}
+{"_e":"metro:bundling:progress","_t":1784188813729,"id":"1","progress":0.04000000000000001,"total":18,"current":3}
+{"_e":"metro:bundling:progress","_t":1784188814603,"id":"1","progress":0.04938271604938271,"total":18,"current":4}
+{"_e":"metro:bundling:progress","_t":1784188814705,"id":"1","progress":0.04938271604938271,"total":217,"current":16}
+{"_e":"metro:bundling:progress","_t":1784188815018,"id":"1","progress":0.04938271604938271,"total":228,"current":18}
+{"_e":"metro:bundling:progress","_t":1784188816044,"id":"1","progress":0.04938271604938271,"total":228,"current":19}
+{"_e":"metro:bundling:progress","_t":1784188816143,"id":"1","progress":0.08112797017128508,"total":323,"current":92}
+{"_e":"metro:bundling:progress","_t":1784188816244,"id":"1","progress":0.12702827087442473,"total":390,"current":139}
+{"_e":"metro:bundling:progress","_t":1784188816344,"id":"1","progress":0.15304791582780414,"total":478,"current":187}
+{"_e":"metro:bundling:progress","_t":1784188816448,"id":"1","progress":0.18911169031449673,"total":499,"current":217}
+{"_e":"metro:bundling:progress","_t":1784188816911,"id":"1","progress":0.18911169031449673,"total":544,"current":228}
+{"_e":"metro:bundling:progress","_t":1784188820971,"id":"1","progress":0.18911169031449673,"total":544,"current":229}
+{"_e":"metro:bundling:progress","_t":1784188821071,"id":"1","progress":0.37000486835165725,"total":628,"current":382}
+{"_e":"metro:bundling:progress","_t":1784188821171,"id":"1","progress":0.3875969106419078,"total":824,"current":513}
+{"_e":"metro:bundling:progress","_t":1784188822109,"id":"1","progress":0.42242234526506306,"total":837,"current":544}
+{"_e":"metro:bundling:progress","_t":1784188825087,"id":"1","progress":0.4239767960043907,"total":837,"current":545}
+{"_e":"metro:bundling:progress","_t":1784188825188,"id":"1","progress":0.5700756722670149,"total":894,"current":675}
+{"_e":"metro:bundling:progress","_t":1784188826131,"id":"1","progress":0.6549556784860494,"total":1033,"current":836}
+{"_e":"metro:bundling:progress","_t":1784188828681,"id":"1","progress":0.6565234952286079,"total":1033,"current":837}
+{"_e":"metro:bundling:progress","_t":1784188829585,"id":"1","progress":0.7780144641683103,"total":1170,"current":1032}
+{"_e":"metro:bundling:progress","_t":1784188830519,"id":"1","progress":0.7795229746511797,"total":1170,"current":1033}
+{"_e":"metro:bundling:progress","_t":1784188832291,"id":"1","progress":0.7795229746511797,"total":1172,"current":1033}
+{"_e":"metro:bundling:progress","_t":1784188833562,"id":"1","progress":0.7795229746511797,"total":1172,"current":1034}
+{"_e":"metro:bundling:progress","_t":1784188833662,"id":"1","progress":0.7795229746511797,"total":1329,"current":1167}
+{"_e":"metro:bundling:progress","_t":1784188834573,"id":"1","progress":0.7795229746511797,"total":1380,"current":1170}
+{"_e":"metro:bundling:progress","_t":1784188835482,"id":"1","progress":0.7795229746511797,"total":1380,"current":1171}
+{"_e":"metro:bundling:progress","_t":1784188836147,"id":"1","progress":0.7795229746511797,"total":1381,"current":1172}
+{"_e":"metro:bundling:progress","_t":1784188837080,"id":"1","progress":0.7795229746511797,"total":1381,"current":1173}
+{"_e":"metro:bundling:progress","_t":1784188837810,"id":"1","progress":0.9299432735097071,"total":1430,"current":1379}
+{"_e":"metro:bundling:progress","_t":1784188838423,"id":"1","progress":0.9312924837400361,"total":1430,"current":1380}
+{"_e":"metro:bundling:progress","_t":1784188838998,"id":"1","progress":0.9326426720133013,"total":1430,"current":1381}
+{"_e":"metro:bundling:progress","_t":1784188839614,"id":"1","progress":0.9326426720133013,"total":1431,"current":1381}
+{"_e":"metro:bundling:progress","_t":1784188839624,"id":"1","progress":0.9326889221935568,"total":1431,"current":1382}
+{"_e":"metro:bundling:progress","_t":1784188840245,"id":"1","progress":0.9699265381083563,"total":1452,"current":1430}
+{"_e":"metro:bundling:progress","_t":1784188841385,"id":"1","progress":0.9712835530359948,"total":1452,"current":1431}
+{"_e":"metro:bundling:progress","_t":1784188841943,"id":"1","progress":0.9712835530359948,"total":1453,"current":1431}
+{"_e":"metro:bundling:progress","_t":1784188841949,"id":"1","progress":0.9713031727318329,"total":1453,"current":1432}
+{"_e":"metro:bundling:progress","_t":1784188842518,"id":"1","progress":0.9877176190817517,"total":1461,"current":1452}
+{"_e":"metro:bundling:progress","_t":1784188843660,"id":"1","progress":0.9890785801592019,"total":1461,"current":1453}
+{"_e":"metro:bundling:progress","_t":1784188844225,"id":"1","progress":0.9890785801592019,"total":1467,"current":1453}
+{"_e":"metro:bundling:progress","_t":1784188844229,"id":"1","progress":0.9890785801592019,"total":1467,"current":1454}
+{"_e":"metro:bundling:progress","_t":1784188844792,"id":"1","progress":0.9890785801592019,"total":1474,"current":1461}
+{"_e":"metro:bundling:progress","_t":1784188845969,"id":"1","progress":0.9890785801592019,"total":1474,"current":1462}
+{"_e":"metro:bundling:progress","_t":1784188846539,"id":"1","progress":0.9890785801592019,"total":1476,"current":1467}
+{"_e":"metro:bundling:progress","_t":1784188846544,"id":"1","progress":0.9891892685864527,"total":1476,"current":1468}
+{"_e":"metro:bundling:progress","_t":1784188847109,"id":"1","progress":0.9972918089614502,"total":1476,"current":1474}
+{"_e":"metro:bundling:progress","_t":1784188848294,"id":"1","progress":0.9986454454652948,"total":1476,"current":1475}
+{"_e":"metro:bundling:progress","_t":1784188848895,"id":"1","progress":0.999,"total":1476,"current":1476}
+{"_e":"metro:bundling:done","_t":1784188850698,"id":"1","total":1476,"ms":41269.3622}
+{"_e":"metro:server_log","_t":1784189181994,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
