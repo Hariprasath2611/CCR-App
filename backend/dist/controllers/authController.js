@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.refresh = exports.login = void 0;
+exports.changePassword = exports.refresh = exports.login = void 0;
 const client_1 = require("@prisma/client");
 const bcrypt = __importStar(require("bcryptjs"));
 const jwt = __importStar(require("jsonwebtoken"));
@@ -113,3 +113,36 @@ const refresh = async (req, res) => {
     }
 };
 exports.refresh = refresh;
+const changePassword = async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+        return res.status(400).json({ error: 'Current password and new password are required' });
+    }
+    const userId = req.user?.id;
+    if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+        });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        const passwordMatch = bcrypt.compareSync(currentPassword, user.passwordHash);
+        if (!passwordMatch) {
+            return res.status(400).json({ error: 'Incorrect current password' });
+        }
+        const newPasswordHash = bcrypt.hashSync(newPassword, 10);
+        await prisma.user.update({
+            where: { id: userId },
+            data: { passwordHash: newPasswordHash },
+        });
+        return res.json({ message: 'Password changed successfully' });
+    }
+    catch (error) {
+        console.error('Change password error:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+exports.changePassword = changePassword;

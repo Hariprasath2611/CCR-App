@@ -4,13 +4,16 @@ exports.submitProgress = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const submitProgress = async (req, res) => {
-    const { id, facultyId, subjectCode, classId, academicWeekNumber, completedTopicIds, pendingTopicIds, reasonsForPending, extraHoursRequested, submittedAt, } = req.body;
+    const { id, facultyId, subjectCode, classId, academicWeekNumber, completedTopicIds, pendingTopicIds, reasonsForPending, extraHoursRequested, submittedAt, periodsPlanned, periodsHandled, periodsRequired, topicsCoveredText, } = req.body;
     if (!id || !facultyId || !subjectCode || !classId || academicWeekNumber === undefined || !completedTopicIds) {
         return res.status(400).json({ error: 'Missing required progress log fields' });
     }
     try {
         const completedStr = Array.isArray(completedTopicIds) ? completedTopicIds.join(',') : completedTopicIds;
         const pendingStr = Array.isArray(pendingTopicIds) ? pendingTopicIds.join(',') : '';
+        const pPlanned = periodsPlanned !== undefined ? parseInt(periodsPlanned) : null;
+        const pHandled = periodsHandled !== undefined ? parseInt(periodsHandled) : null;
+        const pRequired = periodsRequired !== undefined ? parseInt(periodsRequired) : null;
         const log = await prisma.progressLog.upsert({
             where: { id },
             update: {
@@ -23,6 +26,10 @@ const submitProgress = async (req, res) => {
                 reasonsForPending: reasonsForPending || null,
                 extraHoursRequested: !!extraHoursRequested,
                 submittedAt: submittedAt ? new Date(submittedAt) : new Date(),
+                periodsPlanned: pPlanned,
+                periodsHandled: pHandled,
+                periodsRequired: pRequired,
+                topicsCoveredText: topicsCoveredText || null,
             },
             create: {
                 id,
@@ -35,6 +42,10 @@ const submitProgress = async (req, res) => {
                 reasonsForPending: reasonsForPending || null,
                 extraHoursRequested: !!extraHoursRequested,
                 submittedAt: submittedAt ? new Date(submittedAt) : new Date(),
+                periodsPlanned: pPlanned,
+                periodsHandled: pHandled,
+                periodsRequired: pRequired,
+                topicsCoveredText: topicsCoveredText || null,
             },
         });
         return res.json({ success: true, log });

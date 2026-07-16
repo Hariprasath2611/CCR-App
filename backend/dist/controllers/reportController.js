@@ -47,8 +47,7 @@ const getWeeklyReport = async (req, res) => {
                 });
             }
         }
-        const subjectsProgress = [];
-        for (const [code, info] of uniqueSubjects.entries()) {
+        const subjectsProgress = await Promise.all(Array.from(uniqueSubjects.entries()).map(async ([code, info]) => {
             // Find total syllabus nodes for this subject
             const totalTopicsCount = await prisma.syllabusNode.count({
                 where: { subjectCode: code },
@@ -62,11 +61,33 @@ const getWeeklyReport = async (req, res) => {
                 },
                 orderBy: { academicWeekNumber: 'desc' },
             });
+            // Find the weekly plan for this subject and week to display "Topics planned for this week"
+            const weeklyPlan = await prisma.weeklyPlan.findFirst({
+                where: {
+                    subjectCode: code,
+                    academicWeekNumber: weekNum,
+                },
+            });
+            let plannedTopicsText = '';
+            if (weeklyPlan && weeklyPlan.targetTopicIds) {
+                const topicIds = weeklyPlan.targetTopicIds.split(',').filter(Boolean);
+                const nodes = await prisma.syllabusNode.findMany({
+                    where: {
+                        subjectCode: code,
+                        topicId: { in: topicIds },
+                    },
+                });
+                plannedTopicsText = nodes.map(n => n.topicTitle).join(', ');
+            }
             let completedTopicsCount = 0;
             let status = 'Pending';
             let coverage = 0;
             let reasonsForPending = '';
             let extraHoursRequested = false;
+            let periodsPlanned = null;
+            let periodsHandled = null;
+            let periodsRequired = null;
+            let topicsCoveredText = '';
             if (latestLog) {
                 // Parse completed topic ids
                 const completedArr = latestLog.completedTopicIds.split(',').filter(Boolean);
@@ -78,8 +99,12 @@ const getWeeklyReport = async (req, res) => {
                 }
                 reasonsForPending = latestLog.reasonsForPending || '';
                 extraHoursRequested = latestLog.extraHoursRequested;
+                periodsPlanned = latestLog.periodsPlanned;
+                periodsHandled = latestLog.periodsHandled;
+                periodsRequired = latestLog.periodsRequired;
+                topicsCoveredText = latestLog.topicsCoveredText || '';
             }
-            subjectsProgress.push({
+            return {
                 code,
                 name: info.name,
                 faculty: info.facultyName,
@@ -89,8 +114,13 @@ const getWeeklyReport = async (req, res) => {
                 totalTopicsCount,
                 reasonsForPending,
                 extraHoursRequested,
-            });
-        }
+                periodsPlanned,
+                periodsHandled,
+                periodsRequired,
+                topicsCoveredText,
+                plannedTopicsText: plannedTopicsText || 'Topics from syllabus schedule',
+            };
+        }));
         // Calculate dynamic overall coverage
         const totalCoverage = subjectsProgress.reduce((sum, s) => sum + s.coverage, 0);
         const overallCoverage = subjectsProgress.length > 0 ? Math.round(totalCoverage / subjectsProgress.length) : 0;
