@@ -110,7 +110,7 @@ export const WeeklyProgressScreen = () => {
   const weekNumber = route.params?.weekNumber || 12;
 
   const [selectedWeek, setSelectedWeek] = useState(weekNumber.toString());
-  const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
+  const [logDate, setLogDate] = useState(getTodayDDMMYYYY());
 
   const [syllabusNodes, setSyllabusNodes] = useState<SQLiteSyllabusNode[]>([]);
   const [loading, setLoading] = useState(true);
@@ -130,6 +130,9 @@ export const WeeklyProgressScreen = () => {
       periodsPlanned: '4',
       periodsHandled: '4',
       periodsRequired: '0',
+      fromDate: getTodayDDMMYYYY(),
+      toDate: getTodayDDMMYYYY(),
+      cumulativePercent: '',
     },
   });
 
@@ -202,7 +205,11 @@ export const WeeklyProgressScreen = () => {
         parseInt(data.periodsPlanned),
         parseInt(data.periodsHandled),
         data.periodsRequired ? parseInt(data.periodsRequired) : 0,
-        data.topicsCovered
+        data.topicsCovered,
+        undefined,
+        data.fromDate,
+        data.toDate,
+        data.cumulativePercent
       );
 
       // 3. Sync Queue logging
@@ -219,10 +226,13 @@ export const WeeklyProgressScreen = () => {
         completedTopicIds,
         pendingTopicIds,
         reasonsForPending: data.reasonsForPending || '',
-        submittedAt: logDate,
+        submittedAt: ddmmToYyyymmdd(logDate),
         periodsPlanned: parseInt(data.periodsPlanned),
         periodsHandled: parseInt(data.periodsHandled),
         periodsRequired: data.periodsRequired ? parseInt(data.periodsRequired) : 0,
+        fromDate: data.fromDate,
+        toDate: data.toDate,
+        cumulativePercent: data.cumulativePercent,
       };
       await syncQueueRepo.enqueue('SUBMIT_PROGRESS', progressPayload);
 
