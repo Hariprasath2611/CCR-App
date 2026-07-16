@@ -9,5 +9,6 @@
     "java.project.resourceFilters": [
         "node_modules",
         ".git"
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "automatic"
 }
