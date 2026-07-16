@@ -125,7 +125,7 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
                 ? actualTopicsText.split(/[,\n]/).map(t => t.trim()).filter(Boolean)
                 : getBriefTopics(subj.code);
               const completedHours = Math.round(subj.completedTopicsCount * 1.5);
-              const isCompleted = subj.coverage >= 60;
+              const isCompleted = subj.completedOnPlan ? subj.completedOnPlan === 'YES' : subj.coverage >= 60;
               
               return (
                 <View key={subj.code} style={[styles.tableRow, index % 2 === 1 && styles.tableRowAlt]}>
@@ -150,7 +150,7 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
                     {isCompleted ? 'Yes' : 'No'}
                   </Text>
                   <Text style={[styles.cell, styles.colReason]}>
-                    {isCompleted ? '-' : (subj.reasonsForPending || 'Topics not completed')}
+                    {isCompleted ? '-' : (subj.reasonsForPending || '-')}
                   </Text>
                   <Text style={[styles.cell, styles.colExtra]}>
                     {subj.extraHoursRequested ? '2' : '-'}
