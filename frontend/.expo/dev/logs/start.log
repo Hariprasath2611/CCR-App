@@ -2087,3 +2087,7 @@
 {"_e":"metro:bundling:progress","_t":1784194476168,"id":"2","progress":0,"total":1,"current":0}
 {"_e":"metro:bundling:done","_t":1784194476445,"id":"2","total":1,"ms":7112.3881}
 {"_e":"metro:client_log","_t":1784194605114,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
+{"_e":"root:init","_t":1784195354858,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1784195354886,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1784195355455,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1784195368812,"atlas":false,"workers":8,"host":"::","port":8082}
