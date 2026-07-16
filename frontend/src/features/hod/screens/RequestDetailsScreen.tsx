@@ -30,6 +30,21 @@ import { useReportStore, SubjectProgress } from '@features/cc/store/useReportSto
 
 import { WeeklyCourseCoverageReportCard } from '../../cc/components/WeeklyCourseCoverageReportCard';
 
+const MOCK_EXTRA_HOUR = {
+  faculty: 'Ms. E Uva Shakthi',
+  subject: 'Computer Networks (CS3591)',
+  section: 'III CSE-B',
+  requestedDate: '2026-07-20',
+  period: 'Period 3 (10:40 AM - 11:30 AM)',
+  reason: 'Compensating lost classes due to college day practice last week.',
+  type: 'Extra Hours Request',
+};
+
+const MOCK_PLAN_REPORT = {
+  section: '',
+  week: '',
+};
+
 export const RequestDetailsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteParams>();
@@ -44,7 +59,7 @@ export const RequestDetailsScreen = () => {
   const reportData = isExtraHour ? null : getReportById(requestId);
 
   const data = isExtraHour 
-    ? null 
+    ? MOCK_EXTRA_HOUR 
     : (reportData 
         ? {
             id: reportData.id,

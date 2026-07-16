@@ -29,11 +29,11 @@ const progressSchema = z.object({
   reasonsForPending: z.string().optional(),
   periodsPlanned: z.string().min(1, 'Please enter periods planned').refine((val) => !isNaN(parseInt(val)) && parseInt(val) >= 0, {
     message: 'Must be a non-negative number',
-  }).transform((val) => parseInt(val)),
+  }),
   periodsHandled: z.string().min(1, 'Please enter periods handled').refine((val) => !isNaN(parseInt(val)) && parseInt(val) >= 0, {
     message: 'Must be a non-negative number',
-  }).transform((val) => parseInt(val)),
-  periodsRequired: z.string().optional().transform((val) => val ? parseInt(val) : 0),
+  }),
+  periodsRequired: z.string().optional(),
 }).refine((data) => {
   if (data.completedOnPlan === 'NO' && (!data.reasonsForPending || data.reasonsForPending.trim().length === 0)) {
     return false;
@@ -178,9 +178,9 @@ export const WeeklyProgressScreen = () => {
         totalCount,
         data.reasonsForPending || '',
         data.completedOnPlan === 'NO',
-        data.periodsPlanned,
-        data.periodsHandled,
-        data.periodsRequired || 0,
+        parseInt(data.periodsPlanned),
+        parseInt(data.periodsHandled),
+        data.periodsRequired ? parseInt(data.periodsRequired) : 0,
         data.topicsCovered
       );
 
@@ -199,9 +199,9 @@ export const WeeklyProgressScreen = () => {
         pendingTopicIds,
         reasonsForPending: data.reasonsForPending || '',
         submittedAt: logDate,
-        periodsPlanned: data.periodsPlanned,
-        periodsHandled: data.periodsHandled,
-        periodsRequired: data.periodsRequired || 0,
+        periodsPlanned: parseInt(data.periodsPlanned),
+        periodsHandled: parseInt(data.periodsHandled),
+        periodsRequired: data.periodsRequired ? parseInt(data.periodsRequired) : 0,
       };
       await syncQueueRepo.enqueue('SUBMIT_PROGRESS', progressPayload);
 

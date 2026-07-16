@@ -14,6 +14,7 @@ interface AppTextInputProps {
   style?: any;
   multiline?: boolean;
   numberOfLines?: number;
+  placeholder?: string;
 }
 
 export const AppTextInput: React.FC<AppTextInputProps> = ({
@@ -27,6 +28,7 @@ export const AppTextInput: React.FC<AppTextInputProps> = ({
   style,
   multiline = false,
   numberOfLines = 1,
+  placeholder,
 }) => {
   return (
     <View style={[styles.container, style]}>
@@ -43,6 +45,7 @@ export const AppTextInput: React.FC<AppTextInputProps> = ({
         numberOfLines={numberOfLines}
         outlineColor={Palette.border}
         activeOutlineColor={Palette.primary}
+        placeholder={placeholder}
         style={styles.input}
       />
       {error && (
