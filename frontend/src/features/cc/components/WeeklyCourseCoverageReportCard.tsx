@@ -28,7 +28,10 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
   const displayClass = classId.includes('CSE') ? 'III Year / V Semester' : 'II Year / III Semester';
   const displayDept = classId.includes('CSE') ? 'Computer Science and Engineering' : 'Computer Science and Business Systems (CSBS)';
 
-  // Compute dates based on weekNumber
+  const loggedSubjects = subjects.filter(s => s.status === 'Submitted' && s.fromDate && s.toDate);
+  const firstLogged = loggedSubjects[0];
+
+  // Compute default dates based on weekNumber if faculty has not entered any date yet
   const getDates = (week: number) => {
     const baseDate = new Date(2024, 4, 20); // 20 May 2024 (months are 0-indexed)
     const weeksDiff = week - 5;
@@ -49,6 +52,9 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
   };
 
   const dates = getDates(weekNumber);
+
+  const fromDateVal = firstLogged?.fromDate ? firstLogged.fromDate.replace(/\//g, '.') : dates.from;
+  const toDateVal = firstLogged?.toDate ? firstLogged.toDate.replace(/\//g, '.') : dates.to;
 
   // Topics completed lookup
   const getBriefTopics = (code: string): string[] => {
@@ -89,9 +95,8 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
 
           {/* Column 2 */}
           <View style={styles.infoColumn}>
-            <InfoItem icon="calendar-outline" label="Report Week No." value={weekNumber.toString()} />
-            <InfoItem icon="clock-outline" label="From Date" value={dates.from} />
-            <InfoItem icon="clock-check-outline" label="To Date" value={dates.to} />
+            <InfoItem icon="clock-outline" label="From Date" value={fromDateVal} />
+            <InfoItem icon="clock-check-outline" label="To Date" value={toDateVal} />
             <InfoItem icon="account-tie" label="Prepared By" value="Class Coordinator" />
           </View>
         </View>
@@ -108,8 +113,6 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
               <Text style={[styles.cell, styles.colCode, styles.headerText]}>Course Code</Text>
               <Text style={[styles.cell, styles.colName, styles.headerText]}>Course Name</Text>
               <Text style={[styles.cell, styles.colFaculty, styles.headerText]}>Faculty Name</Text>
-              <Text style={[styles.cell, styles.colDate, styles.headerText]}>From Date</Text>
-              <Text style={[styles.cell, styles.colDate, styles.headerText]}>To Date</Text>
               <Text style={[styles.cell, styles.colHours, styles.headerText]}>No. of Hours Completed</Text>
               <Text style={[styles.cell, styles.colPercent, styles.headerText]}>Cumulative % Completed</Text>
               <Text style={[styles.cell, styles.colTopics, styles.headerText]}>Topics Covered (Brief)</Text>
@@ -133,8 +136,6 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
                   <Text style={[styles.cell, styles.colCode, styles.boldCode]}>{subj.code}</Text>
                   <Text style={[styles.cell, styles.colName]}>{subj.name}</Text>
                   <Text style={[styles.cell, styles.colFaculty]}>{subj.faculty}</Text>
-                  <Text style={[styles.cell, styles.colDate]}>{subj.fromDate || '-'}</Text>
-                  <Text style={[styles.cell, styles.colDate]}>{subj.toDate || '-'}</Text>
                   <Text style={[styles.cell, styles.colHours]}>{completedHours}</Text>
                   <Text style={[styles.cell, styles.colPercent]}>{subj.cumulativePercent || `${subj.coverage}%`}</Text>
                   <View style={[styles.cell, styles.colTopics, styles.bulletCell]}>
@@ -165,8 +166,6 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
               <Text style={[styles.cell, styles.colCode, styles.footerText]}>-</Text>
               <Text style={[styles.cell, styles.colName, styles.footerText]}>-</Text>
               <Text style={[styles.cell, styles.colFaculty, styles.footerText]}>-</Text>
-              <Text style={[styles.cell, styles.colDate, styles.footerText]}>-</Text>
-              <Text style={[styles.cell, styles.colDate, styles.footerText]}>-</Text>
               <Text style={[styles.cell, styles.colHours, styles.footerValue]}>{totalHours}</Text>
               <Text style={[styles.cell, styles.colPercent, styles.footerText]}>-</Text>
               <Text style={[styles.cell, styles.colTopics, styles.footerText]}>-</Text>
