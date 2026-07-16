@@ -73,9 +73,25 @@ export const DepartmentClassesScreen = () => {
   const allDeptClasses = getClassesForDept(deptCode);
   const filteredClasses = allDeptClasses.filter((c) => c.year === selectedYear);
 
+  interface DeptSubject {
+    code: string;
+    year: string;
+    name: string;
+    faculty: string;
+    topics: number;
+  }
+
   // Dynamic Subjects list builder for HOD department
-  const getMockSubjectsForDept = (code: string) => {
-    return [];
+  const getMockSubjectsForDept = (code: string): DeptSubject[] => {
+    return [
+      { code: 'CS3591', year: '3rd Year', name: 'Computer Networks', faculty: 'Ms.E Uva Shakthi', topics: 5 },
+      { code: 'CS3501', year: '3rd Year', name: 'Compiler Design', faculty: 'Mr.J Lin Eby Chandra', topics: 5 },
+      { code: 'CB3491', year: '3rd Year', name: 'Cryptography and Cyber Security', faculty: 'Mr.S Faizal Mukthar Hussain', topics: 5 },
+      { code: 'CS3551', year: '3rd Year', name: 'Distributed Computing', faculty: 'Ms.R Rajalakshmi', topics: 5 },
+      { code: 'CCS375', year: '3rd Year', name: 'Web Technologies', faculty: 'Ms.P Divya', topics: 5 },
+      { code: 'CCS370', year: '3rd Year', name: 'UI and UX Design', faculty: 'Ms.Punitha EM', topics: 5 },
+      { code: 'MX3084', year: '3rd Year', name: 'Disaster Management', faculty: 'Ms.Arun Kamala', topics: 5 },
+    ];
   };
 
   const departmentSubjects = getMockSubjectsForDept(deptCode);

@@ -103,8 +103,21 @@ export const DeptSummaryScreen = () => {
     };
   });
 
-  const getAllSubjectsForDept = (deptCode: string) => {
-    return [];
+  interface DeptSubject {
+    code: string;
+    year: string;
+    name: string;
+    faculty: string;
+    topics: number;
+  }
+
+  const getAllSubjectsForDept = (deptCode: string): DeptSubject[] => {
+    return [
+      { code: `${deptCode}3591`, year: '3rd Year', name: 'Computer Networks', faculty: 'Dr. Sundaram A', topics: 5 },
+      { code: `${deptCode}3501`, year: '3rd Year', name: 'Compiler Design', faculty: 'Prof. Priyadharshini M', topics: 5 },
+      { code: `${deptCode}3491`, year: '3rd Year', name: 'Cryptography and Cyber Security', faculty: 'Dr. Suresh Babu', topics: 5 },
+      { code: `${deptCode}3551`, year: '3rd Year', name: 'Distributed Computing', faculty: 'Prof. Divya R', topics: 5 },
+    ];
   };
 
   // Helper to generate classes list for a selected dept & year dynamically from reports
