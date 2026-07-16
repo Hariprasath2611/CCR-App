@@ -225,7 +225,7 @@ export const WeeklyProgressScreen = () => {
         completedTopicIds,
         pendingTopicIds,
         reasonsForPending: data.reasonsForPending || '',
-        submittedAt: ddmmToYyyymmdd(logDate),
+        submittedAt: new Date().toISOString(),
         periodsPlanned: parseInt(data.periodsPlanned),
         periodsHandled: parseInt(data.periodsHandled),
         periodsRequired: data.periodsRequired ? parseInt(data.periodsRequired) : 0,
@@ -277,15 +277,7 @@ export const WeeklyProgressScreen = () => {
       </View>
       {/* ── REPORT DETAILS SECTION ── */}
       <Card style={{ backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 20, borderWidth: 1, borderColor: '#F1F5F9' }}>
-        <View style={{ marginBottom: 12 }}>
-          <Text style={{ fontSize: 13, fontWeight: '700', color: Palette.textDark, marginBottom: 6 }}>Log Date</Text>
-          <DatePickerField
-            label="Completion Date (DD/MM/YYYY)"
-            value={logDate}
-            onChange={setLogDate}
-          />
-        </View>
-
+        
         {/* Course Duration Dates (From Date & To Date) */}
         <View style={styles.periodsRow}>
           <View style={styles.periodCol}>
