@@ -11,6 +11,7 @@ export interface SubjectProgress {
   totalTopicsCount: number;
   reasonsForPending?: string;
   extraHoursRequested?: boolean;
+  completedOnPlan?: 'YES' | 'NO';
   periodsPlanned?: number | null;
   periodsHandled?: number | null;
   periodsRequired?: number | null;
@@ -55,7 +56,8 @@ interface ReportStoreState {
     plannedTopicsText?: string,
     fromDate?: string,
     toDate?: string,
-    cumulativePercent?: string
+    cumulativePercent?: string,
+    completedOnPlan?: 'YES' | 'NO'
   ) => void;
   compileWeeklyReport: (classId: string, weekNumber: number, ccRemarks: string, ccName: string) => Promise<string>;
   submitHODDecision: (reportId: string, decision: 'APPROVED' | 'RETURNED' | 'REJECTED', remarks: string) => Promise<void>;
@@ -110,7 +112,8 @@ export const useReportStore = create<ReportStoreState>((set, get) => ({
     plannedTopicsText,
     fromDate,
     toDate,
-    cumulativePercent
+    cumulativePercent,
+    completedOnPlan
   ) => {
     const key = `${classId}_${weekNumber}`;
     set((state) => {
@@ -147,6 +150,7 @@ export const useReportStore = create<ReportStoreState>((set, get) => ({
             totalTopicsCount: totalTopics,
             reasonsForPending,
             extraHoursRequested,
+            completedOnPlan,
             periodsPlanned,
             periodsHandled,
             periodsRequired,

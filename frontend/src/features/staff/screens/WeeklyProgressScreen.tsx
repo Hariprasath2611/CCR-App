@@ -208,7 +208,8 @@ export const WeeklyProgressScreen = () => {
         undefined,
         data.fromDate,
         data.toDate,
-        data.cumulativePercent
+        data.cumulativePercent,
+        data.completedOnPlan
       );
 
       // 3. Sync Queue logging
