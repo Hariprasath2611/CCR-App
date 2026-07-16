@@ -72,18 +72,6 @@ export const StaffDashboardScreen = () => {
       const subjects = Object.values(subjectMap);
       setHandledSubjects(subjects);
 
-      const progressMap: Record<string, { completed: number; total: number; percent: number }> = {};
-      for (const subject of subjects) {
-        const nodes = await syllabusRepo.getSyllabusBySubject(subject.code);
-        const completed = nodes.filter((n) => n.is_completed === 1).length;
-        const total = nodes.length || 5;
-        progressMap[subject.code] = {
-          completed,
-          total,
-          percent: completed / total,
-        };
-      }
-      setSyllabusProgress(progressMap);
     } catch (err) {
       console.error('Failed to load dashboard metrics:', err);
     } finally {

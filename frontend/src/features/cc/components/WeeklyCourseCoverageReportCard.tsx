@@ -406,6 +406,8 @@ const styles = StyleSheet.create({
   colCode: { width: 90 },
   colName: { width: 140 },
   colFaculty: { width: 130 },
+  colDate: { width: 95 },
+  colPercent: { width: 140 },
   colHours: { width: 90 },
   colTopics: { width: 200 },
   colCompleted: { width: 100 },
