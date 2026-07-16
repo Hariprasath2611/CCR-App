@@ -153,9 +153,6 @@ export const StaffDashboardScreen = () => {
       ) : (
         <View style={styles.subjectsContainer}>
           {handledSubjects.map((subj) => {
-            const prog = syllabusProgress[subj.code] || { completed: 0, total: 5, percent: 0 };
-            const percentLabel = Math.round(prog.percent * 100);
-            
             return (
               <TouchableOpacity
                 key={subj.code}
@@ -175,21 +172,10 @@ export const StaffDashboardScreen = () => {
                     <Text style={styles.subjName} numberOfLines={1}>
                       {subj.name} ({subj.shortName})
                     </Text>
-                    
-                    <View style={styles.progressRow}>
-                      <Text style={styles.progressLabel}>Syllabus Coverage</Text>
-                      <Text style={[styles.progressVal, { color: subj.color }]}>{percentLabel}%</Text>
-                    </View>
-
-                    <ProgressBar 
-                      progress={prog.percent} 
-                      color={subj.color} 
-                      style={styles.progressBar}
-                    />
 
                     <View style={styles.cardFooter}>
                       <Text style={styles.topicsCount}>
-                        {prog.completed} of {prog.total} units completed
+                        Tap to log weekly progress details
                       </Text>
                       <Feather name="chevron-right" size={16} color={Palette.textLight} />
                     </View>
