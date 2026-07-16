@@ -108,7 +108,10 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
               <Text style={[styles.cell, styles.colCode, styles.headerText]}>Course Code</Text>
               <Text style={[styles.cell, styles.colName, styles.headerText]}>Course Name</Text>
               <Text style={[styles.cell, styles.colFaculty, styles.headerText]}>Faculty Name</Text>
+              <Text style={[styles.cell, styles.colDate, styles.headerText]}>From Date</Text>
+              <Text style={[styles.cell, styles.colDate, styles.headerText]}>To Date</Text>
               <Text style={[styles.cell, styles.colHours, styles.headerText]}>No. of Hours Completed</Text>
+              <Text style={[styles.cell, styles.colPercent, styles.headerText]}>Cumulative % Completed</Text>
               <Text style={[styles.cell, styles.colTopics, styles.headerText]}>Topics Covered (Brief)</Text>
               <Text style={[styles.cell, styles.colCompleted, styles.headerText]}>Completed as per Schedule (Yes/No)</Text>
               <Text style={[styles.cell, styles.colReason, styles.headerText]}>If No Reason</Text>
@@ -130,7 +133,10 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
                   <Text style={[styles.cell, styles.colCode, styles.boldCode]}>{subj.code}</Text>
                   <Text style={[styles.cell, styles.colName]}>{subj.name}</Text>
                   <Text style={[styles.cell, styles.colFaculty]}>{subj.faculty}</Text>
+                  <Text style={[styles.cell, styles.colDate]}>{subj.fromDate || '-'}</Text>
+                  <Text style={[styles.cell, styles.colDate]}>{subj.toDate || '-'}</Text>
                   <Text style={[styles.cell, styles.colHours]}>{completedHours}</Text>
+                  <Text style={[styles.cell, styles.colPercent]}>{subj.cumulativePercent || `${subj.coverage}%`}</Text>
                   <View style={[styles.cell, styles.colTopics, styles.bulletCell]}>
                     {topics.map((t, idx) => (
                       <Text key={idx} style={styles.bulletText}>• {t}</Text>
@@ -159,7 +165,10 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
               <Text style={[styles.cell, styles.colCode, styles.footerText]}>-</Text>
               <Text style={[styles.cell, styles.colName, styles.footerText]}>-</Text>
               <Text style={[styles.cell, styles.colFaculty, styles.footerText]}>-</Text>
+              <Text style={[styles.cell, styles.colDate, styles.footerText]}>-</Text>
+              <Text style={[styles.cell, styles.colDate, styles.footerText]}>-</Text>
               <Text style={[styles.cell, styles.colHours, styles.footerValue]}>{totalHours}</Text>
+              <Text style={[styles.cell, styles.colPercent, styles.footerText]}>-</Text>
               <Text style={[styles.cell, styles.colTopics, styles.footerText]}>-</Text>
               <Text style={[styles.cell, styles.colCompleted, styles.footerText]}>-</Text>
               <Text style={[styles.cell, styles.colReason, styles.footerText]}>-</Text>

@@ -276,7 +276,6 @@ export const WeeklyProgressScreen = () => {
           </Text>
         </View>
       </View>
-
       {/* ── REPORT DETAILS SECTION ── */}
       <Card style={{ backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 20, borderWidth: 1, borderColor: '#F1F5F9' }}>
         <View style={{ marginBottom: 12 }}>
@@ -288,14 +287,45 @@ export const WeeklyProgressScreen = () => {
             onSelect={(val) => setSelectedWeek(val)}
           />
         </View>
-        <View>
+        <View style={{ marginBottom: 12 }}>
           <Text style={{ fontSize: 13, fontWeight: '700', color: Palette.textDark, marginBottom: 6 }}>Log Date</Text>
-          <AppTextInput
-            label="Completion Date (YYYY-MM-DD)"
+          <DatePickerField
+            label="Completion Date (DD/MM/YYYY)"
             value={logDate}
-            onChangeText={setLogDate}
-            placeholder="YYYY-MM-DD"
+            onChange={setLogDate}
           />
+        </View>
+
+        {/* Course Duration Dates (From Date & To Date) */}
+        <View style={styles.periodsRow}>
+          <View style={styles.periodCol}>
+            <Controller
+              control={control}
+              name="fromDate"
+              render={({ field: { onChange, value } }) => (
+                <DatePickerField
+                  label="From Date (DD/MM/YYYY)"
+                  value={value}
+                  onChange={onChange}
+                  error={errors.fromDate?.message}
+                />
+              )}
+            />
+          </View>
+          <View style={styles.periodCol}>
+            <Controller
+              control={control}
+              name="toDate"
+              render={({ field: { onChange, value } }) => (
+                <DatePickerField
+                  label="To Date (DD/MM/YYYY)"
+                  value={value}
+                  onChange={onChange}
+                  error={errors.toDate?.message}
+                />
+              )}
+            />
+          </View>
         </View>
       </Card>
 
@@ -325,6 +355,21 @@ export const WeeklyProgressScreen = () => {
             options={TEMP_UNIT_OPTIONS}
             onSelect={onChange}
             error={errors.tempUnit?.message}
+            style={styles.dropdownSpacing}
+          />
+        )}
+      />
+
+      {/* Cumulative % Completed Input */}
+      <Controller
+        control={control}
+        name="cumulativePercent"
+        render={({ field: { onChange, value } }) => (
+          <AppTextInput
+            label="Cumulative % Completed (e.g. Unit 1 - 50%, 2/12)"
+            value={value || ''}
+            onChangeText={onChange}
+            error={errors.cumulativePercent?.message}
             style={styles.dropdownSpacing}
           />
         )}
