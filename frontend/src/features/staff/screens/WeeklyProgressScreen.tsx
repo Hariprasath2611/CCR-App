@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { AppTextInput } from '@components/common/AppTextInput';
 import { AppButton } from '@components/common/AppButton';
 import { AppDropdown } from '@components/common/AppDropdown';
+import { DatePickerField } from '@components/common/DatePickerField';
 import { SyllabusRepository } from '@database/repositories/SyllabusRepository';
 import { SyncQueueRepository } from '@database/repositories/SyncQueueRepository';
 import { SQLiteSyllabusNode } from '@database/types';
@@ -20,6 +21,23 @@ import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
 type RouteParams = RouteProp<StaffStackParamList, 'WeeklyProgress'>;
 
+const getTodayDDMMYYYY = () => {
+  const today = new Date();
+  const dd = today.getDate().toString().padStart(2, '0');
+  const mm = (today.getMonth() + 1).toString().padStart(2, '0');
+  const yyyy = today.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+};
+
+const ddmmToYyyymmdd = (dateStr: string): string => {
+  if (!dateStr) return '';
+  const parts = dateStr.split('/');
+  if (parts.length === 3) {
+    const [dd, mm, yyyy] = parts;
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  return dateStr;
+};
 
 const progressSchema = z.object({
   unit: z.string().min(1, 'Please select the main unit'),
@@ -34,6 +52,9 @@ const progressSchema = z.object({
     message: 'Must be a non-negative number',
   }),
   periodsRequired: z.string().optional(),
+  fromDate: z.string().min(10, 'Use DD/MM/YYYY format').regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Must be in DD/MM/YYYY format'),
+  toDate: z.string().min(10, 'Use DD/MM/YYYY format').regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Must be in DD/MM/YYYY format'),
+  cumulativePercent: z.string().min(1, 'Please type cumulative completion progress'),
 }).refine((data) => {
   if (data.completedOnPlan === 'NO' && (!data.reasonsForPending || data.reasonsForPending.trim().length === 0)) {
     return false;
