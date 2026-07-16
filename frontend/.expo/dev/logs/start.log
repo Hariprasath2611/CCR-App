@@ -2206,3 +2206,5 @@
 {"_e":"metro:bundling:progress","_t":1784210072547,"id":"3","progress":0,"total":1,"current":0}
 {"_e":"metro:bundling:progress","_t":1784210075318,"id":"3","progress":0,"total":1,"current":0}
 {"_e":"metro:bundling:done","_t":1784210075356,"id":"3","total":1,"ms":3352.7839}
+{"_e":"metro:client_log","_t":1784210166384,"level":"error","data":["Login error details:","[AxiosError: Network Error]"]}
+{"_e":"metro:server_log","_t":1784210258726,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
