@@ -41,7 +41,12 @@ export const generateReportHTML = (report: ConsolidatedReport): string => {
     };
   };
 
-  const dates = getDates(weekNumber);
+  const firstWithDates = subjects.find(s => s.fromDate && s.toDate);
+  const defaultDates = getDates(weekNumber);
+  const dates = {
+    from: firstWithDates?.fromDate ? firstWithDates.fromDate.replace(/\//g, '.') : defaultDates.from,
+    to: firstWithDates?.toDate ? firstWithDates.toDate.replace(/\//g, '.') : defaultDates.to,
+  };
 
   const tableRowsHtml = subjects.map((subj, index) => {
     const actualTopicsText = subj.topicsCoveredText || '';
