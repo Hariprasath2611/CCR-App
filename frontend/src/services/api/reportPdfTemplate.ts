@@ -218,7 +218,6 @@ export const generateReportHTML = (report: ConsolidatedReport): string => {
             <th style="width: 7%;">If deviation, Period required to complete</th>
             <th style="width: 4%;">Sign. of the faculty In-charge</th>
             <th style="width: 4%;">HoD Remarks</th>
-            <th style="width: 4%;">Principal Remarks</th>
           </tr>
         </thead>
         <tbody>
