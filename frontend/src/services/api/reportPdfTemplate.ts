@@ -80,7 +80,6 @@ export const generateReportHTML = (report: ConsolidatedReport): string => {
         <td style="vertical-align: top;"><ul style="margin: 0; padding-left: 12px; font-size: 9px;">${plannedBullets}</ul></td>
         <td style="vertical-align: top;">
           <ul style="margin: 0; padding-left: 12px; font-size: 9px;">${topicsBullets}</ul>
-          <div style="font-size: 8.5px; font-weight: bold; margin-top: 4px; padding-left: 2px;">(${subj.coverage}% Completed)</div>
         </td>
         <td style="text-align: center; vertical-align: middle;">${periodsPlanned}</td>
         <td style="text-align: center; vertical-align: middle;">${periodsHandled}</td>
@@ -212,13 +211,14 @@ export const generateReportHTML = (report: ConsolidatedReport): string => {
             <th style="width: 14%;">Sub-code & Name</th>
             <th style="width: 12%;">Staff In charge</th>
             <th style="width: 18%;">Topics to be handled in this week as per plan</th>
-            <th style="width: 18%;">Actual Topics Covered & (%) Completed</th>
+            <th style="width: 18%;">Actual Topics Covered</th>
             <th style="width: 6%;">No. of Periods Planned for this week</th>
             <th style="width: 6%;">No. of Periods Handled</th>
             <th style="width: 7%;">Cumulative % Unit wise Completed</th>
             <th style="width: 7%;">If deviation, Period required to complete</th>
             <th style="width: 4%;">Sign. of the faculty In-charge</th>
             <th style="width: 4%;">HoD Remarks</th>
+            <th style="width: 4%;">Principal Remarks</th>
           </tr>
         </thead>
         <tbody>
