@@ -88,7 +88,7 @@ export const generateReportHTML = (report: ConsolidatedReport): string => {
         </td>
         <td style="text-align: center; vertical-align: middle;">${periodsPlanned}</td>
         <td style="text-align: center; vertical-align: middle;">${periodsHandled}</td>
-        <td style="text-align: center; vertical-align: middle;">${subj.coverage}%</td>
+        <td style="text-align: center; vertical-align: middle;">${subj.cumulativePercent || (subj.coverage + '%')}</td>
         <td style="vertical-align: middle; font-size: 9px; text-align: center;">${deviationText || '-'}</td>
         <td style="vertical-align: middle;"></td>
         <td style="vertical-align: middle; font-size: 9px;">${subj.reasonsForPending || ''}</td>
