@@ -1,8 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const planController_1 = require("../controllers/planController");
+const plan_controller_1 = require("../controllers/plan.controller");
 const auth_1 = require("../middleware/auth");
+const authorize_1 = require("../middleware/authorize");
+const validate_1 = require("../middleware/validate");
+const plan_schema_1 = require("../validators/plan.schema");
 const router = (0, express_1.Router)();
-router.post('/create', auth_1.authenticateToken, planController_1.createPlan);
+router.post('/create', auth_1.authenticateToken, (0, authorize_1.authorize)('STAFF', 'HOD', 'ADMIN'), (0, validate_1.validateBody)(plan_schema_1.createPlanSchema), plan_controller_1.createPlan);
 exports.default = router;

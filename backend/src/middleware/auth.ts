@@ -1,21 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
+import { config } from '../config/env';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_ccms_key_12345';
-
-export interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    role: string;
-    isClassCoordinator: boolean;
-    department: string;
-    assignedClassId?: string;
-  };
+export interface UserTokenPayload {
+  id: string;
+  email: string;
+  role: string;
+  isClassCoordinator: boolean;
+  department: string;
+  assignedClassId?: string;
 }
 
 export const authenticateToken = (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -27,7 +24,7 @@ export const authenticateToken = (
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const decoded = jwt.verify(token, config.jwtSecret) as UserTokenPayload;
     req.user = {
       id: decoded.id,
       email: decoded.email,

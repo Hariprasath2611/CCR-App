@@ -1,8 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const extraHoursController_1 = require("../controllers/extraHoursController");
+const extraHours_controller_1 = require("../controllers/extraHours.controller");
 const auth_1 = require("../middleware/auth");
+const authorize_1 = require("../middleware/authorize");
+const validate_1 = require("../middleware/validate");
+const extraHours_schema_1 = require("../validators/extraHours.schema");
 const router = (0, express_1.Router)();
-router.post('/request', auth_1.authenticateToken, extraHoursController_1.requestExtraHours);
+router.post('/request', auth_1.authenticateToken, (0, authorize_1.authorize)('STAFF', 'HOD', 'ADMIN'), (0, validate_1.validateBody)(extraHours_schema_1.requestExtraHoursSchema), extraHours_controller_1.requestExtraHours);
 exports.default = router;

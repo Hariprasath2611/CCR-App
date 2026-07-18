@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
-
-// Load env variables
-dotenv.config();
+import helmet from 'helmet';
+import { corsOptions } from './config/cors';
+import { errorHandler } from './middleware/errorHandler';
+import { prisma } from './lib/prisma';
 
 // Route imports
 import authRoutes from './routes/authRoutes';
@@ -17,22 +17,29 @@ import principalRoutes from './routes/principalRoutes';
 
 const app = express();
 
-// Standard Middlewares
-app.use(cors());
-app.use(express.json());
+// Security & Standard Middlewares
+app.use(helmet());
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
-// Log incoming requests
+// Request Logger
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
 
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'UP', timestamp: new Date().toISOString() });
+// Health check with database connection check
+app.get('/health', async (req, res) => {
+  try {
+    await prisma.$runCommandRaw({ ping: 1 });
+    res.json({ status: 'UP', database: 'CONNECTED', timestamp: new Date().toISOString() });
+  } catch (err: any) {
+    res.status(500).json({ status: 'DEGRADED', database: 'DISCONNECTED', error: err.message });
+  }
 });
 
-// v1 routes
+// v1 API Routes
 app.use('/v1/auth', authRoutes);
 app.use('/v1/sync', syncRoutes);
 app.use('/v1/plans', planRoutes);
@@ -47,10 +54,7 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Endpoint not found' });
 });
 
-// Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Unhandled Server Error:', err);
-  res.status(500).json({ error: 'Internal server error' });
-});
+// Global Error handling middleware
+app.use(errorHandler);
 
 export default app;

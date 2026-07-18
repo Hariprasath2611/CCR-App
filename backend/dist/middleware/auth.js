@@ -35,7 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authenticateToken = void 0;
 const jwt = __importStar(require("jsonwebtoken"));
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_ccms_key_12345';
+const env_1 = require("../config/env");
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -43,7 +43,7 @@ const authenticateToken = (req, res, next) => {
         return res.status(401).json({ error: 'Access token required' });
     }
     try {
-        const decoded = jwt.verify(token, JWT_SECRET);
+        const decoded = jwt.verify(token, env_1.config.jwtSecret);
         req.user = {
             id: decoded.id,
             email: decoded.email,

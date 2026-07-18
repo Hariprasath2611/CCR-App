@@ -4,7 +4,7 @@ exports.submitProgress = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const submitProgress = async (req, res) => {
-    const { id, facultyId, subjectCode, classId, academicWeekNumber, completedTopicIds, pendingTopicIds, reasonsForPending, extraHoursRequested, submittedAt, periodsPlanned, periodsHandled, periodsRequired, topicsCoveredText, } = req.body;
+    const { id, facultyId, subjectCode, classId, academicWeekNumber, completedTopicIds, pendingTopicIds, reasonsForPending, extraHoursRequested, submittedAt, periodsPlanned, periodsHandled, periodsRequired, topicsCoveredText, fromDate, toDate, cumulativePercent, } = req.body;
     if (!id || !facultyId || !subjectCode || !classId || academicWeekNumber === undefined || !completedTopicIds) {
         return res.status(400).json({ error: 'Missing required progress log fields' });
     }
@@ -30,6 +30,9 @@ const submitProgress = async (req, res) => {
                 periodsHandled: pHandled,
                 periodsRequired: pRequired,
                 topicsCoveredText: topicsCoveredText || null,
+                fromDate: fromDate || null,
+                toDate: toDate || null,
+                cumulativePercent: cumulativePercent || null,
             },
             create: {
                 id,
@@ -46,6 +49,9 @@ const submitProgress = async (req, res) => {
                 periodsHandled: pHandled,
                 periodsRequired: pRequired,
                 topicsCoveredText: topicsCoveredText || null,
+                fromDate: fromDate || null,
+                toDate: toDate || null,
+                cumulativePercent: cumulativePercent || null,
             },
         });
         return res.json({ success: true, log });

@@ -88,11 +88,30 @@ const getWeeklyReport = async (req, res) => {
             let periodsHandled = null;
             let periodsRequired = null;
             let topicsCoveredText = '';
+            let fromDate = null;
+            let toDate = null;
+            let cumulativePercent = null;
             if (latestLog) {
                 // Parse completed topic ids
                 const completedArr = latestLog.completedTopicIds.split(',').filter(Boolean);
                 completedTopicsCount = completedArr.length;
                 coverage = totalTopicsCount > 0 ? Math.round((completedTopicsCount / totalTopicsCount) * 100) : 0;
+                if (latestLog.cumulativePercent) {
+                    cumulativePercent = latestLog.cumulativePercent;
+                    // Attempt to parse number for numeric coverage average calculation
+                    const pctMatch = latestLog.cumulativePercent.match(/(\d+)\s*%/);
+                    if (pctMatch) {
+                        coverage = parseInt(pctMatch[1]);
+                    }
+                    else {
+                        const numMatch = latestLog.cumulativePercent.match(/(\d+)/);
+                        if (numMatch) {
+                            coverage = parseInt(numMatch[1]);
+                        }
+                    }
+                }
+                fromDate = latestLog.fromDate || null;
+                toDate = latestLog.toDate || null;
                 // If they submitted a log exactly for this week, set status to Submitted
                 if (latestLog.academicWeekNumber === weekNum) {
                     status = 'Submitted';
@@ -119,6 +138,9 @@ const getWeeklyReport = async (req, res) => {
                 periodsRequired,
                 topicsCoveredText,
                 plannedTopicsText: plannedTopicsText || 'Topics from syllabus schedule',
+                fromDate,
+                toDate,
+                cumulativePercent,
             };
         }));
         // Calculate dynamic overall coverage

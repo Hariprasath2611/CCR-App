@@ -5,9 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const dotenv_1 = __importDefault(require("dotenv"));
-// Load env variables
-dotenv_1.default.config();
+const helmet_1 = __importDefault(require("helmet"));
+const cors_2 = require("./config/cors");
+const errorHandler_1 = require("./middleware/errorHandler");
+const prisma_1 = require("./lib/prisma");
 // Route imports
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const syncRoutes_1 = __importDefault(require("./routes/syncRoutes"));
@@ -18,19 +19,27 @@ const reportRoutes_1 = __importDefault(require("./routes/reportRoutes"));
 const hodRoutes_1 = __importDefault(require("./routes/hodRoutes"));
 const principalRoutes_1 = __importDefault(require("./routes/principalRoutes"));
 const app = (0, express_1.default)();
-// Standard Middlewares
-app.use((0, cors_1.default)());
-app.use(express_1.default.json());
-// Log incoming requests
+// Security & Standard Middlewares
+app.use((0, helmet_1.default)());
+app.use((0, cors_1.default)(cors_2.corsOptions));
+app.use(express_1.default.json({ limit: '1mb' }));
+app.use(express_1.default.urlencoded({ extended: true, limit: '1mb' }));
+// Request Logger
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     next();
 });
-// Health check
-app.get('/health', (req, res) => {
-    res.json({ status: 'UP', timestamp: new Date().toISOString() });
+// Health check with database connection check
+app.get('/health', async (req, res) => {
+    try {
+        await prisma_1.prisma.$runCommandRaw({ ping: 1 });
+        res.json({ status: 'UP', database: 'CONNECTED', timestamp: new Date().toISOString() });
+    }
+    catch (err) {
+        res.status(500).json({ status: 'DEGRADED', database: 'DISCONNECTED', error: err.message });
+    }
 });
-// v1 routes
+// v1 API Routes
 app.use('/v1/auth', authRoutes_1.default);
 app.use('/v1/sync', syncRoutes_1.default);
 app.use('/v1/plans', planRoutes_1.default);
@@ -43,9 +52,6 @@ app.use('/v1/principal', principalRoutes_1.default);
 app.use((req, res) => {
     res.status(404).json({ error: 'Endpoint not found' });
 });
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error('Unhandled Server Error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-});
+// Global Error handling middleware
+app.use(errorHandler_1.errorHandler);
 exports.default = app;

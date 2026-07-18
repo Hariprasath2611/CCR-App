@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { syncInit } from '../controllers/syncController';
+import { syncInit } from '../controllers/sync.controller';
 import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
 
-router.get('/init', authenticateToken as any, syncInit as any);
+router.get('/init', authenticateToken, syncInit);
 
 export default router;
