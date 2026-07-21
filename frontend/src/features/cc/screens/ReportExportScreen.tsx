@@ -9,6 +9,7 @@ import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { CCStackParamList } from '@navigation/types';
 import { generateReportHTML } from '@services/api/reportPdfTemplate';
+import { generateReportWord } from '@services/api/reportWordTemplate';
 
 type RouteParams = RouteProp<CCStackParamList, 'ReportExport'>;
 
@@ -17,7 +18,8 @@ export const ReportExportScreen = () => {
   const navigation = useNavigation();
   const reportId = route.params?.reportId;
 
-  const [isExporting, setIsExporting] = useState(false);
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
+  const [isExportingWord, setIsExportingWord] = useState(false);
   const reports = useReportStore((state) => state.reports);
   const subjectProgressList = useReportStore((state) => state.subjectProgressList);
 
@@ -91,7 +93,7 @@ export const ReportExportScreen = () => {
   const dates = getDates(weekNumber);
 
   const handleExportPDF = async () => {
-    setIsExporting(true);
+    setIsExportingPDF(true);
     try {
       const html = generateReportHTML(report);
       const { uri } = await Print.printToFileAsync({ html });
@@ -100,9 +102,27 @@ export const ReportExportScreen = () => {
       console.error('Failed to export PDF:', err);
       Alert.alert('Export Failed', 'An error occurred while generating the PDF.');
     } finally {
-      setIsExporting(false);
+      setIsExportingPDF(false);
     }
   };
+
+  const handleExportWord = async () => {
+    setIsExportingWord(true);
+    try {
+      const uri = await generateReportWord(report);
+      await Sharing.shareAsync(uri, {
+        UTI: 'com.microsoft.word.doc',
+        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      });
+    } catch (err) {
+      console.error('Failed to export Word:', err);
+      Alert.alert('Export Failed', 'An error occurred while generating the Word document.');
+    } finally {
+      setIsExportingWord(false);
+    }
+  };
+
+  const isExporting = isExportingPDF || isExportingWord;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -110,10 +130,10 @@ export const ReportExportScreen = () => {
         <Card.Content style={styles.cardContent}>
           <View style={styles.header}>
             <View style={styles.iconBox}>
-              <MaterialCommunityIcons name="file-pdf-box" size={32} color="#EF4444" />
+              <MaterialCommunityIcons name="file-document-multiple-outline" size={32} color="#0F52BA" />
             </View>
             <View style={styles.headerText}>
-              <Text style={styles.title}>Export Spreadsheet Report</Text>
+              <Text style={styles.title}>Export Syllabus Report</Text>
               <Text style={styles.subtitle}>
                 Class: {classId} · Week {weekNumber}
               </Text>
@@ -138,18 +158,29 @@ export const ReportExportScreen = () => {
           <Divider style={styles.divider} />
 
           <Text style={styles.desc}>
-            This action compiles the weekly course coverage statistics and planned syllabus topics into a standardized PDF document ready for printing or institutional submission.
+            This action compiles the weekly course coverage statistics and planned syllabus topics into a standardized document ready for printing or institutional submission.
           </Text>
 
           <Button
             mode="contained"
-            icon="share-variant"
+            icon="file-pdf-box"
             style={styles.exportBtn}
             labelStyle={styles.btnLabel}
             onPress={handleExportPDF}
             disabled={isExporting}
           >
-            {isExporting ? 'Generating PDF...' : 'Share / Export PDF Report'}
+            {isExportingPDF ? 'Generating PDF...' : 'Share / Export PDF Report'}
+          </Button>
+
+          <Button
+            mode="contained"
+            icon="file-word-box"
+            style={[styles.exportBtn, { backgroundColor: '#2B579A', marginTop: 12 }]}
+            labelStyle={styles.btnLabel}
+            onPress={handleExportWord}
+            disabled={isExporting}
+          >
+            {isExportingWord ? 'Generating DOCX...' : 'Share / Export Word Report'}
           </Button>
 
           {isExporting && (

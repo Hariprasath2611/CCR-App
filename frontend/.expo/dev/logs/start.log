@@ -2479,3 +2479,54 @@
 {"_e":"devserver:start","_t":1784398133484,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
 {"_e":"metro:config","_t":1784398134344,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
 {"_e":"expo:dev-tools-plugin:load","_t":1784398135817,"plugins":[{"packageName":"expo-sqlite","bannerTitle":"expo-sqlite","cliBanner":false,"webpageEndpoint":"/_expo/plugins/expo-sqlite"}]}
+{"_e":"root:init","_t":1784637429590,"format":"v0-jsonl","version":"57.0.4"}
+{"_e":"devserver:start","_t":1784637429812,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1784637432588,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1784637469838,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1784637501373,"id":"1","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1784637501373,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784637501379,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1784637501557,"id":"1","progress":0.09,"total":10,"current":3}
+{"_e":"metro:bundling:progress","_t":1784637501665,"id":"1","progress":0.09,"total":18,"current":3}
+{"_e":"metro:bundling:progress","_t":1784637501667,"id":"1","progress":0.09,"total":18,"current":4}
+{"_e":"metro:bundling:progress","_t":1784637501792,"id":"1","progress":0.09,"total":101,"current":15}
+{"_e":"metro:bundling:progress","_t":1784637501899,"id":"1","progress":0.09,"total":207,"current":17}
+{"_e":"metro:bundling:progress","_t":1784637502001,"id":"1","progress":0.09,"total":228,"current":18}
+{"_e":"metro:bundling:progress","_t":1784637502038,"id":"1","progress":0.09,"total":228,"current":19}
+{"_e":"metro:bundling:progress","_t":1784637502154,"id":"1","progress":0.09,"total":276,"current":68}
+{"_e":"metro:bundling:progress","_t":1784637502254,"id":"1","progress":0.09,"total":330,"current":93}
+{"_e":"metro:bundling:progress","_t":1784637502364,"id":"1","progress":0.09,"total":351,"current":102}
+{"_e":"metro:bundling:progress","_t":1784637502468,"id":"1","progress":0.09,"total":396,"current":115}
+{"_e":"metro:bundling:progress","_t":1784637502573,"id":"1","progress":0.1961722673445347,"total":508,"current":225}
+{"_e":"metro:bundling:progress","_t":1784637502690,"id":"1","progress":0.1961722673445347,"total":544,"current":228}
+{"_e":"metro:bundling:progress","_t":1784637502713,"id":"1","progress":0.1961722673445347,"total":544,"current":229}
+{"_e":"metro:bundling:progress","_t":1784637502813,"id":"1","progress":0.3006064209274673,"total":580,"current":318}
+{"_e":"metro:bundling:progress","_t":1784637502959,"id":"1","progress":0.31310865655801334,"total":638,"current":357}
+{"_e":"metro:bundling:progress","_t":1784637503102,"id":"1","progress":0.3683612461895776,"total":664,"current":403}
+{"_e":"metro:bundling:progress","_t":1784637503208,"id":"1","progress":0.3914266929651545,"total":780,"current":488}
+{"_e":"metro:bundling:progress","_t":1784637503335,"id":"1","progress":0.4207450693937181,"total":814,"current":528}
+{"_e":"metro:bundling:progress","_t":1784637503435,"id":"1","progress":0.42296552195533177,"total":838,"current":545}
+{"_e":"metro:bundling:progress","_t":1784637503544,"id":"1","progress":0.4281744684417712,"total":839,"current":549}
+{"_e":"metro:bundling:progress","_t":1784637503672,"id":"1","progress":0.4575194886016245,"total":856,"current":579}
+{"_e":"metro:bundling:progress","_t":1784637503794,"id":"1","progress":0.49927424224127526,"total":910,"current":643}
+{"_e":"metro:bundling:progress","_t":1784637503894,"id":"1","progress":0.49927424224127526,"total":989,"current":691}
+{"_e":"metro:bundling:progress","_t":1784637504049,"id":"1","progress":0.6328535576437171,"total":1027,"current":817}
+{"_e":"metro:bundling:progress","_t":1784637504155,"id":"1","progress":0.6555522882681042,"total":1035,"current":838}
+{"_e":"metro:bundling:progress","_t":1784637504190,"id":"1","progress":0.6571177857126187,"total":1035,"current":839}
+{"_e":"metro:bundling:progress","_t":1784637504299,"id":"1","progress":0.6571177857126187,"total":1065,"current":856}
+{"_e":"metro:bundling:progress","_t":1784637504399,"id":"1","progress":0.7382123107241247,"total":1115,"current":958}
+{"_e":"metro:bundling:progress","_t":1784637504499,"id":"1","progress":0.7539977959539164,"total":1162,"current":1009}
+{"_e":"metro:bundling:progress","_t":1784637504603,"id":"1","progress":0.7772209630001538,"total":1174,"current":1035}
+{"_e":"metro:bundling:progress","_t":1784637504715,"id":"1","progress":0.7772209630001538,"total":1199,"current":1048}
+{"_e":"metro:bundling:progress","_t":1784637504814,"id":"1","progress":0.7772209630001538,"total":1357,"current":1127}
+{"_e":"metro:bundling:progress","_t":1784637504922,"id":"1","progress":0.7772209630001538,"total":1383,"current":1174}
+{"_e":"metro:bundling:progress","_t":1784637505039,"id":"1","progress":0.7772209630001538,"total":1392,"current":1188}
+{"_e":"metro:bundling:progress","_t":1784637505158,"id":"1","progress":0.7772209630001538,"total":1415,"current":1226}
+{"_e":"metro:bundling:progress","_t":1784637505261,"id":"1","progress":0.9299432735097071,"total":1430,"current":1379}
+{"_e":"metro:bundling:progress","_t":1784637505361,"id":"1","progress":0.9605078434674351,"total":1454,"current":1425}
+{"_e":"metro:bundling:progress","_t":1784637505462,"id":"1","progress":0.999,"total":1478,"current":1478}
+{"_e":"metro:bundling:done","_t":1784637505544,"id":"1","total":1478,"ms":4170.9756}
+{"_e":"metro:server_log","_t":1784637526424,"level":"info","data":["Launching DevTools..."]}
+{"_e":"metro:server_log","_t":1784637526427,"level":"warn","data":["No compatible apps connected. React Native DevTools can only be used with the Hermes engine."]}
+{"_e":"metro:server_log","_t":1784637527651,"level":"info","data":["Launching DevTools..."]}
+{"_e":"metro:server_log","_t":1784637527651,"level":"warn","data":["No compatible apps connected. React Native DevTools can only be used with the Hermes engine."]}
