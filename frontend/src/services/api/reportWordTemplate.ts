@@ -12,7 +12,7 @@ import {
   BorderStyle,
   VerticalAlign
 } from 'docx';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { ConsolidatedReport } from '@features/cc/store/useReportStore';
 import { JEC_LOGO_BASE64 } from '../../assets/logo_base64';
 

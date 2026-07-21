@@ -25,6 +25,7 @@ import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { generateReportHTML } from '@services/api/reportPdfTemplate';
+import { generateReportWord } from '@services/api/reportWordTemplate';
 
 const { width } = Dimensions.get('window');
 
@@ -216,6 +217,31 @@ export const DeptSummaryScreen = () => {
       console.error('Failed to export PDF:', err);
       Alert.alert('Export Failed', 'An error occurred while generating the PDF.');
     }
+  };
+
+  const handleExportWord = async (rep: ConsolidatedReport) => {
+    try {
+      const uri = await generateReportWord(rep);
+      await Sharing.shareAsync(uri, {
+        UTI: 'com.microsoft.word.doc',
+        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      });
+    } catch (err) {
+      console.error('Failed to export Word:', err);
+      Alert.alert('Export Failed', 'An error occurred while generating the Word document.');
+    }
+  };
+
+  const handleExportReport = (rep: ConsolidatedReport) => {
+    Alert.alert(
+      'Export Report',
+      'Choose a file format to export the weekly course coverage report:',
+      [
+        { text: 'PDF Document', onPress: () => handleExportPDF(rep) },
+        { text: 'Word Document (DOCX)', onPress: () => handleExportWord(rep) },
+        { text: 'Cancel', style: 'cancel' }
+      ]
+    );
   };
 
   // Breadcrumbs element
@@ -477,7 +503,7 @@ export const DeptSummaryScreen = () => {
                 <WeeklyCourseCoverageReportCard 
                   report={selectedReport} 
                   showDownloadButton={true} 
-                  onDownloadPress={() => handleExportPDF(selectedReport)}
+                  onDownloadPress={() => handleExportReport(selectedReport)}
                 />
               </ScrollView>
 
