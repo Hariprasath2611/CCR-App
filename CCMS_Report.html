@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CCMS Project Report - Team Members & Roles</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      color: #111111;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      text-align: center;
+      margin-top: 20px;
+      margin-bottom: 5px;
+      letter-spacing: 0.5px;
+    }
+    .subtitle {
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 5px;
+    }
+    .class-info {
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    p.intro {
+      font-size: 14.5px;
+      margin-bottom: 25px;
+      text-align: justify;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 35px;
+    }
+    th, td {
+      border: 1px solid #d3d3d3;
+      padding: 12px;
+      font-size: 14px;
+    }
+    th {
+      background-color: #eaf2f0;
+      color: #111111;
+      font-weight: bold;
+      text-align: left;
+    }
+    th.sno, td.sno {
+      text-align: center;
+      width: 8%;
+    }
+    th.member, td.member {
+      width: 32%;
+    }
+    th.role, td.role {
+      width: 60%;
+    }
+    h2 {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+    .responsibility-section {
+      margin-bottom: 25px;
+    }
+    .responsibility-section p {
+      font-size: 14.5px;
+      margin-bottom: 15px;
+      text-align: justify;
+    }
+    .responsibility-title {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .footer-box {
+      border: 1.5px solid #aec5be;
+      background-color: #eaf2f0;
+      padding: 15px 20px;
+      margin-top: 40px;
+      border-radius: 2px;
+    }
+    .footer-box p {
+      font-size: 14.5px;
+      margin: 0;
+      font-weight: bold;
+    }
+    @media print {
+      body {
+        margin: 20px;
+      }
+      .footer-box {
+        background-color: #eaf2f0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      th {
+        background-color: #eaf2f0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>CCMS</h1>
+  <div class="subtitle">Team Members & Roles</div>
+  <div class="class-info">3rd & 4th Year – CSE A</div>
+
+  <p class="intro">
+    The following team members are currently working on the CCMS project. The responsibilities are divided based on the development requirements of the project.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="sno">S.No</th>
+        <th class="member">Team Member</th>
+        <th class="role">Role / Responsibility</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="sno">1</td>
+        <td>Hariprasath</td>
+        <td>Mobile Application – Frontend and Backend Development</td>
+      </tr>
+      <tr>
+        <td class="sno">2</td>
+        <td>Deepak S</td>
+        <td>Database Development</td>
+      </tr>
+      <tr>
+        <td class="sno">3</td>
+        <td>Akashprabu</td>
+        <td>Testing</td>
+      </tr>
+      <tr>
+        <td class="sno">4</td>
+        <td>Muthu ganesh</td>
+        <td>Integration</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Project Responsibility Summary</h2>
+
+  <div class="responsibility-section">
+    <span class="responsibility-title">Frontend and Backend Development – Mobile Application:</span>
+    <p>
+      Hariprasath is responsible for frontend and backend development, including designing and implementing the React Native screens, developing server-side API endpoints, implementing role-based authentication, and handling business logic for class coordinators.
+    </p>
+
+    <span class="responsibility-title">Database Development:</span>
+    <p>
+      Deepak S is responsible for database architecture and design. This includes writing the Prisma schema for MongoDB, defining relationships, and implementing database access logic for handling weekly syllabus plans and progress logs.
+    </p>
+
+    <span class="responsibility-title">Testing:</span>
+    <p>
+      Akashprabu is responsible for testing the application frontend and backend services, checking the workflow transitions, and ensuring correct data validation and offline SQLite storage behavior.
+    </p>
+
+    <span class="responsibility-title">Integration:</span>
+    <p>
+      Muthu ganesh is responsible for the overall integration of the application, linking mobile client services with the backend REST endpoints, and configuring Word/PDF document generation engines.
+    </p>
+  </div>
+
+  <div class="footer-box">
+    <p>Project: CCMS – Class Coordinator Management System (50% of Work Completed)</p>
+  </div>
+
+</body>
+</html>
