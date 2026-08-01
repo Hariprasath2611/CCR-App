@@ -7,14 +7,14 @@
 ## PROJECT STATUS & LAUNCH REPORT
 
 **TO:** The Dean, Jaya Engineering College  
-**FROM:** CCMS Project Development Team, Department of Computer Science & Engineering (CSE)  
+**FROM:** CCR Project Development Team, Department of Computer Science & Engineering (CSE)  
 **DATE:** July 25, 2026  
-**SUBJECT:** Demonstration Feedback, Development Progress, and Launch Plan for the Class Coordinator Management System (CCMS)  
+**SUBJECT:** Demonstration Feedback, Development Progress, and Launch Plan for the Course Coverage Report (CCR) Application  
 
 ---
 
 ### 1. Executive Summary
-The **Class Coordinator Management System (CCMS)** is an application designed to streamline and automate academic tracking, weekly syllabus coverage, and progress log monitoring. This report provides an update on the recent HOD demonstration, feedback received, resolution status of requested features, and the finalized deployment plan for the Computer Science & Engineering department.
+The **Course Coverage Report (CCR)** application is designed to streamline and automate academic tracking, weekly syllabus coverage, and progress log monitoring. This report provides an update on the recent HOD demonstration, feedback received, resolution status of requested features, and the finalized deployment plan for the Computer Science & Engineering department.
 
 ---
 
@@ -30,7 +30,7 @@ The development team has been actively addressing feedback to ensure the applica
 ---
 
 ### 3. HOD Demonstration & Feedback Summary
-On **July 23, 2026**, the development team presented a live demonstration of the CCMS mobile application to the Head of the Department (HOD) of Computer Science & Engineering.
+On **July 23, 2026**, the development team presented a live demonstration of the CCR mobile application to the Head of the Department (HOD) of Computer Science & Engineering.
 
 #### Key Feedback & Discussions:
 1.  **General Evaluation:** The HOD commended the application's user interface, navigation, and the automated weekly syllabus completion reports, noting it would significantly save time for class coordinators.
