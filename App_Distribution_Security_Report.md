@@ -7,14 +7,14 @@
 ## SECURITY & DISTRIBUTION REPORT: PRIVATE APP DEPLOYMENT
 
 **TO:** The Dean, Jaya Engineering College  
-**FROM:** CCMS Project Development Team, Department of Computer Science & Engineering (CSE)  
+**FROM:** CCR Project Development Team, Department of Computer Science & Engineering (CSE)  
 **DATE:** August 1, 2026  
 **SUBJECT:** Technical Evaluation of Mobile App Distribution Security and Intellectual Property (IP) Protection  
 
 ---
 
 ### 1. Objective
-This report evaluates the security risks of sharing raw application installer files (`.apk` for Android and `.ipa` for iOS) via email, and addresses concerns regarding intellectual property leakage. We propose technical deployment strategies to distribute the Class Coordinator Management System (CCMS) securely to faculty without exposing the app to public store directories or competing institutions.
+This report evaluates the security risks of sharing raw application installer files (`.apk` for Android and `.ipa` for iOS) via email, and addresses concerns regarding intellectual property leakage. We propose technical deployment strategies to distribute the Course Coverage Report (CCR) application securely to faculty without exposing the app to public store directories or competing institutions.
 
 ---
 
