@@ -37,17 +37,15 @@ Publishing the application on the public Google Play Store or Apple App Store pr
 ### 4. Technical Solutions: Secure Private Distribution Channels
 To ensure that the app is accessible **only** to verified faculty members of Jaya Engineering College and is kept hidden from competing organizations, the development team proposes the following secure, private distribution channels. These methods bypass public store listings completely:
 
-#### Option A: Managed Private Google Play Store (For Android)
-*   **How it works:** The app is published to the Google Play Console under a **Private App** configuration, which is bound exclusively to the college's official Google Workspace domain (`@jec.com`).
-*   **Privacy:** The app will **never** appear on the public Google Play Store. It is invisible to search queries from outside the college.
-*   **Security:** Only verified users logged into their Google account with their official `@jec.com` email address can see and install the app on their devices.
+#### Option A: Managed Private App Store Distribution (Android & iOS)
+*   **Android (Managed Google Play):**
+    *   **How it works:** The app is published to the Google Play Console under a **Private App** configuration, bound exclusively to the college's official Google Workspace domain (`@jec.com`).
+    *   **Privacy & Security:** The app will **never** appear on the public Google Play Store (invisible to external search queries). Only verified users logged in with their `@jec.com` email address can see and install it.
+*   **iOS (Apple School Manager & Custom Apps):**
+    *   **How it works:** The app is submitted to Apple via **Apple School Manager** as a **Custom App**, rather than a public app.
+    *   **Privacy & Security:** The app is unlisted and does not appear in public App Store search results or categories. It is restricted to Jaya Engineering College and accessed securely via private redemption codes or managed distribution portals.
 
-#### Option B: Apple Custom App Distribution (For iOS)
-*   **How it works:** The app is submitted to Apple via **Apple School Manager** as a **Custom App**, rather than a public app.
-*   **Privacy:** The app undergoes Apple's security review but is **unlisted**. It does not appear in public App Store search results or categories.
-*   **Security:** The app is only available to authorized organizations (Jaya Engineering College) and is accessed securely via private redemption codes or managed mobile distribution portals.
-
-#### Option C: Secure Self-Hosted JEC Distribution Portal
+#### Option B: Secure Self-Hosted JEC Distribution Portal
 *   **How it works:** The APK and IPA files are hosted on a secure, private web server owned and controlled by the college.
 *   **Privacy:** The download page is placed behind an authentication firewall. Faculty must first log in with their college credentials (`@jec.com`) to access the download buttons.
 *   **Security:** We can restrict access so that downloads are only allowed when connected to the college's physical campus Wi-Fi network, ensuring complete containment.
@@ -55,7 +53,7 @@ To ensure that the app is accessible **only** to verified faculty members of Jay
 ---
 
 ### 5. Recommendation
-To achieve absolute control over who has access to the application and prevent any unauthorized duplication of our idea, the development team recommends **Option C (Self-Hosted Private Portal)** for initial testing, transitioning to **Options A and B (Managed Private Stores)** for seamless, secure updates. 
+To achieve absolute control over who has access to the application and prevent any unauthorized duplication of our idea, the development team recommends **Option B (Self-Hosted Private Portal)** for initial testing, transitioning to **Option A (Managed Private App Store Distribution)** for seamless, secure updates. 
 
 This technical approach ensures:
 1. Zero public visibility.
