@@ -47,7 +47,7 @@ To prevent further delays to the deployment schedule (initially targeted for CSE
 We propose removing **Akashprabu** from his role in Testing & SQLite Offline Validation, and appointing a new member to take over these responsibilities:
 
 * **Outgoing Member:** Akashprabu (3rd Year - CSE A)
-* **Incoming Member:** `[Insert New Member Name]` (`[Insert Year/Department, e.g., 3rd/4th Year - CSE A]`)
+* **Incoming Member:** _______________ (3rd Year - CSE A)
 * **Assigned Role:** Quality Assurance (QA) Specialist, SQLite Offline Synchronization & Data Validation Coordinator
 
 #### Primary Responsibilities of the New Member:
