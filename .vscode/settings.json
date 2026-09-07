@@ -12,10 +12,13 @@
         ".git"
     ],
     "java.import.gradle.annotationProcessing.enabled": false,
-    "java.import.gradle.enabled": true,
-    "java.import.gradle.wrapper.enabled": true,
-    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.import.gradle.enabled": false,
+    "java.import.gradle.wrapper.enabled": false,
+    "java.import.maven.enabled": false,
+    "java.autobuild.enabled": false,
+    "java.configuration.updateBuildConfiguration": "disabled",
     "gradle.autoDetect": "off",
+    "gradle.nestedProjects": false,
     "files.exclude": {
         "**/node_modules": true
     },
