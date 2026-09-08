@@ -129,12 +129,52 @@ export const getDBConnection = async (): Promise<SQLite.SQLiteDatabase> => {
           { id: '24', subject_code: 'CCS375', unit: 'Unit 4', topic_id: 'ccs375_4', topic_title: 'Database Connection & Persistent Engines' },
           { id: '25', subject_code: 'CCS375', unit: 'Unit 5', topic_id: 'ccs375_5', topic_title: 'AJAX Communication & XML Web Services' },
 
-          // CCS370 - UI and UX Design
-          { id: '26', subject_code: 'CCS370', unit: 'Unit 1', topic_id: 'ccs370_1', topic_title: 'UX Foundations & User Research' },
-          { id: '27', subject_code: 'CCS370', unit: 'Unit 2', topic_id: 'ccs370_2', topic_title: 'Wireframing Visual Layout & Styling' },
-          { id: '28', subject_code: 'CCS370', unit: 'Unit 3', topic_id: 'ccs370_3', topic_title: 'Interactive Prototyping Systems' },
-          { id: '29', subject_code: 'CCS370', unit: 'Unit 4', topic_id: 'ccs370_4', topic_title: 'Usability Evaluation & Analytics' },
-          { id: '30', subject_code: 'CCS370', unit: 'Unit 5', topic_id: 'ccs370_5', topic_title: 'Design Principles & Native App Guidelines' },
+          // CCS370 - UI and UX Design (Detailed)
+          // Unit 1
+          { id: 'ccs370_u1_1', subject_code: 'CCS370', unit: 'Unit 1', topic_id: 'ccs370_u1_t1', topic_title: 'UI vs. UX Design' },
+          { id: 'ccs370_u1_2', subject_code: 'CCS370', unit: 'Unit 1', topic_id: 'ccs370_u1_t2', topic_title: 'Core Stages of Design Thinking' },
+          { id: 'ccs370_u1_3', subject_code: 'CCS370', unit: 'Unit 1', topic_id: 'ccs370_u1_t3', topic_title: 'Divergent and Convergent Thinking' },
+          { id: 'ccs370_u1_4', subject_code: 'CCS370', unit: 'Unit 1', topic_id: 'ccs370_u1_t4', topic_title: 'Brainstorming and Game storming' },
+          { id: 'ccs370_u1_5', subject_code: 'CCS370', unit: 'Unit 1', topic_id: 'ccs370_u1_t5', topic_title: 'Observational Empathy' },
+          // Unit 2
+          { id: 'ccs370_u2_1', subject_code: 'CCS370', unit: 'Unit 2', topic_id: 'ccs370_u2_t1', topic_title: 'Visual and UI Principles' },
+          { id: 'ccs370_u2_2', subject_code: 'CCS370', unit: 'Unit 2', topic_id: 'ccs370_u2_t2', topic_title: 'UI Elements and Patterns' },
+          { id: 'ccs370_u2_3', subject_code: 'CCS370', unit: 'Unit 2', topic_id: 'ccs370_u2_t3', topic_title: 'Interaction Behaviors and Principles' },
+          { id: 'ccs370_u2_4', subject_code: 'CCS370', unit: 'Unit 2', topic_id: 'ccs370_u2_t4', topic_title: 'Branding' },
+          { id: 'ccs370_u2_5', subject_code: 'CCS370', unit: 'Unit 2', topic_id: 'ccs370_u2_t5', topic_title: 'Style Guides' },
+          // Unit 3
+          { id: 'ccs370_u3_1', subject_code: 'CCS370', unit: 'Unit 3', topic_id: 'ccs370_u3_t1', topic_title: 'Introduction to User Experience' },
+          { id: 'ccs370_u3_2', subject_code: 'CCS370', unit: 'Unit 3', topic_id: 'ccs370_u3_t2', topic_title: 'Why You Should Care about User Experience' },
+          { id: 'ccs370_u3_3', subject_code: 'CCS370', unit: 'Unit 3', topic_id: 'ccs370_u3_t3', topic_title: 'Understanding User Experience' },
+          { id: 'ccs370_u3_4', subject_code: 'CCS370', unit: 'Unit 3', topic_id: 'ccs370_u3_t4', topic_title: 'Defining the UX Design Process and its Methodology' },
+          { id: 'ccs370_u3_5', subject_code: 'CCS370', unit: 'Unit 3', topic_id: 'ccs370_u3_t5', topic_title: 'Research in User Experience Design' },
+          { id: 'ccs370_u3_6', subject_code: 'CCS370', unit: 'Unit 3', topic_id: 'ccs370_u3_t6', topic_title: 'Tools and Method used for Research' },
+          { id: 'ccs370_u3_7', subject_code: 'CCS370', unit: 'Unit 3', topic_id: 'ccs370_u3_t7', topic_title: 'User Needs and its Goals' },
+          { id: 'ccs370_u3_8', subject_code: 'CCS370', unit: 'Unit 3', topic_id: 'ccs370_u3_t8', topic_title: 'Know about Business Goals' },
+          // Unit 4
+          { id: 'ccs370_u4_1', subject_code: 'CCS370', unit: 'Unit 4', topic_id: 'ccs370_u4_t1', topic_title: 'Sketching Principles' },
+          { id: 'ccs370_u4_2', subject_code: 'CCS370', unit: 'Unit 4', topic_id: 'ccs370_u4_t2', topic_title: 'Sketching Red Routes' },
+          { id: 'ccs370_u4_3', subject_code: 'CCS370', unit: 'Unit 4', topic_id: 'ccs370_u4_t3', topic_title: 'Responsive Design' },
+          { id: 'ccs370_u4_4', subject_code: 'CCS370', unit: 'Unit 4', topic_id: 'ccs370_u4_t4', topic_title: 'Wireframing' },
+          { id: 'ccs370_u4_5', subject_code: 'CCS370', unit: 'Unit 4', topic_id: 'ccs370_u4_t5', topic_title: 'Creating Wireflows' },
+          { id: 'ccs370_u4_6', subject_code: 'CCS370', unit: 'Unit 4', topic_id: 'ccs370_u4_t6', topic_title: 'Building a Prototype' },
+          { id: 'ccs370_u4_7', subject_code: 'CCS370', unit: 'Unit 4', topic_id: 'ccs370_u4_t7', topic_title: 'Building High-Fidelity Mockups' },
+          { id: 'ccs370_u4_8', subject_code: 'CCS370', unit: 'Unit 4', topic_id: 'ccs370_u4_t8', topic_title: 'Designing Efficiently with Tools' },
+          { id: 'ccs370_u4_9', subject_code: 'CCS370', unit: 'Unit 4', topic_id: 'ccs370_u4_t9', topic_title: 'Interaction Patterns' },
+          { id: 'ccs370_u4_10', subject_code: 'CCS370', unit: 'Unit 4', topic_id: 'ccs370_u4_t10', topic_title: 'Conducting Usability Tests' },
+          { id: 'ccs370_u4_11', subject_code: 'CCS370', unit: 'Unit 4', topic_id: 'ccs370_u4_t11', topic_title: 'Other Evaluative User Research Methods' },
+          { id: 'ccs370_u4_12', subject_code: 'CCS370', unit: 'Unit 4', topic_id: 'ccs370_u4_t12', topic_title: 'Synthesizing Test Findings' },
+          { id: 'ccs370_u4_13', subject_code: 'CCS370', unit: 'Unit 4', topic_id: 'ccs370_u4_t13', topic_title: 'Prototype Iteration' },
+          // Unit 5
+          { id: 'ccs370_u5_1', subject_code: 'CCS370', unit: 'Unit 5', topic_id: 'ccs370_u5_t1', topic_title: 'Identifying and Writing Problem Statements' },
+          { id: 'ccs370_u5_2', subject_code: 'CCS370', unit: 'Unit 5', topic_id: 'ccs370_u5_t2', topic_title: 'Identifying Appropriate Research Methods' },
+          { id: 'ccs370_u5_3', subject_code: 'CCS370', unit: 'Unit 5', topic_id: 'ccs370_u5_t3', topic_title: 'Creating Personas' },
+          { id: 'ccs370_u5_4', subject_code: 'CCS370', unit: 'Unit 5', topic_id: 'ccs370_u5_t4', topic_title: 'Solution Ideation' },
+          { id: 'ccs370_u5_5', subject_code: 'CCS370', unit: 'Unit 5', topic_id: 'ccs370_u5_t5', topic_title: 'Creating User Stories' },
+          { id: 'ccs370_u5_6', subject_code: 'CCS370', unit: 'Unit 5', topic_id: 'ccs370_u5_t6', topic_title: 'Creating Scenarios' },
+          { id: 'ccs370_u5_7', subject_code: 'CCS370', unit: 'Unit 5', topic_id: 'ccs370_u5_t7', topic_title: 'Flow Diagrams' },
+          { id: 'ccs370_u5_8', subject_code: 'CCS370', unit: 'Unit 5', topic_id: 'ccs370_u5_t8', topic_title: 'Flow Mapping' },
+          { id: 'ccs370_u5_9', subject_code: 'CCS370', unit: 'Unit 5', topic_id: 'ccs370_u5_t9', topic_title: 'Information Architecture' },
 
           // MX3084 - Disaster Management
           { id: '31', subject_code: 'MX3084', unit: 'Unit 1', topic_id: 'mx3084_1', topic_title: 'Understanding Disasters & Hazard Types' },
