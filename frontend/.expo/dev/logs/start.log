@@ -2613,3 +2613,63 @@
 {"_e":"metro:client_log","_t":1784797121303,"level":"warn","data":["No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?"]}
 {"_e":"metro:client_log","_t":1784797390212,"level":"error","data":["Login error details:","[AxiosError: Request failed with status code 401]"]}
 {"_e":"metro:server_log","_t":1784797755039,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"root:init","_t":1788848500132,"format":"v0-jsonl","version":"57.0.9"}
+{"_e":"devserver:start","_t":1788848500216,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1788848506667,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1788848509093,"plugins":[{"packageName":"expo-sqlite","bannerTitle":"expo-sqlite","cliBanner":false,"webpageEndpoint":"/_expo/plugins/expo-sqlite"}]}
+{"_e":"metro:instantiate","_t":1788848527709,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1788848547001,"id":"1","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1788848547002,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1788848547008,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1788848547108,"id":"1","progress":0.08163265306122448,"total":21,"current":6}
+{"_e":"metro:bundling:progress","_t":1788848547234,"id":"1","progress":0.08163265306122448,"total":105,"current":14}
+{"_e":"metro:bundling:progress","_t":1788848547334,"id":"1","progress":0.08163265306122448,"total":227,"current":17}
+{"_e":"metro:bundling:progress","_t":1788848547439,"id":"1","progress":0.08163265306122448,"total":228,"current":19}
+{"_e":"metro:bundling:progress","_t":1788848547538,"id":"1","progress":0.08163265306122448,"total":388,"current":100}
+{"_e":"metro:bundling:progress","_t":1788848547710,"id":"1","progress":0.08163265306122448,"total":388,"current":101}
+{"_e":"metro:bundling:progress","_t":1788848547810,"id":"1","progress":0.1047502625643498,"total":482,"current":156}
+{"_e":"metro:bundling:progress","_t":1788848547920,"id":"1","progress":0.17259137110726647,"total":544,"current":226}
+{"_e":"metro:bundling:progress","_t":1788848548719,"id":"1","progress":0.17412210748269896,"total":544,"current":227}
+{"_e":"metro:bundling:progress","_t":1788848548871,"id":"1","progress":0.18704046566146304,"total":548,"current":237}
+{"_e":"metro:bundling:progress","_t":1788848548971,"id":"1","progress":0.31138685366166174,"total":586,"current":327}
+{"_e":"metro:bundling:progress","_t":1788848549071,"id":"1","progress":0.338642008025159,"total":653,"current":380}
+{"_e":"metro:bundling:progress","_t":1788848549174,"id":"1","progress":0.338642008025159,"total":657,"current":381}
+{"_e":"metro:bundling:progress","_t":1788848549221,"id":"1","progress":0.338642008025159,"total":657,"current":382}
+{"_e":"metro:bundling:progress","_t":1788848549321,"id":"1","progress":0.3879510204081633,"total":700,"current":436}
+{"_e":"metro:bundling:progress","_t":1788848549426,"id":"1","progress":0.4157867147023601,"total":839,"current":541}
+{"_e":"metro:bundling:progress","_t":1788848549725,"id":"1","progress":0.4173252396220599,"total":839,"current":542}
+{"_e":"metro:bundling:progress","_t":1788848549825,"id":"1","progress":0.45841042455146547,"total":898,"current":608}
+{"_e":"metro:bundling:progress","_t":1788848549926,"id":"1","progress":0.45841042455146547,"total":964,"current":646}
+{"_e":"metro:bundling:progress","_t":1788848550045,"id":"1","progress":0.45841042455146547,"total":964,"current":647}
+{"_e":"metro:bundling:progress","_t":1788848550145,"id":"1","progress":0.5428589605063175,"total":1003,"current":739}
+{"_e":"metro:bundling:progress","_t":1788848550250,"id":"1","progress":0.6477528063665429,"total":1035,"current":833}
+{"_e":"metro:bundling:progress","_t":1788848550350,"id":"1","progress":0.6995041322314048,"total":1100,"current":920}
+{"_e":"metro:bundling:progress","_t":1788848550454,"id":"1","progress":0.7089848086257653,"total":1133,"current":954}
+{"_e":"metro:bundling:progress","_t":1788848550637,"id":"1","progress":0.7104719289485225,"total":1133,"current":955}
+{"_e":"metro:bundling:progress","_t":1788848550750,"id":"1","progress":0.7104719289485225,"total":1138,"current":959}
+{"_e":"metro:bundling:progress","_t":1788848550906,"id":"1","progress":0.770860027490128,"total":1172,"current":1029}
+{"_e":"metro:bundling:progress","_t":1788848551008,"id":"1","progress":0.770860027490128,"total":1342,"current":1120}
+{"_e":"metro:bundling:progress","_t":1788848551347,"id":"1","progress":0.770860027490128,"total":1342,"current":1121}
+{"_e":"metro:bundling:progress","_t":1788848551455,"id":"1","progress":0.770860027490128,"total":1344,"current":1121}
+{"_e":"metro:bundling:progress","_t":1788848551666,"id":"1","progress":0.770860027490128,"total":1344,"current":1122}
+{"_e":"metro:bundling:progress","_t":1788848551771,"id":"1","progress":0.770860027490128,"total":1347,"current":1124}
+{"_e":"metro:bundling:progress","_t":1788848551808,"id":"1","progress":0.770860027490128,"total":1347,"current":1125}
+{"_e":"metro:bundling:progress","_t":1788848551917,"id":"1","progress":0.770860027490128,"total":1362,"current":1130}
+{"_e":"metro:bundling:progress","_t":1788848551945,"id":"1","progress":0.770860027490128,"total":1362,"current":1131}
+{"_e":"metro:bundling:progress","_t":1788848552046,"id":"1","progress":0.770860027490128,"total":1383,"current":1166}
+{"_e":"metro:bundling:progress","_t":1788848552079,"id":"1","progress":0.770860027490128,"total":1383,"current":1167}
+{"_e":"metro:bundling:progress","_t":1788848552179,"id":"1","progress":0.8833073136966467,"total":1413,"current":1328}
+{"_e":"metro:bundling:progress","_t":1788848552279,"id":"1","progress":0.9247110649241365,"total":1433,"current":1378}
+{"_e":"metro:bundling:progress","_t":1788848552384,"id":"1","progress":0.9782467415665242,"total":1463,"current":1447}
+{"_e":"metro:bundling:progress","_t":1788848552491,"id":"1","progress":0.9782467415665242,"total":1477,"current":1460}
+{"_e":"metro:bundling:progress","_t":1788848552605,"id":"1","progress":0.99190286732305,"total":1479,"current":1473}
+{"_e":"metro:bundling:progress","_t":1788848553778,"id":"1","progress":0.9932501036599386,"total":1479,"current":1474}
+{"_e":"metro:bundling:progress","_t":1788848553878,"id":"1","progress":0.9986500170286605,"total":1481,"current":1480}
+{"_e":"metro:bundling:progress","_t":1788848553992,"id":"1","progress":0.998654557838163,"total":1486,"current":1485}
+{"_e":"metro:bundling:progress","_t":1788848554144,"id":"1","progress":0.999,"total":1486,"current":1486}
+{"_e":"metro:bundling:done","_t":1788848554514,"id":"1","total":1486,"ms":7512.6069}
+{"_e":"metro:client_log","_t":1788848558656,"level":"warn","data":["No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?"]}
+{"_e":"metro:client_log","_t":1788848559693,"level":"log","data":["Migrating timetable table to add faculty_name column..."]}
+{"_e":"metro:client_log","_t":1788848559693,"level":"log","data":["Clearing old syllabus progress to seed new subjects..."]}
+{"_e":"metro:client_log","_t":1788848559892,"level":"log","data":["Syllabus data successfully seeded."]}
+{"_e":"metro:client_log","_t":1788848560026,"level":"log","data":["Timetable data successfully seeded."]}
