@@ -2673,3 +2673,37 @@
 {"_e":"metro:client_log","_t":1788848559693,"level":"log","data":["Clearing old syllabus progress to seed new subjects..."]}
 {"_e":"metro:client_log","_t":1788848559892,"level":"log","data":["Syllabus data successfully seeded."]}
 {"_e":"metro:client_log","_t":1788848560026,"level":"log","data":["Timetable data successfully seeded."]}
+{"_e":"root:init","_t":1788855806149,"format":"v0-jsonl","version":"57.0.9"}
+{"_e":"devserver:start","_t":1788855806237,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1788855809697,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1788855811081,"plugins":[{"packageName":"expo-sqlite","bannerTitle":"expo-sqlite","cliBanner":false,"webpageEndpoint":"/_expo/plugins/expo-sqlite"}]}
+{"_e":"metro:instantiate","_t":1788855821145,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1788855831878,"id":"1","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1788855831879,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1788855831882,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1788855831982,"id":"1","progress":0.006944444444444444,"total":228,"current":19}
+{"_e":"metro:bundling:progress","_t":1788855832082,"id":"1","progress":0.1372452951757094,"total":386,"current":143}
+{"_e":"metro:bundling:progress","_t":1788855832182,"id":"1","progress":0.19140625,"total":560,"current":245}
+{"_e":"metro:bundling:progress","_t":1788855832282,"id":"1","progress":0.267851646660511,"total":684,"current":354}
+{"_e":"metro:bundling:progress","_t":1788855832382,"id":"1","progress":0.3675082994427975,"total":739,"current":448}
+{"_e":"metro:bundling:progress","_t":1788855832483,"id":"1","progress":0.39462211126350705,"total":823,"current":517}
+{"_e":"metro:bundling:progress","_t":1788855832582,"id":"1","progress":0.4901596481214464,"total":877,"current":614}
+{"_e":"metro:bundling:progress","_t":1788855832682,"id":"1","progress":0.5862817527704348,"total":956,"current":732}
+{"_e":"metro:bundling:progress","_t":1788855832803,"id":"1","progress":0.605964460176437,"total":1011,"current":787}
+{"_e":"metro:bundling:progress","_t":1788855832902,"id":"1","progress":0.6998712852252162,"total":1077,"current":901}
+{"_e":"metro:bundling:progress","_t":1788855833013,"id":"1","progress":0.7623053265514578,"total":1119,"current":977}
+{"_e":"metro:bundling:progress","_t":1788855833114,"id":"1","progress":0.8247446075632265,"total":1165,"current":1058}
+{"_e":"metro:bundling:progress","_t":1788855833214,"id":"1","progress":0.8247446075632265,"total":1216,"current":1098}
+{"_e":"metro:bundling:progress","_t":1788855833314,"id":"1","progress":0.8606651647455241,"total":1259,"current":1168}
+{"_e":"metro:bundling:progress","_t":1788855833416,"id":"1","progress":0.9162288603915276,"total":1285,"current":1230}
+{"_e":"metro:bundling:progress","_t":1788855833516,"id":"1","progress":0.9338533045291736,"total":1308,"current":1264}
+{"_e":"metro:bundling:progress","_t":1788855833659,"id":"1","progress":0.9468338771558679,"total":1336,"current":1300}
+{"_e":"metro:bundling:progress","_t":1788855833769,"id":"1","progress":0.9468338771558679,"total":1436,"current":1339}
+{"_e":"metro:bundling:progress","_t":1788855833871,"id":"1","progress":0.9468338771558679,"total":1487,"current":1372}
+{"_e":"metro:bundling:progress","_t":1788855833981,"id":"1","progress":0.999,"total":1487,"current":1487}
+{"_e":"metro:bundling:done","_t":1788855834042,"id":"1","total":1487,"ms":2163.6893}
+{"_e":"metro:client_log","_t":1788855838495,"level":"warn","data":["No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?"]}
+{"_e":"metro:bundling:started","_t":1788856289790,"id":"3","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1788856289790,"id":"3","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1788856289846,"id":"3","total":1,"ms":55.3635}
+{"_e":"metro:client_log","_t":1788856293424,"level":"warn","data":["No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?"]}
