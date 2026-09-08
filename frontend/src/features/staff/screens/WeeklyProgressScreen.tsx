@@ -6,6 +6,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AppTextInput } from '@components/common/AppTextInput';
+import { CreatableTopicSelect } from '@components/common/CreatableTopicSelect';
 import { AppButton } from '@components/common/AppButton';
 import { AppDropdown } from '@components/common/AppDropdown';
 import { DatePickerField } from '@components/common/DatePickerField';
@@ -138,6 +139,7 @@ export const WeeklyProgressScreen = () => {
   });
 
   const completedOnPlan = watch('completedOnPlan');
+  const unit = watch('unit');
 
   useEffect(() => {
     const loadSyllabus = async () => {
@@ -365,14 +367,13 @@ export const WeeklyProgressScreen = () => {
         control={control}
         name="topicsCovered"
         render={({ field: { onChange, value } }) => (
-          <AppTextInput
+          <CreatableTopicSelect
             label="Topics Covered (Type topics covered)"
+            unit={unit}
+            syllabusNodes={syllabusNodes}
             value={value || ''}
             onChangeText={onChange}
             error={errors.topicsCovered?.message}
-            multiline
-            numberOfLines={8}
-            style={styles.textInput}
           />
         )}
       />
