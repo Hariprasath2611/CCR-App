@@ -4,6 +4,8 @@ import { Card, Text, Checkbox } from 'react-native-paper';
 import { SQLiteSyllabusNode } from '@database/types';
 import { Palette } from '@theme/colors';
 
+import { ms } from '@theme/responsive';
+
 interface SyllabusProgressCardProps {
   node: SQLiteSyllabusNode;
   onToggleStatus: (topicId: string, currentStatus: boolean) => void;
@@ -39,8 +41,8 @@ export const SyllabusProgressCard: React.FC<SyllabusProgressCardProps> = ({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Palette.surface,
-    borderRadius: 8,
-    marginVertical: 4,
+    borderRadius: ms(8),
+    marginVertical: ms(4),
     elevation: 1,
   },
   completedCard: {
@@ -49,15 +51,15 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingVertical: ms(8),
+    paddingHorizontal: ms(12),
   },
   textContainer: {
     flex: 1,
-    paddingLeft: 8,
+    paddingLeft: ms(8),
   },
   title: {
-    fontSize: 15,
+    fontSize: ms(15),
     fontWeight: '500',
     color: Palette.textDark,
   },
@@ -66,8 +68,8 @@ const styles = StyleSheet.create({
     color: Palette.textLight,
   },
   subtitle: {
-    fontSize: 12,
+    fontSize: ms(12),
     color: Palette.textLight,
-    marginTop: 2,
+    marginTop: ms(2),
   },
 });

@@ -30,6 +30,8 @@ import { useReportStore, SubjectProgress } from '@features/cc/store/useReportSto
 
 import { WeeklyCourseCoverageReportCard } from '../../cc/components/WeeklyCourseCoverageReportCard';
 
+import { ms } from '@theme/responsive';
+
 const MOCK_EXTRA_HOUR = {
   faculty: 'Ms. E Uva Shakthi',
   subject: 'Computer Networks (CS3591)',
@@ -134,8 +136,8 @@ export const RequestDetailsScreen = () => {
   if (!data) {
     return (
       <View style={styles.centerContainer}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold', color: Palette.textDark, textAlign: 'center' }}>No Request Details Found</Text>
-        <Text style={{ marginTop: 8, color: Palette.textLight, textAlign: 'center' }}>
+        <Text style={{ fontSize: ms(18), fontWeight: 'bold', color: Palette.textDark, textAlign: 'center' }}>No Request Details Found</Text>
+        <Text style={{ marginTop: ms(8), color: Palette.textLight, textAlign: 'center' }}>
           This request could not be found or has already been processed.
         </Text>
       </View>
@@ -176,7 +178,7 @@ export const RequestDetailsScreen = () => {
                 <View style={styles.subjectInfo}>
                   <Text style={styles.subjectCode}>{s.code}</Text>
                   <Text style={styles.subjectName}>{s.name}</Text>
-                  <Text style={{ fontSize: 12.5, color: Palette.textLight, marginTop: 2 }}>Faculty: {s.faculty || 'Unknown'}</Text>
+                  <Text style={{ fontSize: ms(12.5), color: Palette.textLight, marginTop: ms(2) }}>Faculty: {s.faculty || 'Unknown'}</Text>
                 </View>
                 <View style={styles.subjectRight}>
                   <Text style={[styles.coveragePct, { color: coverageColor(s.coverage) }]}>
@@ -189,7 +191,7 @@ export const RequestDetailsScreen = () => {
                       { backgroundColor: s.status === 'Submitted' ? '#E6F4EA' : '#FFF3E0' },
                     ]}
                     textStyle={{
-                      fontSize: 10,
+                      fontSize: ms(10),
                       color: s.status === 'Submitted' ? Palette.success : Palette.warning,
                     }}
                   >
@@ -296,75 +298,75 @@ const styles = StyleSheet.create({
     backgroundColor: '#FAF9F6', // Off-white premium workspace canvas
   },
   content: {
-    padding: 16,
-    paddingBottom: 40,
+    padding: ms(16),
+    paddingBottom: ms(40),
   },
   banner: {
     backgroundColor: '#0F52BA', // Royal/Sapphire Blue
-    borderRadius: 16,
-    padding: 18,
-    marginBottom: 16,
+    borderRadius: ms(16),
+    padding: ms(18),
+    marginBottom: ms(16),
     shadowColor: '#0F52BA',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: ms(0), height: ms(4) },
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 3,
   },
   bannerTitle: {
-    fontSize: 18,
+    fontSize: ms(18),
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 4,
+    marginBottom: ms(4),
   },
   bannerSub: {
-    fontSize: 13,
+    fontSize: ms(13),
     color: '#C8D8F5',
-    marginBottom: 12,
+    marginBottom: ms(12),
   },
   statusChip: {
     backgroundColor: '#F59E0B',
     alignSelf: 'flex-start',
-    borderRadius: 8,
+    borderRadius: ms(8),
   },
   statusChipText: {
-    fontSize: 11,
+    fontSize: ms(11),
     color: '#FFFFFF',
     fontWeight: '700',
   },
   card: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    marginBottom: 16,
+    borderRadius: ms(16),
+    marginBottom: ms(16),
     borderWidth: 1,
     borderColor: '#F1F5F9',
     shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: ms(0), height: ms(2) },
     shadowOpacity: 0.02,
     shadowRadius: 6,
     elevation: 1.5,
   },
   sectionLabel: {
-    fontSize: 11,
+    fontSize: ms(11),
     fontWeight: '800',
     color: '#64748B',
     textTransform: 'uppercase',
     letterSpacing: 1.2,
-    marginBottom: 12,
+    marginBottom: ms(12),
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 10,
+    paddingVertical: ms(10),
     borderBottomWidth: 1,
     borderBottomColor: '#F1F5F9',
   },
   rowLabel: {
-    fontSize: 13,
+    fontSize: ms(13),
     color: '#64748B',
     flex: 1,
   },
   rowValue: {
-    fontSize: 13,
+    fontSize: ms(13),
     color: '#1E293B',
     fontWeight: '500',
     flex: 1.2,
@@ -372,13 +374,13 @@ const styles = StyleSheet.create({
   },
   divider: {
     backgroundColor: '#F1F5F9',
-    marginVertical: 14,
+    marginVertical: ms(14),
   },
   subjectRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: ms(10),
     borderBottomWidth: 1,
     borderBottomColor: '#F1F5F9',
   },
@@ -386,53 +388,53 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   subjectCode: {
-    fontSize: 11,
+    fontSize: ms(11),
     fontWeight: '800',
     color: '#0F52BA',
   },
   subjectName: {
-    fontSize: 14,
+    fontSize: ms(14),
     fontWeight: '700',
     color: '#1E293B',
-    marginTop: 2,
+    marginTop: ms(2),
   },
   subjectRight: {
     alignItems: 'flex-end',
-    gap: 4,
+    gap: ms(4),
   },
   coveragePct: {
-    fontSize: 16,
+    fontSize: ms(16),
     fontWeight: 'bold',
   },
   subjectChip: {
-    height: 22,
-    borderRadius: 8,
+    height: ms(22),
+    borderRadius: ms(8),
   },
   remarksText: {
-    fontSize: 14,
+    fontSize: ms(14),
     color: '#1E293B',
     lineHeight: 22,
     backgroundColor: '#F8FAFC',
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    borderRadius: 10,
-    padding: 12,
+    borderRadius: ms(10),
+    padding: ms(12),
   },
   actionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 16,
-    gap: 12,
+    marginTop: ms(16),
+    gap: ms(12),
   },
   actionBtn: {
     flex: 1,
-    borderRadius: 10,
+    borderRadius: ms(10),
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Palette.background,
-    padding: 24,
+    padding: ms(24),
   },
 });

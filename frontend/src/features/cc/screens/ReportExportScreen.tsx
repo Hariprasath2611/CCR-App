@@ -11,6 +11,8 @@ import { CCStackParamList } from '@navigation/types';
 import { generateReportHTML } from '@services/api/reportPdfTemplate';
 import { generateReportWord } from '@services/api/reportWordTemplate';
 
+import { ms } from '@theme/responsive';
+
 type RouteParams = RouteProp<CCStackParamList, 'ReportExport'>;
 
 export const ReportExportScreen = () => {
@@ -175,7 +177,7 @@ export const ReportExportScreen = () => {
           <Button
             mode="contained"
             icon="file-word-box"
-            style={[styles.exportBtn, { backgroundColor: '#2B579A', marginTop: 12 }]}
+            style={[styles.exportBtn, { backgroundColor: '#2B579A', marginTop: ms(12) }]}
             labelStyle={styles.btnLabel}
             onPress={handleExportWord}
             disabled={isExporting}
@@ -184,7 +186,7 @@ export const ReportExportScreen = () => {
           </Button>
 
           {isExporting && (
-            <ActivityIndicator size="small" color={Palette.primary} style={{ marginTop: 12 }} />
+            <ActivityIndicator size="small" color={Palette.primary} style={{ marginTop: ms(12) }} />
           )}
         </Card.Content>
       </Card>
@@ -198,23 +200,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
   },
   content: {
-    padding: 16,
+    padding: ms(16),
     justifyContent: 'center',
     minHeight: '80%',
   },
   card: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    borderRadius: ms(20),
     elevation: 3,
     shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 6 },
+    shadowOffset: { width: ms(0), height: ms(6) },
     shadowOpacity: 0.05,
     shadowRadius: 12,
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
   cardContent: {
-    padding: 24,
+    padding: ms(24),
   },
   header: {
     flexDirection: 'row',
@@ -222,57 +224,57 @@ const styles = StyleSheet.create({
   },
   iconBox: {
     backgroundColor: '#FEF2F2',
-    padding: 12,
-    borderRadius: 14,
+    padding: ms(12),
+    borderRadius: ms(14),
   },
   headerText: {
-    marginLeft: 16,
+    marginLeft: ms(16),
     flex: 1,
   },
   title: {
-    fontSize: 18,
+    fontSize: ms(18),
     fontWeight: '800',
     color: '#0F172A',
   },
   subtitle: {
-    fontSize: 12,
+    fontSize: ms(12),
     color: '#64748B',
-    marginTop: 2,
+    marginTop: ms(2),
   },
   divider: {
-    marginVertical: 18,
+    marginVertical: ms(18),
     backgroundColor: '#E2E8F0',
   },
   metaRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: 4,
+    marginVertical: ms(4),
   },
   metaLabel: {
-    fontSize: 13,
+    fontSize: ms(13),
     color: '#64748B',
     fontWeight: '500',
   },
   metaVal: {
-    fontSize: 13,
+    fontSize: ms(13),
     color: '#0F172A',
     fontWeight: '700',
   },
   desc: {
-    fontSize: 12,
+    fontSize: ms(12),
     color: '#64748B',
     lineHeight: 1.8,
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: ms(8),
   },
   exportBtn: {
-    marginTop: 16,
+    marginTop: ms(16),
     backgroundColor: '#0F52BA',
-    borderRadius: 12,
-    paddingVertical: 6,
+    borderRadius: ms(12),
+    paddingVertical: ms(6),
   },
   btnLabel: {
-    fontSize: 14,
+    fontSize: ms(14),
     fontWeight: '800',
     color: '#FFFFFF',
   },
@@ -280,24 +282,24 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
+    padding: ms(32),
     backgroundColor: '#F8FAFC',
   },
   errorTitle: {
-    fontSize: 18,
+    fontSize: ms(18),
     fontWeight: '800',
     color: Palette.textDark,
-    marginTop: 16,
+    marginTop: ms(16),
   },
   errorSub: {
-    fontSize: 13,
+    fontSize: ms(13),
     color: Palette.textLight,
-    marginTop: 4,
+    marginTop: ms(4),
     textAlign: 'center',
   },
   backBtn: {
-    marginTop: 20,
-    borderRadius: 10,
+    marginTop: ms(20),
+    borderRadius: ms(10),
     backgroundColor: Palette.primary,
   },
 });

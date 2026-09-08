@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AppTextInput } from './AppTextInput';
 
+import { ms } from '@theme/responsive';
+
 interface DatePickerFieldProps {
   label: string;
   value: string; // expects DD/MM/YYYY
@@ -54,6 +56,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   input: {
-    marginBottom: 0,
+    marginBottom: ms(0),
   },
 });

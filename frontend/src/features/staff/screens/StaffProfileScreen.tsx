@@ -6,6 +6,8 @@ import { Palette } from '@theme/colors';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { apiClient } from '@services/api/apiClient';
 
+import { ms } from '@theme/responsive';
+
 export const StaffProfileScreen = () => {
   const { user, logout } = useAuthStore();
 
@@ -216,7 +218,7 @@ export const StaffProfileScreen = () => {
               secureTextEntry
               mode="outlined"
               activeOutlineColor={Palette.primary}
-              style={{ marginBottom: 12 }}
+              style={{ marginBottom: ms(12) }}
             />
             <TextInput
               label="New Password"
@@ -225,7 +227,7 @@ export const StaffProfileScreen = () => {
               secureTextEntry
               mode="outlined"
               activeOutlineColor={Palette.primary}
-              style={{ marginBottom: 12 }}
+              style={{ marginBottom: ms(12) }}
             />
             <TextInput
               label="Confirm New Password"
@@ -259,35 +261,35 @@ const styles = StyleSheet.create({
     backgroundColor: Palette.background,
   },
   content: {
-    padding: 20,
-    paddingBottom: 40,
+    padding: ms(20),
+    paddingBottom: ms(40),
   },
   
   // Profile Card styles
   profileCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 24,
+    borderRadius: ms(24),
     shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 10 },
+    shadowOffset: { width: ms(0), height: ms(10) },
     shadowOpacity: 0.04,
     shadowRadius: 16,
     elevation: 3,
     borderWidth: 1,
     borderColor: '#F1F5F9',
-    marginBottom: 24,
-    paddingVertical: 12,
+    marginBottom: ms(24),
+    paddingVertical: ms(12),
   },
   headerContent: {
     alignItems: 'center',
   },
   avatarContainer: {
     position: 'relative',
-    marginBottom: 16,
+    marginBottom: ms(16),
   },
   avatar: {
     backgroundColor: Palette.primary,
     shadowColor: Palette.primary,
-    shadowOffset: { width: 0, height: 8 },
+    shadowOffset: { width: ms(0), height: ms(8) },
     shadowOpacity: 0.15,
     shadowRadius: 10,
     elevation: 4,
@@ -298,12 +300,12 @@ const styles = StyleSheet.create({
   },
   cameraBadge: {
     position: 'absolute',
-    bottom: 2,
-    right: 2,
+    bottom: ms(2),
+    right: ms(2),
     backgroundColor: Palette.accent,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: ms(28),
+    height: ms(28),
+    borderRadius: ms(14),
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
@@ -311,45 +313,45 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   facultyName: {
-    fontSize: 20,
+    fontSize: ms(20),
     fontWeight: '900',
     color: Palette.textDark,
     letterSpacing: -0.4,
     textAlign: 'center',
   },
   designationText: {
-    fontSize: 13,
+    fontSize: ms(13),
     fontWeight: '700',
     color: Palette.primary,
-    marginTop: 4,
+    marginTop: ms(4),
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   collegeText: {
-    fontSize: 12,
+    fontSize: ms(12),
     color: Palette.textLight,
     fontWeight: '600',
-    marginTop: 2,
+    marginTop: ms(2),
   },
 
   // Section titles
   sectionTitle: {
-    fontSize: 12,
+    fontSize: ms(12),
     fontWeight: '800',
     color: Palette.textLight,
     letterSpacing: 1.0,
     textTransform: 'uppercase',
-    marginBottom: 8,
-    paddingLeft: 4,
+    marginBottom: ms(8),
+    paddingLeft: ms(4),
   },
 
   // Details Cards
   detailsCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    marginBottom: 20,
+    borderRadius: ms(20),
+    marginBottom: ms(20),
     shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 6 },
+    shadowOffset: { width: ms(0), height: ms(6) },
     shadowOpacity: 0.02,
     shadowRadius: 12,
     elevation: 1,
@@ -357,38 +359,38 @@ const styles = StyleSheet.create({
     borderColor: '#F1F5F9',
   },
   listContent: {
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingVertical: ms(4),
+    paddingHorizontal: ms(8),
   },
   listTitle: {
-    fontSize: 14,
+    fontSize: ms(14),
     fontWeight: '700',
     color: Palette.textDark,
   },
   listDesc: {
-    fontSize: 12.5,
+    fontSize: ms(12.5),
     color: Palette.textLight,
     fontWeight: '500',
-    marginTop: 1,
+    marginTop: ms(1),
   },
   divider: {
     backgroundColor: '#F1F5F9',
-    height: 1,
+    height: ms(1),
   },
 
   // Sign out button
   signOutBtn: {
-    borderRadius: 16,
-    paddingVertical: 6,
+    borderRadius: ms(16),
+    paddingVertical: ms(6),
     shadowColor: Palette.error,
-    shadowOffset: { width: 0, height: 8 },
+    shadowOffset: { width: ms(0), height: ms(8) },
     shadowOpacity: 0.15,
     shadowRadius: 10,
     elevation: 3,
-    marginTop: 16,
+    marginTop: ms(16),
   },
   btnLabel: {
-    fontSize: 15,
+    fontSize: ms(15),
     fontWeight: '800',
     color: '#FFFFFF',
     letterSpacing: 0.3,

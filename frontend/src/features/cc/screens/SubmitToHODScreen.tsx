@@ -13,6 +13,8 @@ import { CCStackParamList } from '@navigation/types';
 import { Palette } from '@theme/colors';
 import { Feather } from '@expo/vector-icons';
 
+import { ms } from '@theme/responsive';
+
 type RouteParams = RouteProp<CCStackParamList, 'SubmitToHOD'>;
 
 const submissionSchema = z.object({
@@ -110,45 +112,45 @@ const styles = StyleSheet.create({
     backgroundColor: Palette.background,
   },
   content: {
-    padding: 16,
-    paddingBottom: 32,
+    padding: ms(16),
+    paddingBottom: ms(32),
     justifyContent: 'center',
     flexGrow: 1,
   },
   card: {
     backgroundColor: Palette.surface,
-    borderRadius: 12,
-    padding: 8,
+    borderRadius: ms(12),
+    padding: ms(8),
     elevation: 2,
   },
   iconHeader: {
     alignItems: 'center',
-    marginVertical: 12,
+    marginVertical: ms(12),
   },
   title: {
-    fontSize: 20,
+    fontSize: ms(20),
     fontWeight: 'bold',
     color: Palette.textDark,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: ms(13),
     color: Palette.textLight,
     textAlign: 'center',
-    marginTop: 6,
+    marginTop: ms(6),
     lineHeight: 18,
-    paddingHorizontal: 8,
+    paddingHorizontal: ms(8),
   },
   divider: {
-    height: 1,
+    height: ms(1),
     backgroundColor: Palette.border,
-    marginVertical: 20,
+    marginVertical: ms(20),
   },
   textInput: {
-    marginTop: 8,
+    marginTop: ms(8),
   },
   submitBtn: {
-    marginTop: 20,
+    marginTop: ms(20),
     backgroundColor: Palette.primary,
   },
 });

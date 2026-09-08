@@ -19,6 +19,8 @@ import { syncEngine } from '@features/sync/syncEngine';
 import { StaffStackParamList } from '@navigation/types';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
+import { ms } from '@theme/responsive';
+
 type RouteParams = RouteProp<StaffStackParamList, 'WeeklyProgress'>;
 
 const getTodayDDMMYYYY = () => {
@@ -277,7 +279,7 @@ export const WeeklyProgressScreen = () => {
         </View>
       </View>
       {/* ── REPORT DETAILS SECTION ── */}
-      <Card style={{ backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 20, borderWidth: 1, borderColor: '#F1F5F9' }}>
+      <Card style={{ backgroundColor: '#FFFFFF', borderRadius: ms(16), padding: ms(16), marginBottom: ms(20), borderWidth: 1, borderColor: '#F1F5F9' }}>
         
         {/* Course Duration Dates (From Date & To Date) */}
         <View style={styles.periodsRow}>
@@ -492,8 +494,8 @@ const styles = StyleSheet.create({
     backgroundColor: Palette.background,
   },
   content: {
-    padding: 16,
-    paddingBottom: 32,
+    padding: ms(16),
+    paddingBottom: ms(32),
   },
   centerContainer: {
     flex: 1,
@@ -502,70 +504,70 @@ const styles = StyleSheet.create({
     backgroundColor: Palette.background,
   },
   loadingText: {
-    marginTop: 12,
-    fontSize: 15,
+    marginTop: ms(12),
+    fontSize: ms(15),
     color: Palette.textLight,
   },
   formCard: {
     backgroundColor: Palette.surface,
-    borderRadius: 12,
+    borderRadius: ms(12),
     elevation: 2,
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: ms(24),
     borderBottomWidth: 1,
     borderBottomColor: Palette.border,
-    paddingBottom: 16,
+    paddingBottom: ms(16),
   },
   subjectIconBox: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: ms(50),
+    height: ms(50),
+    borderRadius: ms(25),
     backgroundColor: '#EDF5FD',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
+    marginRight: ms(16),
   },
   headerInfo: {
     flex: 1,
   },
   headingText: {
-    fontSize: 20,
+    fontSize: ms(20),
     fontWeight: '900',
     color: Palette.textDark,
     letterSpacing: -0.4,
   },
   subjectName: {
-    fontSize: 15,
+    fontSize: ms(15),
     fontWeight: '700',
     color: Palette.primary,
-    marginTop: 2,
+    marginTop: ms(2),
   },
   weekLabel: {
-    fontSize: 12,
+    fontSize: ms(12),
     color: Palette.textLight,
-    marginTop: 2,
+    marginTop: ms(2),
     fontWeight: '500',
   },
   dropdownSpacing: {
-    marginTop: 12,
+    marginTop: ms(12),
   },
   textInput: {
-    marginTop: 14,
+    marginTop: ms(14),
   },
   radioGroupLabel: {
-    fontSize: 14,
+    fontSize: ms(14),
     fontWeight: '700',
     color: Palette.textDark,
-    marginTop: 20,
-    marginBottom: 10,
+    marginTop: ms(20),
+    marginBottom: ms(10),
   },
   radioRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: ms(12),
   },
   radioCard: {
     flex: 0.48,
@@ -573,8 +575,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1.5,
     borderColor: Palette.border,
-    borderRadius: 12,
-    padding: 12,
+    borderRadius: ms(12),
+    padding: ms(12),
     backgroundColor: '#FFFFFF',
   },
   radioCardSelected: {
@@ -586,10 +588,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FEF2F2',
   },
   radioLabel: {
-    fontSize: 14,
+    fontSize: ms(14),
     fontWeight: '700',
     color: Palette.textLight,
-    marginLeft: 8,
+    marginLeft: ms(8),
   },
   radioLabelSelected: {
     color: Palette.success,
@@ -598,30 +600,30 @@ const styles = StyleSheet.create({
     color: Palette.error,
   },
   textInputReason: {
-    marginTop: 8,
+    marginTop: ms(8),
   },
   textInputPeriods: {
-    marginTop: 12,
+    marginTop: ms(12),
   },
   periodsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 12,
+    marginTop: ms(12),
   },
   periodCol: {
     flex: 0.48,
   },
   deviationBlock: {
-    marginTop: 8,
+    marginTop: ms(8),
     borderLeftWidth: 3,
     borderLeftColor: Palette.error,
-    paddingLeft: 12,
+    paddingLeft: ms(12),
     backgroundColor: '#FEF2F2',
-    borderRadius: 8,
-    paddingBottom: 8,
+    borderRadius: ms(8),
+    paddingBottom: ms(8),
   },
   submitBtn: {
-    marginTop: 24,
+    marginTop: ms(24),
     backgroundColor: Palette.primary,
   },
 });

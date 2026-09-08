@@ -3,6 +3,8 @@ import { View, StyleSheet } from 'react-native';
 import { Text, Button } from 'react-native-paper';
 import { Palette } from '@theme/colors';
 
+import { ms } from '@theme/responsive';
+
 export const ForgotPasswordScreen = () => {
   return (
     <View style={styles.container}>
@@ -18,14 +20,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: ms(24),
     backgroundColor: Palette.background,
   },
   text: {
     textAlign: 'center',
     color: Palette.textLight,
-    marginTop: 16,
-    marginBottom: 24,
+    marginTop: ms(16),
+    marginBottom: ms(24),
   },
   btn: {
     width: '100%',

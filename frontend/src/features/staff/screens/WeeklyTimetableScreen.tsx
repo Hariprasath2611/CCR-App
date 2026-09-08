@@ -10,6 +10,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StaffStackParamList } from '@navigation/types';
 import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 
+import { ms } from '@theme/responsive';
+
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
 export const WeeklyTimetableScreen = () => {
@@ -138,17 +140,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: Palette.border,
-    paddingVertical: 12,
+    paddingVertical: ms(12),
   },
   tabScrollContent: {
-    paddingHorizontal: 12,
+    paddingHorizontal: ms(12),
   },
   tabButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
+    paddingVertical: ms(8),
+    paddingHorizontal: ms(16),
+    borderRadius: ms(20),
     backgroundColor: '#F1F5F9',
-    marginHorizontal: 4,
+    marginHorizontal: ms(4),
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
@@ -157,7 +159,7 @@ const styles = StyleSheet.create({
     borderColor: Palette.primary,
   },
   tabText: {
-    fontSize: 13,
+    fontSize: ms(13),
     color: Palette.textLight,
     fontWeight: '700',
   },
@@ -168,46 +170,46 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
+    padding: ms(32),
   },
   loadingText: {
-    marginTop: 12,
-    fontSize: 14,
+    marginTop: ms(12),
+    fontSize: ms(14),
     color: Palette.textLight,
   },
   emptyTitle: {
-    fontSize: 18,
+    fontSize: ms(18),
     fontWeight: '800',
     color: Palette.textDark,
-    marginTop: 16,
+    marginTop: ms(16),
   },
   emptySubtitle: {
-    fontSize: 13,
+    fontSize: ms(13),
     color: Palette.textLight,
     textAlign: 'center',
-    marginTop: 6,
+    marginTop: ms(6),
   },
   scroll: {
     flex: 1,
   },
   scrollContent: {
-    padding: 16,
-    paddingBottom: 32,
+    padding: ms(16),
+    paddingBottom: ms(32),
   },
   scheduleHeader: {
-    fontSize: 14,
+    fontSize: ms(14),
     fontWeight: '800',
     color: Palette.textLight,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
-    marginBottom: 14,
+    marginBottom: ms(14),
   },
   card: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    marginBottom: 12,
+    borderRadius: ms(16),
+    marginBottom: ms(12),
     shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: ms(0), height: ms(4) },
     shadowOpacity: 0.02,
     shadowRadius: 8,
     elevation: 1,
@@ -217,29 +219,29 @@ const styles = StyleSheet.create({
   cardContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: ms(12),
+    paddingHorizontal: ms(16),
   },
   periodCol: {
     alignItems: 'center',
-    width: 48,
+    width: ms(48),
   },
   periodNum: {
-    fontSize: 22,
+    fontSize: ms(22),
     fontWeight: '900',
     color: Palette.primary,
   },
   periodLabel: {
-    fontSize: 10,
+    fontSize: ms(10),
     color: Palette.textLight,
     fontWeight: '600',
     textTransform: 'uppercase',
   },
   divider: {
-    height: 40,
-    width: 1,
+    height: ms(40),
+    width: ms(1),
     backgroundColor: '#E2E8F0',
-    marginHorizontal: 16,
+    marginHorizontal: ms(16),
   },
   infoCol: {
     flex: 1,
@@ -247,51 +249,51 @@ const styles = StyleSheet.create({
   subjectRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 2,
+    marginBottom: ms(2),
   },
   subjectCode: {
-    fontSize: 11,
+    fontSize: ms(11),
     fontWeight: '800',
     color: Palette.primary,
-    marginRight: 6,
+    marginRight: ms(6),
   },
   classBadge: {
     backgroundColor: 'rgba(15, 82, 186, 0.08)',
-    borderRadius: 4,
-    paddingHorizontal: 4,
-    paddingVertical: 1,
+    borderRadius: ms(4),
+    paddingHorizontal: ms(4),
+    paddingVertical: ms(1),
   },
   classBadgeText: {
-    fontSize: 9,
+    fontSize: ms(9),
     fontWeight: '800',
     color: Palette.primary,
   },
   subjectName: {
-    fontSize: 15,
+    fontSize: ms(15),
     fontWeight: '700',
     color: Palette.textDark,
   },
   roomRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4,
+    marginTop: ms(4),
   },
   roomText: {
-    fontSize: 11,
+    fontSize: ms(11),
     color: Palette.textLight,
-    marginLeft: 4,
+    marginLeft: ms(4),
     fontWeight: '500',
   },
   actionButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingLeft: 12,
+    paddingLeft: ms(12),
   },
   actionBtnLabel: {
-    fontSize: 10,
+    fontSize: ms(10),
     fontWeight: '800',
     color: Palette.primary,
-    marginTop: 2,
+    marginTop: ms(2),
   },
 });
 

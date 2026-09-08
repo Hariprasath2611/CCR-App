@@ -3,6 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import { TextInput, HelperText } from 'react-native-paper';
 import { Palette } from '@theme/colors';
 
+import { ms } from '@theme/responsive';
+
 interface AppTextInputProps {
   label: string;
   value: string;
@@ -60,12 +62,12 @@ export const AppTextInput: React.FC<AppTextInputProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginBottom: 8,
+    marginBottom: ms(8),
   },
   input: {
     backgroundColor: Palette.surface,
   },
   errorText: {
-    paddingLeft: 4,
+    paddingLeft: ms(4),
   },
 });

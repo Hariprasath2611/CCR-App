@@ -15,6 +15,8 @@ import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { Palette } from '@theme/colors';
 import { syncEngine } from '@features/sync/syncEngine';
 
+import { ms } from '@theme/responsive';
+
 const planSchema = z.object({
   weekNo: z.string().min(1, 'Academic week number is required'),
   subjectCode: z.string().min(1, 'Subject code is required'),
@@ -196,41 +198,41 @@ export const WeeklyPlanFormScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: ms(16),
     backgroundColor: Palette.background,
   },
   formCard: {
     backgroundColor: Palette.surface,
-    borderRadius: 12,
-    marginBottom: 32,
+    borderRadius: ms(12),
+    marginBottom: ms(32),
   },
   syllabusBlock: {
-    marginTop: 16,
+    marginTop: ms(16),
     borderTopWidth: 1,
     borderTopColor: Palette.border,
-    paddingTop: 16,
+    paddingTop: ms(16),
   },
   syllabusLabel: {
-    fontSize: 16,
+    fontSize: ms(16),
     fontWeight: 'bold',
     color: Palette.textDark,
-    marginBottom: 10,
+    marginBottom: ms(10),
   },
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 6,
+    paddingVertical: ms(6),
   },
   topicText: {
-    fontSize: 15,
+    fontSize: ms(15),
     color: Palette.textDark,
     flex: 1,
-    marginLeft: 8,
+    marginLeft: ms(8),
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 24,
+    marginTop: ms(24),
   },
   draftBtn: {
     flex: 0.48,

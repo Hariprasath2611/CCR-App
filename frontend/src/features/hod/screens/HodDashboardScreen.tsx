@@ -9,6 +9,8 @@ import { StaffStackParamList } from '@navigation/types';
 import { useReportStore } from '@features/cc/store/useReportStore';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
+import { ms } from '@theme/responsive';
+
 type HodNav = NativeStackNavigationProp<StaffStackParamList>;
 
 interface ClassData {
@@ -158,16 +160,16 @@ const styles = StyleSheet.create({
     backgroundColor: Palette.background,
   },
   content: {
-    padding: 16,
-    paddingBottom: 32,
+    padding: ms(16),
+    paddingBottom: ms(32),
   },
 
   // Header styles
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 8,
-    marginBottom: 20,
+    marginTop: ms(8),
+    marginBottom: ms(20),
   },
   avatar: {
     backgroundColor: Palette.primary,
@@ -178,32 +180,32 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   headerText: {
-    marginLeft: 14,
+    marginLeft: ms(14),
     flex: 1,
   },
   welcomeLabel: {
-    fontSize: 12,
+    fontSize: ms(12),
     fontWeight: '700',
     color: Palette.textLight,
     textTransform: 'uppercase',
   },
   deptName: {
-    fontSize: 18,
+    fontSize: ms(18),
     fontWeight: '900',
     color: Palette.textDark,
-    marginTop: 1,
+    marginTop: ms(1),
   },
 
   // Section labels
   sectionTitle: {
-    fontSize: 11,
+    fontSize: ms(11),
     fontWeight: '800',
     color: Palette.textLight,
     letterSpacing: 1.0,
     textTransform: 'uppercase',
-    marginBottom: 10,
-    marginTop: 14,
-    paddingLeft: 4,
+    marginBottom: ms(10),
+    marginTop: ms(14),
+    paddingLeft: ms(4),
   },
 
   // Year Selector styles
@@ -211,25 +213,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 8,
+    borderRadius: ms(16),
+    padding: ms(8),
     borderWidth: 1,
     borderColor: '#F1F5F9',
-    marginBottom: 12,
+    marginBottom: ms(12),
   },
   yearBtn: {
     flex: 1,
-    paddingVertical: 10,
-    borderRadius: 12,
+    paddingVertical: ms(10),
+    borderRadius: ms(12),
     alignItems: 'center',
-    marginHorizontal: 4,
+    marginHorizontal: ms(4),
     backgroundColor: '#F1F5F9',
   },
   yearBtnActive: {
     backgroundColor: Palette.primary,
   },
   yearBtnText: {
-    fontSize: 13,
+    fontSize: ms(13),
     fontWeight: '700',
     color: Palette.textLight,
   },
@@ -239,14 +241,14 @@ const styles = StyleSheet.create({
 
   // Class Cards styles
   classesContainer: {
-    marginBottom: 8,
+    marginBottom: ms(8),
   },
   classCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    marginBottom: 12,
+    borderRadius: ms(20),
+    marginBottom: ms(12),
     shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: ms(0), height: ms(4) },
     shadowOpacity: 0.02,
     shadowRadius: 8,
     elevation: 1,
@@ -257,74 +259,74 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: ms(12),
   },
   className: {
-    fontSize: 16,
+    fontSize: ms(16),
     fontWeight: '800',
     color: Palette.textDark,
   },
   classDeptSub: {
-    fontSize: 12,
+    fontSize: ms(12),
     color: Palette.textLight,
     fontWeight: '500',
-    marginTop: 1,
+    marginTop: ms(1),
   },
   pendingBadge: {
     backgroundColor: '#FEF2F2',
     color: Palette.error,
     fontWeight: '800',
-    paddingHorizontal: 8,
-    borderRadius: 6,
+    paddingHorizontal: ms(8),
+    borderRadius: ms(6),
   },
   okBadge: {
     backgroundColor: '#ECFDF5',
     color: Palette.success,
     fontWeight: '800',
-    paddingHorizontal: 8,
-    borderRadius: 6,
+    paddingHorizontal: ms(8),
+    borderRadius: ms(6),
   },
   progressSection: {
-    marginBottom: 14,
+    marginBottom: ms(14),
   },
   progressLabelRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: ms(6),
   },
   progressLabel: {
-    fontSize: 12,
+    fontSize: ms(12),
     color: Palette.textLight,
     fontWeight: '600',
   },
   progressValue: {
-    fontSize: 13,
+    fontSize: ms(13),
     fontWeight: '800',
     color: Palette.primary,
   },
   progressBar: {
-    height: 6,
-    borderRadius: 3,
+    height: ms(6),
+    borderRadius: ms(3),
   },
   inspectBtn: {
-    borderRadius: 10,
+    borderRadius: ms(10),
     borderColor: Palette.primary,
     borderWidth: 1.5,
   },
   inspectBtnLabel: {
-    fontSize: 12,
+    fontSize: ms(12),
     fontWeight: '700',
   },
 
   // Review card styles
   reviewCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    marginBottom: 12,
+    borderRadius: ms(20),
+    marginBottom: ms(12),
     borderWidth: 1,
     borderColor: '#F1F5F9',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: ms(0), height: ms(4) },
     shadowOpacity: 0.01,
     shadowRadius: 6,
     elevation: 1,
@@ -333,18 +335,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: ms(6),
   },
   reviewTitle: {
-    fontSize: 15,
+    fontSize: ms(15),
     fontWeight: '800',
     color: Palette.textDark,
   },
   reviewSubtitle: {
-    fontSize: 12.5,
+    fontSize: ms(12.5),
     color: Palette.textLight,
     lineHeight: 18,
-    marginBottom: 12,
+    marginBottom: ms(12),
   },
   errorBadge: {
     backgroundColor: Palette.error,
@@ -355,17 +357,17 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   reviewBtn: {
-    borderRadius: 10,
-    paddingVertical: 2,
+    borderRadius: ms(10),
+    paddingVertical: ms(2),
   },
 
   // Logout styles
   logoutBtn: {
-    marginTop: 20,
+    marginTop: ms(20),
     alignSelf: 'center',
   },
   logoutLabel: {
-    fontSize: 13,
+    fontSize: ms(13),
     fontWeight: '800',
   },
   // Quick Actions styles
@@ -373,38 +375,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: ms(16),
+    padding: ms(16),
     borderWidth: 1,
     borderColor: '#F1F5F9',
-    marginBottom: 16,
+    marginBottom: ms(16),
     shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: ms(0), height: ms(4) },
     shadowOpacity: 0.02,
     shadowRadius: 8,
     elevation: 1,
   },
   actionIconBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+    width: ms(44),
+    height: ms(44),
+    borderRadius: ms(12),
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 14,
+    marginRight: ms(14),
   },
   actionTextBox: {
     flex: 1,
   },
   actionTitle: {
-    fontSize: 14.5,
+    fontSize: ms(14.5),
     fontWeight: '800',
     color: Palette.textDark,
   },
   actionSubtitle: {
-    fontSize: 11.5,
+    fontSize: ms(11.5),
     color: Palette.textLight,
     fontWeight: '500',
-    marginTop: 2,
+    marginTop: ms(2),
   },
 });
 

@@ -12,6 +12,8 @@ import * as Sharing from 'expo-sharing';
 import { generateReportHTML } from '@services/api/reportPdfTemplate';
 import { generateReportWord } from '@services/api/reportWordTemplate';
 
+import { ms } from '@theme/responsive';
+
 const { width } = Dimensions.get('window');
 
 interface ClassData {
@@ -229,7 +231,7 @@ export const DepartmentClassesScreen = () => {
                       mode="outlined"
                       compact
                       icon="eye"
-                      style={[styles.actionBtn, { flex: 1, marginRight: 8 }]}
+                      style={[styles.actionBtn, { flex: 1, marginRight: ms(8) }]}
                       labelStyle={styles.actionBtnLabel}
                       onPress={() => navigation.navigate('FacultyProgress', { classId: cls.classId })}
                     >
@@ -347,31 +349,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Palette.background,
-    paddingTop: 10,
+    paddingTop: ms(10),
   },
   tabContainer: {
     flexDirection: 'row',
     backgroundColor: '#EEF2FF',
-    borderRadius: 14,
-    padding: 5,
-    marginHorizontal: 16,
-    marginBottom: 10,
+    borderRadius: ms(14),
+    padding: ms(5),
+    marginHorizontal: ms(16),
+    marginBottom: ms(10),
   },
   tabButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    borderRadius: 10,
-    gap: 6,
+    paddingVertical: ms(10),
+    borderRadius: ms(10),
+    gap: ms(6),
   },
   activeTabButton: {
     backgroundColor: Palette.primary,
     elevation: 2,
   },
   tabText: {
-    fontSize: 13,
+    fontSize: ms(13),
     fontWeight: '700',
     color: Palette.textLight,
   },
@@ -382,47 +384,47 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 32,
+    paddingHorizontal: ms(16),
+    paddingBottom: ms(32),
   },
   headerBox: {
-    marginBottom: 16,
-    marginTop: 8,
+    marginBottom: ms(16),
+    marginTop: ms(8),
   },
   title: {
-    fontSize: 20,
+    fontSize: ms(20),
     fontWeight: '900',
     color: Palette.textDark,
   },
   subtitle: {
-    fontSize: 12.5,
+    fontSize: ms(12.5),
     color: Palette.textLight,
     lineHeight: 18,
-    marginTop: 4,
+    marginTop: ms(4),
   },
   yearSelectorContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 5,
+    borderRadius: ms(12),
+    padding: ms(5),
     borderWidth: 1,
     borderColor: '#F1F5F9',
-    marginBottom: 16,
+    marginBottom: ms(16),
   },
   yearBtn: {
     flex: 1,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingVertical: ms(8),
+    borderRadius: ms(8),
     alignItems: 'center',
-    marginHorizontal: 2,
+    marginHorizontal: ms(2),
     backgroundColor: '#F1F5F9',
   },
   yearBtnActive: {
     backgroundColor: Palette.primary,
   },
   yearBtnText: {
-    fontSize: 11,
+    fontSize: ms(11),
     fontWeight: '700',
     color: Palette.textLight,
   },
@@ -430,14 +432,14 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   classesList: {
-    marginBottom: 8,
+    marginBottom: ms(8),
   },
   classCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    marginBottom: 12,
+    borderRadius: ms(16),
+    marginBottom: ms(12),
     shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: ms(0), height: ms(4) },
     shadowOpacity: 0.02,
     shadowRadius: 8,
     elevation: 1,
@@ -448,80 +450,80 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: ms(12),
   },
   className: {
-    fontSize: 15.5,
+    fontSize: ms(15.5),
     fontWeight: '800',
     color: Palette.textDark,
   },
   classDeptCode: {
-    fontSize: 11.5,
+    fontSize: ms(11.5),
     color: Palette.textLight,
     fontWeight: '500',
-    marginTop: 1,
+    marginTop: ms(1),
   },
   pendingBadge: {
     backgroundColor: '#FEF2F2',
     color: Palette.error,
     fontWeight: '800',
-    paddingHorizontal: 8,
-    borderRadius: 6,
+    paddingHorizontal: ms(8),
+    borderRadius: ms(6),
   },
   okBadge: {
     backgroundColor: '#ECFDF5',
     color: Palette.success,
     fontWeight: '800',
-    paddingHorizontal: 8,
-    borderRadius: 6,
+    paddingHorizontal: ms(8),
+    borderRadius: ms(6),
   },
   progressSection: {
-    marginBottom: 14,
+    marginBottom: ms(14),
   },
   progressLabelRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: ms(6),
   },
   progressLabel: {
-    fontSize: 11.5,
+    fontSize: ms(11.5),
     color: Palette.textLight,
     fontWeight: '600',
   },
   progressValue: {
-    fontSize: 12.5,
+    fontSize: ms(12.5),
     fontWeight: '800',
     color: Palette.primary,
   },
   progressBar: {
-    height: 6,
-    borderRadius: 3,
+    height: ms(6),
+    borderRadius: ms(3),
   },
   actionsRow: {
     flexDirection: 'row',
-    marginTop: 4,
+    marginTop: ms(4),
   },
   actionBtn: {
-    borderRadius: 10,
+    borderRadius: ms(10),
     borderColor: Palette.primary,
     borderWidth: 1.2,
   },
   actionBtnLabel: {
-    fontSize: 11.5,
+    fontSize: ms(11.5),
     fontWeight: '700',
   },
 
   // Subjects styles
   subjectsGrid: {
-    gap: 12,
+    gap: ms(12),
   },
   subjectCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    borderRadius: ms(16),
     borderWidth: 1,
     borderColor: '#F1F5F9',
     shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: ms(0), height: ms(2) },
     shadowOpacity: 0.02,
     shadowRadius: 6,
     elevation: 1,
@@ -530,32 +532,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: ms(8),
   },
   subCodeBadge: {
     backgroundColor: '#EFF6FF',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    paddingHorizontal: ms(8),
+    paddingVertical: ms(4),
+    borderRadius: ms(6),
   },
   subCodeText: {
-    fontSize: 11,
+    fontSize: ms(11),
     fontWeight: '800',
     color: Palette.primary,
   },
   subYearBadge: {
-    fontSize: 11.5,
+    fontSize: ms(11.5),
     color: Palette.textLight,
     fontWeight: '600',
   },
   subjectName: {
-    fontSize: 15,
+    fontSize: ms(15),
     fontWeight: '800',
     color: Palette.textDark,
-    marginBottom: 8,
+    marginBottom: ms(8),
   },
   subDivider: {
-    marginVertical: 8,
+    marginVertical: ms(8),
     backgroundColor: '#F1F5F9',
   },
   subjectMeta: {
@@ -565,11 +567,11 @@ const styles = StyleSheet.create({
   metaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: ms(6),
     flex: 1,
   },
   metaText: {
-    fontSize: 11.5,
+    fontSize: ms(11.5),
     color: Palette.textLight,
     fontWeight: '500',
   },
@@ -579,13 +581,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: ms(16),
   },
   modalContent: {
     width: width - 32,
     maxHeight: '85%',
     backgroundColor: '#FFFFFF',
-    borderRadius: 24,
+    borderRadius: ms(24),
     overflow: 'hidden',
     elevation: 10,
   },
@@ -593,42 +595,42 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 18,
+    padding: ms(18),
   },
   modalTitleBox: {
     flex: 1,
   },
   modalTitle: {
-    fontSize: 16,
+    fontSize: ms(16),
     fontWeight: '900',
     color: Palette.textDark,
   },
   modalSubtitle: {
-    fontSize: 11.5,
+    fontSize: ms(11.5),
     color: Palette.textLight,
-    marginTop: 2,
+    marginTop: ms(2),
     fontWeight: '500',
   },
   closeBtn: {
-    padding: 6,
-    borderRadius: 10,
+    padding: ms(6),
+    borderRadius: ms(10),
     backgroundColor: '#F8FAFC',
   },
   modalDivider: {
     backgroundColor: '#E2E8F0',
   },
   modalScroll: {
-    padding: 16,
+    padding: ms(16),
   },
   modalFooter: {
-    padding: 16,
+    padding: ms(16),
     backgroundColor: '#F8FAFC',
     alignItems: 'center',
   },
   modalCloseButton: {
-    borderRadius: 12,
+    borderRadius: ms(12),
     width: '100%',
-    paddingVertical: 4,
+    paddingVertical: ms(4),
   },
 });
 

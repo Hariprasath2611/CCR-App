@@ -5,6 +5,8 @@ import { Palette } from '@theme/colors';
 import { Feather, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { ConsolidatedReport, SubjectProgress } from '../store/useReportStore';
 
+import { ms } from '@theme/responsive';
+
 const { width } = Dimensions.get('window');
 
 interface WeeklyCourseCoverageReportCardProps {
@@ -188,7 +190,7 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
         </View>
 
         {/* ── Remarks Card ── */}
-        <View style={[styles.remarkBox, { marginTop: 12 }]}>
+        <View style={[styles.remarkBox, { marginTop: ms(12) }]}>
           <View style={styles.remarkHeader}>
             <Feather name="message-square" size={14} color="#0F52BA" />
             <Text style={styles.remarkLabel}>Remarks (if any)</Text>
@@ -197,7 +199,7 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
         </View>
 
         {hodRemarks ? (
-          <View style={[styles.remarkBox, { marginTop: 12, borderLeftColor: '#EF4444' }]}>
+          <View style={[styles.remarkBox, { marginTop: ms(12), borderLeftColor: '#EF4444' }]}>
             <View style={styles.remarkHeader}>
               <Feather name="alert-triangle" size={14} color="#EF4444" />
               <Text style={[styles.remarkLabel, { color: '#EF4444' }]}>HOD Decision Remarks</Text>
@@ -240,36 +242,36 @@ const InfoItem = ({ icon, label, value }: { icon: string; label: string; value: 
 const styles = StyleSheet.create({
   outerCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    borderRadius: ms(16),
     borderWidth: 1,
     borderColor: '#E2E8F0',
     shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: ms(0), height: ms(4) },
     shadowOpacity: 0.04,
     shadowRadius: 10,
     elevation: 3,
     width: '100%',
   },
   cardContent: {
-    padding: 16,
+    padding: ms(16),
   },
   docHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-    marginTop: 4,
+    marginBottom: ms(20),
+    marginTop: ms(4),
   },
   headerIconBox: {
-    width: 38,
-    height: 38,
-    borderRadius: 8,
+    width: ms(38),
+    height: ms(38),
+    borderRadius: ms(8),
     backgroundColor: '#EFF6FF',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: ms(12),
   },
   docTitle: {
-    fontSize: 15,
+    fontSize: ms(15),
     fontWeight: '800',
     color: '#0F52BA',
     letterSpacing: 0.5,
@@ -287,16 +289,16 @@ const styles = StyleSheet.create({
   infoRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: ms(12),
   },
   infoIconBox: {
-    width: 26,
-    height: 26,
-    borderRadius: 6,
+    width: ms(26),
+    height: ms(26),
+    borderRadius: ms(6),
     backgroundColor: '#F8FAFC',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 8,
+    marginRight: ms(8),
     borderWidth: 0.5,
     borderColor: '#E2E8F0',
   },
@@ -304,32 +306,32 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   infoLabel: {
-    fontSize: 9,
+    fontSize: ms(9),
     fontWeight: '700',
     color: '#94A3B8',
     textTransform: 'uppercase',
   },
   infoValue: {
-    fontSize: 12,
+    fontSize: ms(12),
     fontWeight: '700',
     color: '#334155',
-    marginTop: 2,
+    marginTop: ms(2),
     lineHeight: 15,
   },
 
   divider: {
     backgroundColor: '#E2E8F0',
-    marginVertical: 18,
+    marginVertical: ms(18),
   },
 
   // Table
   tableLabel: {
-    fontSize: 11,
+    fontSize: ms(11),
     fontWeight: '800',
     color: '#64748B',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
-    marginBottom: 10,
+    marginBottom: ms(10),
   },
   tableScrollView: {
     width: '100%',
@@ -337,7 +339,7 @@ const styles = StyleSheet.create({
   tableBlock: {
     borderWidth: 1,
     borderColor: '#CBD5E1',
-    borderRadius: 8,
+    borderRadius: ms(8),
     overflow: 'hidden',
   },
   tableRow: {
@@ -362,8 +364,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
   },
   cell: {
-    padding: 10,
-    fontSize: 12,
+    padding: ms(10),
+    fontSize: ms(12),
     color: '#334155',
     textAlign: 'center',
     verticalAlign: 'middle',
@@ -372,7 +374,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerText: {
-    fontSize: 11,
+    fontSize: ms(11),
     fontWeight: '800',
     color: '#1E40AF',
     textAlign: 'center',
@@ -391,107 +393,107 @@ const styles = StyleSheet.create({
   },
   bulletCell: {
     alignItems: 'flex-start',
-    paddingVertical: 8,
+    paddingVertical: ms(8),
   },
   bulletText: {
-    fontSize: 11,
+    fontSize: ms(11),
     color: '#334155',
     lineHeight: 16,
     textAlign: 'left',
   },
 
   // Column Widths
-  colSn: { width: 50 },
-  colCode: { width: 90 },
-  colName: { width: 140 },
-  colFaculty: { width: 130 },
-  colDate: { width: 95 },
-  colPercent: { width: 140 },
-  colHours: { width: 90 },
-  colTopics: { width: 200 },
-  colCompleted: { width: 100 },
-  colReason: { width: 120 },
-  colExtra: { width: 100 },
+  colSn: { width: ms(50) },
+  colCode: { width: ms(90) },
+  colName: { width: ms(140) },
+  colFaculty: { width: ms(130) },
+  colDate: { width: ms(95) },
+  colPercent: { width: ms(140) },
+  colHours: { width: ms(90) },
+  colTopics: { width: ms(200) },
+  colCompleted: { width: ms(100) },
+  colReason: { width: ms(120) },
+  colExtra: { width: ms(100) },
 
   // Remark Blocks
   remarkBox: {
     backgroundColor: '#FAF9F6',
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    borderRadius: 10,
-    padding: 12,
+    borderRadius: ms(10),
+    padding: ms(12),
     borderLeftWidth: 3,
     borderLeftColor: '#0F52BA',
   },
   remarkHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: ms(4),
   },
   remarkLabel: {
-    fontSize: 10,
+    fontSize: ms(10),
     fontWeight: '800',
     color: '#0F52BA',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
-    marginLeft: 6,
+    marginLeft: ms(6),
   },
   remarkContent: {
-    fontSize: 13,
+    fontSize: ms(13),
     color: '#334155',
     lineHeight: 18,
   },
 
   // Signatures
   approvalHeader: {
-    fontSize: 11,
+    fontSize: ms(11),
     fontWeight: '800',
     color: '#64748B',
     textTransform: 'uppercase',
     letterSpacing: 1.2,
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: ms(12),
   },
   signaturesRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    marginBottom: 20,
-    gap: 8,
+    marginBottom: ms(20),
+    gap: ms(8),
   },
   signatureCard: {
     flex: 1,
     backgroundColor: '#F8FAFC',
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    borderRadius: 10,
-    padding: 10,
+    borderRadius: ms(10),
+    padding: ms(10),
     alignItems: 'center',
   },
   signatureRole: {
-    fontSize: 10,
+    fontSize: ms(10),
     fontWeight: '800',
     color: '#475569',
     textTransform: 'uppercase',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: ms(10),
   },
   stampWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 4,
+    marginTop: ms(4),
   },
   stampText: {
-    fontSize: 11,
+    fontSize: ms(11),
     fontWeight: '800',
     color: '#10B981',
-    marginTop: 4,
+    marginTop: ms(4),
     textTransform: 'uppercase',
   },
   stampDate: {
-    fontSize: 9,
+    fontSize: ms(9),
     color: '#64748B',
-    marginTop: 2,
+    marginTop: ms(2),
   },
   stampWrapperPending: {
     alignItems: 'center',
@@ -499,61 +501,61 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   pendingStampText: {
-    fontSize: 9,
+    fontSize: ms(9),
     color: '#94A3B8',
     fontStyle: 'italic',
     textAlign: 'center',
   },
   signatureLine: {
     width: '80%',
-    height: 1,
+    height: ms(1),
     backgroundColor: '#CBD5E1',
-    marginVertical: 10,
+    marginVertical: ms(10),
   },
   signatureDate: {
-    fontSize: 9,
+    fontSize: ms(9),
     color: '#94A3B8',
   },
 
   // Legend Reference Table
   legendHeader: {
-    fontSize: 10,
+    fontSize: ms(10),
     fontWeight: '800',
     color: '#64748B',
     textTransform: 'uppercase',
     letterSpacing: 1,
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: ms(10),
   },
   legendTable: {
     flexDirection: 'row',
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    borderRadius: 10,
+    borderRadius: ms(10),
     backgroundColor: '#F8FAFC',
     overflow: 'hidden',
-    marginBottom: 24,
+    marginBottom: ms(24),
   },
   legendCol: {
     flex: 1,
-    padding: 8,
+    padding: ms(8),
     alignItems: 'center',
     borderRightWidth: 1,
     borderRightColor: '#E2E8F0',
   },
   legendLabelText: {
-    fontSize: 9,
+    fontSize: ms(9),
     fontWeight: '700',
     color: '#64748B',
     textAlign: 'center',
   },
   legendArrow: {
-    fontSize: 12,
+    fontSize: ms(12),
     color: '#0F52BA',
-    marginVertical: 2,
+    marginVertical: ms(2),
   },
   legendValueText: {
-    fontSize: 10,
+    fontSize: ms(10),
     fontWeight: '800',
     color: '#1E40AF',
   },
@@ -562,23 +564,23 @@ const styles = StyleSheet.create({
   downloadButton: {
     flexDirection: 'row',
     backgroundColor: '#0F52BA',
-    borderRadius: 12,
-    height: 50,
+    borderRadius: ms(12),
+    height: ms(50),
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#0F52BA',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: ms(0), height: ms(4) },
     shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 4,
-    marginTop: 8,
+    marginTop: ms(8),
     width: '100%',
   },
   downloadText: {
     color: '#FFFFFF',
-    fontSize: 14,
+    fontSize: ms(14),
     fontWeight: '800',
-    marginLeft: 8,
+    marginLeft: ms(8),
     letterSpacing: 0.5,
   },
 });

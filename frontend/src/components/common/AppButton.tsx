@@ -3,6 +3,8 @@ import { StyleSheet } from 'react-native';
 import { Button } from 'react-native-paper';
 import { Palette } from '@theme/colors';
 
+import { ms } from '@theme/responsive';
+
 interface AppButtonProps {
   title: string;
   onPress: () => void;
@@ -45,15 +47,15 @@ export const AppButton: React.FC<AppButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 8,
-    marginVertical: 6,
+    borderRadius: ms(8),
+    marginVertical: ms(6),
   },
   containedButton: {
     backgroundColor: Palette.primary,
   },
   label: {
-    fontSize: 15,
+    fontSize: ms(15),
     fontWeight: '600',
-    paddingVertical: 2,
+    paddingVertical: ms(2),
   },
 });

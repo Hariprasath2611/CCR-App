@@ -10,6 +10,8 @@ import { StaffStackParamList } from '@navigation/types';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { WeeklyCourseCoverageReportCard } from '../../cc/components/WeeklyCourseCoverageReportCard';
 
+import { ms } from '@theme/responsive';
+
 type RouteParams = RouteProp<StaffStackParamList, 'FacultyProgress'>;
 type HodNav = NativeStackNavigationProp<StaffStackParamList>;
 
@@ -149,7 +151,7 @@ export const FacultyProgressScreen = () => {
           )}
         </>
       ) : (
-        <View style={{ marginBottom: 20 }}>
+        <View style={{ marginBottom: ms(20) }}>
           {existingReport ? (
             <WeeklyCourseCoverageReportCard report={existingReport} showDownloadButton={false} />
           ) : (
@@ -238,8 +240,8 @@ const styles = StyleSheet.create({
     backgroundColor: Palette.background,
   },
   content: {
-    padding: 16,
-    paddingBottom: 32,
+    padding: ms(16),
+    paddingBottom: ms(32),
   },
 
   // Class Header styles
@@ -247,60 +249,60 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Palette.primary,
-    borderRadius: 20,
-    padding: 16,
-    marginBottom: 20,
+    borderRadius: ms(20),
+    padding: ms(16),
+    marginBottom: ms(20),
     elevation: 3,
     shadowColor: Palette.primary,
-    shadowOffset: { width: 0, height: 6 },
+    shadowOffset: { width: ms(0), height: ms(6) },
     shadowOpacity: 0.1,
     shadowRadius: 10,
   },
   headerIconBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+    width: ms(44),
+    height: ms(44),
+    borderRadius: ms(12),
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 14,
+    marginRight: ms(14),
   },
   headerInfo: {
     flex: 1,
   },
   classTitle: {
-    fontSize: 16,
+    fontSize: ms(16),
     fontWeight: '900',
     color: '#FFFFFF',
   },
   classSubtitle: {
-    fontSize: 11.5,
+    fontSize: ms(11.5),
     color: 'rgba(255, 255, 255, 0.85)',
     fontWeight: '500',
-    marginTop: 2,
+    marginTop: ms(2),
   },
 
   // Section titles
   sectionTitle: {
-    fontSize: 11,
+    fontSize: ms(11),
     fontWeight: '800',
     color: Palette.textLight,
     letterSpacing: 1.0,
     textTransform: 'uppercase',
-    marginBottom: 10,
-    marginTop: 12,
-    paddingLeft: 4,
+    marginBottom: ms(10),
+    marginTop: ms(12),
+    paddingLeft: ms(4),
   },
 
   // Subject Cards
   subjectCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    marginBottom: 12,
+    borderRadius: ms(20),
+    marginBottom: ms(12),
     borderWidth: 1,
     borderColor: '#F1F5F9',
     shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: ms(0), height: ms(4) },
     shadowOpacity: 0.02,
     shadowRadius: 8,
     elevation: 1,
@@ -309,67 +311,67 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: ms(12),
   },
   subjLeft: {
     flex: 1,
-    paddingRight: 8,
+    paddingRight: ms(8),
   },
   subjCode: {
-    fontSize: 11,
+    fontSize: ms(11),
     fontWeight: '800',
     color: Palette.primary,
     letterSpacing: 0.3,
   },
   subjName: {
-    fontSize: 15,
+    fontSize: ms(15),
     fontWeight: '800',
     color: Palette.textDark,
-    marginTop: 2,
+    marginTop: ms(2),
   },
   subjFaculty: {
-    fontSize: 12,
+    fontSize: ms(12),
     color: Palette.textLight,
     fontWeight: '500',
-    marginTop: 2,
+    marginTop: ms(2),
   },
   subjRight: {
     alignItems: 'flex-end',
   },
   badgeStyle: {
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 8,
+    paddingVertical: ms(4),
+    paddingHorizontal: ms(8),
+    borderRadius: ms(8),
   },
   badgeText: {
-    fontSize: 9,
+    fontSize: ms(9),
     fontWeight: '800',
   },
   progressBlock: {
-    marginTop: 6,
+    marginTop: ms(6),
   },
   progressLabelRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: ms(6),
   },
   progressLabel: {
-    fontSize: 11,
+    fontSize: ms(11),
     color: Palette.textLight,
     fontWeight: '600',
   },
   progressValue: {
-    fontSize: 12.5,
+    fontSize: ms(12.5),
     fontWeight: '800',
     color: Palette.primary,
   },
   progressBar: {
-    height: 6,
-    borderRadius: 3,
-    marginBottom: 6,
+    height: ms(6),
+    borderRadius: ms(3),
+    marginBottom: ms(6),
   },
   topicsCount: {
-    fontSize: 10.5,
+    fontSize: ms(10.5),
     color: Palette.textLight,
     fontWeight: '500',
   },
@@ -377,12 +379,12 @@ const styles = StyleSheet.create({
   // Review card styles
   reviewCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    marginBottom: 12,
+    borderRadius: ms(20),
+    marginBottom: ms(12),
     borderWidth: 1,
     borderColor: '#F1F5F9',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: ms(0), height: ms(4) },
     shadowOpacity: 0.01,
     shadowRadius: 6,
     elevation: 1,
@@ -391,18 +393,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: ms(6),
   },
   reviewTitle: {
-    fontSize: 14.5,
+    fontSize: ms(14.5),
     fontWeight: '800',
     color: Palette.textDark,
   },
   reviewSubtitle: {
-    fontSize: 12,
+    fontSize: ms(12),
     color: Palette.textLight,
     lineHeight: 18,
-    marginBottom: 12,
+    marginBottom: ms(12),
   },
   errorBadge: {
     backgroundColor: Palette.error,
@@ -413,21 +415,21 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   reviewBtn: {
-    borderRadius: 10,
-    paddingVertical: 2,
+    borderRadius: ms(10),
+    paddingVertical: ms(2),
   },
 
   // Empty styles
   emptyCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    borderRadius: ms(16),
     borderWidth: 1,
     borderColor: '#F1F5F9',
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: ms(20),
   },
   emptyText: {
-    fontSize: 13,
+    fontSize: ms(13),
     color: Palette.textLight,
     fontStyle: 'italic',
   },
@@ -435,29 +437,29 @@ const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: 'row',
     backgroundColor: '#EEF2FF',
-    borderRadius: 12,
-    padding: 4,
-    marginBottom: 16,
+    borderRadius: ms(12),
+    padding: ms(4),
+    marginBottom: ms(16),
   },
   tabButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    borderRadius: 8,
-    gap: 6,
+    paddingVertical: ms(10),
+    borderRadius: ms(8),
+    gap: ms(6),
   },
   activeTabButton: {
     backgroundColor: Palette.primary,
     elevation: 2,
     shadowColor: Palette.primary,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: ms(0), height: ms(2) },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   tabText: {
-    fontSize: 13,
+    fontSize: ms(13),
     fontWeight: '700',
     color: Palette.textLight,
   },

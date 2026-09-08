@@ -3,6 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { Palette } from '@theme/colors';
 
+import { ms } from '@theme/responsive';
+
 export const ApprovalStatusScreen = () => {
   return (
     <View style={styles.container}>
@@ -15,7 +17,7 @@ export const ApprovalStatusScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: ms(16),
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Palette.background,

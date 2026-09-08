@@ -13,6 +13,8 @@ import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { Palette } from '@theme/colors';
 import { syncEngine } from '@features/sync/syncEngine';
 
+import { ms } from '@theme/responsive';
+
 const ddmmToYyyymmdd = (dateStr: string): string => {
   if (!dateStr) return '';
   const parts = dateStr.split('/');
@@ -169,18 +171,18 @@ export const ExtraHoursRequestScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: ms(16),
     backgroundColor: Palette.background,
   },
   formCard: {
     backgroundColor: Palette.surface,
-    borderRadius: 12,
-    marginBottom: 32,
+    borderRadius: ms(12),
+    marginBottom: ms(32),
   },
   textInput: {
-    marginTop: 12,
+    marginTop: ms(12),
   },
   submitBtn: {
-    marginTop: 24,
+    marginTop: ms(24),
   },
 });

@@ -3,6 +3,8 @@ import { StyleSheet, View, TouchableOpacity, ScrollView } from 'react-native';
 import { TextInput, Portal, Dialog, RadioButton, Text, Button } from 'react-native-paper';
 import { Palette } from '@theme/colors';
 
+import { ms } from '@theme/responsive';
+
 interface DropdownOption {
   label: string;
   value: string;
@@ -90,41 +92,41 @@ export const AppDropdown: React.FC<AppDropdownProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginBottom: 8,
+    marginBottom: ms(8),
   },
   input: {
     backgroundColor: Palette.surface,
   },
   errorText: {
     color: Palette.error,
-    fontSize: 12,
-    marginTop: 4,
-    paddingLeft: 4,
+    fontSize: ms(12),
+    marginTop: ms(4),
+    paddingLeft: ms(4),
   },
   dialog: {
     backgroundColor: Palette.surface,
-    borderRadius: 12,
+    borderRadius: ms(12),
     maxHeight: '80%',
   },
   title: {
     color: Palette.textDark,
   },
   dialogContent: {
-    paddingHorizontal: 10,
+    paddingHorizontal: ms(10),
   },
   optionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: ms(8),
     borderBottomWidth: 1,
     borderBottomColor: Palette.secondary,
   },
   labelTouch: {
     flex: 1,
-    paddingLeft: 12,
+    paddingLeft: ms(12),
   },
   optionLabel: {
-    fontSize: 16,
+    fontSize: ms(16),
     color: Palette.textDark,
   },
 });
