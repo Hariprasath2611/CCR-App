@@ -59,6 +59,468 @@ export const LoginScreen = () => {
     }
 
     // Explicit mapping for seeded users to match database exactly
+
+    if (emailLower === 'drkaruppaiya@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Dr. Karuppaiya',
+        dept: 'MATHS',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrsgopikha@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. Gopikha',
+        dept: 'ENG',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'drjosphin@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Dr. Josphin',
+        dept: 'TAMIL',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'drsaravanan@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Dr. Saravanan',
+        dept: 'PHY',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'drbhuvaneshwari@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Dr. Bhuvaneshwari',
+        dept: 'CHEM',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrsagnus@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. Agnus',
+        dept: 'CSE',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrsarchana@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. Archana',
+        dept: 'CSE',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrdsivakumar@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mr. D.Sivakumar',
+        dept: 'MECH',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrsbhakyalakshmi@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. Bhakyalakshmi',
+        dept: 'ECE',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mssabishna@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Ms. Sabishna',
+        dept: 'PD',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrsavaniberlina@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. A.Vani Berlina',
+        dept: 'ENG',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrsrevathy@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. Revathy',
+        dept: 'PHY',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'drcmurugesan@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Dr. C.Murugesan',
+        dept: 'CHEM',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'drgopikumar@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Dr. Gopikumar',
+        dept: 'CIVIL',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrskanagavalli@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. Kanagavalli',
+        dept: 'EEE',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'drthirugnanam@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Dr. Thirugnanam',
+        dept: 'PHY',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrsrinivasan@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mr. Srinivasan',
+        dept: 'MATHS',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrsgophika@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. Gophika',
+        dept: 'ENG',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrsjasline@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. Jasline',
+        dept: 'PHY',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'drayoganath@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Dr. A.Yoganath',
+        dept: 'CHEM',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'drkalaimani@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Dr. Kalaimani',
+        dept: 'MECH',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrskavitha@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. Kavitha',
+        dept: 'MATHS',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrsavaniberlin@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. A.Vani Berlin',
+        dept: 'ENG',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrkumarasamy@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mr. Kumarasamy',
+        dept: 'EEE',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrsvyshnavai@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. Vyshnavai',
+        dept: 'CIVIL',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mraravind@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mr. Aravind',
+        dept: 'ENG',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrvijayakumar@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mr. Vijayakumar',
+        dept: 'MECH',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrsamudha@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. Amudha',
+        dept: 'ECE',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'msgophika@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Ms. Gophika',
+        dept: 'TEX',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrkumaraswamy@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mr. Kumaraswamy',
+        dept: 'EEE',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrsrsumathy@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. R.Sumathy',
+        dept: 'MATHS',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrsgrevathy@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. G.Revathy',
+        dept: 'PHY',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'mrsashwini@ccms.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mrs. Ashwini',
+        dept: 'ECE',
+        label: 'Subject Teacher',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
     if (emailLower === 'punitha@ccms.edu') {
       return {
         role: 'STAFF' as const,
