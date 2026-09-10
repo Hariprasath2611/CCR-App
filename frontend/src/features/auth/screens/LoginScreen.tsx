@@ -389,11 +389,11 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsavaniberlin@ccr.edu') {
+    if (emailLower === 'mrsavaniberlin@ccr.edu' || emailLower === 'mrsavaniberlina@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
-        name: 'Mrs. A.Vani Berlin',
+        name: 'Mrs. A.Vani Berlina',
         dept: 'ENG',
         label: 'Subject Teacher',
         icon: 'book-open-variant',

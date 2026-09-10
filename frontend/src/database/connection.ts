@@ -269,7 +269,7 @@ export const getDBConnection = async (): Promise<SQLite.SQLiteDatabase> => {
           { id: 't127', day_of_week: 'Monday', period: 8, subject_code: 'UC25A01', subject_name: 'LIFE SKILLS FOR ENGINEERS-I', class_section: '1st Year SEC-C', room_no: 'LH-10C', faculty_name: 'Dr. Thirugnanam' },
           { id: 't128', day_of_week: 'Monday', period: 9, subject_code: 'UC25A02', subject_name: 'PHYSICAL EDUCATION-I', class_section: '1st Year SEC-C', room_no: 'LH-10C', faculty_name: 'Ms. Sabishna' },
           { id: 't129', day_of_week: 'Monday', period: 1, subject_code: 'MA25C01', subject_name: 'APPLIED CALCULUS', class_section: '1st Year SEC-D', room_no: 'LH-10D', faculty_name: 'Mrs. Kavitha' },
-          { id: 't130', day_of_week: 'Monday', period: 2, subject_code: 'EN25C01', subject_name: 'ENGLISH ESSENTIALS-I', class_section: '1st Year SEC-D', room_no: 'LH-10D', faculty_name: 'Mrs. A.Vani Berlin' },
+          { id: 't130', day_of_week: 'Monday', period: 2, subject_code: 'EN25C01', subject_name: 'ENGLISH ESSENTIALS-I', class_section: '1st Year SEC-D', room_no: 'LH-10D', faculty_name: 'Mrs. A.Vani Berlina' },
           { id: 't131', day_of_week: 'Monday', period: 3, subject_code: 'UC25H01', subject_name: 'HERITAGE OF TAMILS', class_section: '1st Year SEC-D', room_no: 'LH-10D', faculty_name: 'Dr. Josphin' },
           { id: 't132', day_of_week: 'Monday', period: 4, subject_code: 'PH25C01', subject_name: 'APPLIED PHYSICS-I', class_section: '1st Year SEC-D', room_no: 'LH-10D', faculty_name: 'Dr. Thirugnanam' },
           { id: 't133', day_of_week: 'Monday', period: 5, subject_code: 'CY25C01', subject_name: 'APPLIED CHEMISTRY-I', class_section: '1st Year SEC-D', room_no: 'LH-10D', faculty_name: 'Dr. Bhuvaneshwari' },
