@@ -60,7 +60,7 @@ export const LoginScreen = () => {
 
     // Explicit mapping for seeded users to match database exactly
 
-    if (emailLower === 'drkaruppaiya@ccms.edu') {
+    if (emailLower === 'drkaruppaiya@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -74,7 +74,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsgopikha@ccms.edu') {
+    if (emailLower === 'mrsgopikha@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -88,7 +88,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'drjosphin@ccms.edu') {
+    if (emailLower === 'drjosphin@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -102,7 +102,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'drsaravanan@ccms.edu') {
+    if (emailLower === 'drsaravanan@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -116,7 +116,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'drbhuvaneshwari@ccms.edu') {
+    if (emailLower === 'drbhuvaneshwari@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -130,7 +130,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsagnus@ccms.edu') {
+    if (emailLower === 'mrsagnus@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -144,7 +144,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsarchana@ccms.edu') {
+    if (emailLower === 'mrsarchana@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -158,7 +158,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrdsivakumar@ccms.edu') {
+    if (emailLower === 'mrdsivakumar@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -172,7 +172,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsbhakyalakshmi@ccms.edu') {
+    if (emailLower === 'mrsbhakyalakshmi@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -186,7 +186,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mssabishna@ccms.edu') {
+    if (emailLower === 'mssabishna@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -200,7 +200,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsavaniberlina@ccms.edu') {
+    if (emailLower === 'mrsavaniberlina@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -214,7 +214,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsrevathy@ccms.edu') {
+    if (emailLower === 'mrsrevathy@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -228,7 +228,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'drcmurugesan@ccms.edu') {
+    if (emailLower === 'drcmurugesan@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -242,7 +242,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'drgopikumar@ccms.edu') {
+    if (emailLower === 'drgopikumar@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -256,7 +256,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrskanagavalli@ccms.edu') {
+    if (emailLower === 'mrskanagavalli@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -270,7 +270,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'drthirugnanam@ccms.edu') {
+    if (emailLower === 'drthirugnanam@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -284,7 +284,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsrinivasan@ccms.edu') {
+    if (emailLower === 'mrsrinivasan@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -298,7 +298,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsgophika@ccms.edu') {
+    if (emailLower === 'mrsgophika@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -312,7 +312,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsjasline@ccms.edu') {
+    if (emailLower === 'mrsjasline@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -326,7 +326,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'drayoganath@ccms.edu') {
+    if (emailLower === 'drayoganath@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -340,7 +340,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'drkalaimani@ccms.edu') {
+    if (emailLower === 'drkalaimani@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -354,7 +354,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrskavitha@ccms.edu') {
+    if (emailLower === 'mrskavitha@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -368,7 +368,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsavaniberlin@ccms.edu') {
+    if (emailLower === 'mrsavaniberlin@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -382,7 +382,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrkumarasamy@ccms.edu') {
+    if (emailLower === 'mrkumarasamy@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -396,7 +396,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsvyshnavai@ccms.edu') {
+    if (emailLower === 'mrsvyshnavai@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -410,7 +410,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mraravind@ccms.edu') {
+    if (emailLower === 'mraravind@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -424,7 +424,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrvijayakumar@ccms.edu') {
+    if (emailLower === 'mrvijayakumar@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -438,7 +438,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsamudha@ccms.edu') {
+    if (emailLower === 'mrsamudha@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -452,7 +452,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'msgophika@ccms.edu') {
+    if (emailLower === 'msgophika@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -466,7 +466,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrkumaraswamy@ccms.edu') {
+    if (emailLower === 'mrkumaraswamy@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -480,7 +480,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsrsumathy@ccms.edu') {
+    if (emailLower === 'mrsrsumathy@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -494,7 +494,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsgrevathy@ccms.edu') {
+    if (emailLower === 'mrsgrevathy@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -508,7 +508,7 @@ export const LoginScreen = () => {
       };
     }
 
-    if (emailLower === 'mrsashwini@ccms.edu') {
+    if (emailLower === 'mrsashwini@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -521,7 +521,7 @@ export const LoginScreen = () => {
         borderColor: '#BFDBFE',
       };
     }
-    if (emailLower === 'punitha@ccms.edu') {
+    if (emailLower === 'punitha@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: true,
@@ -534,7 +534,7 @@ export const LoginScreen = () => {
         borderColor: '#BFDBFE',
       };
     }
-    if (emailLower === 'linebychandra@ccms.edu') {
+    if (emailLower === 'linebychandra@ccr.edu') {
       return {
         role: 'HOD' as const,
         isCC: false,
@@ -547,7 +547,7 @@ export const LoginScreen = () => {
         borderColor: '#A7F3D0',
       };
     }
-    if (emailLower === 'uvashakthi@ccms.edu') {
+    if (emailLower === 'uvashakthi@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -560,7 +560,7 @@ export const LoginScreen = () => {
         borderColor: '#BFDBFE',
       };
     }
-    if (emailLower === 'faizal@ccms.edu') {
+    if (emailLower === 'faizal@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -573,7 +573,7 @@ export const LoginScreen = () => {
         borderColor: '#BFDBFE',
       };
     }
-    if (emailLower === 'rajalakshmi@ccms.edu') {
+    if (emailLower === 'rajalakshmi@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -586,7 +586,7 @@ export const LoginScreen = () => {
         borderColor: '#BFDBFE',
       };
     }
-    if (emailLower === 'divya@ccms.edu') {
+    if (emailLower === 'divya@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -599,7 +599,7 @@ export const LoginScreen = () => {
         borderColor: '#BFDBFE',
       };
     }
-    if (emailLower === 'arunkamala@ccms.edu') {
+    if (emailLower === 'arunkamala@ccr.edu') {
       return {
         role: 'STAFF' as const,
         isCC: false,
@@ -612,7 +612,7 @@ export const LoginScreen = () => {
         borderColor: '#BFDBFE',
       };
     }
-    if (emailLower === 'principal@ccms.edu') {
+    if (emailLower === 'principal@ccr.edu') {
       return {
         role: 'ADMIN' as const,
         isCC: false,
@@ -626,7 +626,7 @@ export const LoginScreen = () => {
       };
     }
 
-    // General fallback: only analyze the username prefix, NOT the domain name (to avoid matching 'cc' in '@ccms.edu')
+    // General fallback: only analyze the username prefix, NOT the domain name (to avoid matching 'cc' in '@ccr.edu')
     const username = emailLower.split('@')[0];
 
     if (

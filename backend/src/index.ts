@@ -6,7 +6,7 @@ const PORT = config.port;
 
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`========================================`);
-  console.log(`  CCMS API Server running on port ${PORT} `);
+  console.log(`  CCR API Server running on port ${PORT} `);
   console.log(`  Environment: ${config.nodeEnv}          `);
   console.log(`  Listening on http://0.0.0.0:${PORT}    `);
   console.log(`========================================`);

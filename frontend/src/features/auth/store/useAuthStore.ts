@@ -35,7 +35,7 @@ export const useAuthStore = create<AuthState>()(
         set({ user: null, accessToken: null, refreshToken: null }),
     }),
     {
-      name: 'ccms-auth-storage',
+      name: 'ccr-auth-storage',
       storage: createJSONStorage(() => AsyncStorage),
     }
   )

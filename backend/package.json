@@ -1,7 +1,7 @@
 {
-  "name": "ccms-backend",
+  "name": "ccr-backend",
   "version": "1.0.0",
-  "description": "Backend API for Course Completion Monitoring System (CCMS)",
+  "description": "Backend API for Course Coverage Report (CCR)",
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",

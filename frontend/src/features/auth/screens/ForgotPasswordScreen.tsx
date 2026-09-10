@@ -9,7 +9,7 @@ export const ForgotPasswordScreen = () => {
   return (
     <View style={styles.container}>
       <Text variant="headlineMedium">Forgot Password</Text>
-      <Text style={styles.text}>Please contact your institutional IT administrator to reset your CCMS password.</Text>
+      <Text style={styles.text}>Please contact your institutional IT administrator to reset your CCR password.</Text>
       <Button mode="outlined" style={styles.btn}>Back to Login</Button>
     </View>
   );
