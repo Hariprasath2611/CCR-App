@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -14,6 +14,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore, UserSession } from '../store/useAuthStore';
 import { Palette } from '@theme/colors';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -32,6 +33,7 @@ export const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [secureText, setSecureText] = useState(true);
+  const [rememberMe, setRememberMe] = useState(true);
   const [isEmailFocused, setIsEmailFocused] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
@@ -40,6 +42,25 @@ export const LoginScreen = () => {
 
   const login = useAuthStore((state) => state.login);
   const navigation = useNavigation<NavigationProp>();
+
+  // Load saved credentials on screen mount if Remember Me was enabled
+  useEffect(() => {
+    const loadSavedCredentials = async () => {
+      try {
+        const savedEmail = await AsyncStorage.getItem('ccr_remembered_email');
+        const savedPref = await AsyncStorage.getItem('ccr_remember_me_preference');
+        if (savedEmail) {
+          setEmail(savedEmail);
+        }
+        if (savedPref !== null) {
+          setRememberMe(savedPref === 'true');
+        }
+      } catch (e) {
+        console.error('Failed to load remembered login credentials:', e);
+      }
+    };
+    loadSavedCredentials();
+  }, []);
 
   // Helper to parse role from email dynamically
   const detectRole = (emailText: string) => {
@@ -705,13 +726,21 @@ export const LoginScreen = () => {
 
     setIsLoading(true);
     try {
+      if (rememberMe) {
+        await AsyncStorage.setItem('ccr_remembered_email', email.trim());
+        await AsyncStorage.setItem('ccr_remember_me_preference', 'true');
+      } else {
+        await AsyncStorage.removeItem('ccr_remembered_email');
+        await AsyncStorage.setItem('ccr_remember_me_preference', 'false');
+      }
+
       const response = await apiClient.post('/auth/login', {
         email: email.toLowerCase().trim(),
         password,
       });
 
       const { user: userSession, accessToken, refreshToken } = response.data;
-      login(userSession, accessToken, refreshToken);
+      login(userSession, accessToken, refreshToken, rememberMe);
     } catch (error: any) {
       console.error('Login error details:', error);
       const errMsg = error.response?.data?.error || error.message || 'Could not authenticate with the server. Please check your credentials and connection.';
@@ -859,14 +888,31 @@ export const LoginScreen = () => {
               </View>
             )}
 
-            {/* Forgot Password Link */}
-            <TouchableOpacity
-              onPress={() => navigation.navigate('ForgotPassword')}
-              style={styles.forgotPasswordContainer}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
+            {/* Remember Me and Forgot Password Container */}
+            <View style={styles.rememberForgotRow}>
+              <TouchableOpacity
+                style={styles.rememberMeContainer}
+                onPress={() => setRememberMe(!rememberMe)}
+                activeOpacity={0.7}
+              >
+                <MaterialCommunityIcons
+                  name={rememberMe ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                  size={20}
+                  color={rememberMe ? Palette.primary : Palette.textLight}
+                />
+                <Text style={[styles.rememberMeText, rememberMe && styles.rememberMeTextActive]}>
+                  Remember Me
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => navigation.navigate('ForgotPassword')}
+                style={styles.forgotPasswordContainer}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+              </TouchableOpacity>
+            </View>
 
             {/* Modern Sign In Button */}
             <TouchableOpacity
@@ -1076,10 +1122,32 @@ const styles = StyleSheet.create({
     marginTop: ms(1),
   },
 
-  // Forgot password
-  forgotPasswordContainer: {
-    alignSelf: 'flex-end',
+  // Remember Me & Forgot Password Row
+  rememberForgotRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: ms(4),
     marginBottom: ms(20),
+  },
+  rememberMeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: ms(4),
+  },
+  rememberMeText: {
+    fontSize: ms(13),
+    fontWeight: '600',
+    color: Palette.textLight,
+    marginLeft: ms(6),
+  },
+  rememberMeTextActive: {
+    color: Palette.textDark,
+    fontWeight: '700',
+  },
+  forgotPasswordContainer: {
+    alignSelf: 'center',
   },
   forgotPasswordText: {
     color: Palette.primary,

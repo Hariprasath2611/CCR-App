@@ -16,8 +16,10 @@ interface AuthState {
   user: UserSession | null;
   accessToken: string | null;
   refreshToken: string | null;
+  rememberMe: boolean;
+  setRememberMe: (rememberMe: boolean) => void;
   setTokens: (accessToken: string, refreshToken: string) => void;
-  login: (user: UserSession, accessToken: string, refreshToken: string) => void;
+  login: (user: UserSession, accessToken: string, refreshToken: string, rememberMe?: boolean) => void;
   logout: () => void;
 }
 
@@ -27,10 +29,12 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       accessToken: null,
       refreshToken: null,
+      rememberMe: true,
+      setRememberMe: (rememberMe) => set({ rememberMe }),
       setTokens: (accessToken, refreshToken) =>
         set({ accessToken, refreshToken }),
-      login: (user, accessToken, refreshToken) =>
-        set({ user, accessToken, refreshToken }),
+      login: (user, accessToken, refreshToken, rememberMe = true) =>
+        set({ user, accessToken, refreshToken, rememberMe }),
       logout: () =>
         set({ user: null, accessToken: null, refreshToken: null }),
     }),
