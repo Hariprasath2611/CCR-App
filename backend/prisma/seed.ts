@@ -23,7 +23,7 @@ async function main() {
   // 3. Seed Users
   const users = [
     {
-      email: 'punitha@ccms.edu',
+      email: 'punitha@ccr.edu',
       passwordHash,
       name: 'Ms.Punitha EM',
       role: 'STAFF',
@@ -32,7 +32,7 @@ async function main() {
       assignedClassId: '3rd Year CSE-A',
     },
     {
-      email: 'linebychandra@ccms.edu',
+      email: 'linebychandra@ccr.edu',
       passwordHash,
       name: 'Mr.J Lin Eby Chandra',
       role: 'HOD',
@@ -41,7 +41,7 @@ async function main() {
       assignedClassId: '3rd Year CSE-A',
     },
     {
-      email: 'uvashakthi@ccms.edu',
+      email: 'uvashakthi@ccr.edu',
       passwordHash,
       name: 'Ms.E Uva Shakthi',
       role: 'STAFF',
@@ -50,7 +50,7 @@ async function main() {
       assignedClassId: '3rd Year CSE-A',
     },
     {
-      email: 'faizal@ccms.edu',
+      email: 'faizal@ccr.edu',
       passwordHash,
       name: 'Mr.S Faizal Mukthar Hussain',
       role: 'STAFF',
@@ -59,7 +59,7 @@ async function main() {
       assignedClassId: '3rd Year CSE-A',
     },
     {
-      email: 'rajalakshmi@ccms.edu',
+      email: 'rajalakshmi@ccr.edu',
       passwordHash,
       name: 'Ms.R Rajalakshmi',
       role: 'STAFF',
@@ -68,7 +68,7 @@ async function main() {
       assignedClassId: '3rd Year CSE-A',
     },
     {
-      email: 'divya@ccms.edu',
+      email: 'divya@ccr.edu',
       passwordHash,
       name: 'Ms.P Divya',
       role: 'STAFF',
@@ -77,7 +77,7 @@ async function main() {
       assignedClassId: '3rd Year CSE-A',
     },
     {
-      email: 'arunkamala@ccms.edu',
+      email: 'arunkamala@ccr.edu',
       passwordHash,
       name: 'Ms.Arun Kamala',
       role: 'STAFF',
@@ -86,7 +86,7 @@ async function main() {
       assignedClassId: '3rd Year CSE-A',
     },
     {
-      email: 'principal@ccms.edu',
+      email: 'principal@ccr.edu',
       passwordHash,
       name: 'Dr. Ramesh',
       role: 'ADMIN',
