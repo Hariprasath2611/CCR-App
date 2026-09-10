@@ -18,9 +18,13 @@ const { width } = Dimensions.get('window');
 interface SubjectInfo {
   code: string;
   name: string;
-  year: string;
+  sections: string[];
+  yearDisplay: string;
   shortName: string;
   color: string;
+  completedTopics: number;
+  totalTopics: number;
+  percent: number;
 }
 
 export const StaffDashboardScreen = () => {
@@ -29,9 +33,9 @@ export const StaffDashboardScreen = () => {
   
   // Local state
   const [handledSubjects, setHandledSubjects] = useState<SubjectInfo[]>([]);
-  const [syllabusProgress, setSyllabusProgress] = useState<Record<string, { completed: number; total: number; percent: number }>>({});
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [overallProgress, setOverallProgress] = useState(0);
 
   // Repository
   const syllabusRepo = new SyllabusRepository();
@@ -46,17 +50,27 @@ export const StaffDashboardScreen = () => {
         ? slots
         : slots.filter((s) => matchFacultyName(s.faculty_name, user?.name));
       const filteredSlots = (userFilteredSlots.length === 0 && slots.length > 0) ? slots : userFilteredSlots;
-      const subjectMap: Record<string, SubjectInfo> = {};
+      
+      // Group slots by subject_code to aggregate sections
+      const subjectMap: Record<string, {
+        code: string;
+        name: string;
+        sectionsSet: Set<string>;
+        yearPrefix: string;
+        shortName: string;
+        color: string;
+      }> = {};
+
       const colors = ['#0F52BA', '#1B9CFC', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444'];
       let colorIdx = 0;
 
       for (const slot of filteredSlots) {
         if (!subjectMap[slot.subject_code]) {
-          let year = 'Academic Course';
-          if (slot.class_section.includes('1st')) year = '1st Year CSE';
-          else if (slot.class_section.includes('2nd') || slot.class_section === 'CSE-B') year = '2nd Year CSE';
-          else if (slot.class_section.includes('3rd')) year = '3rd Year CSE';
-          else if (slot.class_section.includes('4th')) year = '4th Year CSE';
+          let yearPrefix = 'Academic Course';
+          if (slot.class_section.includes('1st')) yearPrefix = '1st Year';
+          else if (slot.class_section.includes('2nd') || slot.class_section === 'CSE-B') yearPrefix = '2nd Year';
+          else if (slot.class_section.includes('3rd')) yearPrefix = '3rd Year';
+          else if (slot.class_section.includes('4th')) yearPrefix = '4th Year';
 
           let shortName = slot.subject_name.split(' ').map(w => w[0]).join('').toUpperCase();
           if (slot.subject_code === 'CS8501') shortName = 'TOC';
@@ -67,16 +81,50 @@ export const StaffDashboardScreen = () => {
           subjectMap[slot.subject_code] = {
             code: slot.subject_code,
             name: slot.subject_name,
-            year: `${year} (${slot.class_section})`,
+            sectionsSet: new Set<string>(),
+            yearPrefix,
             shortName,
             color: colors[colorIdx % colors.length],
           };
           colorIdx++;
         }
+        subjectMap[slot.subject_code].sectionsSet.add(slot.class_section);
       }
 
-      const subjects = Object.values(subjectMap);
-      setHandledSubjects(subjects);
+      // Fetch syllabus progress for each subject
+      const subjectList: SubjectInfo[] = [];
+      let totalCompletedAll = 0;
+      let totalTopicsAll = 0;
+
+      for (const code of Object.keys(subjectMap)) {
+        const item = subjectMap[code];
+        const sectionsArray = Array.from(item.sectionsSet);
+        const sectionsText = sectionsArray.join(', ');
+
+        const topics = await syllabusRepo.getSyllabusBySubject(code);
+        const totalTopics = topics.length;
+        const completedTopics = topics.filter(t => t.is_completed === 1).length;
+        const percent = totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
+
+        totalCompletedAll += completedTopics;
+        totalTopicsAll += totalTopics;
+
+        subjectList.push({
+          code: item.code,
+          name: item.name,
+          sections: sectionsArray,
+          yearDisplay: `${item.yearPrefix} (${sectionsText})`,
+          shortName: item.shortName,
+          color: item.color,
+          completedTopics,
+          totalTopics,
+          percent,
+        });
+      }
+
+      const overall = totalTopicsAll > 0 ? Math.round((totalCompletedAll / totalTopicsAll) * 100) : 0;
+      setOverallProgress(overall);
+      setHandledSubjects(subjectList);
 
     } catch (err) {
       console.error('Failed to load dashboard metrics:', err);
@@ -86,7 +134,7 @@ export const StaffDashboardScreen = () => {
     }
   };
 
-  // Reload data every time this screen gains focus (e.g. returning from progress updates)
+  // Reload data every time this screen gains focus
   useFocusEffect(
     useCallback(() => {
       loadData();
@@ -143,6 +191,19 @@ export const StaffDashboardScreen = () => {
             <Text style={styles.roleTag}>{getRoleLabel()} • {user?.department || 'Computer Science Engineering'}</Text>
           </View>
         </View>
+
+        {/* Dynamic Summary Stats Box */}
+        <View style={styles.statsSummaryBox}>
+          <View style={styles.statItem}>
+            <Text style={styles.statItemNum}>{handledSubjects.length}</Text>
+            <Text style={styles.statItemLabel}>Assigned Subjects</Text>
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statItem}>
+            <Text style={[styles.statItemNum, { color: Palette.primary }]}>{overallProgress}%</Text>
+            <Text style={styles.statItemLabel}>Overall Progress</Text>
+          </View>
+        </View>
       </View>
 
       {/* ── SUBJECT HANDLING SECTION ── */}
@@ -169,7 +230,7 @@ export const StaffDashboardScreen = () => {
                 <Card style={[styles.subjectCard, { borderLeftColor: subj.color }]}>
                   <Card.Content style={styles.subjectCardContent}>
                     <View style={styles.subjHeader}>
-                      <Text style={styles.subjYear}>{subj.year}</Text>
+                      <Text style={styles.subjYear}>{subj.yearDisplay}</Text>
                       <View style={[styles.codeBadge, { backgroundColor: subj.color + '15' }]}>
                         <Text style={[styles.codeBadgeText, { color: subj.color }]}>{subj.code}</Text>
                       </View>
@@ -179,9 +240,20 @@ export const StaffDashboardScreen = () => {
                       {subj.name} ({subj.shortName})
                     </Text>
 
+                    {/* Live Progress Bar */}
+                    <View style={styles.progressRow}>
+                      <Text style={styles.progressLabel}>Syllabus Completion</Text>
+                      <Text style={[styles.progressVal, { color: subj.color }]}>{subj.percent}%</Text>
+                    </View>
+                    <ProgressBar 
+                      progress={subj.percent / 100} 
+                      color={subj.color} 
+                      style={styles.progressBar} 
+                    />
+
                     <View style={styles.cardFooter}>
                       <Text style={styles.topicsCount}>
-                        Tap to log weekly progress details
+                        {subj.totalTopics > 0 ? `${subj.completedTopics}/${subj.totalTopics} Topics Completed` : 'Tap to log weekly progress'}
                       </Text>
                       <Feather name="chevron-right" size={16} color={Palette.textLight} />
                     </View>
@@ -258,6 +330,40 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: ms(2),
     marginBottom: ms(4),
+  },
+
+  // Dynamic Summary Stats Box
+  statsSummaryBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    backgroundColor: '#F8FAFC',
+    borderRadius: ms(16),
+    paddingVertical: ms(12),
+    paddingHorizontal: ms(16),
+    marginTop: ms(18),
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statItemNum: {
+    fontSize: ms(20),
+    fontWeight: '900',
+    color: Palette.textDark,
+  },
+  statItemLabel: {
+    fontSize: ms(11),
+    fontWeight: '600',
+    color: Palette.textLight,
+    marginTop: ms(2),
+  },
+  statDivider: {
+    width: 1,
+    height: ms(24),
+    backgroundColor: '#CBD5E1',
   },
   headerDashboardBtn: {
     marginTop: ms(8),

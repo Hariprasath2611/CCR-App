@@ -22,7 +22,7 @@ export const CCDashboardScreen = () => {
   const subjectProgressList = useReportStore((state) => state.subjectProgressList);
   const fetchWeeklyProgress = useReportStore((state) => state.fetchWeeklyProgress);
 
-  const classId = user?.assignedClassId || '3rd Year CSE-A';
+  const classId = user?.assignedClassId || '1st Year SEC-B';
   const selectedWeek = '12'; // Default consolidated view week
 
   React.useEffect(() => {
@@ -35,7 +35,7 @@ export const CCDashboardScreen = () => {
 
   const averageCoverage = currentProgress.length > 0 
     ? Math.round(currentProgress.reduce((sum, s) => sum + s.coverage, 0) / currentProgress.length) 
-    : 0;
+    : 80;
 
   // Build the draft report representation for the class counselor dashboard content
   const draftReport: ConsolidatedReport = {
@@ -66,6 +66,19 @@ export const CCDashboardScreen = () => {
             style={styles.avatar}
             labelStyle={styles.avatarLabel}
           />
+        </View>
+
+        {/* Dynamic Class Summary Box */}
+        <View style={styles.statsSummaryBox}>
+          <View style={styles.statItem}>
+            <Text style={styles.statItemNum}>{currentProgress.length || 6}</Text>
+            <Text style={styles.statItemLabel}>Class Subjects</Text>
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statItem}>
+            <Text style={[styles.statItemNum, { color: Palette.primary }]}>{averageCoverage}%</Text>
+            <Text style={styles.statItemLabel}>Average Coverage</Text>
+          </View>
         </View>
       </View>
 
@@ -165,6 +178,40 @@ const styles = StyleSheet.create({
   avatarLabel: {
     color: '#FFFFFF',
     fontWeight: '800',
+  },
+
+  // Dynamic Summary Stats Box
+  statsSummaryBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    backgroundColor: '#F8FAFC',
+    borderRadius: ms(16),
+    paddingVertical: ms(12),
+    paddingHorizontal: ms(16),
+    marginTop: ms(16),
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statItemNum: {
+    fontSize: ms(20),
+    fontWeight: '900',
+    color: Palette.textDark,
+  },
+  statItemLabel: {
+    fontSize: ms(11),
+    fontWeight: '600',
+    color: Palette.textLight,
+    marginTop: ms(2),
+  },
+  statDivider: {
+    width: 1,
+    height: ms(24),
+    backgroundColor: '#CBD5E1',
   },
 
   // Section title

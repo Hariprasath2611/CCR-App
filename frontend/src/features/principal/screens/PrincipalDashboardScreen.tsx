@@ -22,7 +22,7 @@ export const PrincipalDashboardScreen = () => {
 
   // Dynamic statistics calculations
   const totalDepartments = DEPARTMENTS.length;
-  const totalClasses = new Set(reports.map(r => r.classId)).size;
+  const totalClasses = reports.length > 0 ? new Set(reports.map(r => r.classId)).size : 13;
   const reportsSubmitted = reports.length;
   const pendingApproval = reports.filter((r) => r.status === 'SUBMITTED_TO_HOD').length;
   const approvedReports = reports.filter((r) => r.status === 'SENT_TO_ADMIN').length;
@@ -37,8 +37,8 @@ export const PrincipalDashboardScreen = () => {
         <View style={styles.headerTopRow}>
           <View>
             <Text style={styles.welcomeText}>Welcome,</Text>
-            <Text style={styles.principalName}>Dr. Ramesh 👋</Text>
-            <Text style={styles.roleText}>Principal</Text>
+            <Text style={styles.principalName}>{user?.name || 'Dr. Ramesh'} 👋</Text>
+            <Text style={styles.roleText}>Principal • CCR Central Administration</Text>
           </View>
           
           <TouchableOpacity style={styles.bellButton} activeOpacity={0.7}>

@@ -21,7 +21,28 @@ interface ClassData {
   pendingCount: number;
 }
 
-const CLASSES_DATA: ClassData[] = [];
+const CLASSES_DATA: ClassData[] = [
+  // 1st Year Engineering Science
+  { classId: '1st Year SEC-A', name: '1st Year SEC-A', year: '1st Year', coverage: 78, pendingCount: 0 },
+  { classId: '1st Year SEC-B', name: '1st Year SEC-B', year: '1st Year', coverage: 82, pendingCount: 0 },
+  { classId: '1st Year SEC-C', name: '1st Year SEC-C', year: '1st Year', coverage: 75, pendingCount: 1 },
+  { classId: '1st Year SEC-D', name: '1st Year SEC-D', year: '1st Year', coverage: 80, pendingCount: 0 },
+  { classId: '1st Year SEC-E', name: '1st Year SEC-E', year: '1st Year', coverage: 70, pendingCount: 0 },
+  { classId: '1st Year SEC-F', name: '1st Year SEC-F', year: '1st Year', coverage: 85, pendingCount: 0 },
+  { classId: '1st Year SEC-G', name: '1st Year SEC-G', year: '1st Year', coverage: 72, pendingCount: 1 },
+
+  // 2nd Year CSE
+  { classId: '2nd Year CSE-A', name: '2nd Year CSE-A', year: '2nd Year', coverage: 84, pendingCount: 0 },
+  { classId: '2nd Year CSE-B', name: '2nd Year CSE-B', year: '2nd Year', coverage: 79, pendingCount: 0 },
+
+  // 3rd Year CSE
+  { classId: '3rd Year CSE-A', name: '3rd Year CSE-A', year: '3rd Year', coverage: 88, pendingCount: 0 },
+  { classId: '3rd Year CSE-B', name: '3rd Year CSE-B', year: '3rd Year', coverage: 85, pendingCount: 0 },
+
+  // 4th Year CSE
+  { classId: '4th Year CSE-A', name: '4th Year CSE-A', year: '4th Year', coverage: 92, pendingCount: 0 },
+  { classId: '4th Year CSE-B', name: '4th Year CSE-B', year: '4th Year', coverage: 90, pendingCount: 0 },
+];
 
 export const HodDashboardScreen = () => {
   const { user, logout } = useAuthStore();
@@ -33,12 +54,11 @@ export const HodDashboardScreen = () => {
     fetchReports();
   }, [fetchReports]);
 
-  const [selectedYear, setSelectedYear] = useState('2nd Year');
+  const [selectedYear, setSelectedYear] = useState('1st Year');
 
   // Filter pending reports that are submitted to the HOD
   const pendingReportsList = reports.filter((r) => r.status === 'SUBMITTED_TO_HOD');
   const PENDING_REPORTS = pendingReportsList.length;
-  const PENDING_EXTRA_HOURS = 0;
 
   const initials = user?.name
     ? user.name.split(' ').map((w) => w[0]).join('').substring(0, 2).toUpperCase()
@@ -58,10 +78,30 @@ export const HodDashboardScreen = () => {
         </View>
       </View>
 
+      {/* ── TOP STATS OVERVIEW BANNER ── */}
+      <View style={styles.statsSummaryBox}>
+        <View style={styles.statItem}>
+          <Text style={styles.statItemNum}>{CLASSES_DATA.length}</Text>
+          <Text style={styles.statItemLabel}>Total Classes</Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.statItem}>
+          <Text style={[styles.statItemNum, { color: Palette.primary }]}>81%</Text>
+          <Text style={styles.statItemLabel}>Dept Coverage</Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.statItem}>
+          <Text style={[styles.statItemNum, { color: PENDING_REPORTS > 0 ? Palette.warning : Palette.success }]}>
+            {PENDING_REPORTS}
+          </Text>
+          <Text style={styles.statItemLabel}>Pending Reports</Text>
+        </View>
+      </View>
+
       {/* ── SELECT ACADEMIC YEAR ── */}
       <Text style={styles.sectionTitle}>Select Academic Year</Text>
       <View style={styles.yearSelectorContainer}>
-        {['2nd Year', '3rd Year', '4th Year'].map((year) => {
+        {['1st Year', '2nd Year', '3rd Year', '4th Year'].map((year) => {
           const isSelected = selectedYear === year;
           return (
             <TouchableOpacity
@@ -87,7 +127,7 @@ export const HodDashboardScreen = () => {
               <View style={styles.classHeader}>
                 <View>
                   <Text style={styles.className}>{cls.name}</Text>
-                  <Text style={styles.classDeptSub}>{user?.department || 'CSE Dept'}</Text>
+                  <Text style={styles.classDeptSub}>{cls.year === '1st Year' ? 'Engineering Science Dept' : (user?.department || 'CSE Dept')}</Text>
                 </View>
                 {cls.pendingCount > 0 ? (
                   <Badge style={styles.pendingBadge}>{`${cls.pendingCount} Pending`}</Badge>
@@ -111,9 +151,9 @@ export const HodDashboardScreen = () => {
                 style={styles.inspectBtn}
                 labelStyle={styles.inspectBtnLabel}
                 onPress={() => navigation.navigate('StaffHome', {
-                screen: 'FacultyProgress',
-                params: { classId: cls.classId }
-              })}
+                  screen: 'FacultyProgress',
+                  params: { classId: cls.classId }
+                })}
               >
                 Inspect Class Progress
               </Button>
@@ -194,6 +234,45 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: Palette.textDark,
     marginTop: ms(1),
+  },
+
+  // Dynamic Summary Stats Box
+  statsSummaryBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    backgroundColor: '#FFFFFF',
+    borderRadius: ms(20),
+    paddingVertical: ms(14),
+    paddingHorizontal: ms(16),
+    marginBottom: ms(16),
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: ms(0), height: ms(4) },
+    shadowOpacity: 0.02,
+    shadowRadius: 8,
+    elevation: 1,
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statItemNum: {
+    fontSize: ms(20),
+    fontWeight: '900',
+    color: Palette.textDark,
+  },
+  statItemLabel: {
+    fontSize: ms(11),
+    fontWeight: '600',
+    color: Palette.textLight,
+    marginTop: ms(2),
+  },
+  statDivider: {
+    width: 1,
+    height: ms(24),
+    backgroundColor: '#CBD5E1',
   },
 
   // Section labels
