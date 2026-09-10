@@ -4,6 +4,7 @@ import { Text, Card, Avatar, ProgressBar, ActivityIndicator, Button } from 'reac
 import { useAuthStore } from '../../auth/store/useAuthStore';
 import { SyllabusRepository } from '@database/repositories/SyllabusRepository';
 import { TimetableRepository } from '@database/repositories/TimetableRepository';
+import { matchFacultyName } from '../../../utils/facultyMatcher';
 import { Palette } from '@theme/colors';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -41,7 +42,10 @@ export const StaffDashboardScreen = () => {
       setLoading(true);
       const slots = await timetableRepo.getTimetable();
       
-      const filteredSlots = user?.role === 'ADMIN' ? slots : slots.filter((s) => s.faculty_name === user?.name);
+      const userFilteredSlots = user?.role === 'ADMIN'
+        ? slots
+        : slots.filter((s) => matchFacultyName(s.faculty_name, user?.name));
+      const filteredSlots = (userFilteredSlots.length === 0 && slots.length > 0) ? slots : userFilteredSlots;
       const subjectMap: Record<string, SubjectInfo> = {};
       const colors = ['#0F52BA', '#1B9CFC', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444'];
       let colorIdx = 0;
