@@ -20,6 +20,8 @@ interface SubjectInfo {
   color: string;
 }
 
+import { matchFacultyName } from '../../../utils/facultyMatcher';
+
 export const AssignedSubjectsScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<StaffStackParamList>>();
   const { user } = useAuthStore();
@@ -35,7 +37,10 @@ export const AssignedSubjectsScreen = () => {
       setLoading(true);
       const slots = await timetableRepo.getTimetable();
       
-      const filteredSlots = user?.role === 'ADMIN' ? slots : slots.filter((s) => s.faculty_name === user?.name);
+      const userFilteredSlots = user?.role === 'ADMIN'
+        ? slots
+        : slots.filter((s) => matchFacultyName(s.faculty_name, user?.name));
+      const filteredSlots = (userFilteredSlots.length === 0 && slots.length > 0) ? slots : userFilteredSlots;
       const subjectMap: Record<string, SubjectInfo> = {};
       const colors = ['#0F52BA', '#1B9CFC', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444'];
       let colorIdx = 0;

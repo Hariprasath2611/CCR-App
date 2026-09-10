@@ -14,6 +14,8 @@ import { ms } from '@theme/responsive';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
+import { matchFacultyName } from '../../../utils/facultyMatcher';
+
 export const WeeklyTimetableScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<StaffStackParamList>>();
   const { user } = useAuthStore();
@@ -27,7 +29,10 @@ export const WeeklyTimetableScreen = () => {
     try {
       setLoading(true);
       const data = await timetableRepo.getTimetable();
-      const mySlots = user?.role === 'ADMIN' ? data : data.filter((s) => s.faculty_name === user?.name);
+      const userSlots = user?.role === 'ADMIN'
+        ? data
+        : data.filter((s) => matchFacultyName(s.faculty_name, user?.name));
+      const mySlots = (userSlots.length === 0 && data.length > 0) ? data : userSlots;
       setSlots(mySlots);
     } catch (err) {
       console.error('Failed to load timetable:', err);
