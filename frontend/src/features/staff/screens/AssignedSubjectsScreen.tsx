@@ -12,10 +12,14 @@ import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { ms } from '@theme/responsive';
 
+import { getCCForSection } from '@config/facultyBoard';
+
 interface SubjectInfo {
   code: string;
   name: string;
+  section: string;
   year: string;
+  ccFacultyName: string;
   description: string;
   color: string;
 }
@@ -41,22 +45,27 @@ export const AssignedSubjectsScreen = () => {
         ? slots
         : slots.filter((s) => matchFacultyName(s.faculty_name, user?.name));
       const filteredSlots = (userFilteredSlots.length === 0 && slots.length > 0) ? slots : userFilteredSlots;
-      const subjectMap: Record<string, SubjectInfo> = {};
+      const sessionMap: Record<string, SubjectInfo> = {};
       const colors = ['#0F52BA', '#1B9CFC', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444'];
       let colorIdx = 0;
 
       for (const slot of filteredSlots) {
-        if (!subjectMap[slot.subject_code]) {
+        const sessionKey = `${slot.subject_code}_${slot.class_section}`;
+        if (!sessionMap[sessionKey]) {
           let year = 'Academic Course';
           if (slot.class_section.includes('1st')) year = '1st Year CSE';
           else if (slot.class_section.includes('2nd') || slot.class_section === 'CSE-B') year = '2nd Year CSE';
           else if (slot.class_section.includes('3rd')) year = '3rd Year CSE';
           else if (slot.class_section.includes('4th')) year = '4th Year CSE';
 
-          subjectMap[slot.subject_code] = {
+          const ccInfo = getCCForSection(slot.class_section);
+
+          sessionMap[sessionKey] = {
             code: slot.subject_code,
             name: slot.subject_name,
+            section: slot.class_section,
             year: `${year} (${slot.class_section})`,
+            ccFacultyName: ccInfo?.facultyName || 'Class Coordinator',
             description: `Syllabus log coverage tracker for ${slot.subject_name}.`,
             color: colors[colorIdx % colors.length],
           };
@@ -64,7 +73,7 @@ export const AssignedSubjectsScreen = () => {
         }
       }
 
-      const subjectsList = Object.values(subjectMap);
+      const subjectsList = Object.values(sessionMap);
       setSubjects(subjectsList);
 
       const progressMap: Record<string, { completed: number; total: number; percent: number }> = {};
@@ -72,7 +81,7 @@ export const AssignedSubjectsScreen = () => {
         const nodes = await syllabusRepo.getSyllabusBySubject(subject.code);
         const completed = nodes.filter((n) => n.is_completed === 1).length;
         const total = nodes.length || 5;
-        progressMap[subject.code] = {
+        progressMap[`${subject.code}_${subject.section}`] = {
           completed,
           total,
           percent: completed / total,
@@ -92,8 +101,8 @@ export const AssignedSubjectsScreen = () => {
     }, [])
   );
 
-  const handleUpdateProgress = (subjectCode: string) => {
-    navigation.navigate('WeeklyProgress', { subjectCode, weekNumber: 12 });
+  const handleUpdateProgress = (subjectCode: string, section?: string) => {
+    navigation.navigate('WeeklyProgress', { subjectCode, classSection: section, weekNumber: 12 });
   };
 
   return (
