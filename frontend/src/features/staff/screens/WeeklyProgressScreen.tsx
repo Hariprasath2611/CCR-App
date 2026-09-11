@@ -105,11 +105,14 @@ const TEMP_UNIT_OPTIONS = [
 export const WeeklyProgressScreen = () => {
   const user = useAuthStore((state) => state.user);
   const addProgressLog = useReportStore((state) => state.addProgressLog);
+  const subjectProgressList = useReportStore((state) => state.subjectProgressList);
   const route = useRoute<RouteParams>();
   const navigation = useNavigation();
 
   // Safeguards for route parameters
   const subjectCode = route.params?.subjectCode || 'CS3591';
+  const routeClassSection = (route.params as any)?.classSection;
+  const targetClassSection = routeClassSection || user?.assignedClassId || '1st Year SEC-B';
   const weekNumber = route.params?.weekNumber || 12;
 
   const [selectedWeek, setSelectedWeek] = useState(weekNumber.toString());
@@ -141,6 +144,27 @@ export const WeeklyProgressScreen = () => {
   const completedOnPlan = watch('completedOnPlan');
   const unit = watch('unit');
 
+  // Pre-populate week-to-week carry-over progress from previous/current week logs
+  useEffect(() => {
+    const currentWeekNum = parseInt(selectedWeek);
+    const currentKey = `${targetClassSection}_${currentWeekNum}`;
+    const prevKey = `${targetClassSection}_${currentWeekNum - 1}`;
+    
+    const currentLogs = subjectProgressList[currentKey];
+    const prevLogs = subjectProgressList[prevKey];
+    
+    const subjectLog = (currentLogs && currentLogs.find(s => s.code === subjectCode)) ||
+                       (prevLogs && prevLogs.find(s => s.code === subjectCode));
+    
+    if (subjectLog) {
+      if (subjectLog.topicsCoveredText) setValue('topicsCovered', subjectLog.topicsCoveredText);
+      if (subjectLog.cumulativePercent) setValue('cumulativePercent', subjectLog.cumulativePercent);
+      if (subjectLog.fromDate) setValue('fromDate', subjectLog.fromDate);
+      if (subjectLog.toDate) setValue('toDate', subjectLog.toDate);
+      if (subjectLog.reasonsForPending) setValue('reasonsForPending', subjectLog.reasonsForPending);
+    }
+  }, [selectedWeek, targetClassSection, subjectCode, subjectProgressList, setValue]);
+
   useEffect(() => {
     const loadSyllabus = async () => {
       try {
@@ -159,7 +183,7 @@ export const WeeklyProgressScreen = () => {
   const onSubmit = async (data: ProgressFormData) => {
     setIsSubmitting(true);
     try {
-      const classId = user?.assignedClassId || 'CSE-B';
+      const classId = targetClassSection;
 
       // 1. Mark topics in SQLite based on unit coverage
       const selectedUnitTopics = syllabusNodes.filter(

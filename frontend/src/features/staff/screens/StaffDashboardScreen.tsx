@@ -15,11 +15,15 @@ import { ms } from '@theme/responsive';
 
 const { width } = Dimensions.get('window');
 
+import { getCCForSection } from '@config/facultyBoard';
+
 interface SubjectInfo {
   code: string;
   name: string;
+  section: string;
   sections: string[];
   yearDisplay: string;
+  ccFacultyName: string;
   shortName: string;
   color: string;
   completedTopics: number;
@@ -51,11 +55,11 @@ export const StaffDashboardScreen = () => {
         : slots.filter((s) => matchFacultyName(s.faculty_name, user?.name));
       const filteredSlots = (userFilteredSlots.length === 0 && slots.length > 0) ? slots : userFilteredSlots;
       
-      // Group slots by subject_code to aggregate sections
-      const subjectMap: Record<string, {
+      // Group slots by (subject_code, class_section) so sessions for different sections show separately
+      const sessionMap: Record<string, {
         code: string;
         name: string;
-        sectionsSet: Set<string>;
+        section: string;
         yearPrefix: string;
         shortName: string;
         color: string;
@@ -65,7 +69,8 @@ export const StaffDashboardScreen = () => {
       let colorIdx = 0;
 
       for (const slot of filteredSlots) {
-        if (!subjectMap[slot.subject_code]) {
+        const sessionKey = `${slot.subject_code}_${slot.class_section}`;
+        if (!sessionMap[sessionKey]) {
           let yearPrefix = 'Academic Course';
           if (slot.class_section.includes('1st')) yearPrefix = '1st Year';
           else if (slot.class_section.includes('2nd') || slot.class_section === 'CSE-B') yearPrefix = '2nd Year';
@@ -78,30 +83,26 @@ export const StaffDashboardScreen = () => {
           if (slot.subject_code === 'CS8503') shortName = 'CN';
           if (slot.subject_code === 'CS8504') shortName = 'OS';
 
-          subjectMap[slot.subject_code] = {
+          sessionMap[sessionKey] = {
             code: slot.subject_code,
             name: slot.subject_name,
-            sectionsSet: new Set<string>(),
+            section: slot.class_section,
             yearPrefix,
             shortName,
             color: colors[colorIdx % colors.length],
           };
           colorIdx++;
         }
-        subjectMap[slot.subject_code].sectionsSet.add(slot.class_section);
       }
 
-      // Fetch syllabus progress for each subject
+      // Fetch syllabus progress for each section session
       const subjectList: SubjectInfo[] = [];
       let totalCompletedAll = 0;
       let totalTopicsAll = 0;
 
-      for (const code of Object.keys(subjectMap)) {
-        const item = subjectMap[code];
-        const sectionsArray = Array.from(item.sectionsSet);
-        const sectionsText = sectionsArray.join(', ');
-
-        const topics = await syllabusRepo.getSyllabusBySubject(code);
+      for (const key of Object.keys(sessionMap)) {
+        const item = sessionMap[key];
+        const topics = await syllabusRepo.getSyllabusBySubject(item.code);
         const totalTopics = topics.length;
         const completedTopics = topics.filter(t => t.is_completed === 1).length;
         const percent = totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
@@ -109,11 +110,16 @@ export const StaffDashboardScreen = () => {
         totalCompletedAll += completedTopics;
         totalTopicsAll += totalTopics;
 
+        const ccInfo = getCCForSection(item.section);
+        const ccFacultyName = ccInfo?.facultyName || 'Section Class Coordinator';
+
         subjectList.push({
           code: item.code,
           name: item.name,
-          sections: sectionsArray,
-          yearDisplay: `${item.yearPrefix} (${sectionsText})`,
+          section: item.section,
+          sections: [item.section],
+          yearDisplay: `${item.yearPrefix} (${item.section})`,
+          ccFacultyName,
           shortName: item.shortName,
           color: item.color,
           completedTopics,
@@ -157,8 +163,8 @@ export const StaffDashboardScreen = () => {
       .toUpperCase();
   };
 
-  const handleSubjectPress = (code: string) => {
-    navigation.navigate('WeeklyProgress', { subjectCode: code, weekNumber: 12 });
+  const handleSubjectPress = (code: string, section?: string) => {
+    navigation.navigate('WeeklyProgress', { subjectCode: code, classSection: section, weekNumber: 12 });
   };
 
   // Determine user role badge label
@@ -222,9 +228,9 @@ export const StaffDashboardScreen = () => {
           {handledSubjects.map((subj) => {
             return (
               <TouchableOpacity
-                key={subj.code}
+                key={`${subj.code}_${subj.section}`}
                 activeOpacity={0.9}
-                onPress={() => handleSubjectPress(subj.code)}
+                onPress={() => handleSubjectPress(subj.code, subj.section)}
                 style={styles.subjectCardWrapper}
               >
                 <Card style={[styles.subjectCard, { borderLeftColor: subj.color }]}>
@@ -238,6 +244,9 @@ export const StaffDashboardScreen = () => {
 
                     <Text style={styles.subjName} numberOfLines={1}>
                       {subj.name} ({subj.shortName})
+                    </Text>
+                    <Text style={{ fontSize: ms(11.5), color: Palette.primary, fontWeight: '700', marginTop: ms(2) }}>
+                      CC: {subj.ccFacultyName}
                     </Text>
 
                     {/* Live Progress Bar */}
