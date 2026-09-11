@@ -21,6 +21,7 @@ import { StaffStackParamList } from '@navigation/types';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { ms } from '@theme/responsive';
+import { getCCForSection } from '@config/facultyBoard';
 
 type RouteParams = RouteProp<StaffStackParamList, 'WeeklyProgress'>;
 
@@ -297,10 +298,13 @@ export const WeeklyProgressScreen = () => {
           <Feather name="book-open" size={24} color={Palette.primary} />
         </View>
         <View style={styles.headerInfo}>
-          <Text style={styles.headingText}>Course Coverage</Text>
+          <Text style={styles.headingText}>Course Coverage Log</Text>
           <Text style={styles.subjectName}>{SUBJECT_NAMES[subjectCode] || 'Subject Course'}</Text>
           <Text style={styles.weekLabel}>
-            Code: {subjectCode} · Class: {user?.assignedClassId || 'CSE-B'}
+            Code: {subjectCode} · Section: {targetClassSection}
+          </Text>
+          <Text style={{ fontSize: ms(11.5), color: Palette.primary, fontWeight: '700', marginTop: ms(2) }}>
+            Assigned CC: {getCCForSection(targetClassSection)?.facultyName || 'Class Coordinator'}
           </Text>
         </View>
       </View>
