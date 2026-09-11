@@ -11,6 +11,9 @@ import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { ms } from '@theme/responsive';
 
+import { FacultyBoardCard } from '@components/common/FacultyBoardCard';
+import { getCCForSection, getHODForYear } from '@config/facultyBoard';
+
 type HodNav = NativeStackNavigationProp<StaffStackParamList>;
 
 interface ClassData {
@@ -19,29 +22,30 @@ interface ClassData {
   year: string;
   coverage: number;
   pendingCount: number;
+  ccName?: string;
 }
 
 const CLASSES_DATA: ClassData[] = [
   // 1st Year Engineering Science
-  { classId: '1st Year SEC-A', name: '1st Year SEC-A', year: '1st Year', coverage: 78, pendingCount: 0 },
-  { classId: '1st Year SEC-B', name: '1st Year SEC-B', year: '1st Year', coverage: 82, pendingCount: 0 },
-  { classId: '1st Year SEC-C', name: '1st Year SEC-C', year: '1st Year', coverage: 75, pendingCount: 1 },
-  { classId: '1st Year SEC-D', name: '1st Year SEC-D', year: '1st Year', coverage: 80, pendingCount: 0 },
-  { classId: '1st Year SEC-E', name: '1st Year SEC-E', year: '1st Year', coverage: 70, pendingCount: 0 },
-  { classId: '1st Year SEC-F', name: '1st Year SEC-F', year: '1st Year', coverage: 85, pendingCount: 0 },
-  { classId: '1st Year SEC-G', name: '1st Year SEC-G', year: '1st Year', coverage: 72, pendingCount: 1 },
+  { classId: '1st Year SEC-A', name: '1st Year SEC-A', year: '1st Year', coverage: 78, pendingCount: 0, ccName: 'Dr. Karuppaiya' },
+  { classId: '1st Year SEC-B', name: '1st Year SEC-B', year: '1st Year', coverage: 82, pendingCount: 0, ccName: 'Mrs. G.Revathi' },
+  { classId: '1st Year SEC-C', name: '1st Year SEC-C', year: '1st Year', coverage: 75, pendingCount: 1, ccName: 'Mrs. Gopikha' },
+  { classId: '1st Year SEC-D', name: '1st Year SEC-D', year: '1st Year', coverage: 80, pendingCount: 0, ccName: 'Dr. Bhuvaneshwari' },
+  { classId: '1st Year SEC-E', name: '1st Year SEC-E', year: '1st Year', coverage: 70, pendingCount: 0, ccName: 'Dr. Josphin' },
+  { classId: '1st Year SEC-F', name: '1st Year SEC-F', year: '1st Year', coverage: 85, pendingCount: 0, ccName: 'Mrs. Jasline' },
+  { classId: '1st Year SEC-G', name: '1st Year SEC-G', year: '1st Year', coverage: 72, pendingCount: 1, ccName: 'Mrs. R.Sumathi' },
 
   // 2nd Year CSE
-  { classId: '2nd Year CSE-A', name: '2nd Year CSE-A', year: '2nd Year', coverage: 84, pendingCount: 0 },
-  { classId: '2nd Year CSE-B', name: '2nd Year CSE-B', year: '2nd Year', coverage: 79, pendingCount: 0 },
+  { classId: '2nd Year CSE-A', name: '2nd Year CSE-A', year: '2nd Year', coverage: 84, pendingCount: 0, ccName: 'Mrs. Agnus' },
+  { classId: '2nd Year CSE-B', name: '2nd Year CSE-B', year: '2nd Year', coverage: 79, pendingCount: 0, ccName: 'Mrs. Archana' },
 
   // 3rd Year CSE
-  { classId: '3rd Year CSE-A', name: '3rd Year CSE-A', year: '3rd Year', coverage: 88, pendingCount: 0 },
-  { classId: '3rd Year CSE-B', name: '3rd Year CSE-B', year: '3rd Year', coverage: 85, pendingCount: 0 },
+  { classId: '3rd Year CSE-A', name: '3rd Year CSE-A', year: '3rd Year', coverage: 88, pendingCount: 0, ccName: 'Ms. Punitha EM' },
+  { classId: '3rd Year CSE-B', name: '3rd Year CSE-B', year: '3rd Year', coverage: 85, pendingCount: 0, ccName: 'Ms. E Uva Shakthi' },
 
   // 4th Year CSE
-  { classId: '4th Year CSE-A', name: '4th Year CSE-A', year: '4th Year', coverage: 92, pendingCount: 0 },
-  { classId: '4th Year CSE-B', name: '4th Year CSE-B', year: '4th Year', coverage: 90, pendingCount: 0 },
+  { classId: '4th Year CSE-A', name: '4th Year CSE-A', year: '4th Year', coverage: 92, pendingCount: 0, ccName: 'Mr. S Faizal Mukthar Hussain' },
+  { classId: '4th Year CSE-B', name: '4th Year CSE-B', year: '4th Year', coverage: 90, pendingCount: 0, ccName: 'Ms. R Rajalakshmi' },
 ];
 
 export const HodDashboardScreen = () => {
@@ -55,6 +59,7 @@ export const HodDashboardScreen = () => {
   }, [fetchReports]);
 
   const [selectedYear, setSelectedYear] = useState('1st Year');
+  const [showBoardModal, setShowBoardModal] = useState(false);
 
   // Filter pending reports that are submitted to the HOD
   const pendingReportsList = reports.filter((r) => r.status === 'SUBMITTED_TO_HOD');
@@ -66,6 +71,7 @@ export const HodDashboardScreen = () => {
 
   // Filter classes according to selectedYear
   const filteredClasses = CLASSES_DATA.filter((c) => c.year === selectedYear);
+  const hodBoardInfo = getHODForYear(selectedYear);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -73,8 +79,8 @@ export const HodDashboardScreen = () => {
       <View style={styles.header}>
         <Avatar.Text size={52} label={initials} style={styles.avatar} labelStyle={styles.avatarLabel} />
         <View style={styles.headerText}>
-          <Text style={styles.welcomeLabel}>HOD Dashboard</Text>
-          <Text style={styles.deptName}>{user?.department || 'Computer Science Engineering'}</Text>
+          <Text style={styles.welcomeLabel}>HOD Dashboard • {hodBoardInfo.hodName}</Text>
+          <Text style={styles.deptName}>{user?.department || hodBoardInfo.department}</Text>
         </View>
       </View>
 
@@ -118,48 +124,61 @@ export const HodDashboardScreen = () => {
         })}
       </View>
 
+      {/* ── HOD BOARD & CC BOARD BANNER FOR SELECTED YEAR ── */}
+      <FacultyBoardCard yearOrDept={selectedYear} showTitle={true} />
+
       {/* ── CLASSES DISPLAY LIST ── */}
-      <Text style={styles.sectionTitle}>{selectedYear} Classes Overview</Text>
+      <Text style={styles.sectionTitle}>{selectedYear} Section CC & Overview</Text>
       <View style={styles.classesContainer}>
-        {filteredClasses.map((cls) => (
-          <Card key={cls.classId} style={styles.classCard}>
-            <Card.Content>
-              <View style={styles.classHeader}>
-                <View>
-                  <Text style={styles.className}>{cls.name}</Text>
-                  <Text style={styles.classDeptSub}>{cls.year === '1st Year' ? 'Engineering Science Dept' : (user?.department || 'CSE Dept')}</Text>
+        {filteredClasses.map((cls) => {
+          const ccInfo = getCCForSection(cls.classId);
+          const ccFacultyName = ccInfo?.facultyName || cls.ccName || 'Faculty Coordinator';
+          return (
+            <Card key={cls.classId} style={styles.classCard}>
+              <Card.Content>
+                <View style={styles.classHeader}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.className}>{cls.name}</Text>
+                    <Text style={styles.classDeptSub}>
+                      {cls.year === '1st Year' ? 'Engineering Science Dept' : (user?.department || 'CSE Dept')}
+                    </Text>
+                    <View style={styles.ccNameTagRow}>
+                      <MaterialCommunityIcons name="shield-star" size={15} color={Palette.primary} />
+                      <Text style={styles.ccNameTagText}>CC: {ccFacultyName}</Text>
+                    </View>
+                  </View>
+                  {cls.pendingCount > 0 ? (
+                    <Badge style={styles.pendingBadge}>{`${cls.pendingCount} Pending`}</Badge>
+                  ) : (
+                    <Badge style={styles.okBadge}>All Logged</Badge>
+                  )}
                 </View>
-                {cls.pendingCount > 0 ? (
-                  <Badge style={styles.pendingBadge}>{`${cls.pendingCount} Pending`}</Badge>
-                ) : (
-                  <Badge style={styles.okBadge}>All Logged</Badge>
-                )}
-              </View>
 
-              <View style={styles.progressSection}>
-                <View style={styles.progressLabelRow}>
-                  <Text style={styles.progressLabel}>Average Coverage</Text>
-                  <Text style={styles.progressValue}>{cls.coverage}%</Text>
+                <View style={styles.progressSection}>
+                  <View style={styles.progressLabelRow}>
+                    <Text style={styles.progressLabel}>Average Coverage</Text>
+                    <Text style={styles.progressValue}>{cls.coverage}%</Text>
+                  </View>
+                  <ProgressBar progress={cls.coverage / 100} color={Palette.primary} style={styles.progressBar} />
                 </View>
-                <ProgressBar progress={cls.coverage / 100} color={Palette.primary} style={styles.progressBar} />
-              </View>
 
-              <Button
-                mode="outlined"
-                compact
-                icon="eye"
-                style={styles.inspectBtn}
-                labelStyle={styles.inspectBtnLabel}
-                onPress={() => navigation.navigate('StaffHome', {
-                  screen: 'FacultyProgress',
-                  params: { classId: cls.classId }
-                })}
-              >
-                Inspect Class Progress
-              </Button>
-            </Card.Content>
-          </Card>
-        ))}
+                <Button
+                  mode="outlined"
+                  compact
+                  icon="eye"
+                  style={styles.inspectBtn}
+                  labelStyle={styles.inspectBtnLabel}
+                  onPress={() => navigation.navigate('StaffHome', {
+                    screen: 'FacultyProgress',
+                    params: { classId: cls.classId }
+                  })}
+                >
+                  Inspect Class Progress
+                </Button>
+              </Card.Content>
+            </Card>
+          );
+        })}
       </View>
 
       {/* ── QUICK ACTIONS ── */}
@@ -486,6 +505,17 @@ const styles = StyleSheet.create({
     color: Palette.textLight,
     fontWeight: '500',
     marginTop: ms(2),
+  },
+  ccNameTagRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: ms(4),
+    gap: ms(4),
+  },
+  ccNameTagText: {
+    fontSize: ms(12.5),
+    fontWeight: '800',
+    color: Palette.primary,
   },
 });
 

@@ -84,12 +84,13 @@ export const LoginScreen = () => {
     if (emailLower === 'drkaruppaiya@ccr.edu') {
       return {
         role: 'STAFF' as const,
-        isCC: false,
+        isCC: true,
+        assignedClassId: '1st Year SEC-A',
         name: 'Dr. Karuppaiya',
-        dept: 'MATHS',
-        label: 'Subject Teacher',
-        icon: 'book-open-variant',
-        color: '#0F52BA',
+        dept: 'Mathematics',
+        label: 'Class Coordinator (1st Year SEC-A)',
+        icon: 'shield-star',
+        color: '#3B82F6',
         bgColor: '#EFF6FF',
         borderColor: '#BFDBFE',
       };
@@ -98,12 +99,13 @@ export const LoginScreen = () => {
     if (emailLower === 'mrsgopikha@ccr.edu') {
       return {
         role: 'STAFF' as const,
-        isCC: false,
+        isCC: true,
+        assignedClassId: '1st Year SEC-C',
         name: 'Mrs. Gopikha',
-        dept: 'ENG',
-        label: 'Subject Teacher',
-        icon: 'book-open-variant',
-        color: '#0F52BA',
+        dept: 'English',
+        label: 'Class Coordinator (1st Year SEC-C)',
+        icon: 'shield-star',
+        color: '#3B82F6',
         bgColor: '#EFF6FF',
         borderColor: '#BFDBFE',
       };
@@ -112,12 +114,13 @@ export const LoginScreen = () => {
     if (emailLower === 'drjosphin@ccr.edu') {
       return {
         role: 'STAFF' as const,
-        isCC: false,
+        isCC: true,
+        assignedClassId: '1st Year SEC-E',
         name: 'Dr. Josphin',
-        dept: 'TAMIL',
-        label: 'Subject Teacher',
-        icon: 'book-open-variant',
-        color: '#0F52BA',
+        dept: 'Tamil',
+        label: 'Class Coordinator (1st Year SEC-E)',
+        icon: 'shield-star',
+        color: '#3B82F6',
         bgColor: '#EFF6FF',
         borderColor: '#BFDBFE',
       };
@@ -125,27 +128,28 @@ export const LoginScreen = () => {
 
     if (emailLower === 'drsaravanan@ccr.edu') {
       return {
-        role: 'STAFF' as const,
+        role: 'HOD' as const,
         isCC: false,
-        name: 'Dr. Saravanan',
-        dept: 'PHY',
-        label: 'Subject Teacher',
-        icon: 'book-open-variant',
-        color: '#0F52BA',
-        bgColor: '#EFF6FF',
-        borderColor: '#BFDBFE',
+        name: 'Dr. SARAVANAN',
+        dept: 'Engineering Science (1st Year)',
+        label: 'Head of Department (1st Year HOD)',
+        icon: 'account-tie',
+        color: '#10B981',
+        bgColor: '#ECFDF5',
+        borderColor: '#A7F3D0',
       };
     }
 
     if (emailLower === 'drbhuvaneshwari@ccr.edu') {
       return {
         role: 'STAFF' as const,
-        isCC: false,
+        isCC: true,
+        assignedClassId: '1st Year SEC-D',
         name: 'Dr. Bhuvaneshwari',
-        dept: 'CHEM',
-        label: 'Subject Teacher',
-        icon: 'book-open-variant',
-        color: '#0F52BA',
+        dept: 'Chemistry',
+        label: 'Class Coordinator (1st Year SEC-D)',
+        icon: 'shield-star',
+        color: '#3B82F6',
         bgColor: '#EFF6FF',
         borderColor: '#BFDBFE',
       };
@@ -336,12 +340,13 @@ export const LoginScreen = () => {
     if (emailLower === 'mrsjasline@ccr.edu') {
       return {
         role: 'STAFF' as const,
-        isCC: false,
+        isCC: true,
+        assignedClassId: '1st Year SEC-F',
         name: 'Mrs. Jasline',
-        dept: 'PHY',
-        label: 'Subject Teacher',
-        icon: 'book-open-variant',
-        color: '#0F52BA',
+        dept: 'Physics',
+        label: 'Class Coordinator (1st Year SEC-F)',
+        icon: 'shield-star',
+        color: '#3B82F6',
         bgColor: '#EFF6FF',
         borderColor: '#BFDBFE',
       };
@@ -504,26 +509,28 @@ export const LoginScreen = () => {
     if (emailLower === 'mrsrsumathy@ccr.edu') {
       return {
         role: 'STAFF' as const,
-        isCC: false,
-        name: 'Mrs. R.Sumathy',
-        dept: 'MATHS',
-        label: 'Subject Teacher',
-        icon: 'book-open-variant',
-        color: '#0F52BA',
+        isCC: true,
+        assignedClassId: '1st Year SEC-G',
+        name: 'Mrs. R.Sumathi',
+        dept: 'Mathematics',
+        label: 'Class Coordinator (1st Year SEC-G)',
+        icon: 'shield-star',
+        color: '#3B82F6',
         bgColor: '#EFF6FF',
         borderColor: '#BFDBFE',
       };
     }
 
-    if (emailLower === 'mrsgrevathy@ccr.edu') {
+    if (emailLower === 'mrsgrevathy@ccr.edu' || emailLower === 'mrsrevathy@ccr.edu') {
       return {
         role: 'STAFF' as const,
-        isCC: false,
-        name: 'Mrs. G.Revathy',
-        dept: 'PHY',
-        label: 'Subject Teacher',
-        icon: 'book-open-variant',
-        color: '#0F52BA',
+        isCC: true,
+        assignedClassId: '1st Year SEC-B',
+        name: 'Mrs. G.Revathi',
+        dept: 'Physics',
+        label: 'Class Coordinator (1st Year SEC-B)',
+        icon: 'shield-star',
+        color: '#3B82F6',
         bgColor: '#EFF6FF',
         borderColor: '#BFDBFE',
       };

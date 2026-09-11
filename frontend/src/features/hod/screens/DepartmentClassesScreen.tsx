@@ -55,10 +55,24 @@ export const DepartmentClassesScreen = () => {
 
   // Dynamic Class builder based on existing consolidated reports
   const getClassesForDept = (code: string): ClassData[] => {
-    // Return classes that actually have reports in the store
     const classMap: Record<string, ClassData> = {};
+    
+    // Always include 1st Year Sections A-G with CC mappings
+    const default1stYear = [
+      { classId: '1st Year SEC-A', name: '1st Year SEC-A', year: '1st Year', coverage: 78, pendingCount: 0 },
+      { classId: '1st Year SEC-B', name: '1st Year SEC-B', year: '1st Year', coverage: 82, pendingCount: 0 },
+      { classId: '1st Year SEC-C', name: '1st Year SEC-C', year: '1st Year', coverage: 75, pendingCount: 1 },
+      { classId: '1st Year SEC-D', name: '1st Year SEC-D', year: '1st Year', coverage: 80, pendingCount: 0 },
+      { classId: '1st Year SEC-E', name: '1st Year SEC-E', year: '1st Year', coverage: 70, pendingCount: 0 },
+      { classId: '1st Year SEC-F', name: '1st Year SEC-F', year: '1st Year', coverage: 85, pendingCount: 0 },
+      { classId: '1st Year SEC-G', name: '1st Year SEC-G', year: '1st Year', coverage: 72, pendingCount: 1 },
+    ];
+    for (const def of default1stYear) {
+      classMap[def.classId] = def;
+    }
+
     for (const report of reports) {
-      if (report.classId.includes(code)) {
+      if (report.classId.includes(code) || report.classId.includes('1st Year')) {
         if (!classMap[report.classId]) {
           classMap[report.classId] = {
             classId: report.classId,
@@ -67,6 +81,9 @@ export const DepartmentClassesScreen = () => {
             coverage: report.overallCoverage,
             pendingCount: report.status === 'SUBMITTED_TO_HOD' ? 1 : 0,
           };
+        } else {
+          classMap[report.classId].coverage = report.overallCoverage;
+          if (report.status === 'SUBMITTED_TO_HOD') classMap[report.classId].pendingCount = 1;
         }
       }
     }
