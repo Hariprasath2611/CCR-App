@@ -164,11 +164,43 @@ export const useReportStore = create<ReportStoreState>((set, get) => ({
         return item;
       });
 
+      // Carry forward progress to subsequent weeks (e.g. weekNumber + 1 through 16) if not already explicitly submitted
+      const nextProgressList = { ...state.subjectProgressList, [key]: updatedList };
+      const updatedSubjectItem = updatedList.find(s => s.code === subjectCode);
+
+      if (updatedSubjectItem) {
+        for (let w = weekNumber + 1; w <= 16; w++) {
+          const futureKey = `${classId}_${w}`;
+          const futureList = nextProgressList[futureKey];
+          if (!futureList) {
+            nextProgressList[futureKey] = updatedList.map(s => {
+              if (s.code === subjectCode) {
+                return {
+                  ...s,
+                  status: 'Pending' as const, // Future week starts with current week's cumulative progress pre-populated
+                };
+              }
+              return s;
+            });
+          } else {
+            nextProgressList[futureKey] = futureList.map(s => {
+              if (s.code === subjectCode && s.status === 'Pending') {
+                return {
+                  ...s,
+                  coverage: updatedSubjectItem.coverage,
+                  completedTopicsCount: updatedSubjectItem.completedTopicsCount,
+                  topicsCoveredText: updatedSubjectItem.topicsCoveredText,
+                  cumulativePercent: updatedSubjectItem.cumulativePercent,
+                };
+              }
+              return s;
+            });
+          }
+        }
+      }
+
       return {
-        subjectProgressList: {
-          ...state.subjectProgressList,
-          [key]: updatedList,
-        },
+        subjectProgressList: nextProgressList,
       };
     });
   },
