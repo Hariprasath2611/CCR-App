@@ -3060,3 +3060,26 @@
 {"_e":"metro:client_log","_t":1789030205047,"level":"log","data":["Clearing old syllabus progress to seed new subjects..."]}
 {"_e":"metro:client_log","_t":1789030205047,"level":"log","data":["Syllabus data successfully seeded."]}
 {"_e":"metro:client_log","_t":1789030205047,"level":"log","data":["Timetable data successfully seeded."]}
+{"_e":"root:init","_t":1789034910494,"format":"v0-jsonl","version":"57.0.9"}
+{"_e":"devserver:start","_t":1789034910777,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1789034911362,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1789034911692,"plugins":[{"packageName":"expo-sqlite","bannerTitle":"expo-sqlite","cliBanner":false,"webpageEndpoint":"/_expo/plugins/expo-sqlite"}]}
+{"_e":"metro:instantiate","_t":1789034923977,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1789034936782,"id":"1","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1789034936782,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789034936786,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789034936886,"id":"1","progress":0.010266063769915968,"total":227,"current":23}
+{"_e":"metro:bundling:progress","_t":1789034936986,"id":"1","progress":0.110520880488909,"total":376,"current":125}
+{"_e":"metro:bundling:progress","_t":1789034937086,"id":"1","progress":0.17031997984378935,"total":567,"current":234}
+{"_e":"metro:bundling:progress","_t":1789034937186,"id":"1","progress":0.3021358712337179,"total":755,"current":415}
+{"_e":"metro:bundling:progress","_t":1789034937286,"id":"1","progress":0.43306879322543307,"total":854,"current":562}
+{"_e":"metro:bundling:progress","_t":1789034937388,"id":"1","progress":0.6480333941877673,"total":959,"current":772}
+{"_e":"metro:bundling:progress","_t":1789034937488,"id":"1","progress":0.6604242521285706,"total":1137,"current":924}
+{"_e":"metro:bundling:progress","_t":1789034937588,"id":"1","progress":0.7754721657215647,"total":1248,"current":1099}
+{"_e":"metro:bundling:progress","_t":1789034937689,"id":"1","progress":0.7754721657215647,"total":1423,"current":1228}
+{"_e":"metro:bundling:progress","_t":1789034937789,"id":"1","progress":0.7978487913681804,"total":1461,"current":1305}
+{"_e":"metro:bundling:progress","_t":1789034937892,"id":"1","progress":0.999,"total":1489,"current":1489}
+{"_e":"metro:bundling:done","_t":1789034939013,"id":"1","total":1489,"ms":2231.8008}
+{"_e":"metro:client_log","_t":1789034942343,"level":"warn","data":["No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?"]}
+{"_e":"metro:client_log","_t":1789035103334,"level":"error","data":["Login error details:","[AxiosError: Request failed with status code 401]"]}
+{"_e":"metro:server_log","_t":1789036627807,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
