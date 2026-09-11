@@ -80,7 +80,7 @@ export const FacultyBoardCard: React.FC<FacultyBoardCardProps> = ({
       <View style={styles.ccBoardHeaderRow}>
         <MaterialCommunityIcons name="account-group" size={20} color={Palette.textDark} />
         <Text style={styles.ccBoardTitle}>CLASS COORDINATOR (CC) BOARD</Text>
-        <Badge style={styles.countBadge}>{ccBoard.length} Sections</Badge>
+        <Badge style={styles.countBadge}>{`${ccBoard.length} Sections`}</Badge>
       </View>
 
       {/* ── CC BOARD GRID / CARDS ── */}
