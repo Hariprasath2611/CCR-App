@@ -10,7 +10,7 @@ export type StaffStackParamList = {
   AssignedSubjects: undefined;
   SubjectDetail: { subjectCode: string };
   WeeklyPlanForm: { editId?: string } | undefined;
-  WeeklyProgress: { subjectCode: string; weekNumber: number };
+  WeeklyProgress: { subjectCode: string; weekNumber: number; classSection?: string };
   ExtraHoursRequest: undefined;
   ReportHistory: undefined;
   ApprovalStatus: undefined;

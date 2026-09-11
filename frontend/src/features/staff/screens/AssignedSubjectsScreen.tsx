@@ -119,11 +119,12 @@ export const AssignedSubjectsScreen = () => {
         </View>
       ) : (
         subjects.map((subj) => {
-          const prog = syllabusProgress[subj.code] || { completed: 0, total: 5, percent: 0 };
+          const progKey = `${subj.code}_${subj.section}`;
+          const prog = syllabusProgress[progKey] || { completed: 0, total: 5, percent: 0 };
           const percentLabel = Math.round(prog.percent * 100);
 
           return (
-            <Card key={subj.code} style={[styles.card, { borderLeftColor: subj.color }]}>
+            <Card key={progKey} style={[styles.card, { borderLeftColor: subj.color }]}>
               <Card.Content style={styles.cardContent}>
                 <View style={styles.topRow}>
                   <Text style={styles.yearText}>{subj.year}</Text>
@@ -133,6 +134,9 @@ export const AssignedSubjectsScreen = () => {
                 </View>
 
                 <Text style={styles.subjectName}>{subj.name}</Text>
+                <Text style={{ fontSize: ms(12), color: Palette.primary, fontWeight: '700', marginBottom: ms(6) }}>
+                  CC: {subj.ccFacultyName}
+                </Text>
                 <Text style={styles.descriptionText}>{subj.description}</Text>
 
                 {/* Progress bar info */}
@@ -171,7 +175,7 @@ export const AssignedSubjectsScreen = () => {
                     compact
                     icon="plus"
                     style={[styles.actionBtn, { backgroundColor: subj.color }]}
-                    onPress={() => handleUpdateProgress(subj.code)}
+                    onPress={() => handleUpdateProgress(subj.code, subj.section)}
                   >
                     Log Progress
                   </Button>
