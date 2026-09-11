@@ -9,6 +9,8 @@ import { CCStackParamList } from '@navigation/types';
 import { Palette } from '@theme/colors';
 import { WeeklyCourseCoverageReportCard } from '../components/WeeklyCourseCoverageReportCard';
 
+import { getCCForSection, getHODForYear } from '@config/facultyBoard';
+
 import { ms } from '@theme/responsive';
 
 type CCNav = NativeStackNavigationProp<CCStackParamList>;
@@ -24,6 +26,8 @@ export const CCDashboardScreen = () => {
 
   const classId = user?.assignedClassId || '1st Year SEC-B';
   const selectedWeek = '12'; // Default consolidated view week
+  const ccInfo = getCCForSection(classId);
+  const hodInfo = getHODForYear(classId);
 
   React.useEffect(() => {
     if (isFocused) {
@@ -43,7 +47,7 @@ export const CCDashboardScreen = () => {
     classId,
     weekNumber: parseInt(selectedWeek),
     overallCoverage: averageCoverage,
-    submittedBy: 'Class Counselor',
+    submittedBy: user?.name || ccInfo?.facultyName || 'Class Counselor',
     submittedAt: new Date().toLocaleDateString(),
     ccRemarks: 'Consolidated class course coverage reports compiled.',
     status: 'PENDING_CC',
@@ -58,7 +62,10 @@ export const CCDashboardScreen = () => {
           <View style={styles.headerInfo}>
             <Text style={styles.welcomeGreeting}>Class Counselor Dashboard</Text>
             <Text style={styles.classLabel}>Class: {classId}</Text>
-            <Text style={styles.ccName}>Counselor: {user?.name || 'Faculty Member'}</Text>
+            <Text style={styles.ccName}>CC Counselor: {user?.name || ccInfo?.facultyName || 'Faculty Member'}</Text>
+            <Text style={{ fontSize: ms(12), color: '#64748B', fontWeight: '600', marginTop: ms(2) }}>
+              HOD: {hodInfo.hodName} ({hodInfo.department})
+            </Text>
           </View>
           <Avatar.Text
             size={48}

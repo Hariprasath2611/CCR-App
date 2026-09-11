@@ -13,6 +13,7 @@ import { generateReportHTML } from '@services/api/reportPdfTemplate';
 import { generateReportWord } from '@services/api/reportWordTemplate';
 
 import { ms } from '@theme/responsive';
+import { getCCForSection } from '@config/facultyBoard';
 
 const { width } = Dimensions.get('window');
 
@@ -220,20 +221,27 @@ export const DepartmentClassesScreen = () => {
 
           {/* Classes lists */}
           <View style={styles.classesList}>
-            {filteredClasses.map((cls) => (
-              <Card key={cls.classId} style={styles.classCard}>
-                <Card.Content>
-                  <View style={styles.classHeader}>
-                    <View>
-                      <Text style={styles.className}>{cls.name}</Text>
-                      <Text style={styles.classDeptCode}>{deptCode} Department</Text>
+            {filteredClasses.map((cls) => {
+              const ccInfo = getCCForSection(cls.classId);
+              return (
+                <Card key={cls.classId} style={styles.classCard}>
+                  <Card.Content>
+                    <View style={styles.classHeader}>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.className}>{cls.name}</Text>
+                        <Text style={styles.classDeptCode}>{deptCode} Department</Text>
+                        {ccInfo && (
+                          <Text style={{ fontSize: ms(12), color: Palette.primary, fontWeight: '700', marginTop: ms(3) }}>
+                            CC: {ccInfo.facultyName} ({ccInfo.department})
+                          </Text>
+                        )}
+                      </View>
+                      {cls.pendingCount > 0 ? (
+                        <Badge style={styles.pendingBadge}>{`${cls.pendingCount} Pending`}</Badge>
+                      ) : (
+                        <Badge style={styles.okBadge}>All Logged</Badge>
+                      )}
                     </View>
-                    {cls.pendingCount > 0 ? (
-                      <Badge style={styles.pendingBadge}>{`${cls.pendingCount} Pending`}</Badge>
-                    ) : (
-                      <Badge style={styles.okBadge}>All Logged</Badge>
-                    )}
-                  </View>
 
                   <View style={styles.progressSection}>
                     <View style={styles.progressLabelRow}>
@@ -268,7 +276,8 @@ export const DepartmentClassesScreen = () => {
                   </View>
                 </Card.Content>
               </Card>
-            ))}
+            );
+          })}
           </View>
         </ScrollView>
       ) : (

@@ -28,6 +28,8 @@ import { generateReportHTML } from '@services/api/reportPdfTemplate';
 import { generateReportWord } from '@services/api/reportWordTemplate';
 
 import { ms } from '@theme/responsive';
+import { FacultyBoardCard } from '@components/common/FacultyBoardCard';
+import { getCCForSection, getHODForYear } from '@config/facultyBoard';
 
 const { width } = Dimensions.get('window');
 
@@ -125,11 +127,27 @@ export const DeptSummaryScreen = () => {
 
   // Helper to generate classes list for a selected dept & year dynamically from reports
   const getClassesForDeptAndYear = (deptId: string, year: string): ClassProgressInfo[] => {
+    const classMap: Record<string, ClassProgressInfo> = {};
+
+    if (year === '1st Year') {
+      const default1stYear = [
+        { classId: '1st Year SEC-A', name: '1st Year SEC-A', coverage: 78, pendingCount: 0 },
+        { classId: '1st Year SEC-B', name: '1st Year SEC-B', coverage: 82, pendingCount: 0 },
+        { classId: '1st Year SEC-C', name: '1st Year SEC-C', coverage: 75, pendingCount: 1 },
+        { classId: '1st Year SEC-D', name: '1st Year SEC-D', coverage: 80, pendingCount: 0 },
+        { classId: '1st Year SEC-E', name: '1st Year SEC-E', coverage: 70, pendingCount: 0 },
+        { classId: '1st Year SEC-F', name: '1st Year SEC-F', coverage: 85, pendingCount: 0 },
+        { classId: '1st Year SEC-G', name: '1st Year SEC-G', coverage: 72, pendingCount: 1 },
+      ];
+      for (const item of default1stYear) {
+        classMap[item.classId] = item;
+      }
+    }
+
     const deptReports = reports.filter(
       (r) => r.classId.toLowerCase().includes(deptId.toLowerCase()) && r.classId.toLowerCase().includes(year.toLowerCase())
     );
     
-    const classMap: Record<string, ClassProgressInfo> = {};
     for (const report of deptReports) {
       if (!classMap[report.classId]) {
         classMap[report.classId] = {
@@ -138,6 +156,8 @@ export const DeptSummaryScreen = () => {
           coverage: report.overallCoverage,
           pendingCount: report.status === 'SUBMITTED_TO_HOD' ? 1 : 0,
         };
+      } else {
+        classMap[report.classId].coverage = report.overallCoverage;
       }
     }
     return Object.values(classMap);
@@ -426,21 +446,31 @@ export const DeptSummaryScreen = () => {
             </Text>
           </View>
 
+          {/* Academic Leadership Board (HOD & CCs) for selected year */}
+          <FacultyBoardCard yearOrDept={selectedYear} showTitle={true} />
+
           <View style={styles.classesContainer}>
-            {activeClasses.map((cls) => (
-              <Card key={cls.classId} style={styles.classCard} onPress={() => handleClassSelect(cls)}>
-                <Card.Content>
-                  <View style={styles.classHeader}>
-                    <View>
-                      <Text style={styles.className}>{cls.name}</Text>
-                      <Text style={styles.classDeptCode}>{selectedDept.code} Department</Text>
+            {activeClasses.map((cls) => {
+              const ccInfo = getCCForSection(cls.classId);
+              return (
+                <Card key={cls.classId} style={styles.classCard} onPress={() => handleClassSelect(cls)}>
+                  <Card.Content>
+                    <View style={styles.classHeader}>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.className}>{cls.name}</Text>
+                        <Text style={styles.classDeptCode}>{selectedDept.code} Department</Text>
+                        {ccInfo && (
+                          <Text style={{ fontSize: ms(12), color: Palette.primary, fontWeight: '700', marginTop: ms(3) }}>
+                            CC: {ccInfo.facultyName} ({ccInfo.department})
+                          </Text>
+                        )}
+                      </View>
+                      {cls.pendingCount > 0 ? (
+                        <Badge style={styles.pendingBadge}>{`${cls.pendingCount} Pending`}</Badge>
+                      ) : (
+                        <Badge style={styles.okBadge}>All Logged</Badge>
+                      )}
                     </View>
-                    {cls.pendingCount > 0 ? (
-                      <Badge style={styles.pendingBadge}>{`${cls.pendingCount} Pending`}</Badge>
-                    ) : (
-                      <Badge style={styles.okBadge}>All Logged</Badge>
-                    )}
-                  </View>
 
                   <View style={styles.progressSection}>
                     <View style={styles.progressLabelRow}>
@@ -468,7 +498,8 @@ export const DeptSummaryScreen = () => {
                   </Button>
                 </Card.Content>
               </Card>
-            ))}
+            );
+          })}
           </View>
         </ScrollView>
       )}
