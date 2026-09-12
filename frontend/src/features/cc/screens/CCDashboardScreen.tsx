@@ -8,7 +8,6 @@ import { useReportStore, ConsolidatedReport } from '../store/useReportStore';
 import { CCStackParamList } from '@navigation/types';
 import { Palette } from '@theme/colors';
 import { WeeklyCourseCoverageReportCard } from '../components/WeeklyCourseCoverageReportCard';
-
 import { getCCForSection, getHODForYear } from '@config/facultyBoard';
 
 import { ms } from '@theme/responsive';
