@@ -5,6 +5,8 @@ import { Palette } from '@theme/colors';
 import { Feather, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { ConsolidatedReport, SubjectProgress } from '../store/useReportStore';
 
+import { getSectionTemplate } from '@config/sectionTemplates';
+
 import { ms } from '@theme/responsive';
 
 const { width } = Dimensions.get('window');
@@ -22,13 +24,16 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
 }) => {
   const { classId, weekNumber, overallCoverage, subjects, ccRemarks, status, hodRemarks, approvedAt } = report;
 
+  // Retrieve section template configuration (Sections A through G)
+  const template = getSectionTemplate(classId);
+
   // Derive layout variables
   const isApprovedHOD = status === 'APPROVED_BY_HOD' || status === 'SENT_TO_ADMIN';
   const isApprovedAdmin = status === 'SENT_TO_ADMIN';
 
-  const sectionChar = classId.split('-')[1] || 'A';
-  const displayClass = classId.includes('CSE') ? 'III Year / V Semester' : 'II Year / III Semester';
-  const displayDept = classId.includes('CSE') ? 'Computer Science and Engineering' : 'Computer Science and Business Systems (CSBS)';
+  const sectionChar = template.section;
+  const displayClass = `Year: ${template.semester === 'I' ? 'I' : 'I'} / Sem: ${template.semester}`;
+  const displayDept = template.department;
 
   const loggedSubjects = subjects.filter(s => s.status === 'Submitted' && s.fromDate && s.toDate);
   const firstLogged = loggedSubjects[0];
@@ -209,6 +214,29 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
             </Text>
           </View>
         ) : null}
+
+        {/* ── 6-Tier Institutional Signatures Footer ── */}
+        <Divider style={styles.divider} />
+        <Text style={styles.approvalHeader}>INSTITUTIONAL AUTHORIZATION & SIGN-OFF</Text>
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ marginBottom: ms(16) }}>
+          <View style={styles.signaturesRow6}>
+            {[
+              { title: 'CC', label: 'Class Coordinator' },
+              { title: 'HOD', label: 'Head of Dept' },
+              { title: 'AC', label: 'Academic Coordinator' },
+              { title: 'VP', label: 'Vice Principal' },
+              { title: 'PRINCIPAL', label: 'Principal' },
+              { title: 'DIRECTOR', label: 'Director (Acad.,)-JGC' },
+            ].map((sig) => (
+              <View key={sig.title} style={styles.sigBox6}>
+                <Text style={styles.sigTitle6}>{sig.title}</Text>
+                <Text style={styles.sigSub6}>{sig.label}</Text>
+                <View style={styles.sigLine6} />
+                <Text style={styles.sigStatus6}>Sign / Seal</Text>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
 
         {/* ── Action Buttons ── */}
         {showDownloadButton && (
@@ -582,5 +610,45 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     marginLeft: ms(8),
     letterSpacing: 0.5,
+  },
+
+  // 6-Tier Signature Styles
+  signaturesRow6: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: ms(10),
+  },
+  sigBox6: {
+    width: ms(110),
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: ms(10),
+    padding: ms(10),
+    alignItems: 'center',
+  },
+  sigTitle6: {
+    fontSize: ms(11),
+    fontWeight: '900',
+    color: '#0F52BA',
+    textAlign: 'center',
+  },
+  sigSub6: {
+    fontSize: ms(9),
+    fontWeight: '600',
+    color: '#64748B',
+    textAlign: 'center',
+    marginTop: ms(2),
+  },
+  sigLine6: {
+    width: '80%',
+    height: 1,
+    backgroundColor: '#94A3B8',
+    marginVertical: ms(10),
+  },
+  sigStatus6: {
+    fontSize: ms(9),
+    color: '#94A3B8',
+    fontStyle: 'italic',
   },
 });

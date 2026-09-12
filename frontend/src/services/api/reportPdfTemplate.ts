@@ -1,5 +1,6 @@
 import { ConsolidatedReport } from '@features/cc/store/useReportStore';
 import { JEC_LOGO_BASE64 } from '../../assets/logo_base64';
+import { getSectionTemplate } from '@config/sectionTemplates';
 
 const getBriefTopics = (code: string): string[] => {
   const lookup: Record<string, string[]> = {
@@ -17,10 +18,12 @@ const getBriefTopics = (code: string): string[] => {
 export const generateReportHTML = (report: ConsolidatedReport): string => {
   const { classId, weekNumber, subjects } = report;
 
-  // Calculate layout variables
-  const sectionChar = classId.split('-')[1] || 'A';
-  const displayClass = classId.includes('CSE') ? 'III Year / V Semester' : 'II Year / III Semester';
-  const displayDept = classId.includes('CSE') ? 'Computer Science and Engineering' : 'Computer Science and Business Systems (CSBS)';
+  // Derive section metadata using section templates
+  const template = getSectionTemplate(classId);
+  const sectionChar = template.section;
+  const displayDept = template.department;
+  const displayYear = classId.includes('3rd') || classId.includes('III') ? 'III' : (classId.includes('4th') || classId.includes('IV') ? 'IV' : 'I');
+  const displaySem = classId.includes('3rd') || classId.includes('III') ? 'V' : (classId.includes('4th') || classId.includes('IV') ? 'VII' : 'I');
 
   const getDates = (week: number) => {
     const baseDate = new Date(2024, 4, 20); // 20 May 2024

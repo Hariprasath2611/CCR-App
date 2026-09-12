@@ -15,6 +15,7 @@ import {
 import * as FileSystem from 'expo-file-system/legacy';
 import { ConsolidatedReport } from '@features/cc/store/useReportStore';
 import { JEC_LOGO_BASE64 } from '../../assets/logo_base64';
+import { getSectionTemplate } from '@config/sectionTemplates';
 
 const getBriefTopics = (code: string): string[] => {
   const lookup: Record<string, string[]> = {
@@ -32,10 +33,11 @@ const getBriefTopics = (code: string): string[] => {
 export const generateReportWord = async (report: ConsolidatedReport): Promise<string> => {
   const { classId, weekNumber, subjects } = report;
 
-  const sectionChar = classId.split('-')[1] || 'A';
-  const displayDept = classId.includes('CSE') ? 'Computer Science and Engineering' : 'Computer Science and Business Systems (CSBS)';
-  const displayYear = classId.includes('3rd') || classId.includes('III') ? 'III' : (classId.includes('4th') || classId.includes('IV') ? 'IV' : 'II');
-  const displaySem = classId.includes('3rd') || classId.includes('III') ? 'V' : (classId.includes('4th') || classId.includes('IV') ? 'VII' : 'III');
+  const template = getSectionTemplate(classId);
+  const sectionChar = template.section;
+  const displayDept = template.department;
+  const displayYear = classId.includes('3rd') || classId.includes('III') ? 'III' : (classId.includes('4th') || classId.includes('IV') ? 'IV' : 'I');
+  const displaySem = classId.includes('3rd') || classId.includes('III') ? 'V' : (classId.includes('4th') || classId.includes('IV') ? 'VII' : 'I');
 
   const getDates = (week: number) => {
     const baseDate = new Date(2024, 4, 20); // 20 May 2024

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { apiClient } from '@services/api/apiClient';
+import { getSectionTemplate } from '@config/sectionTemplates';
 
 export interface SubjectProgress {
   code: string;
@@ -64,9 +65,33 @@ interface ReportStoreState {
   getReportById: (reportId: string) => ConsolidatedReport | undefined;
 }
 
-const INITIAL_SUBJECTS_PROGRESS: Record<string, SubjectProgress[]> = {};
+export const getDefaultSubjectsForClass = (classId: string): SubjectProgress[] => {
+  const upper = (classId || '').toUpperCase();
+  if (upper.includes('1ST YEAR') || upper.includes('SEC-') || upper.includes('SEC ')) {
+    const template = getSectionTemplate(classId);
+    return template.subjects.map((s) => ({
+      code: s.subjectCode,
+      name: s.subjectName,
+      faculty: s.staffInCharge,
+      coverage: 0,
+      status: 'Pending',
+      completedTopicsCount: 0,
+      totalTopicsCount: 5,
+      periodsPlanned: s.periodsPlannedDefault || 6,
+    }));
+  }
 
-const INITIAL_REPORTS: ConsolidatedReport[] = [];
+  // Default fallback for 3rd Year / CSE
+  return [
+    { code: 'CS3591', name: 'Computer Networks', faculty: 'Ms.E Uva Shakthi', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
+    { code: 'CS3501', name: 'Compiler Design', faculty: 'Mr.J Lin Eby Chandra', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
+    { code: 'CB3491', name: 'Cryptography and Cyber Security', faculty: 'Mr.S Faizal Mukthar Hussain', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
+    { code: 'CS3551', name: 'Distributed Computing', faculty: 'Ms.R Rajalakshmi', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
+    { code: 'CCS375', name: 'Web Technologies', faculty: 'Ms.P Divya', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
+    { code: 'CCS370', name: 'UI and UX Design', faculty: 'Ms.Punitha EM', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
+    { code: 'MX3084', name: 'Disaster Management', faculty: 'Ms.Arun Kamala', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
+  ];
+};
 
 export const useReportStore = create<ReportStoreState>((set, get) => ({
   reports: [],
@@ -82,10 +107,10 @@ export const useReportStore = create<ReportStoreState>((set, get) => ({
   },
 
   fetchWeeklyProgress: async (classId, weekNumber) => {
+    const key = `${classId}_${weekNumber}`;
     try {
       const response = await apiClient.get(`/reports/weekly/${classId}/${weekNumber}`);
       const report = response.data;
-      const key = `${classId}_${weekNumber}`;
       set((state) => ({
         subjectProgressList: {
           ...state.subjectProgressList,
@@ -93,7 +118,18 @@ export const useReportStore = create<ReportStoreState>((set, get) => ({
         },
       }));
     } catch (err) {
-      console.error('fetchWeeklyProgress error:', err);
+      console.error('fetchWeeklyProgress error, using template defaults:', err);
+      set((state) => {
+        if (!state.subjectProgressList[key]) {
+          return {
+            subjectProgressList: {
+              ...state.subjectProgressList,
+              [key]: getDefaultSubjectsForClass(classId),
+            },
+          };
+        }
+        return state;
+      });
     }
   },
 
@@ -117,15 +153,7 @@ export const useReportStore = create<ReportStoreState>((set, get) => ({
   ) => {
     const key = `${classId}_${weekNumber}`;
     set((state) => {
-      const currentList = state.subjectProgressList[key] || [
-        { code: 'CS3591', name: 'Computer Networks', faculty: 'Ms.E Uva Shakthi', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
-        { code: 'CS3501', name: 'Compiler Design', faculty: 'Mr.J Lin Eby Chandra', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
-        { code: 'CB3491', name: 'Cryptography and Cyber Security', faculty: 'Mr.S Faizal Mukthar Hussain', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
-        { code: 'CS3551', name: 'Distributed Computing', faculty: 'Ms.R Rajalakshmi', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
-        { code: 'CCS375', name: 'Web Technologies', faculty: 'Ms.P Divya', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
-        { code: 'CCS370', name: 'UI and UX Design', faculty: 'Ms.Punitha EM', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
-        { code: 'MX3084', name: 'Disaster Management', faculty: 'Ms.Arun Kamala', coverage: 0, status: 'Pending', completedTopicsCount: 0, totalTopicsCount: 5 },
-      ];
+      const currentList = state.subjectProgressList[key] || getDefaultSubjectsForClass(classId);
 
       const updatedList = currentList.map((item) => {
         if (item.code === subjectCode) {
