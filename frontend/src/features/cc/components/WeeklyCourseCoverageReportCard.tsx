@@ -216,28 +216,7 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
           </View>
         ) : null}
 
-        {/* ── 6-Tier Institutional Signatures Footer ── */}
-        <Divider style={styles.divider} />
-        <Text style={styles.approvalHeader}>INSTITUTIONAL AUTHORIZATION & SIGN-OFF</Text>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ marginBottom: ms(16) }}>
-          <View style={styles.signaturesRow6}>
-            {[
-              { title: 'CC', label: 'Class Coordinator' },
-              { title: 'HOD', label: 'Head of Dept' },
-              { title: 'AC', label: 'Academic Coordinator' },
-              { title: 'VP', label: 'Vice Principal' },
-              { title: 'PRINCIPAL', label: 'Principal' },
-              { title: 'DIRECTOR', label: 'Director (Acad.,)-JGC' },
-            ].map((sig) => (
-              <View key={sig.title} style={styles.sigBox6}>
-                <Text style={styles.sigTitle6}>{sig.title}</Text>
-                <Text style={styles.sigSub6}>{sig.label}</Text>
-                <View style={styles.sigLine6} />
-                <Text style={styles.sigStatus6}>Sign / Seal</Text>
-              </View>
-            ))}
-          </View>
-        </ScrollView>
+
 
         {/* ── Action Buttons ── */}
         {showDownloadButton && (

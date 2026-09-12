@@ -233,18 +233,6 @@ export const generateReportHTML = (report: ConsolidatedReport): string => {
           ${tableRowsHtml}
         </tbody>
       </table>
-
-      <!-- Horizontal Signatures Row -->
-      <table style="width: 100%; border-collapse: collapse; border: none; margin-top: 60px; font-family: Arial, sans-serif; font-size: 10px; font-weight: bold; text-align: center;">
-        <tr style="border: none;">
-          <td style="width: 16.6%; border: none; padding: 0;">CC</td>
-          <td style="width: 16.6%; border: none; padding: 0;">HOD</td>
-          <td style="width: 16.6%; border: none; padding: 0;">AC</td>
-          <td style="width: 16.6%; border: none; padding: 0;">VP</td>
-          <td style="width: 16.6%; border: none; padding: 0;">PRINCIPAL</td>
-          <td style="width: 16.6%; border: none; padding: 0;">DIRECTOR(Acad.,)-JGC</td>
-        </tr>
-      </table>
     </body>
     </html>
   `;

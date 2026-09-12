@@ -401,38 +401,7 @@ export const generateReportWord = async (report: ConsolidatedReport): Promise<st
     rows: tableRows,
   });
 
-  // 5. Signatures Table
-  const sigs = ['CC', 'HOD', 'AC', 'VP', 'PRINCIPAL', 'DIRECTOR(Acad.,)-JGC'];
-  const signaturesTable = new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    borders: {
-      top: noBorder,
-      bottom: noBorder,
-      left: noBorder,
-      right: noBorder,
-      insideHorizontal: noBorder,
-      insideVertical: noBorder,
-    },
-    rows: [
-      new TableRow({
-        children: sigs.map(s => new TableCell({
-          width: { size: 16.6, type: WidthType.PERCENTAGE },
-          verticalAlign: VerticalAlign.CENTER,
-          children: [
-            new Paragraph({
-              alignment: AlignmentType.CENTER,
-              children: [
-                new TextRun({ text: '\n\n\n' }), // spacing for signature
-                new TextRun({ text: s, bold: true, size: 16 }),
-              ],
-            }),
-          ],
-        })),
-      }),
-    ],
-  });
-
-  // 6. Build Document
+  // 5. Build Document
   const doc = new Document({
     sections: [
       {
@@ -464,8 +433,6 @@ export const generateReportWord = async (report: ConsolidatedReport): Promise<st
           metaTable,
           new Paragraph({ text: '\n' }),
           dataTable,
-          new Paragraph({ text: '\n' }),
-          signaturesTable,
         ],
       },
     ],
