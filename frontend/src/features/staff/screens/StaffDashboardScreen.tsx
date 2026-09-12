@@ -124,6 +124,7 @@ export const StaffDashboardScreen = () => {
           color: item.color,
           completedTopics,
           totalTopics,
+          percent,
         });
       }
 
