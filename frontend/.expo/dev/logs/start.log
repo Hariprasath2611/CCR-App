@@ -3127,3 +3127,33 @@
 {"_e":"metro:client_log","_t":1789192606077,"level":"warn","data":["No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?"]}
 {"_e":"metro:server_log","_t":1789192686574,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
 {"_e":"metro:server_log","_t":1789193041426,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"root:init","_t":1789194634679,"format":"v0-jsonl","version":"57.0.9"}
+{"_e":"devserver:start","_t":1789194634806,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1789194647523,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1789194650228,"plugins":[{"packageName":"expo-sqlite","bannerTitle":"expo-sqlite","cliBanner":false,"webpageEndpoint":"/_expo/plugins/expo-sqlite"}]}
+{"_e":"metro:instantiate","_t":1789194669018,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1789194699276,"id":"1","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1789194699276,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789194699279,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789194699382,"id":"1","progress":0.006232686980609418,"total":228,"current":18}
+{"_e":"metro:bundling:progress","_t":1789194699482,"id":"1","progress":0.16253246489732975,"total":444,"current":179}
+{"_e":"metro:bundling:progress","_t":1789194699582,"id":"1","progress":0.232853843479222,"total":659,"current":318}
+{"_e":"metro:bundling:progress","_t":1789194699691,"id":"1","progress":0.30833871620112413,"total":814,"current":452}
+{"_e":"metro:bundling:progress","_t":1789194699792,"id":"1","progress":0.4500300953191402,"total":878,"current":589}
+{"_e":"metro:bundling:progress","_t":1789194699892,"id":"1","progress":0.6104939268502069,"total":1029,"current":804}
+{"_e":"metro:bundling:progress","_t":1789194699992,"id":"1","progress":0.7860242499203538,"total":1155,"current":1024}
+{"_e":"metro:bundling:progress","_t":1789194700092,"id":"1","progress":0.7860242499203538,"total":1388,"current":1176}
+{"_e":"metro:bundling:progress","_t":1789194700211,"id":"1","progress":0.7860242499203538,"total":1435,"current":1257}
+{"_e":"metro:bundling:progress","_t":1789194700311,"id":"1","progress":0.9945689170322588,"total":1471,"current":1467}
+{"_e":"metro:bundling:progress","_t":1789194700416,"id":"1","progress":0.999,"total":1491,"current":1491}
+{"_e":"metro:bundling:done","_t":1789194700560,"id":"1","total":1491,"ms":1283.7438}
+{"_e":"metro:client_log","_t":1789194703520,"level":"warn","data":["No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?"]}
+{"_e":"metro:bundling:failed","_t":1789195259313,"id":null,"message":"SyntaxError: d:\\work\\cc-app\\frontend\\src\\features\\staff\\screens\\StaffDashboardScreen.tsx: Unexpected token (137:6)\n\n  135 |         setHandledSubjects(subjectList);\n  136 |\n> 137 |     } catch (err) {\n      |       ^\n  138 |       console.error('Failed to load dashboard metrics:', err);\n  139 |     } finally {\n  140 |       setLoading(false);","importStack":null,"filename":"src\\features\\staff\\screens\\StaffDashboardScreen.tsx","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:server_log","_t":1789195275762,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:bundling:failed","_t":1789195293144,"id":null,"message":"SyntaxError: d:\\work\\cc-app\\frontend\\src\\features\\principal\\screens\\DeptSummaryScreen.tsx: 'import' and 'export' may only appear at the top level. (1053:0)\n\n  1051 | });\n  1052 |\n> 1053 | export default DeptSummaryScreen;\n       | ^\n  1054 |","importStack":null,"filename":"src\\features\\principal\\screens\\DeptSummaryScreen.tsx","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:started","_t":1789195423742,"id":"3","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1789195423742,"id":"3","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1789195423784,"id":"3","total":1,"ms":42.7648}
+{"_e":"metro:client_log","_t":1789195427563,"level":"warn","data":["No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?"]}
+{"_e":"metro:client_log","_t":1789195775771,"level":"error","data":["[ReferenceError: Property 'WeeklyCourseCoverageReportCard' doesn't exist]"]}
+{"_e":"metro:server_log","_t":1789196072960,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
