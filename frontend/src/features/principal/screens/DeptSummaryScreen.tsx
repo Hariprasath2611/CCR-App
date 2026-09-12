@@ -160,7 +160,9 @@ export const DeptSummaryScreen = () => {
         classMap[report.classId].coverage = report.overallCoverage;
       }
     }
-    return Object.values(classMap);
+    const resultList = Object.values(classMap);
+    resultList.sort((a, b) => a.classId.localeCompare(b.classId, undefined, { numeric: true, sensitivity: 'base' }));
+    return resultList;
   };
 
   const getMockSubjectsForDept = (deptCode: string, year: number): { code: string; name: string; faculty: string }[] => {
