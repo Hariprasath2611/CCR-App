@@ -8,7 +8,7 @@ import { useReportStore, ConsolidatedReport } from '../store/useReportStore';
 import { CCStackParamList } from '@navigation/types';
 import { Palette } from '@theme/colors';
 import { WeeklyCourseCoverageReportCard } from '../components/WeeklyCourseCoverageReportCard';
-import { getCCForSection, getHODForYear } from '@config/facultyBoard';
+import { getCCForSection, getHODForYear, FIRST_YEAR_CC_BOARD, CSE_3RD_YEAR_CC_BOARD } from '@config/facultyBoard';
 
 import { ms } from '@theme/responsive';
 
@@ -23,9 +23,13 @@ export const CCDashboardScreen = () => {
   const subjectProgressList = useReportStore((state) => state.subjectProgressList);
   const fetchWeeklyProgress = useReportStore((state) => state.fetchWeeklyProgress);
 
-  const classId = user?.assignedClassId || '1st Year SEC-B';
+  // Look up CC profile by logged-in user email or assignedClassId
+  const userCC = FIRST_YEAR_CC_BOARD.find(cc => cc.email.toLowerCase() === user?.email?.toLowerCase())
+    || CSE_3RD_YEAR_CC_BOARD.find(cc => cc.email.toLowerCase() === user?.email?.toLowerCase());
+
+  const classId = user?.assignedClassId || userCC?.classId || '1st Year SEC-A';
   const selectedWeek = '12'; // Default consolidated view week
-  const ccInfo = getCCForSection(classId);
+  const ccInfo = getCCForSection(classId) || userCC;
   const hodInfo = getHODForYear(classId);
 
   React.useEffect(() => {
