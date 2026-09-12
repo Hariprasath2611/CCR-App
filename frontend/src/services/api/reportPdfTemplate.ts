@@ -1,6 +1,6 @@
 import { ConsolidatedReport } from '@features/cc/store/useReportStore';
 import { JEC_LOGO_BASE64 } from '../../assets/logo_base64';
-import { getSectionTemplate } from '@config/sectionTemplates';
+import { getSectionTemplate, filterNonAcademicSubjects } from '@config/sectionTemplates';
 
 const getBriefTopics = (code: string): string[] => {
   const lookup: Record<string, string[]> = {
@@ -17,6 +17,7 @@ const getBriefTopics = (code: string): string[] => {
 
 export const generateReportHTML = (report: ConsolidatedReport): string => {
   const { classId, weekNumber, subjects } = report;
+  const displaySubjects = filterNonAcademicSubjects(subjects || []);
 
   // Derive section metadata using section templates
   const template = getSectionTemplate(classId);
@@ -44,14 +45,14 @@ export const generateReportHTML = (report: ConsolidatedReport): string => {
     };
   };
 
-  const firstWithDates = subjects.find(s => s.fromDate && s.toDate);
+  const firstWithDates = displaySubjects.find(s => s.fromDate && s.toDate);
   const defaultDates = getDates(weekNumber);
   const dates = {
     from: firstWithDates?.fromDate ? firstWithDates.fromDate.replace(/\//g, '.') : defaultDates.from,
     to: firstWithDates?.toDate ? firstWithDates.toDate.replace(/\//g, '.') : defaultDates.to,
   };
 
-  const tableRowsHtml = subjects.map((subj, index) => {
+  const tableRowsHtml = displaySubjects.map((subj, index) => {
     const actualTopicsText = subj.topicsCoveredText || '';
     const topics = actualTopicsText
       ? actualTopicsText.split(/[,\n]/).map(t => t.trim()).filter(Boolean)

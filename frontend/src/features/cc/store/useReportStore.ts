@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { apiClient } from '@services/api/apiClient';
-import { getSectionTemplate } from '@config/sectionTemplates';
+import { getSectionTemplate, filterNonAcademicSubjects } from '@config/sectionTemplates';
 
 export interface SubjectProgress {
   code: string;

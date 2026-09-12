@@ -15,7 +15,7 @@ import {
 import * as FileSystem from 'expo-file-system/legacy';
 import { ConsolidatedReport } from '@features/cc/store/useReportStore';
 import { JEC_LOGO_BASE64 } from '../../assets/logo_base64';
-import { getSectionTemplate } from '@config/sectionTemplates';
+import { getSectionTemplate, filterNonAcademicSubjects } from '@config/sectionTemplates';
 
 const getBriefTopics = (code: string): string[] => {
   const lookup: Record<string, string[]> = {
@@ -32,6 +32,7 @@ const getBriefTopics = (code: string): string[] => {
 
 export const generateReportWord = async (report: ConsolidatedReport): Promise<string> => {
   const { classId, weekNumber, subjects } = report;
+  const displaySubjects = filterNonAcademicSubjects(subjects || []);
 
   const template = getSectionTemplate(classId);
   const sectionChar = template.section;
@@ -293,7 +294,7 @@ export const generateReportWord = async (report: ConsolidatedReport): Promise<st
 
   // Main Data Rows
   const tableRows = [headerRow];
-  subjects.forEach((subj, index) => {
+  displaySubjects.forEach((subj, index) => {
     const actualTopicsText = subj.topicsCoveredText || '';
     const topics = actualTopicsText
       ? actualTopicsText.split(/[,\n]/).map(t => t.trim()).filter(Boolean)

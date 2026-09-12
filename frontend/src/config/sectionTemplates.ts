@@ -109,8 +109,6 @@ export const SECTION_TEMPLATES: Record<string, SectionTemplateConfig> = {
       { sNo: 9, subjectCode: 'CE25C01', subjectName: 'INTRODUCTION TO CIVIL ENGINEERING', staffInCharge: 'Dr. GOPIKUMAR/AP/CIVIL', periodsPlannedDefault: 3 },
       { sNo: 10, subjectCode: 'ME25C16/EE25C16', subjectName: 'MAKERSPACE', staffInCharge: 'Mr. KALAIMANI/AP/MECH & Ms. KANAGAVALLI/AP/EEE', periodsPlannedDefault: 3 },
       { sNo: 11, subjectCode: 'UC25A01', subjectName: 'LIFE SKILLS FOR ENGINEERS-I', staffInCharge: 'Dr. THIRUGNANAM/AP/PHY', periodsPlannedDefault: 1 },
-      { sNo: 12, subjectCode: 'UC25A02', subjectName: 'PHYSICAL EDUCATION-I', staffInCharge: 'Ms. SABISHNA/PD', periodsPlannedDefault: 1 },
-      { sNo: 13, subjectCode: 'LIB25', subjectName: 'LIBRARY HOUR', staffInCharge: 'Library Staff', periodsPlannedDefault: 1 },
     ],
   },
 
@@ -149,10 +147,20 @@ export const SECTION_TEMPLATES: Record<string, SectionTemplateConfig> = {
       { sNo: 7, subjectCode: 'EE25C04', subjectName: 'BASIC ELECTRONICS AND ELECTRICAL ENGINEERING', staffInCharge: 'Mr. KUMARASWAMY/AP/EEE', periodsPlannedDefault: 5 },
       { sNo: 8, subjectCode: 'ME25C16/EE25C16', subjectName: 'MAKERSPACE', staffInCharge: 'Mrs. VYSHNAVAI & Mrs. ASHWINI', periodsPlannedDefault: 3 },
       { sNo: 9, subjectCode: 'UC25A01', subjectName: 'LIFE SKILLS FOR ENGINEERS-I', staffInCharge: 'Dr. THIRUGNANAM/AP/PHY', periodsPlannedDefault: 1 },
-      { sNo: 10, subjectCode: 'UC25A02', subjectName: 'PHYSICAL EDUCATION-I', staffInCharge: 'Ms. SABISHNA/PD', periodsPlannedDefault: 1 },
-      { sNo: 11, subjectCode: 'LIB25', subjectName: 'LIBRARY HOUR', staffInCharge: 'Library Staff', periodsPlannedDefault: 1 },
     ],
   },
+};
+
+/**
+ * Filter out Physical Education and Library Hour from any subject list
+ */
+export const filterNonAcademicSubjects = <T extends { subjectName?: string; name?: string }>(subjects: T[]): T[] => {
+  return subjects.filter((s) => {
+    const name = (s.subjectName || s.name || '').toUpperCase();
+    const isPhysicalEdu = name.includes('PHYSICAL EDUCATION') || name.includes('SPORTS') || name.includes('PHYSICAL EDU');
+    const isLibrary = name.includes('LIBRARY');
+    return !isPhysicalEdu && !isLibrary;
+  });
 };
 
 /**
@@ -160,14 +168,22 @@ export const SECTION_TEMPLATES: Record<string, SectionTemplateConfig> = {
  */
 export const getSectionTemplate = (classId: string): SectionTemplateConfig => {
   const upper = classId.toUpperCase();
-  if (upper.includes('SEC-A') || upper.includes('SEC A') || upper.endsWith(' A')) return SECTION_TEMPLATES['SEC-A'];
-  if (upper.includes('SEC-B') || upper.includes('SEC B') || upper.endsWith(' B')) return SECTION_TEMPLATES['SEC-B'];
-  if (upper.includes('SEC-C') || upper.includes('SEC C') || upper.endsWith(' C')) return SECTION_TEMPLATES['SEC-C'];
-  if (upper.includes('SEC-D') || upper.includes('SEC D') || upper.endsWith(' D')) return SECTION_TEMPLATES['SEC-D'];
-  if (upper.includes('SEC-E') || upper.includes('SEC E') || upper.endsWith(' E')) return SECTION_TEMPLATES['SEC-E'];
-  if (upper.includes('SEC-F') || upper.includes('SEC F') || upper.endsWith(' F')) return SECTION_TEMPLATES['SEC-F'];
-  if (upper.includes('SEC-G') || upper.includes('SEC G') || upper.endsWith(' G')) return SECTION_TEMPLATES['SEC-G'];
-  
-  // Default fallback to SEC-A
-  return SECTION_TEMPLATES['SEC-A'];
+  let template: SectionTemplateConfig;
+
+  if (upper.includes('SEC-A') || upper.includes('SEC A') || upper.endsWith(' A')) template = SECTION_TEMPLATES['SEC-A'];
+  else if (upper.includes('SEC-B') || upper.includes('SEC B') || upper.endsWith(' B')) template = SECTION_TEMPLATES['SEC-B'];
+  else if (upper.includes('SEC-C') || upper.includes('SEC C') || upper.endsWith(' C')) template = SECTION_TEMPLATES['SEC-C'];
+  else if (upper.includes('SEC-D') || upper.includes('SEC D') || upper.endsWith(' D')) template = SECTION_TEMPLATES['SEC-D'];
+  else if (upper.includes('SEC-E') || upper.includes('SEC E') || upper.endsWith(' E')) template = SECTION_TEMPLATES['SEC-E'];
+  else if (upper.includes('SEC-F') || upper.includes('SEC F') || upper.endsWith(' F')) template = SECTION_TEMPLATES['SEC-F'];
+  else if (upper.includes('SEC-G') || upper.includes('SEC G') || upper.endsWith(' G')) template = SECTION_TEMPLATES['SEC-G'];
+  else template = SECTION_TEMPLATES['SEC-A'];
+
+  return {
+    ...template,
+    subjects: filterNonAcademicSubjects(template.subjects).map((s, idx) => ({
+      ...s,
+      sNo: idx + 1,
+    })),
+  };
 };

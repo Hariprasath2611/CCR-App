@@ -5,7 +5,7 @@ import { Palette } from '@theme/colors';
 import { Feather, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { ConsolidatedReport, SubjectProgress } from '../store/useReportStore';
 
-import { getSectionTemplate } from '@config/sectionTemplates';
+import { getSectionTemplate, filterNonAcademicSubjects } from '@config/sectionTemplates';
 
 import { ms } from '@theme/responsive';
 
@@ -26,6 +26,7 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
 
   // Retrieve section template configuration (Sections A through G)
   const template = getSectionTemplate(classId);
+  const displaySubjects = filterNonAcademicSubjects(subjects || []);
 
   // Derive layout variables
   const isApprovedHOD = status === 'APPROVED_BY_HOD' || status === 'SENT_TO_ADMIN';
@@ -35,7 +36,7 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
   const displayClass = `Year: ${template.semester === 'I' ? 'I' : 'I'} / Sem: ${template.semester}`;
   const displayDept = template.department;
 
-  const loggedSubjects = subjects.filter(s => s.status === 'Submitted' && s.fromDate && s.toDate);
+  const loggedSubjects = displaySubjects.filter(s => s.status === 'Submitted' && s.fromDate && s.toDate);
   const firstLogged = loggedSubjects[0];
 
   // Compute default dates based on weekNumber if faculty has not entered any date yet
@@ -78,7 +79,7 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
   };
 
   // Calculate sum completed hours
-  const totalHours = subjects.reduce((sum, s) => sum + (s.completedTopicsCount * 1.5), 0);
+  const totalHours = displaySubjects.reduce((sum, s) => sum + (s.completedTopicsCount * 1.5), 0);
 
   return (
     <Card style={styles.outerCard}>
@@ -129,7 +130,7 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
             </View>
 
             {/* Table Data Rows */}
-            {subjects.map((subj, index) => {
+            {displaySubjects.map((subj, index) => {
               const actualTopicsText = subj.topicsCoveredText || '';
               const topics = actualTopicsText
                 ? actualTopicsText.split(/[,\n]/).map(t => t.trim()).filter(Boolean)
