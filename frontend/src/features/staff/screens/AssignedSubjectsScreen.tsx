@@ -74,6 +74,7 @@ export const AssignedSubjectsScreen = () => {
       }
 
       const subjectsList = Object.values(sessionMap);
+      subjectsList.sort((a, b) => a.section.localeCompare(b.section, undefined, { numeric: true, sensitivity: 'base' }));
       setSubjects(subjectsList);
 
       const progressMap: Record<string, { completed: number; total: number; percent: number }> = {};

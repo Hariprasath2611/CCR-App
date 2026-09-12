@@ -88,7 +88,9 @@ export const DepartmentClassesScreen = () => {
         }
       }
     }
-    return Object.values(classMap);
+    const resultList = Object.values(classMap);
+    resultList.sort((a, b) => a.classId.localeCompare(b.classId, undefined, { numeric: true, sensitivity: 'base' }));
+    return resultList;
   };
 
   const allDeptClasses = getClassesForDept(deptCode);

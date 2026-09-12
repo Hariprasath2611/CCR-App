@@ -124,9 +124,12 @@ export const StaffDashboardScreen = () => {
           color: item.color,
           completedTopics,
           totalTopics,
-          percent,
         });
       }
+
+      subjectList.sort((a, b) => 
+        a.section.localeCompare(b.section, undefined, { numeric: true, sensitivity: 'base' })
+      );
 
       const overall = totalTopicsAll > 0 ? Math.round((totalCompletedAll / totalTopicsAll) * 100) : 0;
       setOverallProgress(overall);
