@@ -3157,3 +3157,30 @@
 {"_e":"metro:client_log","_t":1789195427563,"level":"warn","data":["No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?"]}
 {"_e":"metro:client_log","_t":1789195775771,"level":"error","data":["[ReferenceError: Property 'WeeklyCourseCoverageReportCard' doesn't exist]"]}
 {"_e":"metro:server_log","_t":1789196072960,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"root:init","_t":1789212027849,"format":"v0-jsonl","version":"57.0.9"}
+{"_e":"devserver:start","_t":1789212027865,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1789212028272,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1789212028499,"plugins":[{"packageName":"expo-sqlite","bannerTitle":"expo-sqlite","cliBanner":false,"webpageEndpoint":"/_expo/plugins/expo-sqlite"}]}
+{"_e":"metro:instantiate","_t":1789212039080,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1789212074817,"id":"1","platform":"android","environment":null,"entry":"d:\\work\\cc-app\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1789212074817,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789212074820,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789212074920,"id":"1","progress":0.043331945022907124,"total":245,"current":51}
+{"_e":"metro:bundling:progress","_t":1789212075020,"id":"1","progress":0.14751356065135002,"total":427,"current":164}
+{"_e":"metro:bundling:progress","_t":1789212075120,"id":"1","progress":0.26307541451767236,"total":581,"current":298}
+{"_e":"metro:bundling:progress","_t":1789212075222,"id":"1","progress":0.37513402609111457,"total":689,"current":422}
+{"_e":"metro:bundling:progress","_t":1789212075321,"id":"1","progress":0.4418521814132239,"total":856,"current":569}
+{"_e":"metro:bundling:progress","_t":1789212075421,"id":"1","progress":0.6358238284420523,"total":1071,"current":854}
+{"_e":"metro:bundling:progress","_t":1789212075538,"id":"1","progress":0.7544887846981726,"total":1233,"current":1071}
+{"_e":"metro:bundling:progress","_t":1789212075638,"id":"1","progress":0.7544887846981726,"total":1426,"current":1228}
+{"_e":"metro:bundling:progress","_t":1789212075744,"id":"1","progress":0.999,"total":1492,"current":1492}
+{"_e":"metro:bundling:done","_t":1789212075800,"id":"1","total":1492,"ms":982.8041}
+{"_e":"metro:client_log","_t":1789212080043,"level":"warn","data":["No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?"]}
+{"_e":"metro:client_log","_t":1789212109099,"level":"error","data":["fetchWeeklyProgress error, using template defaults:","[AxiosError: Request failed with status code 403]"]}
+{"_e":"metro:client_log","_t":1789212109554,"level":"error","data":["fetchWeeklyProgress error, using template defaults:","[AxiosError: Request failed with status code 403]"]}
+{"_e":"metro:client_log","_t":1789212285319,"level":"error","data":["fetchWeeklyProgress error, using template defaults:","[AxiosError: Request failed with status code 403]"]}
+{"_e":"metro:client_log","_t":1789212359809,"level":"error","data":["fetchWeeklyProgress error, using template defaults:","[AxiosError: Request failed with status code 403]"]}
+{"_e":"metro:client_log","_t":1789212465701,"level":"error","data":["fetchWeeklyProgress error, using template defaults:","[AxiosError: Request failed with status code 403]"]}
+{"_e":"metro:client_log","_t":1789212472081,"level":"error","data":["[ReferenceError: Property 'create' doesn't exist]"]}
+{"_e":"metro:client_log","_t":1789212479331,"level":"error","data":["fetchWeeklyProgress error, using template defaults:","[AxiosError: Request failed with status code 403]"]}
+{"_e":"metro:server_log","_t":1789212674534,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
