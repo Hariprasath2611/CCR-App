@@ -7,7 +7,7 @@ export const fetchPrincipalAnalyticsData = async () => {
 
   let institutionalCoverage = 0;
   if (totalReports > 0) {
-    const sum = allReports.reduce((acc, r) => acc + r.overallCoverage, 0);
+    const sum = allReports.reduce((acc: number, r: any) => acc + r.overallCoverage, 0);
     institutionalCoverage = Math.round(sum / totalReports);
   }
 

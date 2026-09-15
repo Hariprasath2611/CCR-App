@@ -15,7 +15,7 @@ export const fetchHODClasses = async (userDepartment?: string) => {
     distinct: ['classSection'],
   });
 
-  const classesList = timetableClasses.map((t) => t.classSection);
+  const classesList = timetableClasses.map((t: { classSection: string }) => t.classSection);
   const targetClasses = classesList.length > 0 ? classesList : ['3rd Year CSE-A', 'CSE-B', '2nd Year CSBS'];
 
   const responseClasses = [];
@@ -107,7 +107,7 @@ export const fetchHODExtraHoursRequests = async () => {
     orderBy: { createdAt: 'desc' },
   });
 
-  return requests.map((r) => ({
+  return requests.map((r: any) => ({
     id: r.id,
     type: 'Extra Hour Request',
     faculty: r.faculty.name,
