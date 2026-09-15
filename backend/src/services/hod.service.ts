@@ -119,3 +119,147 @@ export const fetchHODExtraHoursRequests = async () => {
     status: r.status,
   }));
 };
+
+export interface AssignCoordinatorData {
+  classId: string;
+  name: string;
+  email: string;
+  department: string;
+  password?: string;
+}
+
+export const assignClassCoordinator = async (data: AssignCoordinatorData) => {
+  const { classId, name, email, department, password } = data;
+  const cleanEmail = email.toLowerCase().trim();
+  const defaultPassword = password || 'JEC@CC2026';
+
+  let user = await prisma.user.findUnique({
+    where: { email: cleanEmail },
+  });
+
+  let createdNewUser = false;
+
+  if (user) {
+    // Update existing user to be Class Coordinator for this class
+    user = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isClassCoordinator: true,
+        assignedClassId: classId,
+      },
+    });
+  } else {
+    // Create new user
+    const bcrypt = await import('bcryptjs');
+    const passwordHash = await bcrypt.hash(defaultPassword, 10);
+    user = await prisma.user.create({
+      data: {
+        email: cleanEmail,
+        name,
+        role: 'STAFF',
+        isClassCoordinator: true,
+        department,
+        assignedClassId: classId,
+        passwordHash,
+      },
+    });
+    createdNewUser = true;
+  }
+
+  // Upsert ClassSection
+  const existingSection = await prisma.classSection.findFirst({
+    where: { name: classId },
+  });
+
+  if (existingSection) {
+    await prisma.classSection.update({
+      where: { id: existingSection.id },
+      data: { ccId: user.id },
+    });
+  } else {
+    await prisma.classSection.create({
+      data: {
+        name: classId,
+        department,
+        year: classId.includes('3rd') ? '3rd Year' : classId.includes('2nd') ? '2nd Year' : '4th Year',
+        section: classId.split('-').pop() || 'A',
+        ccId: user.id,
+      },
+    });
+  }
+
+  return {
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      department: user.department,
+      assignedClassId: user.assignedClassId,
+      isClassCoordinator: user.isClassCoordinator,
+    },
+    createdNewUser,
+    credentials: createdNewUser
+      ? { email: cleanEmail, password: defaultPassword }
+      : { email: cleanEmail, note: 'User already exists. Linked to class with existing password.' },
+  };
+};
+
+export const fetchDepartmentCoordinators = async (userDepartment?: string) => {
+  // Query all classes and their assigned coordinators
+  const classes = await fetchHODClasses(userDepartment);
+
+  const sectionsWithCC = await Promise.all(
+    classes.map(async (c) => {
+      const ccUser = await prisma.user.findFirst({
+        where: {
+          assignedClassId: c.classId,
+          isClassCoordinator: true,
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          department: true,
+        },
+      });
+
+      return {
+        ...c,
+        coordinator: ccUser || null,
+      };
+    })
+  );
+
+  return sectionsWithCC;
+};
+
+export const removeCoordinator = async (classId: string) => {
+  // Find coordinator for this class
+  const ccUser = await prisma.user.findFirst({
+    where: { assignedClassId: classId, isClassCoordinator: true },
+  });
+
+  if (ccUser) {
+    await prisma.user.update({
+      where: { id: ccUser.id },
+      data: {
+        assignedClassId: null,
+        isClassCoordinator: false,
+      },
+    });
+  }
+
+  const section = await prisma.classSection.findFirst({
+    where: { name: classId },
+  });
+
+  if (section) {
+    await prisma.classSection.update({
+      where: { id: section.id },
+      data: { ccId: null },
+    });
+  }
+
+  return { success: true, message: `Coordinator removed from ${classId}` };
+};
+

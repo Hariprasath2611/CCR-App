@@ -28,3 +28,33 @@ export const getExtraHoursRequests = async (req: Request, res: Response, next: N
     next(error);
   }
 };
+
+export const getDepartmentCoordinators = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user;
+    const coordinators = await hodService.fetchDepartmentCoordinators(user?.department);
+    return res.json(coordinators);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const assignCoordinator = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await hodService.assignClassCoordinator(req.body);
+    return res.status(201).json({ success: true, ...result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteCoordinator = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { classId } = req.params;
+    const result = await hodService.removeCoordinator(classId);
+    return res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
