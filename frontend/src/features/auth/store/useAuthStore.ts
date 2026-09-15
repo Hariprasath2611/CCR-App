@@ -10,6 +10,12 @@ export interface UserSession {
   isClassCoordinator: boolean;
   department: string;
   assignedClassId?: string; // e.g. 'CSE-B' — set for staff/CC users
+  subjectAssignments?: Array<{
+    id?: string;
+    classId: string;
+    subjectCode: string;
+    subjectName: string;
+  }>;
 }
 
 interface AuthState {

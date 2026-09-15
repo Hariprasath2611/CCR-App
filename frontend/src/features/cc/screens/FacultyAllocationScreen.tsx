@@ -229,12 +229,13 @@ export const FacultyAllocationScreen = () => {
                 <Badge
                   style={[
                     styles.badge,
-                    { backgroundColor: hasFaculty ? '#E8F5E9' : '#FFF3E0' },
+                    {
+                      backgroundColor: hasFaculty ? '#E8F5E9' : '#FFF3E0',
+                      color: hasFaculty ? '#2E7D32' : '#E65100',
+                    },
                   ]}
                 >
-                  <Text style={{ color: hasFaculty ? '#2E7D32' : '#E65100', fontWeight: 'bold' }}>
-                    {hasFaculty ? 'Allocated' : 'Not Allocated'}
-                  </Text>
+                  {hasFaculty ? 'Allocated' : 'Not Allocated'}
                 </Badge>
               </View>
 
@@ -245,7 +246,7 @@ export const FacultyAllocationScreen = () => {
                   <Avatar.Text
                     size={38}
                     label={currentAssignment.faculty.name.substring(0, 2).toUpperCase()}
-                    style={{ backgroundColor: Palette.primaryLight }}
+                    style={{ backgroundColor: Palette.accent }}
                   />
                   <View style={{ marginLeft: 10, flex: 1 }}>
                     <Text style={styles.facultyName}>{currentAssignment.faculty.name}</Text>
@@ -341,7 +342,7 @@ export const FacultyAllocationScreen = () => {
                     <Avatar.Text
                       size={34}
                       label={faculty.name.substring(0, 2).toUpperCase()}
-                      style={{ backgroundColor: Palette.primaryLight }}
+                      style={{ backgroundColor: Palette.accent }}
                     />
                     <View style={{ marginLeft: 10, flex: 1 }}>
                       <Text style={styles.searchName}>{faculty.name}</Text>
@@ -428,7 +429,7 @@ export const FacultyAllocationScreen = () => {
                 <Text style={styles.credValue}>{credInfo.password}</Text>
               </>
             ) : (
-              <Text style={{ marginTop: 8, color: Palette.textSecondary, fontStyle: 'italic' }}>
+              <Text style={{ marginTop: 8, color: Palette.textLight, fontStyle: 'italic' }}>
                 {credInfo?.note || 'Linked to existing faculty account.'}
               </Text>
             )}

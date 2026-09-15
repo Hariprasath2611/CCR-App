@@ -169,7 +169,7 @@ export const ManageCoordinatorsScreen = () => {
         <ActivityIndicator size="large" color={Palette.primary} style={{ marginTop: 40 }} />
       ) : filteredCoordinators.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Feather name="info" size={32} color={Palette.textSecondary} />
+          <Feather name="info" size={32} color={Palette.textLight} />
           <Text style={styles.emptyText}>No sections found for {selectedYear}.</Text>
         </View>
       ) : (
@@ -185,12 +185,13 @@ export const ManageCoordinatorsScreen = () => {
                 <Badge
                   style={[
                     styles.statusBadge,
-                    { backgroundColor: isAssigned ? '#E8F5E9' : '#FFF3E0' },
+                    {
+                      backgroundColor: isAssigned ? '#E8F5E9' : '#FFF3E0',
+                      color: isAssigned ? '#2E7D32' : '#E65100',
+                    },
                   ]}
                 >
-                  <Text style={{ color: isAssigned ? '#2E7D32' : '#E65100', fontWeight: 'bold' }}>
-                    {isAssigned ? 'Assigned' : 'Unassigned'}
-                  </Text>
+                  {isAssigned ? 'Assigned' : 'Unassigned'}
                 </Badge>
               </View>
 
@@ -201,7 +202,7 @@ export const ManageCoordinatorsScreen = () => {
                   <Avatar.Text
                     size={42}
                     label={item.coordinator?.name ? item.coordinator.name.substring(0, 2).toUpperCase() : 'CC'}
-                    style={{ backgroundColor: Palette.primaryLight }}
+                    style={{ backgroundColor: Palette.accent }}
                   />
                   <View style={{ marginLeft: 12, flex: 1 }}>
                     <Text style={styles.coordinatorName}>{item.coordinator?.name}</Text>
@@ -327,7 +328,7 @@ export const ManageCoordinatorsScreen = () => {
                 <Text style={styles.credValue}>{createdCredentials.password}</Text>
               </>
             ) : (
-              <Text style={{ marginTop: 8, color: Palette.textSecondary, fontStyle: 'italic' }}>
+              <Text style={{ marginTop: 8, color: Palette.textLight, fontStyle: 'italic' }}>
                 {createdCredentials?.note || 'Account linked to existing password.'}
               </Text>
             )}
