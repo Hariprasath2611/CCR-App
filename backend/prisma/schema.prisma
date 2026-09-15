@@ -18,10 +18,25 @@ model User {
   assignedClassId    String?             // e.g., "CSE-B" (null for Principal/HOD unless assigned)
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
+  subjectAssignments SubjectAssignment[]
   weeklyPlans        WeeklyPlan[]
   progressLogs       ProgressLog[]
   extraHourRequests  ExtraHourRequest[]
   timetableSlots     TimetableSlot[]
+}
+
+model SubjectAssignment {
+  id           String   @id @default(uuid()) @map("_id")
+  facultyId    String
+  faculty      User     @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  classId      String   // e.g., "3rd Year CSE-A" or "1st Year SEC-B"
+  subjectCode  String   // e.g., "CS3591"
+  subjectName  String   // e.g., "Computer Networks"
+  assignedByCc String?  // User ID of the CC who created this assignment
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([facultyId, classId, subjectCode])
 }
 
 model TimetableSlot {
