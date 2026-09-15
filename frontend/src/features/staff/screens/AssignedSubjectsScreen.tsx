@@ -73,6 +73,33 @@ export const AssignedSubjectsScreen = () => {
         }
       }
 
+      // Merge dynamically allocated subjects from CC
+      if (user?.subjectAssignments && user.subjectAssignments.length > 0) {
+        for (const assignment of user.subjectAssignments) {
+          const sessionKey = `${assignment.subjectCode}_${assignment.classId}`;
+          if (!sessionMap[sessionKey]) {
+            let year = 'Academic Course';
+            if (assignment.classId.includes('1st')) year = '1st Year';
+            else if (assignment.classId.includes('2nd')) year = '2nd Year';
+            else if (assignment.classId.includes('3rd')) year = '3rd Year';
+            else if (assignment.classId.includes('4th')) year = '4th Year';
+
+            const ccInfo = getCCForSection(assignment.classId);
+
+            sessionMap[sessionKey] = {
+              code: assignment.subjectCode,
+              name: assignment.subjectName,
+              section: assignment.classId,
+              year: `${year} (${assignment.classId})`,
+              ccFacultyName: ccInfo?.facultyName || 'Class Coordinator',
+              description: `Syllabus log coverage tracker for ${assignment.subjectName}.`,
+              color: colors[colorIdx % colors.length],
+            };
+            colorIdx++;
+          }
+        }
+      }
+
       const subjectsList = Object.values(sessionMap);
       subjectsList.sort((a, b) => a.section.localeCompare(b.section, undefined, { numeric: true, sensitivity: 'base' }));
       setSubjects(subjectsList);

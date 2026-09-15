@@ -95,6 +95,32 @@ export const StaffDashboardScreen = () => {
         }
       }
 
+      // Merge dynamically allocated subjects from CC
+      if (user?.subjectAssignments && user.subjectAssignments.length > 0) {
+        for (const assignment of user.subjectAssignments) {
+          const sessionKey = `${assignment.subjectCode}_${assignment.classId}`;
+          if (!sessionMap[sessionKey]) {
+            let yearPrefix = 'Academic Course';
+            if (assignment.classId.includes('1st')) yearPrefix = '1st Year';
+            else if (assignment.classId.includes('2nd')) yearPrefix = '2nd Year';
+            else if (assignment.classId.includes('3rd')) yearPrefix = '3rd Year';
+            else if (assignment.classId.includes('4th')) yearPrefix = '4th Year';
+
+            let shortName = assignment.subjectName.split(' ').map(w => w[0]).join('').toUpperCase();
+
+            sessionMap[sessionKey] = {
+              code: assignment.subjectCode,
+              name: assignment.subjectName,
+              section: assignment.classId,
+              yearPrefix,
+              shortName,
+              color: colors[colorIdx % colors.length],
+            };
+            colorIdx++;
+          }
+        }
+      }
+
       // Fetch syllabus progress for each section session
       const subjectList: SubjectInfo[] = [];
       let totalCompletedAll = 0;
