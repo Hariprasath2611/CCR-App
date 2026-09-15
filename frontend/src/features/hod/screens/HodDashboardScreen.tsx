@@ -104,6 +104,37 @@ export const HodDashboardScreen = () => {
         </View>
       </View>
 
+      {/* ── MANAGE COORDINATORS QUICK ACTION ── */}
+      <TouchableOpacity
+        activeOpacity={0.85}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: '#FFFFFF',
+          padding: 14,
+          borderRadius: 14,
+          marginBottom: 16,
+          borderWidth: 1,
+          borderColor: '#E2E8F0',
+          elevation: 2,
+        }}
+        onPress={() => navigation.navigate('ManageCoordinators')}
+      >
+        <View style={{ width: 42, height: 42, borderRadius: 21, backgroundColor: '#E0F2FE', justifyContent: 'center', alignItems: 'center' }}>
+          <MaterialCommunityIcons name="account-tie" size={24} color={Palette.primary} />
+        </View>
+        <View style={{ flex: 1, marginLeft: 12 }}>
+          <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#0F172A' }}>
+            Class Coordinators & Credentials
+          </Text>
+          <Text style={{ fontSize: 12, color: '#64748B', marginTop: 1 }}>
+            Assign CCs & generate login credentials per section
+          </Text>
+        </View>
+        <Feather name="chevron-right" size={20} color={Palette.primary} />
+      </TouchableOpacity>
+
+
       {/* ── SELECT ACADEMIC YEAR ── */}
       <Text style={styles.sectionTitle}>Select Academic Year</Text>
       <View style={styles.yearSelectorContainer}>

@@ -1,7 +1,9 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { CCDashboardScreen } from '@features/cc/screens/CCDashboardScreen';
+import { FacultyAllocationScreen } from '@features/cc/screens/FacultyAllocationScreen';
 import { ClassProgressScreen } from '@features/cc/screens/ClassProgressScreen';
+
 import { SubjectProgressDetailScreen } from '@features/cc/screens/SubjectProgressDetailScreen';
 import { PendingSubmissionsScreen } from '@features/cc/screens/PendingSubmissionsScreen';
 import { ConsolidatedReportScreen } from '@features/cc/screens/ConsolidatedReportScreen';
@@ -27,6 +29,12 @@ export const CCNavigator = () => {
         component={CCDashboardScreen} 
         options={{ title: 'CC Dashboard' }} 
       />
+      <Stack.Screen 
+        name="FacultyAllocation" 
+        component={FacultyAllocationScreen} 
+        options={{ title: 'Subject Allocation' }} 
+      />
+
       <Stack.Screen 
         name="ClassProgress" 
         component={ClassProgressScreen} 

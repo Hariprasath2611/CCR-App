@@ -90,7 +90,19 @@ export const CCDashboardScreen = () => {
             <Text style={styles.statItemLabel}>Average Coverage</Text>
           </View>
         </View>
+
+        {/* ── ALLOCATE FACULTY QUICK ACTION ── */}
+        <Button
+          mode="contained-tonal"
+          icon="account-multiple-plus"
+          style={{ marginTop: 12, borderRadius: 10, backgroundColor: '#E0F2FE' }}
+          textColor={Palette.primary}
+          onPress={() => navigation.navigate('FacultyAllocation')}
+        >
+          Manage & Allocate Subject Teachers
+        </Button>
       </View>
+
 
       {/* ── CONSOLIDATED REPORT CONTENT ── */}
       <Text style={styles.sectionTitle}>Week {selectedWeek} Consolidated Spreadsheet</Text>

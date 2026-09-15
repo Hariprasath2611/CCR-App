@@ -18,6 +18,7 @@ export type StaffStackParamList = {
   // HOD routes
   HodDashboard: undefined;
   DepartmentClasses: undefined;
+  ManageCoordinators: undefined;
   FacultyProgress: { classId?: string } | undefined;
   SubjectReports: undefined;
   CCReports: undefined;
@@ -28,6 +29,7 @@ export type StaffStackParamList = {
   HodProfile: undefined;
   // CC routes
   CCDashboard: undefined;
+  FacultyAllocation: undefined;
   ClassProgress: { classId: string };
   SubjectProgressDetail: { progressId: string };
   PendingSubmissions: { classId: string };
@@ -38,6 +40,7 @@ export type StaffStackParamList = {
 
 export type CCStackParamList = {
   CCDashboard: undefined;
+  FacultyAllocation: undefined;
   ClassProgress: { classId: string };
   SubjectProgressDetail: { progressId: string };
   PendingSubmissions: { classId: string };
@@ -49,6 +52,7 @@ export type CCStackParamList = {
 export type HodStackParamList = {
   HodDashboard: undefined;
   DepartmentClasses: undefined;
+  ManageCoordinators: undefined;
   FacultyProgress: { classId?: string } | undefined;
   SubjectReports: undefined;
   CCReports: undefined;
@@ -58,6 +62,7 @@ export type HodStackParamList = {
   DeptAnalytics: undefined;
   HodProfile: undefined;
 };
+
 
 export type AdminStackParamList = {
   AdminDashboard: undefined;
