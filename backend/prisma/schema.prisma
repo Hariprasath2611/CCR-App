@@ -39,6 +39,18 @@ model SubjectAssignment {
   @@unique([facultyId, classId, subjectCode])
 }
 
+model ClassSection {
+  id           String   @id @default(uuid()) @map("_id")
+  department   String   // e.g., "Computer Science"
+  year         String   // e.g., "3rd Year"
+  section      String   // e.g., "A"
+  name         String   @unique // e.g., "3rd Year CSE-A"
+  ccId         String?  // User ID of the assigned Class Coordinator
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+
 model TimetableSlot {
   id           String   @id @default(uuid()) @map("_id")
   dayOfWeek    String   // e.g., "Monday"

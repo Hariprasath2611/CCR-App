@@ -7,6 +7,9 @@ import { AppError } from '../middleware/AppError';
 export const loginUser = async (email: string, password: string) => {
   const user = await prisma.user.findUnique({
     where: { email: email.toLowerCase().trim() },
+    include: {
+      subjectAssignments: true,
+    },
   });
 
   if (!user) {
@@ -26,6 +29,7 @@ export const loginUser = async (email: string, password: string) => {
     isClassCoordinator: user.isClassCoordinator,
     department: user.department,
     assignedClassId: user.assignedClassId || undefined,
+    subjectAssignments: user.subjectAssignments || [],
   };
 
   const accessToken = jwt.sign(userSession, config.jwtSecret, { expiresIn: '1h' });

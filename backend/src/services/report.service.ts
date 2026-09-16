@@ -99,7 +99,7 @@ export const fetchWeeklyReport = async (classId: string, weekNumber: number) => 
             topicId: { in: topicIds },
           },
         });
-        plannedTopicsText = nodes.map((n) => n.topicTitle).join(', ');
+        plannedTopicsText = nodes.map((n: any) => n.topicTitle).join(', ');
       }
 
       let completedTopicsCount = 0;
@@ -221,7 +221,7 @@ export const fetchAllReports = async () => {
     orderBy: { weekNumber: 'desc' },
   });
 
-  return reports.map((r) => {
+  return reports.map((r: any) => {
     let parsedSubjects = [];
     try {
       parsedSubjects = JSON.parse(r.subjectsJson);

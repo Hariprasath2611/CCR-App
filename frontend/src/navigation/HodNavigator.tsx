@@ -6,7 +6,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 // Screens
 import { HodDashboardScreen } from '@features/hod/screens/HodDashboardScreen';
 import { DepartmentClassesScreen } from '@features/hod/screens/DepartmentClassesScreen';
+import { ManageCoordinatorsScreen } from '@features/hod/screens/ManageCoordinatorsScreen';
 import { FacultyProgressScreen } from '@features/hod/screens/FacultyProgressScreen';
+
 import { SubjectReportsScreen } from '@features/hod/screens/SubjectReportsScreen';
 import { CCReportsScreen } from '@features/hod/screens/CCReportsScreen';
 import { RequestDetailsScreen } from '@features/hod/screens/RequestDetailsScreen';
@@ -43,6 +45,12 @@ const HodStackNavigator = () => {
         component={DepartmentClassesScreen}
         options={{ title: 'Classes' }}
       />
+      <Stack.Screen
+        name="ManageCoordinators"
+        component={ManageCoordinatorsScreen}
+        options={{ title: 'Class Coordinators' }}
+      />
+
       <Stack.Screen
         name="FacultyProgress"
         component={FacultyProgressScreen}

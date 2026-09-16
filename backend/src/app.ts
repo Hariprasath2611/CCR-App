@@ -14,8 +14,10 @@ import extraHoursRoutes from './routes/extraHoursRoutes';
 import reportRoutes from './routes/reportRoutes';
 import hodRoutes from './routes/hodRoutes';
 import principalRoutes from './routes/principalRoutes';
+import ccRoutes from './routes/ccRoutes';
 
 const app = express();
+
 
 // Security & Standard Middlewares
 app.use(helmet());
@@ -48,6 +50,8 @@ app.use('/v1/extra-hours', extraHoursRoutes);
 app.use('/v1/reports', reportRoutes);
 app.use('/v1/hod', hodRoutes);
 app.use('/v1/principal', principalRoutes);
+app.use('/v1/cc', ccRoutes);
+
 
 // 404 Route handler
 app.use((req, res) => {
