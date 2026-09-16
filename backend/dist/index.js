@@ -9,7 +9,7 @@ const prisma_1 = require("./lib/prisma");
 const PORT = env_1.config.port;
 const server = app_1.default.listen(PORT, '0.0.0.0', () => {
     console.log(`========================================`);
-    console.log(`  CCMS API Server running on port ${PORT} `);
+    console.log(`  CCR API Server running on port ${PORT} `);
     console.log(`  Environment: ${env_1.config.nodeEnv}          `);
     console.log(`  Listening on http://0.0.0.0:${PORT}    `);
     console.log(`========================================`);
