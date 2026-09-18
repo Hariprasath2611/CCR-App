@@ -42,7 +42,7 @@ export const searchFaculty = async (query: string) => {
 export const allocateSubjectTeacher = async (data: AllocateSubjectData) => {
   const { classId, subjectCode, subjectName, facultyEmail, facultyName, department, password, assignedByCcId } = data;
   const cleanEmail = facultyEmail.toLowerCase().trim();
-  const defaultPassword = password || 'JEC@Faculty2026';
+  const defaultPassword = password || 'CCR@2026!';
 
   // 1. Check if user already exists
   let user = await prisma.user.findUnique({
@@ -58,14 +58,14 @@ export const allocateSubjectTeacher = async (data: AllocateSubjectData) => {
         email: cleanEmail,
         name: facultyName,
         role: 'STAFF',
-        department: department || 'General',
+        department: department || 'Computer Science',
         passwordHash,
       },
     });
     createdNewUser = true;
   }
 
-  // 2. Check if this subject is already assigned in this class to another teacher or same teacher
+  // 2. Create or Update SubjectAssignment (Decoupled mapping)
   const existingAssignment = await prisma.subjectAssignment.findFirst({
     where: {
       classId,
@@ -76,7 +76,7 @@ export const allocateSubjectTeacher = async (data: AllocateSubjectData) => {
   let assignment;
 
   if (existingAssignment) {
-    // Update existing assignment with new faculty
+    // Re-assign existing subject allocation to this faculty
     assignment = await prisma.subjectAssignment.update({
       where: { id: existingAssignment.id },
       data: {
@@ -100,7 +100,50 @@ export const allocateSubjectTeacher = async (data: AllocateSubjectData) => {
     });
   }
 
+  // 3. Update Timetable & Class Mappings
+  const updatedSlots = await prisma.timetableSlot.updateMany({
+    where: {
+      classSection: classId,
+      subjectCode,
+    },
+    data: {
+      facultyId: user.id,
+      subjectName,
+    },
+  });
+
+  // If no slots exist yet for this class & subject, create default schedule slots
+  if (updatedSlots.count === 0) {
+    const defaultSlots = [
+      { dayOfWeek: 'Monday', period: 2, roomNo: 'LH-201' },
+      { dayOfWeek: 'Wednesday', period: 3, roomNo: 'LH-201' },
+      { dayOfWeek: 'Friday', period: 1, roomNo: 'LH-201' },
+    ];
+    for (const slot of defaultSlots) {
+      await prisma.timetableSlot.create({
+        data: {
+          classSection: classId,
+          subjectCode,
+          subjectName,
+          dayOfWeek: slot.dayOfWeek,
+          period: slot.period,
+          roomNo: slot.roomNo,
+          facultyId: user.id,
+        },
+      });
+    }
+  }
+
   return {
+    status: createdNewUser ? 'NEW_USER' : 'EXISTING_USER_REUSED',
+    message: createdNewUser
+      ? 'Account created. Temp Credentials: [Email/Password]'
+      : 'Added successfully. Credentials unchanged.',
+    tempPassword: createdNewUser ? defaultPassword : undefined,
+    createdNewUser,
+    credentials: createdNewUser
+      ? { email: cleanEmail, password: defaultPassword }
+      : { email: cleanEmail, note: 'Credentials unchanged. Reused existing profile.' },
     assignment: {
       id: assignment.id,
       classId: assignment.classId,
@@ -113,10 +156,6 @@ export const allocateSubjectTeacher = async (data: AllocateSubjectData) => {
         department: user.department,
       },
     },
-    createdNewUser,
-    credentials: createdNewUser
-      ? { email: cleanEmail, password: defaultPassword }
-      : { email: cleanEmail, note: 'Linked to existing faculty account. No new password generated.' },
   };
 };
 

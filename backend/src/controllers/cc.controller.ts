@@ -24,11 +24,14 @@ export const allocateSubjectTeacher = async (req: Request, res: Response, next: 
       assignedByCcId,
     });
 
-    return res.status(201).json({ success: true, ...result });
+    const statusCode = result.status === 'NEW_USER' ? 201 : 200;
+    return res.status(statusCode).json({ success: true, ...result });
   } catch (error) {
     next(error);
   }
 };
+
+export const assignFaculty = allocateSubjectTeacher;
 
 export const getClassSubjectAllocations = async (req: Request, res: Response, next: NextFunction) => {
   try {
