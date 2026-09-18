@@ -15,6 +15,7 @@ import reportRoutes from './routes/reportRoutes';
 import hodRoutes from './routes/hodRoutes';
 import principalRoutes from './routes/principalRoutes';
 import ccRoutes from './routes/ccRoutes';
+import erpRoutes from './routes/erpRoutes';
 
 const app = express();
 
@@ -51,6 +52,8 @@ app.use('/v1/reports', reportRoutes);
 app.use('/v1/hod', hodRoutes);
 app.use('/v1/principal', principalRoutes);
 app.use('/v1/cc', ccRoutes);
+app.use('/v1/erp', erpRoutes);
+app.use('/api/erp', erpRoutes);
 
 
 // 404 Route handler

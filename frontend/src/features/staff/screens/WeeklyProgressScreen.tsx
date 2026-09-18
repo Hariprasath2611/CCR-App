@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Alert, StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
-import { Text, Card, ActivityIndicator } from 'react-native-paper';
+import { Text, Card, ActivityIndicator, Chip } from 'react-native-paper';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,38 +17,33 @@ import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { useReportStore } from '@features/cc/store/useReportStore';
 import { Palette } from '@theme/colors';
 import { syncEngine } from '@features/sync/syncEngine';
+import { apiClient } from '@services/api/apiClient';
 import { StaffStackParamList } from '@navigation/types';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
-
 import { ms } from '@theme/responsive';
 import { getCCForSection } from '@config/facultyBoard';
+import {
+  YEAR_OPTIONS,
+  FIRST_YEAR_SECTION_OPTIONS,
+  DEPARTMENT_OPTIONS,
+  HIGHER_YEAR_SECTION_OPTIONS,
+  getSectionTemplate,
+} from '@config/sectionTemplates';
 
 type RouteParams = RouteProp<StaffStackParamList, 'WeeklyProgress'>;
 
-const getTodayDDMMYYYY = () => {
-  const today = new Date();
-  const dd = today.getDate().toString().padStart(2, '0');
-  const mm = (today.getMonth() + 1).toString().padStart(2, '0');
-  const yyyy = today.getFullYear();
-  return `${dd}/${mm}/${yyyy}`;
-};
-
-const ddmmToYyyymmdd = (dateStr: string): string => {
-  if (!dateStr) return '';
-  const parts = dateStr.split('/');
-  if (parts.length === 3) {
-    const [dd, mm, yyyy] = parts;
-    return `${yyyy}-${mm}-${dd}`;
-  }
-  return dateStr;
-};
-
 const progressSchema = z.object({
+  academicYear: z.string().min(1, 'Please select the academic year'),
+  department: z.string().min(1, 'Please select the department'),
+  classSection: z.string().min(1, 'Please select or enter the class / section'),
+  subjectCode: z.string().min(1, 'Please enter the subject code'),
+  subjectName: z.string().min(1, 'Please enter the subject name'),
+  weekNumber: z.string().min(1, 'Please select the week number'),
+  fromDate: z.string().min(10, 'Use DD/MM/YYYY format').regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Must be in DD/MM/YYYY format'),
+  toDate: z.string().min(10, 'Use DD/MM/YYYY format').regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Must be in DD/MM/YYYY format'),
   unit: z.string().min(1, 'Please select the main unit'),
   tempUnit: z.string().optional(),
   topicsCovered: z.string().min(1, 'Please type the topics covered'),
-  completedOnPlan: z.enum(['YES', 'NO']),
-  reasonsForPending: z.string().optional(),
   periodsPlanned: z.string().min(1, 'Please enter periods planned').refine((val) => !isNaN(parseInt(val)) && parseInt(val) >= 0, {
     message: 'Must be a non-negative number',
   }),
@@ -56,30 +51,23 @@ const progressSchema = z.object({
     message: 'Must be a non-negative number',
   }),
   periodsRequired: z.string().optional(),
-  fromDate: z.string().min(10, 'Use DD/MM/YYYY format').regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Must be in DD/MM/YYYY format'),
-  toDate: z.string().min(10, 'Use DD/MM/YYYY format').regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Must be in DD/MM/YYYY format'),
-  cumulativePercent: z.string().min(1, 'Please type cumulative completion progress'),
+  completedOnPlan: z.enum(['YES', 'NO']),
+  reasonsForPending: z.string().optional(),
+  cumulativePercent: z.string().min(1, 'Please enter cumulative completion progress (e.g. Unit 1 - 75%)'),
 }).refine((data) => {
-  if (data.completedOnPlan === 'NO' && (!data.reasonsForPending || data.reasonsForPending.trim().length === 0)) {
+  const pPlan = parseInt(data.periodsPlanned) || 0;
+  const pHandled = parseInt(data.periodsHandled) || 0;
+  const isLagging = data.completedOnPlan === 'NO' || pHandled < pPlan;
+  if (isLagging && (!data.reasonsForPending || data.reasonsForPending.trim().length === 0)) {
     return false;
   }
   return true;
 }, {
-  message: 'Please explain the reason for pending topics',
+  message: 'Please explain the reason for pending topics or period deficit',
   path: ['reasonsForPending'],
 });
 
 type ProgressFormData = z.infer<typeof progressSchema>;
-
-const SUBJECT_NAMES: Record<string, string> = {
-  'CS3591': 'Computer Networks',
-  'CS3501': 'Compiler Design',
-  'CB3491': 'Cryptography and Cyber Security',
-  'CS3551': 'Distributed Computing',
-  'CCS375': 'Web Technologies',
-  'CCS370': 'UI and UX Design',
-  'MX3084': 'Disaster Management',
-};
 
 const WEEK_OPTIONS = Array.from({ length: 16 }, (_, i) => ({
   label: `Week ${i + 1}`,
@@ -110,16 +98,18 @@ export const WeeklyProgressScreen = () => {
   const route = useRoute<RouteParams>();
   const navigation = useNavigation();
 
-  // Safeguards for route parameters
-  const subjectCode = route.params?.subjectCode || 'CS3591';
-  const routeClassSection = (route.params as any)?.classSection;
-  const targetClassSection = routeClassSection || user?.assignedClassId || '1st Year SEC-B';
-  const weekNumber = route.params?.weekNumber || 12;
+  // Initial parameters from navigation if provided
+  const initialSubjectCode = route.params?.subjectCode || '';
+  const initialClassSection = (route.params as any)?.classSection || user?.assignedClassId || '1st Year SEC-B';
+  const initialWeekNumber = (route.params?.weekNumber || 12).toString();
 
-  const [selectedWeek, setSelectedWeek] = useState(weekNumber.toString());
+  // Determine initial Year & Dept
+  const is1stYear = initialClassSection.includes('1st Year') || initialClassSection.includes('SEC-');
+  const initialYear = is1stYear ? '1st Year' : (initialClassSection.includes('2nd') ? '2nd Year' : initialClassSection.includes('3rd') ? '3rd Year' : '4th Year');
+  const initialDept = is1stYear ? 'General Engineering' : 'CSE';
 
   const [syllabusNodes, setSyllabusNodes] = useState<SQLiteSyllabusNode[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const syllabusRepo = new SyllabusRepository();
@@ -128,7 +118,13 @@ export const WeeklyProgressScreen = () => {
   const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<ProgressFormData>({
     resolver: zodResolver(progressSchema),
     defaultValues: {
-      unit: '',
+      academicYear: initialYear,
+      department: initialDept,
+      classSection: initialClassSection,
+      subjectCode: initialSubjectCode || 'CS3591',
+      subjectName: '',
+      weekNumber: initialWeekNumber,
+      unit: 'Unit 1',
       tempUnit: 'None',
       topicsCovered: '',
       completedOnPlan: 'YES',
@@ -138,39 +134,73 @@ export const WeeklyProgressScreen = () => {
       periodsRequired: '0',
       fromDate: '',
       toDate: '',
-      cumulativePercent: '',
+      cumulativePercent: 'Unit 1 - 75%',
     },
   });
 
+  const selectedYear = watch('academicYear');
+  const selectedDept = watch('department');
+  const selectedClass = watch('classSection');
+  const selectedSubjectCode = watch('subjectCode');
   const completedOnPlan = watch('completedOnPlan');
+  const periodsPlanned = watch('periodsPlanned');
+  const periodsHandled = watch('periodsHandled');
   const unit = watch('unit');
 
-  // Pre-populate week-to-week carry-over progress from previous/current week logs
-  useEffect(() => {
-    const currentWeekNum = parseInt(selectedWeek);
-    const currentKey = `${targetClassSection}_${currentWeekNum}`;
-    const prevKey = `${targetClassSection}_${currentWeekNum - 1}`;
-    
-    const currentLogs = subjectProgressList[currentKey];
-    const prevLogs = subjectProgressList[prevKey];
-    
-    const subjectLog = (currentLogs && currentLogs.find(s => s.code === subjectCode)) ||
-                       (prevLogs && prevLogs.find(s => s.code === subjectCode));
-    
-    if (subjectLog) {
-      if (subjectLog.topicsCoveredText) setValue('topicsCovered', subjectLog.topicsCoveredText);
-      if (subjectLog.cumulativePercent) setValue('cumulativePercent', subjectLog.cumulativePercent);
-      if (subjectLog.fromDate) setValue('fromDate', subjectLog.fromDate);
-      if (subjectLog.toDate) setValue('toDate', subjectLog.toDate);
-      if (subjectLog.reasonsForPending) setValue('reasonsForPending', subjectLog.reasonsForPending);
-    }
-  }, [selectedWeek, targetClassSection, subjectCode, subjectProgressList, setValue]);
+  // Algorithm 1 Dynamic calculations in UI
+  const paceRatio = useMemo(() => {
+    const planned = parseInt(periodsPlanned) || 0;
+    const handled = parseInt(periodsHandled) || 0;
+    if (planned === 0) return 1.0;
+    return Number((handled / planned).toFixed(2));
+  }, [periodsPlanned, periodsHandled]);
 
+  const periodsDeficit = useMemo(() => {
+    const planned = parseInt(periodsPlanned) || 0;
+    const handled = parseInt(periodsHandled) || 0;
+    return Math.max(0, planned - handled);
+  }, [periodsPlanned, periodsHandled]);
+
+  const isLagging = completedOnPlan === 'NO' || periodsDeficit > 0;
+
+  // Available Section Options based on Year & Dept
+  const availableSectionOptions = useMemo(() => {
+    if (selectedYear === '1st Year') {
+      return FIRST_YEAR_SECTION_OPTIONS;
+    }
+    const deptSections = HIGHER_YEAR_SECTION_OPTIONS[selectedDept] || [{ label: 'Section A', value: `${selectedDept}-A` }];
+    return deptSections.map((s) => ({
+      label: `${selectedYear} ${s.label} (${selectedDept})`,
+      value: `${selectedYear} ${s.value}`,
+    }));
+  }, [selectedYear, selectedDept]);
+
+  // Suggested Subjects from template
+  const suggestedSubjects = useMemo(() => {
+    if (selectedClass.includes('1st Year') || selectedClass.includes('SEC-')) {
+      const tmpl = getSectionTemplate(selectedClass);
+      return tmpl.subjects;
+    }
+    return [];
+  }, [selectedClass]);
+
+  // Auto-fill subject name when subject code changes or suggested subject picked
+  const onPickSuggestedSubject = (sub: { subjectCode: string; subjectName: string; periodsPlannedDefault?: number }) => {
+    setValue('subjectCode', sub.subjectCode);
+    setValue('subjectName', sub.subjectName);
+    if (sub.periodsPlannedDefault) {
+      setValue('periodsPlanned', sub.periodsPlannedDefault.toString());
+      setValue('periodsHandled', sub.periodsPlannedDefault.toString());
+    }
+  };
+
+  // Load syllabus topics if available for subject code
   useEffect(() => {
     const loadSyllabus = async () => {
+      if (!selectedSubjectCode) return;
       try {
         setLoading(true);
-        const nodes = await syllabusRepo.getSyllabusBySubject(subjectCode);
+        const nodes = await syllabusRepo.getSyllabusBySubject(selectedSubjectCode);
         setSyllabusNodes(nodes);
       } catch (err) {
         console.error('Failed to load syllabus:', err);
@@ -179,12 +209,37 @@ export const WeeklyProgressScreen = () => {
       }
     };
     loadSyllabus();
-  }, [subjectCode]);
+  }, [selectedSubjectCode]);
+
+  // Pre-populate week-to-week carry-over progress from previous/current week logs
+  useEffect(() => {
+    const currentWeekNum = parseInt(watch('weekNumber') || '12');
+    const currentKey = `${selectedClass}_${currentWeekNum}`;
+    const prevKey = `${selectedClass}_${currentWeekNum - 1}`;
+    
+    const currentLogs = subjectProgressList[currentKey];
+    const prevLogs = subjectProgressList[prevKey];
+    
+    const subjectLog = (currentLogs && currentLogs.find(s => s.code === selectedSubjectCode)) ||
+                       (prevLogs && prevLogs.find(s => s.code === selectedSubjectCode));
+    
+    if (subjectLog) {
+      if (subjectLog.topicsCoveredText) setValue('topicsCovered', subjectLog.topicsCoveredText);
+      if (subjectLog.cumulativePercent) setValue('cumulativePercent', subjectLog.cumulativePercent);
+      if (subjectLog.fromDate) setValue('fromDate', subjectLog.fromDate);
+      if (subjectLog.toDate) setValue('toDate', subjectLog.toDate);
+      if (subjectLog.reasonsForPending) setValue('reasonsForPending', subjectLog.reasonsForPending);
+    }
+  }, [selectedClass, selectedSubjectCode, watch('weekNumber'), subjectProgressList, setValue]);
 
   const onSubmit = async (data: ProgressFormData) => {
     setIsSubmitting(true);
     try {
-      const classId = targetClassSection;
+      const classId = data.classSection;
+      const finalWeekNumber = parseInt(data.weekNumber);
+      const pPlanned = parseInt(data.periodsPlanned);
+      const pHandled = parseInt(data.periodsHandled);
+      const pRequired = data.periodsRequired ? parseInt(data.periodsRequired) : periodsDeficit;
 
       // 1. Mark topics in SQLite based on unit coverage
       const selectedUnitTopics = syllabusNodes.filter(
@@ -214,25 +269,23 @@ export const WeeklyProgressScreen = () => {
         );
       }
 
-      // Re-read DB completion states to compile correct overall summary counts
-      const updatedNodes = await syllabusRepo.getSyllabusBySubject(subjectCode);
+      // Re-read DB completion states
+      const updatedNodes = await syllabusRepo.getSyllabusBySubject(data.subjectCode);
       const totalCount = updatedNodes.length || 5;
       const completedCount = updatedNodes.filter((n) => n.is_completed === 1).length;
-
-      const finalWeekNumber = parseInt(selectedWeek);
 
       // 2. Update Consolidated Report Store
       addProgressLog(
         classId,
         finalWeekNumber,
-        subjectCode,
+        data.subjectCode,
         completedCount,
         totalCount,
         data.reasonsForPending || '',
-        data.completedOnPlan === 'NO',
-        parseInt(data.periodsPlanned),
-        parseInt(data.periodsHandled),
-        data.periodsRequired ? parseInt(data.periodsRequired) : 0,
+        data.completedOnPlan === 'NO' || pHandled < pPlanned,
+        pPlanned,
+        pHandled,
+        pRequired,
         data.topicsCovered,
         undefined,
         data.fromDate,
@@ -243,9 +296,14 @@ export const WeeklyProgressScreen = () => {
 
       // 3. Sync Queue logging
       const progressPayload = {
-        id: `progress_${subjectCode}_W${finalWeekNumber}_${Date.now()}`,
+        id: `progress_${data.subjectCode}_W${finalWeekNumber}_${Date.now()}`,
         facultyId: user?.id,
-        subjectCode,
+        facultyName: user?.name,
+        facultyEmail: user?.email,
+        academicYear: data.academicYear,
+        department: data.department,
+        subjectCode: data.subjectCode,
+        subjectName: data.subjectName || data.subjectCode,
         classId,
         academicWeekNumber: finalWeekNumber,
         unitSelected: data.unit,
@@ -256,23 +314,34 @@ export const WeeklyProgressScreen = () => {
         pendingTopicIds,
         reasonsForPending: data.reasonsForPending || '',
         submittedAt: new Date().toISOString(),
-        periodsPlanned: parseInt(data.periodsPlanned),
-        periodsHandled: parseInt(data.periodsHandled),
-        periodsRequired: data.periodsRequired ? parseInt(data.periodsRequired) : 0,
+        periodsPlanned: pPlanned,
+        periodsHandled: pHandled,
+        periodsRequired: pRequired,
         fromDate: data.fromDate,
         toDate: data.toDate,
         cumulativePercent: data.cumulativePercent,
+        extraHoursRequested: isLagging,
       };
+      
       await syncQueueRepo.enqueue('SUBMIT_PROGRESS', progressPayload);
 
-      // Trigger background sync immediately to send the log to MongoDB
+      // 4. Also call the ERP CCR API endpoint directly
+      try {
+        await apiClient.post('/v1/erp/ccr/submit-log', progressPayload);
+      } catch (erpErr) {
+        console.warn('ERP API direct submit failed, queued for background sync:', erpErr);
+      }
+
+      // Trigger background sync
       syncEngine.triggerSync().catch((err) => {
         console.error('Trigger sync after submission failed:', err);
       });
 
-      Alert.alert('Success', 'Course coverage successfully logged and synchronized!', [
-        { text: 'OK', onPress: () => navigation.goBack() }
-      ]);
+      Alert.alert(
+        'Submission Successful',
+        `Course coverage for ${data.subjectCode} (${classId}) has been logged and sent to the CC / HOD CCR dashboard!`,
+        [{ text: 'OK', onPress: () => navigation.goBack() }]
+      );
     } catch (err) {
       console.error('Progress submit failed:', err);
       Alert.alert('Error', 'Failed to log course coverage.');
@@ -281,37 +350,189 @@ export const WeeklyProgressScreen = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={Palette.primary} />
-        <Text style={styles.loadingText}>Loading Syllabus...</Text>
-      </View>
-    );
-  }
-
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Header Row */}
+      {/* ── HEADER CARD ── */}
       <View style={styles.headerRow}>
         <View style={styles.subjectIconBox}>
-          <Feather name="book-open" size={24} color={Palette.primary} />
+          <Feather name="edit-3" size={24} color={Palette.primary} />
         </View>
         <View style={styles.headerInfo}>
           <Text style={styles.headingText}>Course Coverage Log</Text>
-          <Text style={styles.subjectName}>{SUBJECT_NAMES[subjectCode] || 'Subject Course'}</Text>
-          <Text style={styles.weekLabel}>
-            Code: {subjectCode} · Section: {targetClassSection}
-          </Text>
-          <Text style={{ fontSize: ms(11.5), color: Palette.primary, fontWeight: '700', marginTop: ms(2) }}>
-            Assigned CC: {getCCForSection(targetClassSection)?.facultyName || 'Class Coordinator'}
+          <Text style={styles.subHeadingText}>
+            Manual Academic Selection & Lesson Plan Tracking
           </Text>
         </View>
       </View>
-      {/* ── REPORT DETAILS SECTION ── */}
-      <Card style={{ backgroundColor: '#FFFFFF', borderRadius: ms(16), padding: ms(16), marginBottom: ms(20), borderWidth: 1, borderColor: '#F1F5F9' }}>
-        
-        {/* Course Duration Dates (From Date & To Date) */}
+
+      {/* ── SECTION 1: ACADEMIC HIERARCHY SELECTOR ── */}
+      <Card style={styles.cardContainer}>
+        <View style={styles.cardHeader}>
+          <MaterialCommunityIcons name="school" size={20} color={Palette.primary} />
+          <Text style={styles.cardTitle}>1. Academic Year & Department</Text>
+        </View>
+
+        {/* Academic Year Dropdown */}
+        <Controller
+          control={control}
+          name="academicYear"
+          render={({ field: { onChange, value } }) => (
+            <AppDropdown
+              label="Academic Year"
+              value={value}
+              options={YEAR_OPTIONS}
+              onSelect={(val) => {
+                onChange(val);
+                if (val === '1st Year') {
+                  setValue('department', 'General Engineering');
+                  setValue('classSection', '1st Year SEC-A');
+                } else {
+                  setValue('department', 'CSE');
+                  setValue('classSection', `${val} CSE-A`);
+                }
+              }}
+              error={errors.academicYear?.message}
+            />
+          )}
+        />
+
+        {/* Department Dropdown (for 2nd, 3rd, 4th Year) */}
+        {selectedYear !== '1st Year' && (
+          <Controller
+            control={control}
+            name="department"
+            render={({ field: { onChange, value } }) => (
+              <AppDropdown
+                label="Department"
+                value={value}
+                options={DEPARTMENT_OPTIONS}
+                onSelect={(val) => {
+                  onChange(val);
+                  setValue('classSection', `${selectedYear} ${val}-A`);
+                }}
+                error={errors.department?.message}
+                style={styles.dropdownSpacing}
+              />
+            )}
+          />
+        )}
+
+        {/* Class / Section Dropdown */}
+        <Controller
+          control={control}
+          name="classSection"
+          render={({ field: { onChange, value } }) => (
+            <AppDropdown
+              label="Class / Section"
+              value={value}
+              options={availableSectionOptions}
+              onSelect={onChange}
+              error={errors.classSection?.message}
+              style={styles.dropdownSpacing}
+            />
+          )}
+        />
+
+        {/* CC Information Banner */}
+        <View style={styles.ccBanner}>
+          <Feather name="user-check" size={16} color={Palette.primary} />
+          <Text style={styles.ccBannerText}>
+            Class Coordinator: <Text style={{ fontWeight: '700' }}>{getCCForSection(selectedClass)?.facultyName || 'Designated CC'}</Text>
+          </Text>
+        </View>
+      </Card>
+
+      {/* ── SECTION 2: SUBJECT DETAILS ── */}
+      <Card style={styles.cardContainer}>
+        <View style={styles.cardHeader}>
+          <MaterialCommunityIcons name="book-open-page-variant" size={20} color={Palette.primary} />
+          <Text style={styles.cardTitle}>2. Subject Information</Text>
+        </View>
+
+        {/* Quick Template Subject Chips */}
+        {suggestedSubjects.length > 0 && (
+          <View style={styles.chipsSection}>
+            <Text style={styles.chipsLabel}>Quick Select Subjects for {selectedClass}:</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll}>
+              {suggestedSubjects.map((sub) => (
+                <TouchableOpacity
+                  key={sub.subjectCode}
+                  onPress={() => onPickSuggestedSubject(sub)}
+                  style={[
+                    styles.subjectChip,
+                    selectedSubjectCode === sub.subjectCode && styles.subjectChipActive,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.subjectChipText,
+                      selectedSubjectCode === sub.subjectCode && styles.subjectChipTextActive,
+                    ]}
+                  >
+                    {sub.subjectCode} · {sub.subjectName}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
+        {/* Subject Code (Editable) */}
+        <Controller
+          control={control}
+          name="subjectCode"
+          render={({ field: { onChange, value } }) => (
+            <AppTextInput
+              label="Subject Code"
+              value={value}
+              onChangeText={onChange}
+              error={errors.subjectCode?.message}
+              placeholder="e.g. CS3591, MA25C01"
+            />
+          )}
+        />
+
+        {/* Subject Name (Editable) */}
+        <Controller
+          control={control}
+          name="subjectName"
+          render={({ field: { onChange, value } }) => (
+            <AppTextInput
+              label="Subject Name"
+              value={value}
+              onChangeText={onChange}
+              error={errors.subjectName?.message}
+              placeholder="e.g. Applied Calculus, Computer Networks"
+              style={styles.dropdownSpacing}
+            />
+          )}
+        />
+
+        {/* Academic Week Dropdown */}
+        <Controller
+          control={control}
+          name="weekNumber"
+          render={({ field: { onChange, value } }) => (
+            <AppDropdown
+              label="Academic Week"
+              value={value}
+              options={WEEK_OPTIONS}
+              onSelect={onChange}
+              error={errors.weekNumber?.message}
+              style={styles.dropdownSpacing}
+            />
+          )}
+        />
+      </Card>
+
+      {/* ── SECTION 3: COURSE DURATION & LESSON PLAN COVERAGE ── */}
+      <Card style={styles.cardContainer}>
+        <View style={styles.cardHeader}>
+          <MaterialCommunityIcons name="calendar-clock" size={20} color={Palette.primary} />
+          <Text style={styles.cardTitle}>3. Weekly Duration & Unit Coverage</Text>
+        </View>
+
+        {/* Date Range Row */}
         <View style={styles.periodsRow}>
           <View style={styles.periodCol}>
             <Controller
@@ -342,173 +563,208 @@ export const WeeklyProgressScreen = () => {
             />
           </View>
         </View>
+
+        {/* Main Unit Selector */}
+        <Controller
+          control={control}
+          name="unit"
+          render={({ field: { onChange, value } }) => (
+            <AppDropdown
+              label="Select Unit"
+              value={value}
+              options={UNIT_OPTIONS}
+              onSelect={onChange}
+              error={errors.unit?.message}
+              style={styles.dropdownSpacing}
+            />
+          )}
+        />
+
+        {/* Temporary Unit Selector */}
+        <Controller
+          control={control}
+          name="tempUnit"
+          render={({ field: { onChange, value } }) => (
+            <AppDropdown
+              label="Select Unit (Temporary / Extra Hour)"
+              value={value || 'None'}
+              options={TEMP_UNIT_OPTIONS}
+              onSelect={onChange}
+              error={errors.tempUnit?.message}
+              style={styles.dropdownSpacing}
+            />
+          )}
+        />
+
+        {/* Cumulative % Completed Input */}
+        <Controller
+          control={control}
+          name="cumulativePercent"
+          render={({ field: { onChange, value } }) => (
+            <AppTextInput
+              label="Cumulative % Completed"
+              value={value || ''}
+              onChangeText={onChange}
+              error={errors.cumulativePercent?.message}
+              placeholder="e.g. Unit 1 - 75%, 2/12"
+              style={styles.dropdownSpacing}
+            />
+          )}
+        />
+
+        {/* Topics Covered Box */}
+        <Controller
+          control={control}
+          name="topicsCovered"
+          render={({ field: { onChange, value } }) => (
+            <CreatableTopicSelect
+              label="Topics Covered (Type topics covered)"
+              unit={unit}
+              syllabusNodes={syllabusNodes}
+              value={value || ''}
+              onChangeText={onChange}
+              error={errors.topicsCovered?.message}
+            />
+          )}
+        />
       </Card>
 
-      {/* Main Unit Selector */}
-      <Controller
-        control={control}
-        name="unit"
-        render={({ field: { onChange, value } }) => (
-          <AppDropdown
-            label="Select Unit"
-            value={value}
-            options={UNIT_OPTIONS}
-            onSelect={onChange}
-            error={errors.unit?.message}
-          />
-        )}
-      />
+      {/* ── SECTION 4: PERIODS & ALGORITHM 1 PACE CALCULATOR ── */}
+      <Card style={styles.cardContainer}>
+        <View style={styles.cardHeader}>
+          <MaterialCommunityIcons name="calculator-variant" size={20} color={Palette.primary} />
+          <Text style={styles.cardTitle}>4. Periods & Syllabus Pace</Text>
+        </View>
 
-      {/* Temporary Unit Selector */}
-      <Controller
-        control={control}
-        name="tempUnit"
-        render={({ field: { onChange, value } }) => (
-          <AppDropdown
-            label="Select Unit (Temporary / Extra Hour)"
-            value={value || 'None'}
-            options={TEMP_UNIT_OPTIONS}
-            onSelect={onChange}
-            error={errors.tempUnit?.message}
-            style={styles.dropdownSpacing}
-          />
-        )}
-      />
+        {/* Planned vs Handled Periods */}
+        <View style={styles.periodsRow}>
+          <View style={styles.periodCol}>
+            <Controller
+              control={control}
+              name="periodsPlanned"
+              render={({ field: { onChange, value } }) => (
+                <AppTextInput
+                  label="No. of Periods Planned"
+                  value={value !== undefined ? value.toString() : ''}
+                  onChangeText={onChange}
+                  error={errors.periodsPlanned?.message}
+                  keyboardType="numeric"
+                />
+              )}
+            />
+          </View>
+          <View style={styles.periodCol}>
+            <Controller
+              control={control}
+              name="periodsHandled"
+              render={({ field: { onChange, value } }) => (
+                <AppTextInput
+                  label="No. of Periods Handled"
+                  value={value !== undefined ? value.toString() : ''}
+                  onChangeText={onChange}
+                  error={errors.periodsHandled?.message}
+                  keyboardType="numeric"
+                />
+              )}
+            />
+          </View>
+        </View>
 
-      {/* Cumulative % Completed Input */}
-      <Controller
-        control={control}
-        name="cumulativePercent"
-        render={({ field: { onChange, value } }) => (
-          <AppTextInput
-            label="Cumulative % Completed (e.g. Unit 1 - 50%, 2/12)"
-            value={value || ''}
-            onChangeText={onChange}
-            error={errors.cumulativePercent?.message}
-            style={styles.dropdownSpacing}
-          />
-        )}
-      />
-
-      {/* Topics Covered Typing Box */}
-      <Controller
-        control={control}
-        name="topicsCovered"
-        render={({ field: { onChange, value } }) => (
-          <CreatableTopicSelect
-            label="Topics Covered (Type topics covered)"
-            unit={unit}
-            syllabusNodes={syllabusNodes}
-            value={value || ''}
-            onChangeText={onChange}
-            error={errors.topicsCovered?.message}
-          />
-        )}
-      />
-
-      {/* Periods Planned and Handled Inputs */}
-      <View style={styles.periodsRow}>
-        <View style={styles.periodCol}>
-          <Controller
-            control={control}
-            name="periodsPlanned"
-            render={({ field: { onChange, value } }) => (
-              <AppTextInput
-                label="No. of Periods Planned"
-                value={value !== undefined ? value.toString() : ''}
-                onChangeText={onChange}
-                error={errors.periodsPlanned?.message}
-                keyboardType="numeric"
-              />
+        {/* Algorithm 1 Real-Time Analytics Badge */}
+        <View style={[styles.paceBadge, isLagging ? styles.paceBadgeWarning : styles.paceBadgeSuccess]}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.paceBadgeTitle}>
+              Pace Ratio: {paceRatio} · Status: {isLagging ? 'Lagging / Deficit' : 'On Track'}
+            </Text>
+            {periodsDeficit > 0 && (
+              <Text style={styles.paceBadgeSub}>
+                Deficit of {periodsDeficit} period(s). Recommendation: Schedule extra hours.
+              </Text>
             )}
+          </View>
+          <MaterialCommunityIcons
+            name={isLagging ? 'alert-circle-outline' : 'check-decagram-outline'}
+            size={24}
+            color={isLagging ? Palette.warning : Palette.success}
           />
         </View>
-        <View style={styles.periodCol}>
-          <Controller
-            control={control}
-            name="periodsHandled"
-            render={({ field: { onChange, value } }) => (
-              <AppTextInput
-                label="No. of Periods Handled"
-                value={value !== undefined ? value.toString() : ''}
-                onChangeText={onChange}
-                error={errors.periodsHandled?.message}
-                keyboardType="numeric"
-              />
-            )}
-          />
+
+        {/* Completed Based on Plan Toggle */}
+        <Text style={styles.radioGroupLabel}>Completed based on plan?</Text>
+        <View style={styles.radioRow}>
+          <TouchableOpacity
+            style={[styles.radioCard, completedOnPlan === 'YES' && styles.radioCardSelected]}
+            onPress={() => setValue('completedOnPlan', 'YES')}
+            activeOpacity={0.7}
+          >
+            <MaterialCommunityIcons
+              name={completedOnPlan === 'YES' ? 'radiobox-marked' : 'radiobox-blank'}
+              size={20}
+              color={completedOnPlan === 'YES' ? Palette.success : Palette.textLight}
+            />
+            <Text style={[styles.radioLabel, completedOnPlan === 'YES' && styles.radioLabelSelected]}>
+              YES
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.radioCard, completedOnPlan === 'NO' && styles.radioCardSelectedNo]}
+            onPress={() => setValue('completedOnPlan', 'NO')}
+            activeOpacity={0.7}
+          >
+            <MaterialCommunityIcons
+              name={completedOnPlan === 'NO' ? 'radiobox-marked' : 'radiobox-blank'}
+              size={20}
+              color={completedOnPlan === 'NO' ? Palette.error : Palette.textLight}
+            />
+            <Text style={[styles.radioLabel, completedOnPlan === 'NO' && styles.radioLabelSelectedNo]}>
+              NO
+            </Text>
+          </TouchableOpacity>
         </View>
-      </View>
 
-      {/* Completed Based on Plan Toggle */}
-      <Text style={styles.radioGroupLabel}>Completed based on plan?</Text>
-      <View style={styles.radioRow}>
-        <TouchableOpacity
-          style={[styles.radioCard, completedOnPlan === 'YES' && styles.radioCardSelected]}
-          onPress={() => setValue('completedOnPlan', 'YES')}
-          activeOpacity={0.7}
-        >
-          <MaterialCommunityIcons 
-            name={completedOnPlan === 'YES' ? 'checkbox-marked-circle' : 'circle-outline'} 
-            size={20} 
-            color={completedOnPlan === 'YES' ? Palette.success : Palette.textLight} 
-          />
-          <Text style={[styles.radioLabel, completedOnPlan === 'YES' && styles.radioLabelSelected]}>Yes</Text>
-        </TouchableOpacity>
+        {/* Reasons for Pending if Deficit or NO */}
+        {isLagging && (
+          <View style={styles.deviationBlock}>
+            <Controller
+              control={control}
+              name="reasonsForPending"
+              render={({ field: { onChange, value } }) => (
+                <AppTextInput
+                  label="Reason for Pending Topics / Deficit *"
+                  value={value || ''}
+                  onChangeText={onChange}
+                  error={errors.reasonsForPending?.message}
+                  multiline
+                  numberOfLines={2}
+                  placeholder="e.g. Topics postponed due to college holiday / slow comprehension"
+                  style={styles.textInputReason}
+                />
+              )}
+            />
 
-        <TouchableOpacity
-          style={[styles.radioCard, completedOnPlan === 'NO' && styles.radioCardSelectedNo]}
-          onPress={() => setValue('completedOnPlan', 'NO')}
-          activeOpacity={0.7}
-        >
-          <MaterialCommunityIcons 
-            name={completedOnPlan === 'NO' ? 'close-circle' : 'circle-outline'} 
-            size={20} 
-            color={completedOnPlan === 'NO' ? Palette.error : Palette.textLight} 
-          />
-          <Text style={[styles.radioLabel, completedOnPlan === 'NO' && styles.radioLabelSelectedNo]}>No</Text>
-        </TouchableOpacity>
-      </View>
+            <Controller
+              control={control}
+              name="periodsRequired"
+              render={({ field: { onChange, value } }) => (
+                <AppTextInput
+                  label="Extra Periods Required to Compensate"
+                  value={value !== undefined ? value.toString() : periodsDeficit.toString()}
+                  onChangeText={onChange}
+                  error={errors.periodsRequired?.message}
+                  keyboardType="numeric"
+                  style={styles.textInputPeriods}
+                />
+              )}
+            />
+          </View>
+        )}
+      </Card>
 
-      {/* Conditional Reason for Pending Topics & Deviation Periods */}
-      {completedOnPlan === 'NO' && (
-        <View style={styles.deviationBlock}>
-          <Controller
-            control={control}
-            name="reasonsForPending"
-            render={({ field: { onChange, value } }) => (
-              <AppTextInput
-                label="Reason for pending topics"
-                value={value || ''}
-                onChangeText={onChange}
-                error={errors.reasonsForPending?.message}
-                multiline
-                numberOfLines={3}
-                style={styles.textInputReason}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="periodsRequired"
-            render={({ field: { onChange, value } }) => (
-              <AppTextInput
-                label="Periods Required to Complete Deviation"
-                value={value !== undefined ? value.toString() : ''}
-                onChangeText={onChange}
-                error={errors.periodsRequired?.message}
-                keyboardType="numeric"
-                style={styles.textInputPeriods}
-              />
-            )}
-          />
-        </View>
-      )}
-
+      {/* ── SUBMIT BUTTON ── */}
       <AppButton
         mode="contained"
-        title="Log Course Coverage"
+        title="Submit Course Coverage to CCR"
         onPress={handleSubmit(onSubmit)}
         loading={isSubmitting}
         style={styles.submitBtn}
@@ -524,79 +780,160 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: ms(16),
-    paddingBottom: ms(32),
-  },
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Palette.background,
-  },
-  loadingText: {
-    marginTop: ms(12),
-    fontSize: ms(15),
-    color: Palette.textLight,
-  },
-  formCard: {
-    backgroundColor: Palette.surface,
-    borderRadius: ms(12),
-    elevation: 2,
+    paddingBottom: ms(40),
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: ms(24),
-    borderBottomWidth: 1,
-    borderBottomColor: Palette.border,
-    paddingBottom: ms(16),
+    marginBottom: ms(16),
+    backgroundColor: '#FFFFFF',
+    padding: ms(16),
+    borderRadius: ms(16),
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   subjectIconBox: {
-    width: ms(50),
-    height: ms(50),
-    borderRadius: ms(25),
+    width: ms(48),
+    height: ms(48),
+    borderRadius: ms(24),
     backgroundColor: '#EDF5FD',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: ms(16),
+    marginRight: ms(14),
   },
   headerInfo: {
     flex: 1,
   },
   headingText: {
-    fontSize: ms(20),
+    fontSize: ms(19),
     fontWeight: '900',
     color: Palette.textDark,
-    letterSpacing: -0.4,
+    letterSpacing: -0.3,
   },
-  subjectName: {
-    fontSize: ms(15),
-    fontWeight: '700',
-    color: Palette.primary,
-    marginTop: ms(2),
-  },
-  weekLabel: {
-    fontSize: ms(12),
+  subHeadingText: {
+    fontSize: ms(12.5),
+    fontWeight: '500',
     color: Palette.textLight,
     marginTop: ms(2),
-    fontWeight: '500',
+  },
+  cardContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: ms(16),
+    padding: ms(16),
+    marginBottom: ms(16),
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    elevation: 2,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: ms(14),
+  },
+  cardTitle: {
+    fontSize: ms(15),
+    fontWeight: '800',
+    color: Palette.textDark,
+    marginLeft: ms(8),
   },
   dropdownSpacing: {
     marginTop: ms(12),
   },
-  textInput: {
-    marginTop: ms(14),
+  ccBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F0FDF4',
+    padding: ms(10),
+    borderRadius: ms(10),
+    marginTop: ms(12),
+    borderWidth: 1,
+    borderColor: '#DCFCE7',
   },
-  radioGroupLabel: {
-    fontSize: ms(14),
+  ccBannerText: {
+    fontSize: ms(12),
+    color: '#166534',
+    marginLeft: ms(8),
+  },
+  chipsSection: {
+    marginBottom: ms(12),
+  },
+  chipsLabel: {
+    fontSize: ms(12),
+    fontWeight: '600',
+    color: Palette.textLight,
+    marginBottom: ms(6),
+  },
+  chipsScroll: {
+    flexDirection: 'row',
+  },
+  subjectChip: {
+    backgroundColor: '#F1F5F9',
+    paddingHorizontal: ms(12),
+    paddingVertical: ms(6),
+    borderRadius: ms(14),
+    marginRight: ms(8),
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  subjectChipActive: {
+    backgroundColor: '#EFF6FF',
+    borderColor: Palette.primary,
+  },
+  subjectChipText: {
+    fontSize: ms(11.5),
+    color: Palette.textDark,
+    fontWeight: '600',
+  },
+  subjectChipTextActive: {
+    color: Palette.primary,
+    fontWeight: '700',
+  },
+  periodsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: ms(8),
+  },
+  periodCol: {
+    flex: 0.48,
+  },
+  paceBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: ms(12),
+    borderRadius: ms(12),
+    marginTop: ms(14),
+    borderWidth: 1,
+  },
+  paceBadgeSuccess: {
+    backgroundColor: '#ECFDF5',
+    borderColor: '#A7F3D0',
+  },
+  paceBadgeWarning: {
+    backgroundColor: '#FFFBEB',
+    borderColor: '#FDE68A',
+  },
+  paceBadgeTitle: {
+    fontSize: ms(13),
     fontWeight: '700',
     color: Palette.textDark,
-    marginTop: ms(20),
-    marginBottom: ms(10),
+  },
+  paceBadgeSub: {
+    fontSize: ms(11.5),
+    color: Palette.textLight,
+    marginTop: ms(2),
+  },
+  radioGroupLabel: {
+    fontSize: ms(13.5),
+    fontWeight: '700',
+    color: Palette.textDark,
+    marginTop: ms(16),
+    marginBottom: ms(8),
   },
   radioRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: ms(12),
+    marginBottom: ms(8),
   },
   radioCard: {
     flex: 0.48,
@@ -605,7 +942,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: Palette.border,
     borderRadius: ms(12),
-    padding: ms(12),
+    padding: ms(10),
     backgroundColor: '#FFFFFF',
   },
   radioCardSelected: {
@@ -617,7 +954,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FEF2F2',
   },
   radioLabel: {
-    fontSize: ms(14),
+    fontSize: ms(13.5),
     fontWeight: '700',
     color: Palette.textLight,
     marginLeft: ms(8),
@@ -628,20 +965,6 @@ const styles = StyleSheet.create({
   radioLabelSelectedNo: {
     color: Palette.error,
   },
-  textInputReason: {
-    marginTop: ms(8),
-  },
-  textInputPeriods: {
-    marginTop: ms(12),
-  },
-  periodsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: ms(12),
-  },
-  periodCol: {
-    flex: 0.48,
-  },
   deviationBlock: {
     marginTop: ms(8),
     borderLeftWidth: 3,
@@ -649,10 +972,18 @@ const styles = StyleSheet.create({
     paddingLeft: ms(12),
     backgroundColor: '#FEF2F2',
     borderRadius: ms(8),
-    paddingBottom: ms(8),
+    padding: ms(10),
+  },
+  textInputReason: {
+    marginTop: ms(4),
+  },
+  textInputPeriods: {
+    marginTop: ms(10),
   },
   submitBtn: {
-    marginTop: ms(24),
+    marginTop: ms(16),
     backgroundColor: Palette.primary,
+    borderRadius: ms(12),
+    paddingVertical: ms(4),
   },
 });

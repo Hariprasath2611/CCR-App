@@ -9,7 +9,7 @@ import { Palette } from '@theme/colors';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StaffStackParamList } from '@navigation/types';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { ms } from '@theme/responsive';
 
@@ -240,6 +240,49 @@ export const StaffDashboardScreen = () => {
             <Text style={styles.statItemLabel}>Overall Progress</Text>
           </View>
         </View>
+      </View>
+
+      {/* ── QUICK ACTION: LOG MANUAL COURSE COVERAGE (ALL DEPTS & YEARS) ── */}
+      <View style={{ paddingHorizontal: ms(16), marginBottom: ms(16) }}>
+        <TouchableOpacity
+          activeOpacity={0.88}
+          onPress={() => navigation.navigate('WeeklyProgress', { subjectCode: '', weekNumber: 12 })}
+          style={{
+            backgroundColor: Palette.primary,
+            borderRadius: ms(16),
+            padding: ms(16),
+            flexDirection: 'row',
+            alignItems: 'center',
+            shadowColor: Palette.primary,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.2,
+            shadowRadius: 8,
+            elevation: 4,
+          }}
+        >
+          <View
+            style={{
+              width: ms(44),
+              height: ms(44),
+              borderRadius: ms(22),
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginRight: ms(12),
+            }}
+          >
+            <MaterialCommunityIcons name="playlist-edit" size={24} color="#FFFFFF" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: ms(15), fontWeight: '800', color: '#FFFFFF' }}>
+              Log Course Coverage
+            </Text>
+            <Text style={{ fontSize: ms(11.5), color: 'rgba(255, 255, 255, 0.85)', marginTop: ms(2) }}>
+              Select any Department, 1st - 4th Year, or Section
+            </Text>
+          </View>
+          <Feather name="arrow-right-circle" size={22} color="#FFFFFF" />
+        </TouchableOpacity>
       </View>
 
       {/* ── SUBJECT HANDLING SECTION ── */}

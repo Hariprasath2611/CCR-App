@@ -149,6 +149,63 @@ export const SECTION_TEMPLATES: Record<string, SectionTemplateConfig> = {
       { sNo: 9, subjectCode: 'UC25A01', subjectName: 'LIFE SKILLS FOR ENGINEERS-I', staffInCharge: 'Dr. THIRUGNANAM/AP/PHY', periodsPlannedDefault: 1 },
     ],
   },
+
+  // Section H Template (General Engineering / Interdisciplinary)
+  'SEC-H': {
+    section: 'H',
+    department: 'General Engineering',
+    academicYear: '2026-2027 ODD SEMESTER',
+    semester: 'I',
+    subjects: [
+      { sNo: 1, subjectCode: 'MA25C01', subjectName: 'APPLIED CALCULUS', staffInCharge: 'Mrs. KAVITHA/AP/MATHS', periodsPlannedDefault: 6 },
+      { sNo: 2, subjectCode: 'EN25C01', subjectName: 'ENGLISH ESSENTIALS-I', staffInCharge: 'Mrs. A.VANI BERLINA/AP/ENG', periodsPlannedDefault: 3 },
+      { sNo: 3, subjectCode: 'UC25H01', subjectName: 'HERITAGE OF TAMILS', staffInCharge: 'Dr. JOSPHIN/AP/TAMIL', periodsPlannedDefault: 2 },
+      { sNo: 4, subjectCode: 'PH25C01', subjectName: 'APPLIED PHYSICS-I', staffInCharge: 'Dr. SARAVANAN/AP/PHY', periodsPlannedDefault: 6 },
+      { sNo: 5, subjectCode: 'CY25C01', subjectName: 'APPLIED CHEMISTRY-I', staffInCharge: 'Dr. BHUVANESHWARI/AP/CHEM', periodsPlannedDefault: 6 },
+      { sNo: 6, subjectCode: 'CS25C01', subjectName: 'COMPUTER PROGRAMMING: C', staffInCharge: 'Mrs. AGNUS/AP/CSE', periodsPlannedDefault: 6 },
+      { sNo: 7, subjectCode: 'CS25C03', subjectName: 'ESSENTIALS OF COMPUTING', staffInCharge: 'Mrs. ARCHANA/AP/CSE', periodsPlannedDefault: 5 },
+      { sNo: 8, subjectCode: 'ME25C16/EE25C16', subjectName: 'MAKERSPACE', staffInCharge: 'Mr. D.SIVAKUMAR & Mrs. BHAKYALAKSHMI', periodsPlannedDefault: 3 },
+      { sNo: 9, subjectCode: 'UC25A01', subjectName: 'LIFE SKILLS FOR ENGINEERS-I', staffInCharge: 'Dr. THIRUGNANAM/AP/PHY', periodsPlannedDefault: 2 },
+    ],
+  },
+};
+
+export const YEAR_OPTIONS = [
+  { label: '1st Year (8 Sections)', value: '1st Year' },
+  { label: '2nd Year', value: '2nd Year' },
+  { label: '3rd Year', value: '3rd Year' },
+  { label: '4th Year', value: '4th Year' },
+];
+
+export const FIRST_YEAR_SECTION_OPTIONS = [
+  { label: '1st Year SEC-A (CSE)', value: '1st Year SEC-A' },
+  { label: '1st Year SEC-B (CSE & CCE)', value: '1st Year SEC-B' },
+  { label: '1st Year SEC-C (IT)', value: '1st Year SEC-C' },
+  { label: '1st Year SEC-D (AIML & CSBS)', value: '1st Year SEC-D' },
+  { label: '1st Year SEC-E (Aero/Mech/Robo)', value: '1st Year SEC-E' },
+  { label: '1st Year SEC-F (AIML/ECE/EEE)', value: '1st Year SEC-F' },
+  { label: '1st Year SEC-G (Aero/Mech/Robo/Civil/ECE)', value: '1st Year SEC-G' },
+  { label: '1st Year SEC-H (General Engg)', value: '1st Year SEC-H' },
+];
+
+export const DEPARTMENT_OPTIONS = [
+  { label: 'Computer Science & Engineering (CSE)', value: 'CSE' },
+  { label: 'Information Technology (IT)', value: 'IT' },
+  { label: 'Artificial Intelligence & Data Science (AIDS)', value: 'AIDS' },
+  { label: 'Electronics & Communication Engineering (ECE)', value: 'ECE' },
+  { label: 'Electrical & Electronics Engineering (EEE)', value: 'EEE' },
+  { label: 'Mechanical Engineering (MECH)', value: 'MECH' },
+  { label: 'Civil Engineering (CIVIL)', value: 'CIVIL' },
+];
+
+export const HIGHER_YEAR_SECTION_OPTIONS: Record<string, { label: string; value: string }[]> = {
+  'CSE': [{ label: 'Section A', value: 'CSE-A' }, { label: 'Section B', value: 'CSE-B' }],
+  'IT': [{ label: 'Section A', value: 'IT-A' }, { label: 'Section B', value: 'IT-B' }],
+  'AIDS': [{ label: 'Section A', value: 'AIDS-A' }, { label: 'Section B', value: 'AIDS-B' }],
+  'ECE': [{ label: 'Section A', value: 'ECE-A' }, { label: 'Section B', value: 'ECE-B' }],
+  'EEE': [{ label: 'Section A', value: 'EEE-A' }, { label: 'Section B', value: 'EEE-B' }],
+  'MECH': [{ label: 'Section A', value: 'MECH-A' }, { label: 'Section B', value: 'MECH-B' }],
+  'CIVIL': [{ label: 'Section A', value: 'CIVIL-A' }],
 };
 
 /**
@@ -177,6 +234,7 @@ export const getSectionTemplate = (classId: string): SectionTemplateConfig => {
   else if (upper.includes('SEC-E') || upper.includes('SEC E') || upper.endsWith(' E')) template = SECTION_TEMPLATES['SEC-E'];
   else if (upper.includes('SEC-F') || upper.includes('SEC F') || upper.endsWith(' F')) template = SECTION_TEMPLATES['SEC-F'];
   else if (upper.includes('SEC-G') || upper.includes('SEC G') || upper.endsWith(' G')) template = SECTION_TEMPLATES['SEC-G'];
+  else if (upper.includes('SEC-H') || upper.includes('SEC H') || upper.endsWith(' H')) template = SECTION_TEMPLATES['SEC-H'];
   else template = SECTION_TEMPLATES['SEC-A'];
 
   return {
