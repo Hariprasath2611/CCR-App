@@ -40,7 +40,7 @@ export const RootNavigator = () => {
     case 'ADMIN':
       return <PrincipalTabNavigator />;
     case 'HOD':
-      return <StaffTabNavigator />;
+      return <HodTabNavigator />;
     case 'STAFF':
     default:
       return <StaffTabNavigator />;

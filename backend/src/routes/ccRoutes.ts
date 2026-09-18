@@ -6,6 +6,7 @@ import {
   removeSubjectAllocation,
 } from '../controllers/cc.controller';
 import { authenticateToken } from '../middleware/auth';
+import { requireClassCoordinator } from '../middleware/authorize';
 import { validateBody } from '../middleware/validate';
 import { allocateSubjectSchema } from '../validators/cc.schema';
 
@@ -16,7 +17,7 @@ router.use(authenticateToken);
 
 router.get('/faculty-search', searchFaculty);
 router.get('/allocations/:classId', getClassSubjectAllocations);
-router.post('/allocate', validateBody(allocateSubjectSchema), allocateSubjectTeacher);
-router.delete('/allocate/:assignmentId', removeSubjectAllocation);
+router.post('/allocate', requireClassCoordinator, validateBody(allocateSubjectSchema), allocateSubjectTeacher);
+router.delete('/allocate/:assignmentId', requireClassCoordinator, removeSubjectAllocation);
 
 export default router;

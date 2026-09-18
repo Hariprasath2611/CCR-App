@@ -327,7 +327,7 @@ export const WeeklyProgressScreen = () => {
 
       // 4. Also call the ERP CCR API endpoint directly
       try {
-        await apiClient.post('/v1/erp/ccr/submit-log', progressPayload);
+        await apiClient.post('/erp/ccr/submit-log', progressPayload);
       } catch (erpErr) {
         console.warn('ERP API direct submit failed, queued for background sync:', erpErr);
       }

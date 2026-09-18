@@ -30,7 +30,7 @@ export interface SubjectAllocationItem {
 export const delegationApi = {
   // HOD APIs
   fetchCoordinators: async (): Promise<CoordinatorItem[]> => {
-    const res = await apiClient.get('/v1/hod/coordinators');
+    const res = await apiClient.get('/hod/coordinators');
     return res.data;
   },
 
@@ -41,23 +41,23 @@ export const delegationApi = {
     department: string;
     password?: string;
   }) => {
-    const res = await apiClient.post('/v1/hod/coordinators', data);
+    const res = await apiClient.post('/hod/coordinators', data);
     return res.data;
   },
 
   removeCoordinator: async (classId: string) => {
-    const res = await apiClient.delete(`/v1/hod/coordinators/${encodeURIComponent(classId)}`);
+    const res = await apiClient.delete(`/hod/coordinators/${encodeURIComponent(classId)}`);
     return res.data;
   },
 
   // CC APIs
   searchFaculty: async (query: string) => {
-    const res = await apiClient.get(`/v1/cc/faculty-search?q=${encodeURIComponent(query)}`);
+    const res = await apiClient.get(`/cc/faculty-search?q=${encodeURIComponent(query)}`);
     return res.data;
   },
 
   fetchClassAllocations: async (classId: string) => {
-    const res = await apiClient.get(`/v1/cc/allocations/${encodeURIComponent(classId)}`);
+    const res = await apiClient.get(`/cc/allocations/${encodeURIComponent(classId)}`);
     return res.data;
   },
 
@@ -70,12 +70,12 @@ export const delegationApi = {
     department?: string;
     password?: string;
   }) => {
-    const res = await apiClient.post('/v1/cc/allocate', data);
+    const res = await apiClient.post('/cc/allocate', data);
     return res.data;
   },
 
   removeAllocation: async (assignmentId: string) => {
-    const res = await apiClient.delete(`/v1/cc/allocate/${encodeURIComponent(assignmentId)}`);
+    const res = await apiClient.delete(`/cc/allocate/${encodeURIComponent(assignmentId)}`);
     return res.data;
   },
 };

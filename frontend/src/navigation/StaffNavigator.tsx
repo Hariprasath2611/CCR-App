@@ -20,6 +20,7 @@ import { NotificationsScreen } from '@features/notifications/screens/Notificatio
 // HOD Screens
 import { HodDashboardScreen } from '@features/hod/screens/HodDashboardScreen';
 import { DepartmentClassesScreen } from '@features/hod/screens/DepartmentClassesScreen';
+import { ManageCoordinatorsScreen } from '@features/hod/screens/ManageCoordinatorsScreen';
 import { FacultyProgressScreen } from '@features/hod/screens/FacultyProgressScreen';
 import { SubjectReportsScreen } from '@features/hod/screens/SubjectReportsScreen';
 import { CCReportsScreen } from '@features/hod/screens/CCReportsScreen';
@@ -31,6 +32,7 @@ import { HodProfileScreen } from '@features/hod/screens/HodProfileScreen';
 
 // CC Screens
 import { CCDashboardScreen } from '@features/cc/screens/CCDashboardScreen';
+import { FacultyAllocationScreen } from '@features/cc/screens/FacultyAllocationScreen';
 import { ClassProgressScreen } from '@features/cc/screens/ClassProgressScreen';
 import { SubjectProgressDetailScreen } from '@features/cc/screens/SubjectProgressDetailScreen';
 import { PendingSubmissionsScreen } from '@features/cc/screens/PendingSubmissionsScreen';
@@ -121,6 +123,11 @@ const StaffStackNavigator = () => {
         options={{ title: 'Classes' }}
       />
       <Stack.Screen
+        name="ManageCoordinators"
+        component={ManageCoordinatorsScreen}
+        options={{ title: 'Class Coordinators' }}
+      />
+      <Stack.Screen
         name="FacultyProgress"
         component={FacultyProgressScreen}
         options={{ title: 'Faculty Progress' }}
@@ -166,6 +173,11 @@ const StaffStackNavigator = () => {
         name="CCDashboard" 
         component={CCDashboardScreen} 
         options={{ title: 'Class Counselor Dashboard' }} 
+      />
+      <Stack.Screen 
+        name="FacultyAllocation" 
+        component={FacultyAllocationScreen} 
+        options={{ title: 'Subject Allocation' }} 
       />
       <Stack.Screen 
         name="ClassProgress" 
@@ -235,7 +247,7 @@ export const StaffTabNavigator = () => {
         component={StaffStackNavigator}
         options={{ title: 'Home', headerShown: false }}
       />
-      {(user?.isClassCoordinator || user?.role === 'STAFF' || user?.role === 'HOD') && (
+      {(user?.isClassCoordinator || user?.role === 'HOD' || user?.role === 'ADMIN') && (
         <Tab.Screen
           name="CounselorTab"
           component={CCDashboardScreen}

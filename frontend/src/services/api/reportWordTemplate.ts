@@ -59,7 +59,7 @@ export const generateReportWord = async (report: ConsolidatedReport): Promise<st
     };
   };
 
-  const firstWithDates = subjects.find(s => s.fromDate && s.toDate);
+  const firstWithDates = (subjects || []).find(s => s.fromDate && s.toDate);
   const defaultDates = getDates(weekNumber);
   const dates = {
     from: firstWithDates?.fromDate ? firstWithDates.fromDate.replace(/\//g, '.') : defaultDates.from,

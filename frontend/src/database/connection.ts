@@ -61,34 +61,7 @@ export const getDBConnection = async (): Promise<SQLite.SQLiteDatabase> => {
     );
   `);
 
-  // Clear old offline mock data to reseed with the user's specific subjects if found
-  try {
-    const checkOld = await db.getFirstAsync<{ count: number }>("SELECT COUNT(*) as count FROM syllabus_progress WHERE subject_code = 'CS8501';");
-    if (checkOld && checkOld.count > 0) {
-      console.log('Clearing old offline mock data...');
-      await db.runAsync('DELETE FROM syllabus_progress;');
-      await db.runAsync('DELETE FROM timetable;');
-      await db.runAsync('DELETE FROM weekly_plans;');
-    }
-
-    const checkNull = await db.getFirstAsync<{ count: number }>("SELECT COUNT(*) as count FROM timetable WHERE faculty_name IS NULL OR faculty_name = '';");
-    if (checkNull && checkNull.count > 0) {
-      console.log('Clearing timetable to add faculty names...');
-      await db.runAsync('DELETE FROM timetable;');
-    }
-
-    const checkNewSyllabus = await db.getFirstAsync<{ count: number }>("SELECT COUNT(*) as count FROM syllabus_progress WHERE subject_code = 'CS3591';");
-    if (!checkNewSyllabus || checkNewSyllabus.count === 0) {
-      console.log('Clearing old syllabus progress to seed new subjects...');
-      await db.runAsync('DELETE FROM syllabus_progress;');
-      await db.runAsync('DELETE FROM timetable;');
-      await db.runAsync('DELETE FROM weekly_plans;');
-    }
-  } catch (e) {
-    console.error('Error checking null faculty_name or old database:', e);
-  }
-
-  // Database Seeding for Syllabus Progress (Topics)
+  // Database Seeding for Syllabus Progress (Topics) if not seeded
   try {
     const countResult = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM syllabus_progress;');
     if (countResult && countResult.count === 0) {
