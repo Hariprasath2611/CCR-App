@@ -3290,3 +3290,96 @@
 {"_e":"metro:client_log","_t":1789448513648,"level":"log","data":["Clearing old syllabus progress to seed new subjects..."]}
 {"_e":"metro:client_log","_t":1789448514083,"level":"log","data":["Syllabus data successfully seeded."]}
 {"_e":"metro:client_log","_t":1789448514472,"level":"log","data":["Timetable data successfully seeded."]}
+{"_e":"root:init","_t":1789461333701,"format":"v0-jsonl","version":"57.0.9"}
+{"_e":"devserver:start","_t":1789461333726,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1789461334176,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1789461334583,"plugins":[{"packageName":"expo-sqlite","bannerTitle":"expo-sqlite","cliBanner":false,"webpageEndpoint":"/_expo/plugins/expo-sqlite"}]}
+{"_e":"metro:instantiate","_t":1789461339733,"atlas":false,"workers":10,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1789461370059,"id":"1","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1789461370060,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789461370062,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789461370523,"id":"1","progress":0.010000000000000002,"total":1,"current":1}
+{"_e":"metro:bundling:progress","_t":1789461370628,"id":"1","progress":0.04000000000000001,"total":9,"current":2}
+{"_e":"metro:bundling:progress","_t":1789461370739,"id":"1","progress":0.09,"total":9,"current":3}
+{"_e":"metro:bundling:progress","_t":1789461371085,"id":"1","progress":0.16000000000000003,"total":9,"current":4}
+{"_e":"metro:bundling:progress","_t":1789461371190,"id":"1","progress":0.16000000000000003,"total":62,"current":22}
+{"_e":"metro:bundling:progress","_t":1789461371314,"id":"1","progress":0.16000000000000003,"total":117,"current":43}
+{"_e":"metro:bundling:progress","_t":1789461371422,"id":"1","progress":0.16000000000000003,"total":234,"current":59}
+{"_e":"metro:bundling:progress","_t":1789461371524,"id":"1","progress":0.16000000000000003,"total":277,"current":81}
+{"_e":"metro:bundling:progress","_t":1789461371624,"id":"1","progress":0.16000000000000003,"total":319,"current":98}
+{"_e":"metro:bundling:progress","_t":1789461371725,"id":"1","progress":0.16000000000000003,"total":335,"current":114}
+{"_e":"metro:bundling:progress","_t":1789461371827,"id":"1","progress":0.16000000000000003,"total":364,"current":132}
+{"_e":"metro:bundling:progress","_t":1789461371927,"id":"1","progress":0.16000000000000003,"total":373,"current":143}
+{"_e":"metro:bundling:progress","_t":1789461372030,"id":"1","progress":0.16000000000000003,"total":443,"current":174}
+{"_e":"metro:bundling:progress","_t":1789461372129,"id":"1","progress":0.1992300466024425,"total":466,"current":208}
+{"_e":"metro:bundling:progress","_t":1789461372229,"id":"1","progress":0.2581961795227709,"total":492,"current":250}
+{"_e":"metro:bundling:progress","_t":1789461372329,"id":"1","progress":0.3171111762603363,"total":499,"current":281}
+{"_e":"metro:bundling:progress","_t":1789461372429,"id":"1","progress":0.4022030836847701,"total":503,"current":319}
+{"_e":"metro:bundling:progress","_t":1789461372529,"id":"1","progress":0.43550294658304495,"total":544,"current":359}
+{"_e":"metro:bundling:progress","_t":1789461372629,"id":"1","progress":0.4659343731435428,"total":586,"current":400}
+{"_e":"metro:bundling:progress","_t":1789461372730,"id":"1","progress":0.4659343731435428,"total":663,"current":431}
+{"_e":"metro:bundling:progress","_t":1789461372834,"id":"1","progress":0.4659343731435428,"total":720,"current":462}
+{"_e":"metro:bundling:progress","_t":1789461372934,"id":"1","progress":0.4659343731435428,"total":775,"current":496}
+{"_e":"metro:bundling:progress","_t":1789461373037,"id":"1","progress":0.4659343731435428,"total":790,"current":534}
+{"_e":"metro:bundling:progress","_t":1789461373137,"id":"1","progress":0.5099493298794733,"total":801,"current":572}
+{"_e":"metro:bundling:progress","_t":1789461373237,"id":"1","progress":0.563421753225193,"total":814,"current":611}
+{"_e":"metro:bundling:progress","_t":1789461373339,"id":"1","progress":0.5813609717841809,"total":842,"current":642}
+{"_e":"metro:bundling:progress","_t":1789461373443,"id":"1","progress":0.5813609717841809,"total":913,"current":671}
+{"_e":"metro:bundling:progress","_t":1789461373547,"id":"1","progress":0.5813609717841809,"total":931,"current":690}
+{"_e":"metro:bundling:progress","_t":1789461373647,"id":"1","progress":0.5904536492746327,"total":937,"current":720}
+{"_e":"metro:bundling:progress","_t":1789461373747,"id":"1","progress":0.5971074380165289,"total":990,"current":765}
+{"_e":"metro:bundling:progress","_t":1789461373847,"id":"1","progress":0.6253111961124127,"total":1018,"current":805}
+{"_e":"metro:bundling:progress","_t":1789461373950,"id":"1","progress":0.6253111961124127,"total":1070,"current":842}
+{"_e":"metro:bundling:progress","_t":1789461374050,"id":"1","progress":0.6444316082312217,"total":1085,"current":871}
+{"_e":"metro:bundling:progress","_t":1789461374155,"id":"1","progress":0.6444316082312217,"total":1132,"current":906}
+{"_e":"metro:bundling:progress","_t":1789461374254,"id":"1","progress":0.6635048313604403,"total":1154,"current":940}
+{"_e":"metro:bundling:progress","_t":1789461374359,"id":"1","progress":0.6833401276653776,"total":1171,"current":968}
+{"_e":"metro:bundling:progress","_t":1789461374461,"id":"1","progress":0.7128021233660965,"total":1188,"current":1003}
+{"_e":"metro:bundling:progress","_t":1789461374563,"id":"1","progress":0.7373427058565832,"total":1203,"current":1033}
+{"_e":"metro:bundling:progress","_t":1789461374669,"id":"1","progress":0.7592255620749293,"total":1228,"current":1070}
+{"_e":"metro:bundling:progress","_t":1789461374769,"id":"1","progress":0.83084031639126,"total":1243,"current":1133}
+{"_e":"metro:bundling:progress","_t":1789461374869,"id":"1","progress":0.83084031639126,"total":1290,"current":1159}
+{"_e":"metro:bundling:progress","_t":1789461374969,"id":"1","progress":0.8315203828481673,"total":1305,"current":1190}
+{"_e":"metro:bundling:progress","_t":1789461375069,"id":"1","progress":0.8679957036337502,"total":1317,"current":1227}
+{"_e":"metro:bundling:progress","_t":1789461375196,"id":"1","progress":0.8679957036337502,"total":1377,"current":1248}
+{"_e":"metro:bundling:progress","_t":1789461375297,"id":"1","progress":0.8679957036337502,"total":1442,"current":1261}
+{"_e":"metro:bundling:progress","_t":1789461375397,"id":"1","progress":0.8679957036337502,"total":1448,"current":1275}
+{"_e":"metro:bundling:progress","_t":1789461375518,"id":"1","progress":0.8679957036337502,"total":1454,"current":1306}
+{"_e":"metro:bundling:progress","_t":1789461375618,"id":"1","progress":0.8679957036337502,"total":1460,"current":1337}
+{"_e":"metro:bundling:progress","_t":1789461375719,"id":"1","progress":0.8740969224995307,"total":1460,"current":1365}
+{"_e":"metro:bundling:progress","_t":1789461375819,"id":"1","progress":0.9051046162507037,"total":1460,"current":1389}
+{"_e":"metro:bundling:progress","_t":1789461375921,"id":"1","progress":0.9301296314663683,"total":1462,"current":1410}
+{"_e":"metro:bundling:progress","_t":1789461376022,"id":"1","progress":0.9782910128441119,"total":1466,"current":1450}
+{"_e":"metro:bundling:progress","_t":1789461376148,"id":"1","progress":0.9959555147601175,"total":1482,"current":1479}
+{"_e":"metro:bundling:progress","_t":1789461376253,"id":"1","progress":0.9986599666496562,"total":1492,"current":1491}
+{"_e":"metro:bundling:progress","_t":1789461377093,"id":"1","progress":0.999,"total":1492,"current":1492}
+{"_e":"metro:bundling:done","_t":1789461377328,"id":"1","total":1492,"ms":7268.5689}
+{"_e":"metro:server_log","_t":1789461730706,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"root:init","_t":1789461867130,"format":"v0-jsonl","version":"57.0.9"}
+{"_e":"devserver:start","_t":1789461867147,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1789461867378,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1789461867521,"plugins":[{"packageName":"expo-sqlite","bannerTitle":"expo-sqlite","cliBanner":false,"webpageEndpoint":"/_expo/plugins/expo-sqlite"}]}
+{"_e":"metro:instantiate","_t":1789461872315,"atlas":false,"workers":10,"host":"::","port":8082}
+{"_e":"metro:bundling:started","_t":1789461901524,"id":"1","platform":"android","environment":null,"entry":"D:\\College Projects\\CCR-App\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1789461901524,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789461901526,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789461901633,"id":"1","progress":0.06126850308793255,"total":303,"current":75}
+{"_e":"metro:bundling:progress","_t":1789461901733,"id":"1","progress":0.2016744657902291,"total":599,"current":269}
+{"_e":"metro:bundling:progress","_t":1789461901833,"id":"1","progress":0.32002456136503554,"total":799,"current":452}
+{"_e":"metro:bundling:progress","_t":1789461901933,"id":"1","progress":0.5829225096088931,"total":1019,"current":778}
+{"_e":"metro:bundling:progress","_t":1789461902045,"id":"1","progress":0.7758288918312326,"total":1183,"current":1042}
+{"_e":"metro:bundling:progress","_t":1789461902145,"id":"1","progress":0.7758288918312326,"total":1407,"current":1211}
+{"_e":"metro:bundling:progress","_t":1789461902247,"id":"1","progress":0.9986599666496562,"total":1492,"current":1491}
+{"_e":"metro:bundling:progress","_t":1789461902359,"id":"1","progress":0.999,"total":1492,"current":1492}
+{"_e":"metro:bundling:done","_t":1789461902686,"id":"1","total":1492,"ms":1162.0244}
+{"_e":"metro:server_log","_t":1789462285440,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:server_log","_t":1789463577875,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","com.anonymous.ccapp","SM-A356E - 16 - API 36","60"]}
+{"_e":"metro:bundling:started","_t":1789463752543,"id":"4","platform":"android","environment":null,"entry":"D:\\College Projects\\CCR-App\\frontend\\index.js"}
+{"_e":"metro:bundling:progress","_t":1789463752543,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789463752545,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789463752645,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789463752745,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789463752845,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789463752945,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1789463753090,"id":"4","total":1,"ms":546.5928}
+{"_e":"metro:client_log","_t":1789463784553,"level":"error","data":["fetchWeeklyProgress error, using template defaults:","[AxiosError: Request failed with status code 403]"]}
