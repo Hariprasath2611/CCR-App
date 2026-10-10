@@ -1,22 +1,19 @@
 {
   "java.compile.nullAnalysis.mode": "disabled",
-  "java.import.exclusions": [
-    "**/node_modules/**",
-    "**/node_modules/*/**",
-    "**/.metadata/**",
-    "**/archetype-resources/**",
-    "**/META-INF/maven/**"
-  ],
-  "java.project.resourceFilters": [
-    "node_modules",
-    ".git"
-  ],
   "java.import.gradle.annotationProcessing.enabled": false,
   "java.import.gradle.enabled": false,
   "java.import.gradle.wrapper.enabled": false,
   "java.import.maven.enabled": false,
   "java.autobuild.enabled": false,
   "java.configuration.updateBuildConfiguration": "disabled",
+  "java.import.exclusions": [
+    "**/node_modules/**",
+    "**/.metadata/**"
+  ],
+  "java.project.resourceFilters": [
+    "node_modules",
+    ".git"
+  ],
   "gradle.autoDetect": "off",
   "gradle.nestedProjects": false,
   "files.exclude": {
