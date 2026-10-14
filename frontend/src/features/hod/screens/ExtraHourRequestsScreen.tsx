@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity, Alert, RefreshControl } from 'react-native';
-import { Text, Card, Avatar, Button, Badge, Chip, TextInput, Portal, Dialog } from 'react-native-paper';
+import { Text, Portal, Dialog } from 'react-native-paper';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
-import { Palette } from '@theme/colors';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { EditorialColors, EditorialFonts, EditorialSpacing } from '@theme/editorial';
+import { Rule } from '@components/editorial/Rule';
+import { Label } from '@components/editorial/Label';
+import { StatRow } from '@components/editorial/StatRow';
+import { EmptyState } from '@components/editorial/EmptyState';
+import { AppTextInput } from '@components/common/AppTextInput';
 import { ms } from '@theme/responsive';
 
 interface ExtraHourRequest {
@@ -145,309 +149,427 @@ export const ExtraHourRequestsScreen = () => {
   const approvedCount = requests.filter((r) => r.status === 'APPROVED').length;
   const returnedCount = requests.filter((r) => r.status === 'RETURNED').length;
 
-  const getStatusChipStyle = (status: ExtraHourRequest['status']) => {
-    switch (status) {
-      case 'PENDING':
-        return { bg: '#FEF3C7', text: '#D97706', label: 'Pending Endorsement' };
-      case 'APPROVED':
-        return { bg: '#DCFCE7', text: '#15803D', label: 'Endorsed & Scheduled' };
-      case 'RETURNED':
-        return { bg: '#FEE2E2', text: '#B91C1C', label: 'Returned for Revision' };
-    }
-  };
-
   return (
-    <View style={styles.container}>
-      {/* ── HEADER SUMMARY BANNER ── */}
-      <View style={styles.headerBanner}>
-        <View style={styles.headerInfo}>
-          <Text style={styles.headerTitle}>Extra Teaching Slots</Text>
-          <Text style={styles.headerSubtitle}>
-            HOD Endorsement Queue • {user?.department || 'Computer Science Engineering'}
-          </Text>
-        </View>
-        <View style={styles.pendingBadgeContainer}>
-          <Text style={styles.pendingBadgeNum}>{pendingCount}</Text>
-          <Text style={styles.pendingBadgeLabel}>Pending</Text>
-        </View>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[EditorialColors.ink]} />}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* ── HEADER ── */}
+      <View style={styles.headerBox}>
+        <Label text="FACULTY REQUISITIONS" />
+        <Text style={styles.headingText}>EXTRA TEACHING SLOTS.</Text>
+        <Text style={styles.subHeadingText}>
+          HOD ENDORSEMENT QUEUE · {user?.department?.toUpperCase() || 'COMPUTER SCIENCE ENGINEERING'}
+        </Text>
+      </View>
+      <Rule thick style={styles.heroRule} />
+
+      {/* ── STATS ROW ── */}
+      <View style={styles.statBox}>
+        <StatRow
+          columns={[
+            { label: 'PENDING', value: `${pendingCount}` },
+            { label: 'ENDORSED', value: `${approvedCount}` },
+            { label: 'RETURNED', value: `${returnedCount}` },
+          ]}
+        />
       </View>
 
       {/* ── FILTER CHIPS ── */}
       <View style={styles.filterRow}>
-        <Chip
-          selected={filter === 'ALL'}
-          onPress={() => setFilter('ALL')}
-          style={[styles.chip, filter === 'ALL' && styles.chipActive]}
-          textStyle={[styles.chipText, filter === 'ALL' && styles.chipTextActive]}
-        >
-          All ({requests.length})
-        </Chip>
-        <Chip
-          selected={filter === 'PENDING'}
-          onPress={() => setFilter('PENDING')}
-          style={[styles.chip, filter === 'PENDING' && styles.chipActive]}
-          textStyle={[styles.chipText, filter === 'PENDING' && styles.chipTextActive]}
-        >
-          Pending ({pendingCount})
-        </Chip>
-        <Chip
-          selected={filter === 'APPROVED'}
-          onPress={() => setFilter('APPROVED')}
-          style={[styles.chip, filter === 'APPROVED' && styles.chipActive]}
-          textStyle={[styles.chipText, filter === 'APPROVED' && styles.chipTextActive]}
-        >
-          Approved ({approvedCount})
-        </Chip>
-        <Chip
-          selected={filter === 'RETURNED'}
-          onPress={() => setFilter('RETURNED')}
-          style={[styles.chip, filter === 'RETURNED' && styles.chipActive]}
-          textStyle={[styles.chipText, filter === 'RETURNED' && styles.chipTextActive]}
-        >
-          Returned ({returnedCount})
-        </Chip>
+        {(['ALL', 'PENDING', 'APPROVED', 'RETURNED'] as const).map((f) => {
+          const isSelected = filter === f;
+          return (
+            <TouchableOpacity
+              key={f}
+              onPress={() => setFilter(f)}
+              style={[styles.squareChip, isSelected && styles.squareChipActive]}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.chipText, isSelected && styles.chipTextActive]}>
+                {f}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
       {/* ── REQUESTS LIST ── */}
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Palette.primary]} />}
-      >
-        {filteredRequests.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <MaterialCommunityIcons name="clock-check-outline" size={54} color="#94A3B8" />
-            <Text style={styles.emptyTitle}>No Requests Found</Text>
-            <Text style={styles.emptySubtitle}>
-              There are currently no extra teaching slot requests in the "{filter.toLowerCase()}" category.
-            </Text>
-          </View>
-        ) : (
-          filteredRequests.map((req) => {
-            const statusConfig = getStatusChipStyle(req.status);
-            return (
-              <Card key={req.id} style={styles.card}>
-                <Card.Content style={styles.cardContent}>
-                  {/* Top Row: Faculty Avatar & Status */}
-                  <View style={styles.topRow}>
-                    <View style={styles.facultyRow}>
-                      <Avatar.Text
-                        size={40}
-                        label={req.facultyName.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase()}
-                        style={styles.avatar}
-                        labelStyle={styles.avatarLabel}
-                      />
-                      <View style={styles.facultyMeta}>
-                        <Text style={styles.facultyName}>{req.facultyName}</Text>
-                        <Text style={styles.submittedAt}>Submitted: {req.submittedAt}</Text>
-                      </View>
-                    </View>
-                    <View style={[styles.statusChip, { backgroundColor: statusConfig.bg }]}>
-                      <Text style={[styles.statusChipText, { color: statusConfig.text }]}>
-                        {statusConfig.label}
-                      </Text>
-                    </View>
-                  </View>
+      {filteredRequests.length === 0 ? (
+        <EmptyState
+          title="NO REQUESTS LOCATED"
+          subtitle={`There are currently no extra teaching slot requests in the "${filter.toLowerCase()}" category.`}
+        />
+      ) : (
+        filteredRequests.map((req) => {
+          const isPending = req.status === 'PENDING';
+          const isApproved = req.status === 'APPROVED';
+          const isReturned = req.status === 'RETURNED';
 
-                  {/* Subject and Target Class */}
-                  <View style={styles.courseBadgeRow}>
-                    <View style={styles.subjectPill}>
-                      <Text style={styles.subjectCode}>{req.subjectCode}</Text>
-                      <Text style={styles.subjectTitle} numberOfLines={1}>
-                        {req.subjectTitle}
-                      </Text>
-                    </View>
-                    <View style={styles.classPill}>
-                      <Feather name="layers" size={12} color="#0F52BA" />
-                      <Text style={styles.classText}>{req.classSection}</Text>
-                    </View>
-                  </View>
+          return (
+            <View key={req.id} style={styles.card}>
+              <View style={styles.topRow}>
+                <View style={{ flex: 1 }}>
+                  <Label text={req.classSection.toUpperCase()} />
+                  <Text style={styles.facultyName}>{req.facultyName.toUpperCase()}</Text>
+                  <Text style={styles.submittedAt}>SUBMITTED: {req.submittedAt}</Text>
+                </View>
 
-                  {/* Time and Slot Details */}
-                  <View style={styles.slotDetailsCard}>
-                    <View style={styles.slotDetailItem}>
-                      <Feather name="calendar" size={14} color="#64748B" />
-                      <Text style={styles.slotDetailLabel}>Date: </Text>
-                      <Text style={styles.slotDetailValue}>{req.requestedDate}</Text>
-                    </View>
-                    <View style={styles.slotDetailItem}>
-                      <Feather name="clock" size={14} color="#64748B" />
-                      <Text style={styles.slotDetailLabel}>Slot: </Text>
-                      <Text style={styles.slotDetailValue}>{req.periodSlot}</Text>
-                    </View>
-                  </View>
+                <View
+                  style={[
+                    styles.statusTag,
+                    isApproved && styles.statusTagApproved,
+                    isReturned && styles.statusTagReturned,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.statusTagText,
+                      isApproved && styles.statusTagTextApproved,
+                      isReturned && styles.statusTagTextReturned,
+                    ]}
+                  >
+                    {isApproved
+                      ? 'ENDORSED'
+                      : isReturned
+                      ? 'RETURNED'
+                      : 'PENDING'}
+                  </Text>
+                </View>
+              </View>
 
-                  {/* Reason justification */}
-                  <View style={styles.reasonBox}>
-                    <Text style={styles.reasonLabel}>Justification / Syllabus Target:</Text>
-                    <Text style={styles.reasonText}>{req.reason}</Text>
-                  </View>
+              {/* Subject */}
+              <Text style={styles.subjectTitle}>
+                {req.subjectCode} · {req.subjectTitle.toUpperCase()}
+              </Text>
 
-                  {/* HOD Remarks (if any) */}
-                  {req.hodRemarks ? (
-                    <View style={styles.remarksBox}>
-                      <Feather name="message-square" size={14} color="#0F52BA" />
-                      <Text style={styles.remarksText}>HOD Note: {req.hodRemarks}</Text>
-                    </View>
-                  ) : null}
+              {/* Slot Details */}
+              <View style={styles.slotBlock}>
+                <Text style={styles.slotText}>
+                  DATE: {req.requestedDate} · {req.periodSlot.toUpperCase()}
+                </Text>
+              </View>
 
-                  {/* Action Buttons for Pending Requests */}
-                  {req.status === 'PENDING' ? (
-                    <View style={styles.actionBtnRow}>
-                      <Button
-                        mode="outlined"
-                        icon="undo-variant"
-                        textColor="#DC2626"
-                        style={styles.returnBtn}
-                        labelStyle={styles.btnLabel}
-                        onPress={() => handleOpenReturnDialog(req.id)}
-                      >
-                        Return
-                      </Button>
-                      <Button
-                        mode="contained"
-                        icon="check-circle-outline"
-                        buttonColor={Palette.primary}
-                        style={styles.approveBtn}
-                        labelStyle={styles.btnLabel}
-                        onPress={() => handleApprove(req.id)}
-                      >
-                        Endorse Slot
-                      </Button>
-                    </View>
-                  ) : null}
-                </Card.Content>
-              </Card>
-            );
-          })
-        )}
-      </ScrollView>
+              {/* Reason */}
+              <View style={styles.reasonBox}>
+                <Label text="JUSTIFICATION / TARGET:" />
+                <Text style={styles.reasonText}>{req.reason}</Text>
+              </View>
+
+              {/* HOD Remarks */}
+              {req.hodRemarks ? (
+                <View style={[styles.remarksBox, isReturned && styles.remarksBoxReturned]}>
+                  <Label
+                    text="HOD NOTE:"
+                    color={isReturned ? EditorialColors.accent : EditorialColors.ink}
+                  />
+                  <Text style={styles.remarksText}>"{req.hodRemarks}"</Text>
+                </View>
+              ) : null}
+
+              {/* Actions for Pending */}
+              {isPending && (
+                <View style={styles.actionBtnRow}>
+                  <TouchableOpacity
+                    style={[styles.outlineActionBtn, { borderColor: EditorialColors.accent }]}
+                    onPress={() => handleOpenReturnDialog(req.id)}
+                  >
+                    <Text style={[styles.outlineActionText, { color: EditorialColors.accent }]}>
+                      RETURN
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.fillActionBtn}
+                    onPress={() => handleApprove(req.id)}
+                  >
+                    <Text style={styles.fillActionText}>ENDORSE SLOT</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          );
+        })
+      )}
 
       {/* ── RETURN FEEDBACK DIALOG ── */}
       <Portal>
-        <Dialog visible={returnDialogVisible} onDismiss={() => setReturnDialogVisible(false)} style={styles.dialog}>
-          <Dialog.Title style={styles.dialogTitle}>Return Slot Request</Dialog.Title>
+        <Dialog
+          visible={returnDialogVisible}
+          onDismiss={() => setReturnDialogVisible(false)}
+          style={styles.dialog}
+        >
+          <Dialog.Title style={styles.dialogTitle}>RETURN SLOT REQUEST</Dialog.Title>
           <Dialog.Content>
             <Text style={styles.dialogPrompt}>
               Specify reasons or alternative slot recommendations for the faculty member:
             </Text>
-            <TextInput
-              mode="outlined"
-              placeholder="e.g. Period 2 conflicts with scheduled lab exam. Please reschedule for Period 5."
-              value={remarksInput}
-              onChangeText={setRemarksInput}
-              multiline
-              numberOfLines={3}
-              style={styles.dialogInput}
-              outlineColor="#CBD5E1"
-              activeOutlineColor={Palette.primary}
-            />
+            <View style={{ marginTop: ms(12) }}>
+              <AppTextInput
+                label="Feedback Remarks *"
+                placeholder="e.g. Period 2 conflicts with scheduled exam..."
+                value={remarksInput}
+                onChangeText={setRemarksInput}
+                multiline
+                numberOfLines={3}
+              />
+            </View>
           </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setReturnDialogVisible(false)} textColor="#64748B">
-              Cancel
-            </Button>
-            <Button onPress={handleConfirmReturn} textColor="#DC2626" mode="contained-tonal">
-              Return Request
-            </Button>
+          <Dialog.Actions style={styles.dialogActions}>
+            <TouchableOpacity
+              style={styles.dialogCancelBtn}
+              onPress={() => setReturnDialogVisible(false)}
+            >
+              <Text style={styles.dialogCancelText}>CANCEL</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.dialogConfirmBtn}
+              onPress={handleConfirmReturn}
+            >
+              <Text style={styles.dialogConfirmText}>RETURN REQUEST</Text>
+            </TouchableOpacity>
           </Dialog.Actions>
         </Dialog>
       </Portal>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: EditorialColors.bg,
   },
-  headerBanner: {
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: ms(20),
-    paddingVertical: ms(16),
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+  content: {
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingTop: EditorialSpacing.topSafeArea,
+    paddingBottom: ms(48),
   },
-  headerInfo: {
-    flex: 1,
+  headerBox: {
+    marginBottom: ms(8),
   },
-  headerTitle: {
-    fontSize: ms(20),
-    fontWeight: '900',
-    color: Palette.textDark,
-    letterSpacing: -0.3,
+  headingText: {
+    fontFamily: EditorialFonts.display,
+    fontSize: ms(24),
+    lineHeight: ms(28),
+    color: EditorialColors.ink,
+    marginTop: ms(4),
   },
-  headerSubtitle: {
-    fontSize: ms(12),
-    color: Palette.textLight,
-    marginTop: ms(2),
-    fontWeight: '500',
+  subHeadingText: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: ms(11),
+    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    marginTop: ms(4),
   },
-  pendingBadgeContainer: {
-    backgroundColor: '#FEF3C7',
-    borderRadius: ms(12),
-    paddingVertical: ms(6),
-    paddingHorizontal: ms(12),
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#FDE68A',
+  heroRule: {
+    marginBottom: ms(20),
   },
-  pendingBadgeNum: {
-    fontSize: ms(18),
-    fontWeight: '900',
-    color: '#D97706',
-  },
-  pendingBadgeLabel: {
-    fontSize: ms(10),
-    fontWeight: '700',
-    color: '#B45309',
-    textTransform: 'uppercase',
+  statBox: {
+    marginBottom: ms(16),
   },
   filterRow: {
     flexDirection: 'row',
-    paddingHorizontal: ms(16),
-    paddingVertical: ms(10),
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-    gap: ms(6),
+    marginBottom: ms(16),
   },
-  chip: {
-    backgroundColor: '#F1F5F9',
-    borderRadius: ms(8),
+  squareChip: {
+    paddingVertical: ms(6),
+    paddingHorizontal: ms(12),
+    backgroundColor: EditorialColors.white,
+    borderWidth: 1,
+    borderColor: EditorialColors.ink,
+    marginRight: ms(8),
   },
-  chipActive: {
-    backgroundColor: Palette.primary,
+  squareChipActive: {
+    backgroundColor: EditorialColors.ink,
   },
   chipText: {
-    fontSize: ms(12),
-    fontWeight: '600',
-    color: '#475569',
+    fontFamily: EditorialFonts.bold,
+    fontSize: ms(11),
+    letterSpacing: 0.5,
+    color: EditorialColors.ink,
   },
   chipTextActive: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: ms(16),
-    paddingBottom: ms(40),
+    color: EditorialColors.white,
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
+    backgroundColor: EditorialColors.white,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    padding: ms(14),
     marginBottom: ms(14),
+  },
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: ms(6),
+  },
+  facultyName: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: ms(13),
+    color: EditorialColors.ink,
+    marginTop: ms(2),
+  },
+  submittedAt: {
+    fontFamily: EditorialFonts.regular,
+    fontSize: ms(10),
+    color: EditorialColors.muted,
+    marginTop: ms(2),
+  },
+  statusTag: {
     borderWidth: 1,
-    borderColor: '#F1F5F9',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.03,
+    borderColor: EditorialColors.muted,
+    paddingHorizontal: ms(8),
+    paddingVertical: ms(3),
+    backgroundColor: EditorialColors.bg,
+  },
+  statusTagApproved: {
+    backgroundColor: EditorialColors.ink,
+    borderColor: EditorialColors.ink,
+  },
+  statusTagReturned: {
+    borderColor: EditorialColors.accent,
+    borderWidth: 1.5,
+    backgroundColor: EditorialColors.white,
+  },
+  statusTagText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: ms(9.5),
+    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+  },
+  statusTagTextApproved: {
+    color: EditorialColors.white,
+  },
+  statusTagTextReturned: {
+    color: EditorialColors.accent,
+  },
+  subjectTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: ms(13),
+    color: EditorialColors.ink,
+    marginTop: ms(6),
+  },
+  slotBlock: {
+    backgroundColor: EditorialColors.bg,
+    borderWidth: 1,
+    borderColor: EditorialColors.ink,
+    padding: ms(8),
+    marginTop: ms(8),
+  },
+  slotText: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: ms(11),
+    color: EditorialColors.ink,
+  },
+  reasonBox: {
+    backgroundColor: EditorialColors.bg,
+    padding: ms(10),
+    marginTop: ms(10),
+    borderLeftWidth: 3,
+    borderLeftColor: EditorialColors.ink,
+  },
+  reasonText: {
+    fontFamily: EditorialFonts.regular,
+    fontSize: ms(12),
+    color: EditorialColors.ink,
+    marginTop: ms(2),
+    lineHeight: ms(17),
+  },
+  remarksBox: {
+    backgroundColor: EditorialColors.bg,
+    padding: ms(10),
+    marginTop: ms(10),
+    borderLeftWidth: 3,
+    borderLeftColor: EditorialColors.ink,
+  },
+  remarksBoxReturned: {
+    borderLeftColor: EditorialColors.accent,
+  },
+  remarksText: {
+    fontFamily: EditorialFonts.regular,
+    fontSize: ms(12),
+    color: EditorialColors.ink,
+    marginTop: ms(2),
+  },
+  actionBtnRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: ms(14),
+  },
+  outlineActionBtn: {
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    paddingHorizontal: ms(12),
+    paddingVertical: ms(8),
+    marginRight: ms(8),
+  },
+  outlineActionText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: ms(11),
+    letterSpacing: 0.5,
+    color: EditorialColors.ink,
+  },
+  fillActionBtn: {
+    backgroundColor: EditorialColors.ink,
+    paddingHorizontal: ms(14),
+    paddingVertical: ms(8),
+  },
+  fillActionText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: ms(11),
+    letterSpacing: 0.5,
+    color: EditorialColors.white,
+  },
+  dialog: {
+    backgroundColor: EditorialColors.white,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: EditorialColors.ink,
+  },
+  dialogTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: ms(15),
+    letterSpacing: 0.5,
+    color: EditorialColors.ink,
+  },
+  dialogPrompt: {
+    fontFamily: EditorialFonts.regular,
+    fontSize: ms(12),
+    lineHeight: ms(16),
+    color: EditorialColors.muted,
+  },
+  dialogActions: {
+    paddingHorizontal: ms(16),
+    paddingBottom: ms(16),
+  },
+  dialogCancelBtn: {
+    paddingHorizontal: ms(12),
+    paddingVertical: ms(8),
+    marginRight: ms(8),
+  },
+  dialogCancelText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: ms(11),
+    letterSpacing: 0.5,
+    color: EditorialColors.muted,
+  },
+  dialogConfirmBtn: {
+    backgroundColor: EditorialColors.accent,
+    paddingHorizontal: ms(14),
+    paddingVertical: ms(8),
+  },
+  dialogConfirmText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: ms(11),
+    letterSpacing: 0.5,
+    color: EditorialColors.white,
+  },
+});
+
     shadowRadius: 8,
     elevation: 2,
   },
