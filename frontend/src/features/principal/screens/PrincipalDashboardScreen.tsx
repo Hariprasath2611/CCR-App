@@ -141,15 +141,84 @@ export const PrincipalDashboardScreen = () => {
             </View>
             <View style={styles.actionTextBox}>
               <Text style={styles.actionTitle}>View Departments</Text>
-              <Text style={styles.actionSubtitle}>View all department classes</Text>
+              <Text style={styles.actionSubtitle}>Auditing syllabus progress across all 16 departments</Text>
             </View>
             <Feather name="chevron-right" size={20} color="#94A3B8" />
           </TouchableOpacity>
 
+          {/* Action 2: Institution Analytics */}
+          <TouchableOpacity
+            style={styles.actionRow}
+            onPress={() => navigation.navigate('InstitutionAnalytics')}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.actionIconBox, { backgroundColor: '#EFF6FF' }]}>
+              <MaterialCommunityIcons name="chart-bell-curve-cumulative" size={24} color="#2563EB" />
+            </View>
+            <View style={styles.actionTextBox}>
+              <Text style={styles.actionTitle}>Institution Analytics</Text>
+              <Text style={styles.actionSubtitle}>Comparative completion velocity and department rankings</Text>
+            </View>
+            <Feather name="chevron-right" size={20} color="#94A3B8" />
+          </TouchableOpacity>
 
+          {/* Action 3: Faculty Performance Analytics */}
+          <TouchableOpacity
+            style={styles.actionRow}
+            onPress={() => navigation.navigate('FacultyAnalytics')}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.actionIconBox, { backgroundColor: '#ECFDF5' }]}>
+              <MaterialCommunityIcons name="account-tie-outline" size={24} color="#10B981" />
+            </View>
+            <View style={styles.actionTextBox}>
+              <Text style={styles.actionTitle}>Faculty Performance Analytics</Text>
+              <Text style={styles.actionSubtitle}>Submission timeliness and teaching load velocity audit</Text>
+            </View>
+            <Feather name="chevron-right" size={20} color="#94A3B8" />
+          </TouchableOpacity>
 
+          {/* Action 4: Weekly Reports Queue */}
+          <TouchableOpacity
+            style={styles.actionRow}
+            onPress={() => navigation.navigate('WeeklyReports')}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.actionIconBox, { backgroundColor: '#FFF7ED' }]}>
+              <MaterialCommunityIcons name="file-document-multiple-outline" size={24} color="#F97316" />
+            </View>
+            <View style={styles.actionTextBox}>
+              <Text style={styles.actionTitle}>Weekly Endorsement Queue</Text>
+              <Text style={styles.actionSubtitle}>Review HOD-approved class coverage reports</Text>
+            </View>
+            <Feather name="chevron-right" size={20} color="#94A3B8" />
+          </TouchableOpacity>
 
-        </ScrollView>
+          {/* Action 5: Institutional Report Export */}
+          <TouchableOpacity
+            style={styles.actionRow}
+            onPress={() => navigation.navigate('ReportExport')}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.actionIconBox, { backgroundColor: '#F0FDF4' }]}>
+              <MaterialCommunityIcons name="file-excel-outline" size={24} color="#16A34A" />
+            </View>
+            <View style={styles.actionTextBox}>
+              <Text style={styles.actionTitle}>Institutional Export Center</Text>
+              <Text style={styles.actionSubtitle}>Export consolidated PDF and Excel reports</Text>
+            </View>
+            <Feather name="chevron-right" size={20} color="#94A3B8" />
+          </TouchableOpacity>
+
+          {/* Sign Out Button */}
+          <TouchableOpacity
+            style={styles.signOutBtn}
+            onPress={logout}
+            activeOpacity={0.8}
+          >
+            <Feather name="log-out" size={18} color="#EF4444" />
+            <Text style={styles.signOutText}>Sign Out from CCR</Text>
+          </TouchableOpacity>
       </View>
     </View>
   );
