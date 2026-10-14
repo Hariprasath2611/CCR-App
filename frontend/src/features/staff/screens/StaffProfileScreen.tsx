@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
-import { Text, Card, Avatar, Button, Divider, List, Dialog, Portal, TextInput } from 'react-native-paper';
+import { Alert, StyleSheet, View, ScrollView, TouchableOpacity, Text } from 'react-native';
+import { Portal, Modal } from 'react-native-paper';
 import { useAuthStore } from '../../auth/store/useAuthStore';
-import { Palette } from '@theme/colors';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { apiClient } from '@services/api/apiClient';
-
-import { ms } from '@theme/responsive';
+import {
+  EditorialColors,
+  EditorialFonts,
+  EditorialSpacing,
+} from '@theme/editorial';
+import {
+  EditorialHeader,
+  Rule,
+  Label,
+  EditorialButton,
+  EditorialTextField,
+} from '@components/editorial';
 
 export const StaffProfileScreen = () => {
   const { user, logout } = useAuthStore();
@@ -83,173 +92,199 @@ export const StaffProfileScreen = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* ── PROFILE HEADER CARD ── */}
-      <Card style={styles.profileCard}>
-        <Card.Content style={styles.headerContent}>
-          {/* Circular Photo / Avatar frame */}
-          <View style={styles.avatarContainer}>
-            <Avatar.Text
-              size={96}
-              label={getInitials(user?.name)}
-              style={styles.avatar}
-              labelStyle={styles.avatarLabel}
-            />
-            {/* Soft Camera Badge */}
-            <TouchableOpacity style={styles.cameraBadge} activeOpacity={0.7}>
-              <Feather name="camera" size={14} color="#FFFFFF" />
-            </TouchableOpacity>
+      <EditorialHeader
+        eyebrow="PERSONNEL DOSSIER"
+        title="FACULTY PROFILE"
+        subtitle="Institutional credentials & access privileges"
+      />
+
+      {/* ── PROFILE IDENTIFICATION CARD ── */}
+      <View style={styles.profileBox}>
+        <View style={styles.avatarRow}>
+          <View style={styles.avatarSquare}>
+            <Text style={styles.avatarInitials}>{getInitials(user?.name)}</Text>
           </View>
+          <View style={styles.avatarInfo}>
+            <Text style={styles.facultyName}>{user?.name || 'Faculty Member'}</Text>
+            <View style={styles.badgeWrapper}>
+              <View style={styles.designationBadge}>
+                <Text style={styles.designationBadgeText}>{getDesignation().toUpperCase()}</Text>
+              </View>
+            </View>
+            <Text style={styles.collegeText}>JAYA ENGINEERING COLLEGE</Text>
+          </View>
+        </View>
+      </View>
 
-          <Text style={styles.facultyName}>{user?.name || 'Faculty Member'}</Text>
-          <Text style={styles.designationText}>{getDesignation()}</Text>
-          <Text style={styles.collegeText}>Jaya Engineering College</Text>
-        </Card.Content>
-      </Card>
+      {/* ── SECTION 1: INSTITUTIONAL RECORD ── */}
+      <View style={styles.sectionHeader}>
+        <Label text="INSTITUTIONAL RECORD" variant="dark" />
+      </View>
+      <Rule thickness={4} color={EditorialColors.ink} style={{ marginBottom: EditorialSpacing.md }} />
 
-      {/* ── DESIGNATION & DEPARTMENT INFO ── */}
-      <Text style={styles.sectionTitle}>Institutional Info</Text>
-      <Card style={styles.detailsCard}>
-        <Card.Content style={styles.listContent}>
-          <List.Item
-            title="Faculty Position"
-            description={getDesignation()}
-            left={(props) => <List.Icon {...props} icon="tie" color={Palette.primary} />}
-            titleStyle={styles.listTitle}
-            descriptionStyle={styles.listDesc}
-          />
-          <Divider style={styles.divider} />
-          <List.Item
-            title="Department"
-            description={user?.department || 'Computer Science Engineering'}
-            left={(props) => <List.Icon {...props} icon="office-building" color={Palette.primary} />}
-            titleStyle={styles.listTitle}
-            descriptionStyle={styles.listDesc}
-          />
-          <Divider style={styles.divider} />
-          <List.Item
-            title="Faculty Identification ID"
-            description={getMockFacultyId()}
-            left={(props) => <List.Icon {...props} icon="card-account-details" color={Palette.primary} />}
-            titleStyle={styles.listTitle}
-            descriptionStyle={styles.listDesc}
-          />
-          {user?.isClassCoordinator && (
-            <>
-              <Divider style={styles.divider} />
-              <List.Item
-                title="Class Coordination"
-                description={`Assigned In-charge: Class ${user.assignedClassId || 'CSE-B'}`}
-                left={(props) => <List.Icon {...props} icon="account-supervisor" color={Palette.primary} />}
-                titleStyle={styles.listTitle}
-                descriptionStyle={styles.listDesc}
-              />
-            </>
-          )}
-        </Card.Content>
-      </Card>
+      <View style={styles.detailCard}>
+        <View style={styles.detailRow}>
+          <View style={styles.detailLeft}>
+            <Text style={styles.detailLabel}>FACULTY POSITION</Text>
+            <Text style={styles.detailValue}>{getDesignation()}</Text>
+          </View>
+        </View>
 
-      {/* ── ACCOUNT / LOGIN INFO ── */}
-      <Text style={styles.sectionTitle}>Login Credentials</Text>
-      <Card style={styles.detailsCard}>
-        <Card.Content style={styles.listContent}>
-          <List.Item
-            title="Email Address"
-            description={user?.email || 'faculty@college.com'}
-            left={(props) => <List.Icon {...props} icon="email-outline" color={Palette.primary} />}
-            titleStyle={styles.listTitle}
-            descriptionStyle={styles.listDesc}
-          />
-          <Divider style={styles.divider} />
-          <List.Item
-            title="Account Privilege Level"
-            description={user?.role || 'STAFF'}
-            left={(props) => <List.Icon {...props} icon="shield-outline" color={Palette.primary} />}
-            titleStyle={styles.listTitle}
-            descriptionStyle={styles.listDesc}
-          />
-          <Divider style={styles.divider} />
-          <List.Item
-            title="Session Validity"
-            description="Active (Device Authorization Online)"
-            left={(props) => <List.Icon {...props} icon="cellphone-key" color={Palette.primary} />}
-            titleStyle={styles.listTitle}
-            descriptionStyle={styles.listDesc}
-          />
-          <Divider style={styles.divider} />
-          <TouchableOpacity onPress={() => setChangePasswordVisible(true)}>
-            <List.Item
-              title="Change Password"
-              description="Update your account login security password"
-              left={(props) => <List.Icon {...props} icon="lock-reset" color={Palette.primary} />}
-              right={(props) => <List.Icon {...props} icon="chevron-right" color={Palette.textLight} />}
-              titleStyle={styles.listTitle}
-              descriptionStyle={styles.listDesc}
-            />
-          </TouchableOpacity>
-        </Card.Content>
-      </Card>
+        <Rule thickness={1} color={EditorialColors.track} />
 
-      {/* ── SIGN OUT BUTTON ── */}
-      <Button
-        mode="contained"
-        onPress={logout}
-        style={styles.signOutBtn}
-        buttonColor={Palette.error}
-        labelStyle={styles.btnLabel}
-        icon="logout"
-      >
-        Sign Out Account
-      </Button>
+        <View style={styles.detailRow}>
+          <View style={styles.detailLeft}>
+            <Text style={styles.detailLabel}>DEPARTMENT</Text>
+            <Text style={styles.detailValue}>{user?.department || 'Computer Science Engineering'}</Text>
+          </View>
+        </View>
 
-      {/* ── CHANGE PASSWORD DIALOG ── */}
+        <Rule thickness={1} color={EditorialColors.track} />
+
+        <View style={styles.detailRow}>
+          <View style={styles.detailLeft}>
+            <Text style={styles.detailLabel}>IDENTIFICATION ID</Text>
+            <Text style={styles.detailValueMono}>{getMockFacultyId()}</Text>
+          </View>
+        </View>
+
+        {user?.isClassCoordinator && (
+          <>
+            <Rule thickness={1} color={EditorialColors.track} />
+            <View style={styles.detailRow}>
+              <View style={styles.detailLeft}>
+                <Text style={styles.detailLabel}>CLASS COORDINATION</Text>
+                <Text style={styles.detailValue}>Assigned In-charge: Class {user.assignedClassId || 'CSE-B'}</Text>
+              </View>
+            </View>
+          </>
+        )}
+      </View>
+
+      {/* ── SECTION 2: SECURITY & CREDENTIALS ── */}
+      <View style={[styles.sectionHeader, { marginTop: EditorialSpacing.xl }]}>
+        <Label text="SECURITY & CREDENTIALS" variant="dark" />
+      </View>
+      <Rule thickness={4} color={EditorialColors.ink} style={{ marginBottom: EditorialSpacing.md }} />
+
+      <View style={styles.detailCard}>
+        <View style={styles.detailRow}>
+          <View style={styles.detailLeft}>
+            <Text style={styles.detailLabel}>EMAIL ADDRESS</Text>
+            <Text style={styles.detailValue}>{user?.email || 'faculty@college.com'}</Text>
+          </View>
+        </View>
+
+        <Rule thickness={1} color={EditorialColors.track} />
+
+        <View style={styles.detailRow}>
+          <View style={styles.detailLeft}>
+            <Text style={styles.detailLabel}>ACCOUNT PRIVILEGE</Text>
+            <Text style={styles.detailValue}>{user?.role || 'STAFF'}</Text>
+          </View>
+        </View>
+
+        <Rule thickness={1} color={EditorialColors.track} />
+
+        <View style={styles.detailRow}>
+          <View style={styles.detailLeft}>
+            <Text style={styles.detailLabel}>SESSION STATUS</Text>
+            <Text style={styles.detailValue}>ACTIVE (DEVICE VERIFIED)</Text>
+          </View>
+        </View>
+
+        <Rule thickness={1} color={EditorialColors.track} />
+
+        <TouchableOpacity
+          style={styles.detailRowClickable}
+          activeOpacity={0.7}
+          onPress={() => setChangePasswordVisible(true)}
+        >
+          <View style={styles.detailLeft}>
+            <Text style={styles.detailLabel}>PASSWORD ACCESS</Text>
+            <Text style={styles.detailValue}>Update Account Password</Text>
+          </View>
+          <Feather name="arrow-right" size={18} color={EditorialColors.ink} />
+        </TouchableOpacity>
+      </View>
+
+      {/* ── SIGN OUT ACTION ── */}
+      <View style={{ marginTop: EditorialSpacing.xl }}>
+        <EditorialButton
+          title="SIGN OUT OF SESSION"
+          variant="outline"
+          fullWidth
+          onPress={logout}
+          rightIcon={<Feather name="log-out" size={16} color={EditorialColors.ink} />}
+        />
+      </View>
+
+      {/* ── CHANGE PASSWORD MODAL ── */}
       <Portal>
-        <Dialog visible={changePasswordVisible} onDismiss={() => {
-          setChangePasswordVisible(false);
-          setCurrentPassword('');
-          setNewPassword('');
-          setConfirmPassword('');
-        }}>
-          <Dialog.Title>Change Password</Dialog.Title>
-          <Dialog.Content>
-            <TextInput
-              label="Current Password"
+        <Modal
+          visible={changePasswordVisible}
+          onDismiss={() => {
+            setChangePasswordVisible(false);
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+          }}
+          contentContainerStyle={styles.modalContainer}
+        >
+          <View style={styles.modalCard}>
+            <Label text="CREDENTIAL UPDATE" variant="dark" />
+            <Text style={styles.modalTitle}>CHANGE PASSWORD</Text>
+            <Rule thickness={2} color={EditorialColors.ink} style={{ marginBottom: EditorialSpacing.lg }} />
+
+            <EditorialTextField
+              label="CURRENT PASSWORD"
               value={currentPassword}
               onChangeText={setCurrentPassword}
               secureTextEntry
-              mode="outlined"
-              activeOutlineColor={Palette.primary}
-              style={{ marginBottom: ms(12) }}
+              containerStyle={{ marginBottom: EditorialSpacing.md }}
             />
-            <TextInput
-              label="New Password"
+
+            <EditorialTextField
+              label="NEW PASSWORD"
               value={newPassword}
               onChangeText={setNewPassword}
               secureTextEntry
-              mode="outlined"
-              activeOutlineColor={Palette.primary}
-              style={{ marginBottom: ms(12) }}
+              containerStyle={{ marginBottom: EditorialSpacing.md }}
             />
-            <TextInput
-              label="Confirm New Password"
+
+            <EditorialTextField
+              label="CONFIRM NEW PASSWORD"
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               secureTextEntry
-              mode="outlined"
-              activeOutlineColor={Palette.primary}
+              containerStyle={{ marginBottom: EditorialSpacing.xl }}
             />
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => {
-              setChangePasswordVisible(false);
-              setCurrentPassword('');
-              setNewPassword('');
-              setConfirmPassword('');
-            }} textColor={Palette.textLight}>Cancel</Button>
-            <Button loading={submitting} disabled={submitting} onPress={handleChangePassword} textColor={Palette.primary}>
-              Update
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
+
+            <View style={styles.modalActions}>
+              <View style={{ flex: 1, marginRight: EditorialSpacing.sm }}>
+                <EditorialButton
+                  title="CANCEL"
+                  variant="outline"
+                  onPress={() => {
+                    setChangePasswordVisible(false);
+                    setCurrentPassword('');
+                    setNewPassword('');
+                    setConfirmPassword('');
+                  }}
+                />
+              </View>
+              <View style={{ flex: 1, marginLeft: EditorialSpacing.sm }}>
+                <EditorialButton
+                  title="UPDATE"
+                  variant="primary"
+                  loading={submitting}
+                  disabled={submitting}
+                  onPress={handleChangePassword}
+                />
+              </View>
+            </View>
+          </View>
+        </Modal>
       </Portal>
     </ScrollView>
   );
@@ -258,142 +293,138 @@ export const StaffProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Palette.background,
+    backgroundColor: EditorialColors.bg,
   },
   content: {
-    padding: ms(20),
-    paddingBottom: ms(40),
+    padding: EditorialSpacing.lg,
+    paddingBottom: EditorialSpacing.xxxl,
   },
-  
-  // Profile Card styles
-  profileCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(24),
-    shadowColor: '#0F172A',
-    shadowOffset: { width: ms(0), height: ms(10) },
-    shadowOpacity: 0.04,
-    shadowRadius: 16,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    marginBottom: ms(24),
-    paddingVertical: ms(12),
-  },
-  headerContent: {
-    alignItems: 'center',
-  },
-  avatarContainer: {
-    position: 'relative',
-    marginBottom: ms(16),
-  },
-  avatar: {
-    backgroundColor: Palette.primary,
-    shadowColor: Palette.primary,
-    shadowOffset: { width: ms(0), height: ms(8) },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 4,
-  },
-  avatarLabel: {
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
-  cameraBadge: {
-    position: 'absolute',
-    bottom: ms(2),
-    right: ms(2),
-    backgroundColor: Palette.accent,
-    width: ms(28),
-    height: ms(28),
-    borderRadius: ms(14),
-    justifyContent: 'center',
-    alignItems: 'center',
+  profileBox: {
+    backgroundColor: EditorialColors.white,
     borderWidth: 2,
-    borderColor: '#FFFFFF',
-    elevation: 2,
+    borderColor: EditorialColors.ink,
+    borderRadius: 0,
+    padding: EditorialSpacing.lg,
+    marginBottom: EditorialSpacing.xl,
+  },
+  avatarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarSquare: {
+    width: 72,
+    height: 72,
+    borderWidth: 2,
+    borderColor: EditorialColors.ink,
+    backgroundColor: EditorialColors.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: EditorialSpacing.md,
+  },
+  avatarInitials: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 26,
+    color: EditorialColors.ink,
+  },
+  avatarInfo: {
+    flex: 1,
   },
   facultyName: {
-    fontSize: ms(20),
-    fontWeight: '900',
-    color: Palette.textDark,
-    letterSpacing: -0.4,
-    textAlign: 'center',
+    fontFamily: EditorialFonts.bold,
+    fontSize: 18,
+    color: EditorialColors.ink,
+    letterSpacing: -0.3,
+    marginBottom: 4,
   },
-  designationText: {
-    fontSize: ms(13),
-    fontWeight: '700',
-    color: Palette.primary,
-    marginTop: ms(4),
-    textTransform: 'uppercase',
+  badgeWrapper: {
+    flexDirection: 'row',
+    marginBottom: 4,
+  },
+  designationBadge: {
+    borderWidth: 1,
+    borderColor: EditorialColors.ink,
+    backgroundColor: EditorialColors.white,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  designationBadgeText: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 10,
+    color: EditorialColors.ink,
     letterSpacing: 0.5,
   },
   collegeText: {
-    fontSize: ms(12),
-    color: Palette.textLight,
-    fontWeight: '600',
-    marginTop: ms(2),
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 11,
+    color: EditorialColors.muted,
+    letterSpacing: 0.6,
   },
-
-  // Section titles
-  sectionTitle: {
-    fontSize: ms(12),
-    fontWeight: '800',
-    color: Palette.textLight,
-    letterSpacing: 1.0,
-    textTransform: 'uppercase',
-    marginBottom: ms(8),
-    paddingLeft: ms(4),
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
   },
-
-  // Details Cards
-  detailsCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(20),
-    marginBottom: ms(20),
-    shadowColor: '#0F172A',
-    shadowOffset: { width: ms(0), height: ms(6) },
-    shadowOpacity: 0.02,
-    shadowRadius: 12,
-    elevation: 1,
+  detailCard: {
+    backgroundColor: EditorialColors.white,
     borderWidth: 1,
-    borderColor: '#F1F5F9',
+    borderColor: EditorialColors.track,
+    borderRadius: 0,
   },
-  listContent: {
-    paddingVertical: ms(4),
-    paddingHorizontal: ms(8),
+  detailRow: {
+    paddingHorizontal: EditorialSpacing.md,
+    paddingVertical: EditorialSpacing.md,
   },
-  listTitle: {
-    fontSize: ms(14),
-    fontWeight: '700',
-    color: Palette.textDark,
+  detailRowClickable: {
+    paddingHorizontal: EditorialSpacing.md,
+    paddingVertical: EditorialSpacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: EditorialColors.white,
   },
-  listDesc: {
-    fontSize: ms(12.5),
-    color: Palette.textLight,
-    fontWeight: '500',
-    marginTop: ms(1),
+  detailLeft: {
+    flex: 1,
   },
-  divider: {
-    backgroundColor: '#F1F5F9',
-    height: ms(1),
+  detailLabel: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 10,
+    color: EditorialColors.muted,
+    letterSpacing: 0.8,
+    marginBottom: 3,
   },
-
-  // Sign out button
-  signOutBtn: {
-    borderRadius: ms(16),
-    paddingVertical: ms(6),
-    shadowColor: Palette.error,
-    shadowOffset: { width: ms(0), height: ms(8) },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 3,
-    marginTop: ms(16),
+  detailValue: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 14,
+    color: EditorialColors.ink,
   },
-  btnLabel: {
-    fontSize: ms(15),
-    fontWeight: '800',
-    color: '#FFFFFF',
-    letterSpacing: 0.3,
+  detailValueMono: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 14,
+    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+  },
+  modalContainer: {
+    padding: EditorialSpacing.lg,
+  },
+  modalCard: {
+    backgroundColor: EditorialColors.white,
+    borderWidth: 2,
+    borderColor: EditorialColors.ink,
+    borderRadius: 0,
+    padding: EditorialSpacing.xl,
+  },
+  modalTitle: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 18,
+    color: EditorialColors.ink,
+    marginTop: 6,
+    marginBottom: 8,
+    letterSpacing: -0.3,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 
