@@ -50,6 +50,7 @@ const CLASSES_DATA: ClassData[] = [
 ];
 
 export const HodDashboardScreen = () => {
+  const insets = useSafeAreaInsets();
   const { user, logout } = useAuthStore();
   const navigation = useNavigation<any>();
   const reports = useReportStore((state) => state.reports);
@@ -75,7 +76,13 @@ export const HodDashboardScreen = () => {
   const hodBoardInfo = getHODForYear(selectedYear);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[
+        styles.content,
+        { paddingTop: Math.max(insets.top, ms(16)) }
+      ]}
+    >
       {/* ── HEADER ── */}
       <View style={styles.header}>
         <Avatar.Text size={52} label={initials} style={styles.avatar} labelStyle={styles.avatarLabel} />
