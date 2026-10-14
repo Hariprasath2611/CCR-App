@@ -1,15 +1,14 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { Text, Avatar, Card, Badge, Divider } from 'react-native-paper';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Palette } from '@theme/colors';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, Avatar } from 'react-native-paper';
+import { Feather } from '@expo/vector-icons';
+import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
 import {
   getHODForYear,
   getCCBoardForYear,
   HODBoardInfo,
   CCBoardMember,
 } from '@config/facultyBoard';
-import { ms } from '@theme/responsive';
 
 interface FacultyBoardCardProps {
   yearOrDept?: string;
@@ -25,99 +24,84 @@ export const FacultyBoardCard: React.FC<FacultyBoardCardProps> = ({
   const hodInfo: HODBoardInfo = getHODForYear(yearOrDept);
   const ccBoard: CCBoardMember[] = getCCBoardForYear(yearOrDept);
 
-  const getSectionBadgeColor = (sec: string) => {
-    const s = sec.toUpperCase();
-    if (s.includes('A')) return '#3B82F6';
-    if (s.includes('B')) return '#10B981';
-    if (s.includes('C')) return '#8B5CF6';
-    if (s.includes('D')) return '#F59E0B';
-    if (s.includes('E')) return '#EC4899';
-    if (s.includes('F')) return '#06B6D4';
-    if (s.includes('G')) return '#6366F1';
-    return Palette.primary;
-  };
-
   return (
     <View style={styles.container}>
       {showTitle && (
         <View style={styles.titleRow}>
-          <MaterialCommunityIcons name="shield-account-outline" size={22} color={Palette.primary} />
-          <Text style={styles.boardHeaderTitle}>Academic Leadership Board ({hodInfo.yearDisplay})</Text>
+          <Text style={styles.boardHeaderTitle}>
+            ACADEMIC LEADERSHIP BOARD ({hodInfo.yearDisplay.toUpperCase()})
+          </Text>
         </View>
       )}
 
       {/* ── HOD BOARD CARD ── */}
-      <Card style={styles.hodBoardCard}>
-        <Card.Content style={styles.hodCardContent}>
-          <View style={styles.hodHeaderRow}>
-            <View style={styles.hodBadgeBox}>
-              <MaterialCommunityIcons name="crown" size={16} color="#FFFFFF" />
-              <Text style={styles.hodBadgeText}>HOD BOARD</Text>
-            </View>
-            <Badge style={styles.deptBadge}>{hodInfo.department}</Badge>
+      <View style={styles.hodBoardCard}>
+        <View style={styles.hodHeaderRow}>
+          <View style={styles.hodBadgeBox}>
+            <Text style={styles.hodBadgeText}>HOD BOARD</Text>
           </View>
+          <View style={styles.deptBadge}>
+            <Text style={styles.deptBadgeText}>{hodInfo.department.toUpperCase()}</Text>
+          </View>
+        </View>
 
-          <View style={styles.hodInfoRow}>
-            <Avatar.Text
-              size={50}
-              label={hodInfo.hodName.replace(/^(Dr\.|Mrs\.|Mr\.|Ms\.)\s*/, '').substring(0, 2).toUpperCase()}
-              style={styles.hodAvatar}
-              labelStyle={styles.hodAvatarText}
-            />
-            <View style={styles.hodDetailsBox}>
-              <Text style={styles.hodRoleLabel}>{hodInfo.designation}</Text>
-              <Text style={styles.hodName}>{hodInfo.hodName}</Text>
-              <View style={styles.emailRow}>
-                <Feather name="mail" size={12} color="#C8D8F5" />
-                <Text style={styles.emailText}>{hodInfo.email}</Text>
-              </View>
+        <View style={styles.hodInfoRow}>
+          <Avatar.Text
+            size={52}
+            label={hodInfo.hodName.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase()}
+            style={styles.hodAvatar}
+            labelStyle={styles.hodAvatarText}
+          />
+          <View style={styles.hodDetailsBox}>
+            <Text style={styles.hodRoleLabel}>HEAD OF DEPARTMENT</Text>
+            <Text style={styles.hodName}>{hodInfo.hodName}</Text>
+            <View style={styles.emailRow}>
+              <Feather name="mail" size={13} color={EditorialColors.muted} />
+              <Text style={styles.emailText}>{hodInfo.email}</Text>
             </View>
           </View>
-        </Card.Content>
-      </Card>
+        </View>
+      </View>
 
       {/* ── CC BOARD HEADER ── */}
       <View style={styles.ccBoardHeaderRow}>
-        <MaterialCommunityIcons name="account-group" size={20} color={Palette.textDark} />
-        <Text style={styles.ccBoardTitle}>CLASS COORDINATOR (CC) BOARD</Text>
-        <Badge style={styles.countBadge}>{`${ccBoard.length} Sections`}</Badge>
+        <Text style={styles.ccBoardTitle}>
+          CLASS COUNSELOR FACULTY BOARD ({ccBoard.length})
+        </Text>
       </View>
 
-      {/* ── CC BOARD GRID / CARDS ── */}
+      {/* ── CC CARDS LIST ── */}
       <View style={styles.ccGridContainer}>
-        {ccBoard.map((cc) => {
-          const color = getSectionBadgeColor(cc.section);
-          return (
-            <TouchableOpacity
-              key={cc.classId}
-              style={styles.ccItemCard}
-              activeOpacity={0.8}
-              onPress={() => onSelectCC && onSelectCC(cc)}
-            >
-              <View style={styles.ccCardHeader}>
-                <View style={[styles.sectionIndicator, { backgroundColor: color + '15', borderColor: color + '40' }]}>
-                  <Text style={[styles.sectionText, { color }]}>{cc.section.replace('Section ', 'SEC ')}</Text>
-                </View>
-                <Badge style={[styles.ccDeptBadge, { backgroundColor: '#F1F5F9', color: Palette.textDark }]}>
-                  {cc.department}
-                </Badge>
+        {ccBoard.map((cc) => (
+          <TouchableOpacity
+            key={cc.classId}
+            style={styles.ccItemCard}
+            onPress={() => onSelectCC && onSelectCC(cc)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.ccCardHeader}>
+              <View style={styles.sectionIndicator}>
+                <Text style={styles.sectionText}>{cc.classId.toUpperCase()}</Text>
               </View>
+              <Text style={styles.ccDeptBadge}>{cc.department.toUpperCase()}</Text>
+            </View>
 
-              <Text style={styles.ccFacultyName}>{cc.facultyName}</Text>
-              <Text style={styles.ccDesignationText} numberOfLines={1}>{cc.designation}</Text>
+            <Text style={styles.ccFacultyName}>{cc.facultyName}</Text>
+            <Text style={styles.ccDesignationText}>{cc.designation.toUpperCase()}</Text>
 
-              <Divider style={styles.ccDivider} />
+            <View style={styles.ccDivider} />
 
-              <View style={styles.ccFooterRow}>
-                <View style={styles.ccEmailBox}>
-                  <Feather name="mail" size={11} color={Palette.textLight} />
-                  <Text style={styles.ccEmailText} numberOfLines={1}>{cc.email}</Text>
-                </View>
-                <Feather name="chevron-right" size={16} color={Palette.textLight} />
+            <View style={styles.ccFooterRow}>
+              <View style={styles.ccEmailBox}>
+                <Feather name="mail" size={12} color={EditorialColors.muted} />
+                <Text style={styles.ccEmailText} numberOfLines={1}>
+                  {cc.email}
+                </Text>
               </View>
-            </TouchableOpacity>
-          );
-        })}
+              <Feather name="arrow-right" size={14} color={EditorialColors.ink} />
+            </View>
+          </TouchableOpacity>
+        ))}
       </View>
     </View>
   );
@@ -125,173 +109,158 @@ export const FacultyBoardCard: React.FC<FacultyBoardCardProps> = ({
 
 const styles = StyleSheet.create({
   container: {
+    marginVertical: 10,
     width: '100%',
-    marginVertical: ms(8),
   },
   titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: ms(12),
-    gap: ms(8),
+    marginBottom: 10,
   },
   boardHeaderTitle: {
-    fontSize: ms(16),
-    fontWeight: '900',
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 12,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
   },
-
-  // HOD Board Styles
   hodBoardCard: {
-    backgroundColor: '#0F52BA',
-    borderRadius: ms(20),
-    marginBottom: ms(16),
-    elevation: 3,
-    shadowColor: '#0F52BA',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-  },
-  hodCardContent: {
-    padding: ms(18),
+    backgroundColor: EditorialColors.ink,
+    borderRadius: 0,
+    borderWidth: EditorialRules.borderWidth,
+    borderColor: EditorialColors.ink,
+    padding: 16,
+    marginBottom: 16,
   },
   hodHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: ms(14),
+    marginBottom: 12,
   },
   hodBadgeBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: ms(10),
-    paddingVertical: ms(4),
-    borderRadius: ms(8),
-    gap: ms(6),
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: EditorialColors.white,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 0,
   },
   hodBadgeText: {
-    color: '#FFFFFF',
-    fontSize: ms(11),
-    fontWeight: '900',
-    letterSpacing: 0.8,
+    color: EditorialColors.white,
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 10,
+    letterSpacing: 1.5,
   },
   deptBadge: {
-    backgroundColor: '#FFFFFF',
-    color: '#0F52BA',
-    fontWeight: '800',
-    paddingHorizontal: ms(10),
-    borderRadius: ms(6),
+    backgroundColor: EditorialColors.white,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 0,
+  },
+  deptBadgeText: {
+    color: EditorialColors.ink,
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 10,
+    letterSpacing: 1,
   },
   hodInfoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: ms(14),
+    gap: 12,
   },
   hodAvatar: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: EditorialColors.white,
+    borderRadius: 0,
   },
   hodAvatarText: {
-    color: '#0F52BA',
-    fontWeight: '900',
+    color: EditorialColors.ink,
+    fontFamily: EditorialFonts.display,
   },
   hodDetailsBox: {
     flex: 1,
   },
   hodRoleLabel: {
-    fontSize: ms(11),
-    color: '#C8D8F5',
-    fontWeight: '600',
-    textTransform: 'uppercase',
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 10,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
   },
   hodName: {
-    fontSize: ms(20),
-    fontWeight: '900',
-    color: '#FFFFFF',
-    marginTop: ms(2),
+    fontFamily: EditorialFonts.display,
+    fontSize: 18,
+    lineHeight: 22,
+    color: EditorialColors.white,
+    marginTop: 2,
   },
   emailRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: ms(6),
-    marginTop: ms(4),
+    gap: 6,
+    marginTop: 4,
   },
   emailText: {
-    fontSize: ms(12),
-    color: '#E2E8F0',
-    fontWeight: '500',
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 12,
+    color: EditorialColors.muted,
   },
-
-  // CC Board Styles
   ccBoardHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: ms(12),
-    marginTop: ms(4),
-    gap: ms(8),
+    marginBottom: 10,
   },
   ccBoardTitle: {
-    fontSize: ms(13),
-    fontWeight: '800',
-    color: Palette.textDark,
-    letterSpacing: 0.5,
-    flex: 1,
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
   },
-  countBadge: {
-    backgroundColor: '#EEF2FF',
-    color: Palette.primary,
-    fontWeight: '800',
-  },
-
-  // CC Items Grid
   ccGridContainer: {
-    gap: ms(12),
+    gap: 10,
   },
   ccItemCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    padding: ms(14),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    elevation: 1,
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
+    backgroundColor: EditorialColors.bg,
+    borderRadius: 0,
+    padding: 14,
+    borderWidth: EditorialRules.hairline,
+    borderColor: EditorialColors.ink,
   },
   ccCardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: ms(8),
+    marginBottom: 8,
   },
   sectionIndicator: {
-    paddingHorizontal: ms(10),
-    paddingVertical: ms(4),
-    borderRadius: ms(8),
     borderWidth: 1,
+    borderColor: EditorialColors.ink,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 0,
+    backgroundColor: EditorialColors.white,
   },
   sectionText: {
-    fontSize: ms(12),
-    fontWeight: '900',
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1,
+    color: EditorialColors.ink,
   },
   ccDeptBadge: {
-    fontWeight: '700',
-    fontSize: ms(10.5),
+    fontFamily: EditorialFonts.bold,
+    fontSize: 10,
+    letterSpacing: 1,
+    color: EditorialColors.muted,
   },
   ccFacultyName: {
-    fontSize: ms(16),
-    fontWeight: '800',
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 16,
+    color: EditorialColors.ink,
   },
   ccDesignationText: {
-    fontSize: ms(11.5),
-    color: Palette.textLight,
-    fontWeight: '500',
-    marginTop: ms(2),
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 11,
+    color: EditorialColors.muted,
+    marginTop: 2,
   },
   ccDivider: {
-    marginVertical: ms(10),
-    backgroundColor: '#F1F5F9',
+    height: 1,
+    backgroundColor: EditorialColors.track,
+    marginVertical: 10,
   },
   ccFooterRow: {
     flexDirection: 'row',
@@ -301,12 +270,12 @@ const styles = StyleSheet.create({
   ccEmailBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: ms(6),
+    gap: 6,
     flex: 1,
   },
   ccEmailText: {
-    fontSize: ms(11.5),
-    color: Palette.textLight,
-    fontWeight: '500',
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 12,
+    color: EditorialColors.muted,
   },
 });
