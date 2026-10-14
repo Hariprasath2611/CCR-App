@@ -85,7 +85,7 @@ export const ExtraHoursRequestScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Card style={styles.formCard}>
         <Card.Title title="Extra teaching Slot Request" subtitle="Apply for compensatory class hours" />
         <Card.Content>
@@ -171,8 +171,11 @@ export const ExtraHoursRequestScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: ms(16),
     backgroundColor: Palette.background,
+  },
+  contentContainer: {
+    padding: ms(16),
+    paddingBottom: ms(40),
   },
   formCard: {
     backgroundColor: Palette.surface,
