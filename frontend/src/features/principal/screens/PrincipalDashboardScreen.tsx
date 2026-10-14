@@ -12,6 +12,7 @@ import { ms } from '@theme/responsive';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const PrincipalDashboardScreen = () => {
+  const insets = useSafeAreaInsets();
   const { logout, user } = useAuthStore();
   const navigation = useNavigation<any>();
   const reports = useReportStore((state) => state.reports);
@@ -34,7 +35,7 @@ export const PrincipalDashboardScreen = () => {
   return (
     <View style={styles.container}>
       {/* ── Header Banner ── */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: Math.max(insets.top, ms(20)) + ms(16) }]}>
         <View style={styles.headerTopRow}>
           <View>
             <Text style={styles.welcomeText}>Welcome,</Text>
