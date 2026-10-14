@@ -3722,3 +3722,13 @@
 {"_e":"metro:bundling:started","_t":1792001939855,"id":"7","platform":"android","environment":null,"entry":"index.js"}
 {"_e":"metro:bundling:progress","_t":1792001939856,"id":"7","progress":0,"total":1,"current":0}
 {"_e":"metro:bundling:done","_t":1792001939908,"id":"7","total":1,"ms":52.7674}
+{"_e":"metro:bundling:started","_t":1792002645092,"id":"8","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1792002645093,"id":"8","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1792002645142,"id":"8","total":1,"ms":49.4912}
+{"_e":"root:init","_t":1792002908783,"format":"v0-jsonl","version":"57.0.9"}
+{"_e":"env:mode","_t":1792002908784,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1792002908786,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1792002909214,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1792002909558,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1792002909805,"plugins":[{"packageName":"expo-sqlite","bannerTitle":"expo-sqlite","cliBanner":false,"webpageEndpoint":"/_expo/plugins/expo-sqlite"}]}
+{"_e":"metro:instantiate","_t":1792002917349,"atlas":false,"workers":8,"host":"::","port":8081}
