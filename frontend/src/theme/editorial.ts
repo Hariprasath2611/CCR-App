@@ -89,6 +89,8 @@ export const EditorialSpacing = {
   hero: 28,
   screenPaddingHorizontal: 20,
   screenPaddingTop: 28,
+  screenHorizontal: 20,
+  topSafeArea: 28,
   rowPaddingVertical: 12,
   blockGap: 12,
 } as const;
@@ -96,6 +98,9 @@ export const EditorialSpacing = {
 export const EditorialRules = {
   hairline: 1,
   heavy: 4,
+  divider: 1,
+  section: 4,
   borderWidth: 1.5,
   borderRadius: 0, // strict 0 everywhere
 } as const;
+

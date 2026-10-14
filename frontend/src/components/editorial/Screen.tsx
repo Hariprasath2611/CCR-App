@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, ViewStyle, StyleProp } from 'react-native';
+import { View, StyleSheet, ScrollView, ViewStyle, StyleProp, RefreshControlProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EditorialColors, EditorialSpacing } from '@theme/editorial';
 
@@ -10,7 +10,7 @@ interface ScreenProps {
   contentContainerStyle?: StyleProp<ViewStyle>;
   safeTop?: boolean;
   safeBottom?: boolean;
-  refreshControl?: React.ReactElement;
+  refreshControl?: React.ReactElement<RefreshControlProps>;
 }
 
 export const Screen: React.FC<ScreenProps> = ({

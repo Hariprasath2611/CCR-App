@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Text, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, ActivityIndicator, ViewStyle, TextStyle, StyleProp } from 'react-native';
 import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
 
 interface AppButtonProps {
@@ -8,7 +8,7 @@ interface AppButtonProps {
   mode?: 'text' | 'outlined' | 'contained';
   loading?: boolean;
   disabled?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   textColor?: string;
   labelStyle?: TextStyle;
   icon?: string;
