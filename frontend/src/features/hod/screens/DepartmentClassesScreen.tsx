@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
-import { Text, Card, ProgressBar, Badge, Button, Portal, Modal, Divider } from 'react-native-paper';
+import { Alert, StyleSheet, View, ScrollView, TouchableOpacity, Text, StatusBar, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { useReportStore, ConsolidatedReport } from '@features/cc/store/useReportStore';
 import { WeeklyCourseCoverageReportCard } from '../../cc/components/WeeklyCourseCoverageReportCard';
-import { Palette } from '@theme/colors';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { generateReportHTML } from '@services/api/reportPdfTemplate';
 import { generateReportWord } from '@services/api/reportWordTemplate';
-
-import { ms } from '@theme/responsive';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getCCForSection } from '@config/facultyBoard';
-
-const { width } = Dimensions.get('window');
+import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { Label } from '@components/editorial/Label';
+import { Rule } from '@components/editorial/Rule';
+import { SegBar } from '@components/editorial/SegBar';
+import { EditorialChip } from '@components/editorial/EditorialChip';
 
 interface ClassData {
   classId: string;
@@ -25,20 +25,19 @@ interface ClassData {
   pendingCount: number;
 }
 
-// DEPT_SUBJECTS_LIST removed
+const YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
 
 export const DepartmentClassesScreen = () => {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
   const { user } = useAuthStore();
   const reports = useReportStore((state) => state.reports);
-  const subjectProgressList = useReportStore((state) => state.subjectProgressList);
 
   const [activeTab, setActiveTab] = useState<'classes' | 'subjects'>('classes');
   const [selectedYear, setSelectedYear] = useState<string>('2nd Year');
   const [selectedReport, setSelectedReport] = useState<ConsolidatedReport | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
-  // Helper to extract department code
   const getDeptCode = (deptName: string = '') => {
     const upper = deptName.toUpperCase();
     if (upper.includes('CSBS') || upper.includes('BUSINESS SYSTEMS')) return 'CSBS';
@@ -54,11 +53,9 @@ export const DepartmentClassesScreen = () => {
 
   const deptCode = getDeptCode(user?.department || 'Computer Science Engineering');
 
-  // Dynamic Class builder based on existing consolidated reports
   const getClassesForDept = (code: string): ClassData[] => {
     const classMap: Record<string, ClassData> = {};
-    
-    // Always include 1st Year Sections A-G with CC mappings
+
     const default1stYear = [
       { classId: '1st Year SEC-A', name: '1st Year SEC-A', year: '1st Year', coverage: 78, pendingCount: 0 },
       { classId: '1st Year SEC-B', name: '1st Year SEC-B', year: '1st Year', coverage: 82, pendingCount: 0 },
@@ -104,7 +101,6 @@ export const DepartmentClassesScreen = () => {
     topics: number;
   }
 
-  // Dynamic Subjects list builder for HOD department
   const getMockSubjectsForDept = (code: string): DeptSubject[] => {
     return [
       { code: 'CS3591', year: '3rd Year', name: 'Computer Networks', faculty: 'Ms.E Uva Shakthi', topics: 5 },
@@ -118,10 +114,6 @@ export const DepartmentClassesScreen = () => {
   };
 
   const departmentSubjects = getMockSubjectsForDept(deptCode);
-
-  const getMockSubjectsForClass = (classId: string, dCode: string) => {
-    return [];
-  };
 
   const handleOpenSpreadsheet = (cls: ClassData) => {
     const week = 12;
@@ -142,8 +134,7 @@ export const DepartmentClassesScreen = () => {
       const { uri } = await Print.printToFileAsync({ html });
       await Sharing.shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
     } catch (err) {
-      console.error('Failed to export PDF:', err);
-      Alert.alert('Export Failed', 'An error occurred while generating the PDF.');
+      Alert.alert('Export Error', 'Failed to generate PDF document.');
     }
   };
 
@@ -155,511 +146,439 @@ export const DepartmentClassesScreen = () => {
         mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       });
     } catch (err) {
-      console.error('Failed to export Word:', err);
-      Alert.alert('Export Failed', 'An error occurred while generating the Word document.');
+      Alert.alert('Export Error', 'Failed to export Word document.');
     }
   };
 
-  const handleExportReport = (rep: ConsolidatedReport) => {
-    Alert.alert(
-      'Export Report',
-      'Choose a file format to export the weekly course coverage report:',
-      [
-        { text: 'PDF Document', onPress: () => handleExportPDF(rep) },
-        { text: 'Word Document (DOCX)', onPress: () => handleExportWord(rep) },
-        { text: 'Cancel', style: 'cancel' }
-      ]
-    );
-  };
-
   return (
-    <View style={styles.container}>
-      {/* ── SEGMENT TABS ── */}
-      <View style={styles.tabContainer}>
-        <TouchableOpacity
-          style={[styles.tabButton, activeTab === 'classes' && styles.activeTabButton]}
-          onPress={() => setActiveTab('classes')}
-          activeOpacity={0.7}
-        >
-          <MaterialCommunityIcons name="google-classroom" size={18} color={activeTab === 'classes' ? '#FFFFFF' : Palette.textLight} />
-          <Text style={[styles.tabText, activeTab === 'classes' && styles.activeTabText]}>Classes Grid</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tabButton, activeTab === 'subjects' && styles.activeTabButton]}
-          onPress={() => setActiveTab('subjects')}
-          activeOpacity={0.7}
-        >
-          <MaterialCommunityIcons name="book-open-page-variant" size={18} color={activeTab === 'subjects' ? '#FFFFFF' : Palette.textLight} />
-          <Text style={[styles.tabText, activeTab === 'subjects' && styles.activeTabText]}>Subject Catalog</Text>
-        </TouchableOpacity>
-      </View>
+    <View style={styles.screenWrapper}>
+      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingBottom: insets.bottom + 80,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Label text={`DEPARTMENT CURRICULUM • ${deptCode}`} />
+          <Text style={styles.headerTitle}>
+            DEPARTMENT CLASSES<Text style={styles.accentDot}>.</Text>
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            Course coverage monitoring, class progress and syllabus logs.
+          </Text>
+        </View>
 
-      {activeTab === 'classes' ? (
-        <ScrollView style={styles.scrollBody} contentContainerStyle={styles.scrollContent}>
-          {/* Header */}
-          <View style={styles.headerBox}>
-            <Text style={styles.title}>{user?.department || 'Computer Science Engineering'}</Text>
-            <Text style={styles.subtitle}>Audit syllabus coverage spreadsheets mapped for your academic classes.</Text>
-          </View>
+        {/* 4px Heavy Rule */}
+        <Rule thickness="heavy" style={styles.heavySpacer} />
 
-          {/* Year selector tabs */}
-          <View style={styles.yearSelectorContainer}>
-            {['1st Year', '2nd Year', '3rd Year', '4th Year'].map((year) => {
-              const isSelected = selectedYear === year;
-              return (
-                <TouchableOpacity
-                  key={year}
-                  onPress={() => setSelectedYear(year)}
-                  style={[styles.yearBtn, isSelected && styles.yearBtnActive]}
-                  activeOpacity={0.7}
-                >
-                  <Text style={[styles.yearBtnText, isSelected && styles.yearBtnTextActive]}>
-                    {year}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+        {/* Tab Toggle: Classes vs Subjects */}
+        <View style={styles.tabToggleRow}>
+          <EditorialChip
+            label="CLASSES"
+            selected={activeTab === 'classes'}
+            onPress={() => setActiveTab('classes')}
+          />
+          <EditorialChip
+            label="SUBJECTS"
+            selected={activeTab === 'subjects'}
+            onPress={() => setActiveTab('subjects')}
+          />
+        </View>
 
-          {/* Classes lists */}
-          <View style={styles.classesList}>
-            {filteredClasses.map((cls) => {
-              const ccInfo = getCCForSection(cls.classId);
-              return (
-                <Card key={cls.classId} style={styles.classCard}>
-                  <Card.Content>
-                    <View style={styles.classHeader}>
-                      <View style={{ flex: 1 }}>
+        {/* Year Filter Chips */}
+        <View style={styles.yearChipRow}>
+          {YEARS.map((yr) => (
+            <EditorialChip
+              key={yr}
+              label={yr.toUpperCase()}
+              selected={selectedYear === yr}
+              onPress={() => setSelectedYear(yr)}
+            />
+          ))}
+        </View>
+
+        {/* 1px Hairline Rule */}
+        <Rule thickness="hairline" style={styles.hairlineSpacer} />
+
+        {activeTab === 'classes' ? (
+          <>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionHeaderTitle}>
+                {selectedYear.toUpperCase()} SECTIONS
+              </Text>
+              <Label text={`${filteredClasses.length} SECTIONS`} />
+            </View>
+
+            <View style={styles.classList}>
+              {filteredClasses.map((cls) => {
+                const ccInfo = getCCForSection(cls.classId);
+                const isLagging = cls.coverage < 75;
+                return (
+                  <View key={cls.classId} style={styles.classRow}>
+                    <View style={styles.rowTop}>
+                      <View style={styles.classInfo}>
                         <Text style={styles.className}>{cls.name}</Text>
-                        <Text style={styles.classDeptCode}>{deptCode} Department</Text>
-                        {ccInfo && (
-                          <Text style={{ fontSize: ms(12), color: Palette.primary, fontWeight: '700', marginTop: ms(3) }}>
-                            CC: {ccInfo.facultyName} ({ccInfo.department})
-                          </Text>
-                        )}
+                        <Label
+                          text={`CC: ${ccInfo?.facultyName?.toUpperCase() || 'UNASSIGNED'}${
+                            cls.pendingCount > 0 ? ' • PENDING REVIEW' : ''
+                          }`}
+                          style={styles.ccMetaLabel}
+                        />
                       </View>
-                      {cls.pendingCount > 0 ? (
-                        <Badge style={styles.pendingBadge}>{`${cls.pendingCount} Pending`}</Badge>
-                      ) : (
-                        <Badge style={styles.okBadge}>All Logged</Badge>
-                      )}
+
+                      <View style={styles.rightValueBox}>
+                        <Text
+                          style={[
+                            styles.percentText,
+                            isLagging ? styles.accentPercentText : null,
+                          ]}
+                        >
+                          {cls.coverage}%
+                        </Text>
+                      </View>
                     </View>
 
-                  <View style={styles.progressSection}>
-                    <View style={styles.progressLabelRow}>
-                      <Text style={styles.progressLabel}>Average Coverage</Text>
-                      <Text style={styles.progressValue}>{cls.coverage}%</Text>
+                    {/* 25-Segment Bar */}
+                    <View style={styles.segBarWrapper}>
+                      <SegBar
+                        totalSegments={25}
+                        filledSegments={Math.round((cls.coverage / 100) * 25)}
+                        isLagging={isLagging}
+                      />
                     </View>
-                    <ProgressBar progress={cls.coverage / 100} color={Palette.primary} style={styles.progressBar} />
-                  </View>
 
-                  <View style={styles.actionsRow}>
-                    <Button
-                      mode="outlined"
-                      compact
-                      icon="eye"
-                      style={[styles.actionBtn, { flex: 1, marginRight: ms(8) }]}
-                      labelStyle={styles.actionBtnLabel}
-                      onPress={() => navigation.navigate('FacultyProgress', { classId: cls.classId })}
-                    >
-                      Inspect Progress
-                    </Button>
-                    <Button
-                      mode="contained"
-                      compact
-                      icon="table"
-                      style={[styles.actionBtn, { flex: 1.2 }]}
-                      labelStyle={[styles.actionBtnLabel, { color: '#FFFFFF' }]}
-                      buttonColor={Palette.primary}
-                      onPress={() => handleOpenSpreadsheet(cls)}
-                    >
-                      Spreadsheet Details
-                    </Button>
-                  </View>
-                </Card.Content>
-              </Card>
-            );
-          })}
-          </View>
-        </ScrollView>
-      ) : (
-        <ScrollView style={styles.scrollBody} contentContainerStyle={styles.scrollContent}>
-          {/* Header */}
-          <View style={styles.headerBox}>
-            <Text style={styles.title}>Department Subjects Details</Text>
-            <Text style={styles.subtitle}>Syllabus configuration details for all subjects mapped under {user?.department || 'CSE'}.</Text>
-          </View>
+                    {/* Row Action Buttons */}
+                    <View style={styles.rowActions}>
+                      <TouchableOpacity
+                        style={styles.actionOutlineBtn}
+                        onPress={() => handleOpenSpreadsheet(cls)}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.actionOutlineBtnText}>SPREADSHEET</Text>
+                      </TouchableOpacity>
 
-          {/* Subjects Grid */}
-          <View style={styles.subjectsGrid}>
-            {departmentSubjects.map((sub) => (
-              <Card key={sub.code} style={styles.subjectCard}>
-                <Card.Content>
-                  <View style={styles.subjectHeader}>
-                    <View style={styles.subCodeBadge}>
-                      <Text style={styles.subCodeText}>{sub.code}</Text>
-                    </View>
-                    <Text style={styles.subYearBadge}>{sub.year}</Text>
-                  </View>
-                  <Text style={styles.subjectName}>{sub.name}</Text>
-                  
-                  <Divider style={styles.subDivider} />
-                  
-                  <View style={styles.subjectMeta}>
-                    <View style={styles.metaItem}>
-                      <Feather name="user" size={13} color={Palette.textLight} />
-                      <Text style={styles.metaText} numberOfLines={1}>{sub.faculty}</Text>
-                    </View>
-                    <View style={styles.metaItem}>
-                      <Feather name="list" size={13} color={Palette.textLight} />
-                      <Text style={styles.metaText}>{sub.topics} Syllabus Units</Text>
+                      <TouchableOpacity
+                        style={styles.actionPrimaryBtn}
+                        onPress={() =>
+                          navigation.navigate('SubjectReports', { classId: cls.classId })
+                        }
+                        activeOpacity={0.85}
+                      >
+                        <Text style={styles.actionPrimaryBtnText}>VIEW REPORTS</Text>
+                        <Feather name="arrow-right" size={14} color={EditorialColors.white} />
+                      </TouchableOpacity>
                     </View>
                   </View>
-                </Card.Content>
-              </Card>
-            ))}
-          </View>
-        </ScrollView>
-      )}
+                );
+              })}
+            </View>
+          </>
+        ) : (
+          <>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionHeaderTitle}>
+                {selectedYear.toUpperCase()} SUBJECTS
+              </Text>
+              <Label text={`${departmentSubjects.length} COURSES`} />
+            </View>
 
-      {/* ── SPREADSHEET DETAIL OVERLAY MODAL ── */}
-      <Portal>
+            <View style={styles.classList}>
+              {departmentSubjects.map((sub) => (
+                <View key={sub.code} style={styles.classRow}>
+                  <View style={styles.rowTop}>
+                    <View style={styles.classInfo}>
+                      <Text style={styles.subjectCode}>{sub.code}</Text>
+                      <Text style={styles.className}>{sub.name}</Text>
+                      <Label text={`FACULTY: ${sub.faculty.toUpperCase()} • ${sub.topics} TOPICS`} />
+                    </View>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </>
+        )}
+
+        {/* Modal for viewing spreadsheet */}
         <Modal
+          animationType="fade"
+          transparent={true}
           visible={modalVisible}
-          onDismiss={() => setModalVisible(false)}
-          contentContainerStyle={styles.modalContainer}
+          onRequestClose={() => setModalVisible(false)}
         >
-          {selectedReport && (
+          <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
-                <View style={styles.modalTitleBox}>
-                  <Text style={styles.modalTitle}>{selectedReport.classId} Course Coverage</Text>
-                  <Text style={styles.modalSubtitle}>
-                    Official Auditing Sheet · Week {selectedReport.weekNumber}
-                  </Text>
-                </View>
-                <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeBtn}>
-                  <Feather name="x" size={22} color={Palette.textLight} />
+                <Text style={styles.modalTitle}>
+                  CONSOLIDATED SPREADSHEET<Text style={styles.accentDot}>.</Text>
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setModalVisible(false)}
+                  style={styles.modalCloseButton}
+                  accessibilityLabel="Close modal"
+                >
+                  <Feather name="x" size={20} color={EditorialColors.ink} />
                 </TouchableOpacity>
               </View>
 
-              <Divider style={styles.modalDivider} />
+              <Rule thickness="hairline" style={{ marginBottom: 16 }} />
 
-              <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
-                <WeeklyCourseCoverageReportCard 
-                  report={selectedReport} 
-                  showDownloadButton={true} 
-                  onDownloadPress={() => handleExportReport(selectedReport)}
-                />
-              </ScrollView>
+              {selectedReport && (
+                <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 420 }}>
+                  <WeeklyCourseCoverageReportCard report={selectedReport} showDownloadButton={false} />
 
-              <Divider style={styles.modalDivider} />
+                  <View style={styles.modalActions}>
+                    <TouchableOpacity
+                      style={styles.modalActionBtn}
+                      onPress={() => handleExportPDF(selectedReport)}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={styles.modalActionBtnText}>EXPORT PDF</Text>
+                      <Feather name="download" size={14} color={EditorialColors.white} />
+                    </TouchableOpacity>
 
-              <View style={styles.modalFooter}>
-                <Button
-                  mode="contained"
-                  onPress={() => setModalVisible(false)}
-                  style={styles.modalCloseButton}
-                  buttonColor={Palette.primary}
-                >
-                  Close Document
-                </Button>
-              </View>
+                    <TouchableOpacity
+                      style={styles.modalOutlineBtn}
+                      onPress={() => handleExportWord(selectedReport)}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={styles.modalOutlineBtnText}>EXPORT WORD</Text>
+                      <Feather name="file-text" size={14} color={EditorialColors.ink} />
+                    </TouchableOpacity>
+                  </View>
+                </ScrollView>
+              )}
             </View>
-          )}
+          </View>
         </Modal>
-      </Portal>
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screenWrapper: {
+    flex: 1,
+    backgroundColor: EditorialColors.bg,
+  },
   container: {
     flex: 1,
-    backgroundColor: Palette.background,
-    paddingTop: ms(10),
+    backgroundColor: EditorialColors.bg,
   },
-  tabContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#EEF2FF',
-    borderRadius: ms(14),
-    padding: ms(5),
-    marginHorizontal: ms(16),
-    marginBottom: ms(10),
+  content: {
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
   },
-  tabButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: ms(10),
-    borderRadius: ms(10),
-    gap: ms(6),
+  header: {
+    marginBottom: 4,
   },
-  activeTabButton: {
-    backgroundColor: Palette.primary,
-    elevation: 2,
+  headerTitle: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 34,
+    lineHeight: 38,
+    color: EditorialColors.ink,
+    letterSpacing: -0.5,
+    marginTop: 4,
+    marginBottom: 4,
   },
-  tabText: {
-    fontSize: ms(13),
-    fontWeight: '700',
-    color: Palette.textLight,
+  accentDot: {
+    color: EditorialColors.accent,
   },
-  activeTabText: {
-    color: '#FFFFFF',
-  },
-  scrollBody: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: ms(16),
-    paddingBottom: ms(32),
-  },
-  headerBox: {
-    marginBottom: ms(16),
-    marginTop: ms(8),
-  },
-  title: {
-    fontSize: ms(20),
-    fontWeight: '900',
-    color: Palette.textDark,
-  },
-  subtitle: {
-    fontSize: ms(12.5),
-    color: Palette.textLight,
+  headerSubtitle: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 12,
+    color: EditorialColors.muted,
     lineHeight: 18,
-    marginTop: ms(4),
   },
-  yearSelectorContainer: {
+  heavySpacer: {
+    marginVertical: 18,
+  },
+  hairlineSpacer: {
+    marginVertical: 16,
+  },
+  tabToggleRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 12,
+  },
+  yearChipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 16,
+  },
+  sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(12),
-    padding: ms(5),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    marginBottom: ms(16),
-  },
-  yearBtn: {
-    flex: 1,
-    paddingVertical: ms(8),
-    borderRadius: ms(8),
     alignItems: 'center',
-    marginHorizontal: ms(2),
-    backgroundColor: '#F1F5F9',
+    marginBottom: 14,
   },
-  yearBtnActive: {
-    backgroundColor: Palette.primary,
+  sectionHeaderTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
   },
-  yearBtnText: {
-    fontSize: ms(11),
-    fontWeight: '700',
-    color: Palette.textLight,
+  classList: {
+    borderTopWidth: EditorialRules.hairline,
+    borderTopColor: EditorialColors.ink,
   },
-  yearBtnTextActive: {
-    color: '#FFFFFF',
+  classRow: {
+    borderBottomWidth: EditorialRules.hairline,
+    borderBottomColor: EditorialColors.ink,
+    paddingVertical: 14,
   },
-  classesList: {
-    marginBottom: ms(8),
-  },
-  classCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    marginBottom: ms(12),
-    shadowColor: '#0F172A',
-    shadowOffset: { width: ms(0), height: ms(4) },
-    shadowOpacity: 0.02,
-    shadowRadius: 8,
-    elevation: 1,
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-  },
-  classHeader: {
+  rowTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: ms(12),
+    marginBottom: 10,
+  },
+  classInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  subjectCode: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 12,
+    letterSpacing: 1,
+    color: EditorialColors.muted,
+    marginBottom: 2,
   },
   className: {
-    fontSize: ms(15.5),
-    fontWeight: '800',
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 17,
+    lineHeight: 22,
+    color: EditorialColors.ink,
+    marginBottom: 4,
   },
-  classDeptCode: {
-    fontSize: ms(11.5),
-    color: Palette.textLight,
-    fontWeight: '500',
-    marginTop: ms(1),
+  ccMetaLabel: {
+    letterSpacing: 1.5,
   },
-  pendingBadge: {
-    backgroundColor: '#FEF2F2',
-    color: Palette.error,
-    fontWeight: '800',
-    paddingHorizontal: ms(8),
-    borderRadius: ms(6),
+  rightValueBox: {
+    alignItems: 'flex-end',
+    justifyContent: 'center',
   },
-  okBadge: {
-    backgroundColor: '#ECFDF5',
-    color: Palette.success,
-    fontWeight: '800',
-    paddingHorizontal: ms(8),
-    borderRadius: ms(6),
+  percentText: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 28,
+    lineHeight: 32,
+    color: EditorialColors.ink,
   },
-  progressSection: {
-    marginBottom: ms(14),
+  accentPercentText: {
+    color: EditorialColors.accent,
   },
-  progressLabelRow: {
+  segBarWrapper: {
+    marginTop: 2,
+    marginBottom: 12,
+  },
+  rowActions: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: ms(6),
+    gap: 10,
+    justifyContent: 'flex-end',
   },
-  progressLabel: {
-    fontSize: ms(11.5),
-    color: Palette.textLight,
-    fontWeight: '600',
-  },
-  progressValue: {
-    fontSize: ms(12.5),
-    fontWeight: '800',
-    color: Palette.primary,
-  },
-  progressBar: {
-    height: ms(6),
-    borderRadius: ms(3),
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    marginTop: ms(4),
-  },
-  actionBtn: {
-    borderRadius: ms(10),
-    borderColor: Palette.primary,
-    borderWidth: 1.2,
-  },
-  actionBtnLabel: {
-    fontSize: ms(11.5),
-    fontWeight: '700',
-  },
-
-  // Subjects styles
-  subjectsGrid: {
-    gap: ms(12),
-  },
-  subjectCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: ms(0), height: ms(2) },
-    shadowOpacity: 0.02,
-    shadowRadius: 6,
-    elevation: 1,
-  },
-  subjectHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  actionOutlineBtn: {
+    height: 38,
+    paddingHorizontal: 12,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
     alignItems: 'center',
-    marginBottom: ms(8),
+    justifyContent: 'center',
   },
-  subCodeBadge: {
-    backgroundColor: '#EFF6FF',
-    paddingHorizontal: ms(8),
-    paddingVertical: ms(4),
-    borderRadius: ms(6),
+  actionOutlineBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    color: EditorialColors.ink,
   },
-  subCodeText: {
-    fontSize: ms(11),
-    fontWeight: '800',
-    color: Palette.primary,
-  },
-  subYearBadge: {
-    fontSize: ms(11.5),
-    color: Palette.textLight,
-    fontWeight: '600',
-  },
-  subjectName: {
-    fontSize: ms(15),
-    fontWeight: '800',
-    color: Palette.textDark,
-    marginBottom: ms(8),
-  },
-  subDivider: {
-    marginVertical: ms(8),
-    backgroundColor: '#F1F5F9',
-  },
-  subjectMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  metaItem: {
+  actionPrimaryBtn: {
+    height: 38,
+    paddingHorizontal: 14,
+    backgroundColor: EditorialColors.ink,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: ms(6),
+    justifyContent: 'center',
+    gap: 6,
+  },
+  actionPrimaryBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    color: EditorialColors.white,
+  },
+  modalOverlay: {
     flex: 1,
-  },
-  metaText: {
-    fontSize: ms(11.5),
-    color: Palette.textLight,
-    fontWeight: '500',
-  },
-
-  // Modal styles
-  modalContainer: {
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(17, 17, 17, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: ms(16),
+    padding: 20,
   },
   modalContent: {
-    width: width - 32,
-    maxHeight: '85%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(24),
-    overflow: 'hidden',
-    elevation: 10,
+    width: '100%',
+    backgroundColor: EditorialColors.bg,
+    borderWidth: 2,
+    borderColor: EditorialColors.ink,
+    padding: 20,
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: ms(18),
-  },
-  modalTitleBox: {
-    flex: 1,
+    marginBottom: 8,
   },
   modalTitle: {
-    fontSize: ms(16),
-    fontWeight: '900',
-    color: Palette.textDark,
-  },
-  modalSubtitle: {
-    fontSize: ms(11.5),
-    color: Palette.textLight,
-    marginTop: ms(2),
-    fontWeight: '500',
-  },
-  closeBtn: {
-    padding: ms(6),
-    borderRadius: ms(10),
-    backgroundColor: '#F8FAFC',
-  },
-  modalDivider: {
-    backgroundColor: '#E2E8F0',
-  },
-  modalScroll: {
-    padding: ms(16),
-  },
-  modalFooter: {
-    padding: ms(16),
-    backgroundColor: '#F8FAFC',
-    alignItems: 'center',
+    fontFamily: EditorialFonts.display,
+    fontSize: 18,
+    color: EditorialColors.ink,
+    letterSpacing: 0.5,
   },
   modalCloseButton: {
-    borderRadius: ms(12),
-    width: '100%',
-    paddingVertical: ms(4),
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 16,
+  },
+  modalActionBtn: {
+    flex: 1,
+    height: 48,
+    backgroundColor: EditorialColors.ink,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  modalActionBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 12,
+    letterSpacing: 1.5,
+    color: EditorialColors.white,
+  },
+  modalOutlineBtn: {
+    flex: 1,
+    height: 48,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  modalOutlineBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 12,
+    letterSpacing: 1.5,
+    color: EditorialColors.ink,
   },
 });
-
-export default DepartmentClassesScreen;

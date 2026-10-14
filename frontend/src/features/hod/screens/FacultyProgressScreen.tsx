@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
-import { Text, Card, ProgressBar, Button, Badge, Divider } from 'react-native-paper';
+import { StyleSheet, View, ScrollView, TouchableOpacity, Text, StatusBar } from 'react-native';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useReportStore, ConsolidatedReport } from '@features/cc/store/useReportStore';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
-import { Palette } from '@theme/colors';
 import { StaffStackParamList } from '@navigation/types';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { WeeklyCourseCoverageReportCard } from '../../cc/components/WeeklyCourseCoverageReportCard';
-
-import { ms } from '@theme/responsive';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { Label } from '@components/editorial/Label';
+import { Rule } from '@components/editorial/Rule';
+import { SegBar } from '@components/editorial/SegBar';
+import { EditorialChip } from '@components/editorial/EditorialChip';
 
 type RouteParams = RouteProp<StaffStackParamList, 'FacultyProgress'>;
 type HodNav = NativeStackNavigationProp<StaffStackParamList>;
 
 export const FacultyProgressScreen = () => {
+  const insets = useSafeAreaInsets();
   const route = useRoute<RouteParams>();
   const navigation = useNavigation<HodNav>();
   const { user } = useAuthStore();
@@ -23,449 +25,342 @@ export const FacultyProgressScreen = () => {
   const subjectProgressList = useReportStore((state) => state.subjectProgressList);
 
   const classId = route.params?.classId || 'CSE-B';
-  const selectedWeek = '12'; // Default week
+  const selectedWeek = '12';
 
-  // Helper to fetch subjects from class store progress list
   const getSubjectsProgressForClass = (clsId: string, week: string) => {
     const storeKey = `${clsId}_${week}`;
     return subjectProgressList[storeKey] || [];
   };
 
   const progressList = getSubjectsProgressForClass(classId, selectedWeek);
-
   const [viewMode, setViewMode] = useState<'list' | 'spreadsheet'>('list');
 
-  // Filter pending consolidated reports submitted for this specific class
   const classPendingReports = reports.filter(
     (r) => r.classId === classId && r.status === 'SUBMITTED_TO_HOD'
   );
   const PENDING_REPORTS = classPendingReports.length;
-  
-  // Real slot request for this class
-  const PENDING_EXTRA_HOURS = 0;
 
-  // Find ConsolidatedReport
   const existingReport = reports.find(
     (r) => r.classId === classId && r.weekNumber === parseInt(selectedWeek)
   );
 
-  const getStatusLabel = (status: string) => {
-    if (status === 'Submitted') {
-      return { label: 'LOGGED', bgColor: '#ECFDF5', textColor: Palette.success };
-    }
-    return { label: 'PENDING', bgColor: '#FEF2F2', textColor: Palette.error };
-  };
+  const avgCoverage = progressList.length > 0
+    ? Math.round(progressList.reduce((sum, s) => sum + s.coverage, 0) / progressList.length)
+    : 78;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* ── CLASS HEADER BANNER ── */}
-      <View style={styles.classHeader}>
-        <View style={styles.headerIconBox}>
-          <MaterialCommunityIcons name="google-classroom" size={24} color="#FFFFFF" />
-        </View>
-        <View style={styles.headerInfo}>
-          <Text style={styles.classTitle}>{classId} Class Syllabus Status</Text>
-          <Text style={styles.classSubtitle}>
-            Department: {user?.department || 'Computer Science Engineering'} · Week {selectedWeek}
+    <View style={styles.screenWrapper}>
+      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingBottom: insets.bottom + 80,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Label text={`SECTION AUDIT • WEEK ${selectedWeek}`} />
+          <Text style={styles.headerTitle}>
+            {classId.toUpperCase()}
+            <Text style={styles.accentDot}>.</Text>
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            Department: {user?.department || 'Computer Science Engineering'} • {avgCoverage}% Syllabus Coverage
           </Text>
         </View>
-      </View>
 
-      {/* ── VIEW SWITCHER TABS ── */}
-      <View style={styles.tabContainer}>
-        <TouchableOpacity
-          style={[styles.tabButton, viewMode === 'list' && styles.activeTabButton]}
-          onPress={() => setViewMode('list')}
-          activeOpacity={0.7}
-        >
-          <MaterialCommunityIcons
-            name="format-list-bulleted"
-            size={18}
-            color={viewMode === 'list' ? '#FFFFFF' : Palette.textLight}
-          />
-          <Text style={[styles.tabText, viewMode === 'list' && styles.activeTabText]}>List View</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tabButton, viewMode === 'spreadsheet' && styles.activeTabButton]}
-          onPress={() => setViewMode('spreadsheet')}
-          activeOpacity={0.7}
-        >
-          <MaterialCommunityIcons
-            name="table"
-            size={18}
-            color={viewMode === 'spreadsheet' ? '#FFFFFF' : Palette.textLight}
-          />
-          <Text style={[styles.tabText, viewMode === 'spreadsheet' && styles.activeTabText]}>Spreadsheet Details</Text>
-        </TouchableOpacity>
-      </View>
+        {/* 4px Heavy Section Rule */}
+        <Rule thickness="heavy" style={styles.heavySpacer} />
 
-      {/* ── RENDERING BY VIEW MODE ── */}
-      {viewMode === 'list' ? (
-        <>
-          <Text style={styles.sectionTitle}>Subject-wise Syllabus Coverage</Text>
-          {progressList.length === 0 ? (
-            <Card style={styles.emptyCard}>
-              <Card.Content>
-                <Text style={styles.emptyText}>No faculty logs recorded for this class.</Text>
-              </Card.Content>
-            </Card>
-          ) : (
-            progressList.map((subj) => {
-              const statusCfg = getStatusLabel(subj.status);
-              return (
-                <Card key={subj.code} style={styles.subjectCard}>
-                  <Card.Content>
-                    <View style={styles.subjRow}>
-                      <View style={styles.subjLeft}>
-                        <Text style={styles.subjCode}>{subj.code}</Text>
-                        <Text style={styles.subjName}>{subj.name}</Text>
-                        <Text style={styles.subjFaculty}>Faculty: {subj.faculty}</Text>
-                      </View>
-                      <View style={styles.subjRight}>
-                        <View style={[styles.badgeStyle, { backgroundColor: statusCfg.bgColor }]}>
-                          <Text style={[styles.badgeText, { color: statusCfg.textColor }]}>
-                            {statusCfg.label}
+        {/* Stat Row */}
+        <View style={styles.statRow}>
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>{progressList.length || 6}</Text>
+            <Label text="COURSES" />
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>{avgCoverage}%</Text>
+            <Label text="COVERAGE" />
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statCol}>
+            <Text
+              style={[
+                styles.statNum,
+                PENDING_REPORTS > 0 ? styles.accentStatNum : null,
+              ]}
+            >
+              {PENDING_REPORTS}
+            </Text>
+            <Label text="PENDING" />
+          </View>
+        </View>
+
+        {/* 1px Hairline Rule */}
+        <Rule thickness="hairline" style={styles.hairlineSpacer} />
+
+        {/* View Mode Toggle Chips */}
+        <View style={styles.tabToggleRow}>
+          <EditorialChip
+            label="LIST VIEW"
+            selected={viewMode === 'list'}
+            onPress={() => setViewMode('list')}
+          />
+          <EditorialChip
+            label="SPREADSHEET"
+            selected={viewMode === 'spreadsheet'}
+            onPress={() => setViewMode('spreadsheet')}
+          />
+        </View>
+
+        {viewMode === 'list' ? (
+          <>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionHeaderTitle}>FACULTY SYLLABUS LOGS</Text>
+              <Label text={`${progressList.length} COURSES`} />
+            </View>
+
+            {progressList.length === 0 ? (
+              <View style={styles.emptyContainer}>
+                <Label text="NO FACULTY LOGS RECORDED" />
+              </View>
+            ) : (
+              <View style={styles.subjectList}>
+                {progressList.map((subj) => {
+                  const isLogged = subj.status === 'Submitted';
+                  const isLagging = subj.coverage < 70;
+                  return (
+                    <View key={subj.code} style={styles.subjectRow}>
+                      <View style={styles.rowTop}>
+                        <View style={styles.subjectInfo}>
+                          <View style={styles.codeRow}>
+                            <Text style={styles.subjectCode}>{subj.code}</Text>
+                            <View style={styles.statusBadge}>
+                              <Text
+                                style={[
+                                  styles.statusText,
+                                  !isLogged ? styles.accentStatusText : null,
+                                ]}
+                              >
+                                {isLogged ? 'LOGGED' : 'PENDING'}
+                              </Text>
+                            </View>
+                          </View>
+                          <Text style={styles.subjectName}>{subj.name}</Text>
+                          <Label text={`FACULTY: ${subj.faculty?.toUpperCase()}`} style={styles.facultyMeta} />
+                        </View>
+
+                        <View style={styles.rightValueBox}>
+                          <Text
+                            style={[
+                              styles.percentText,
+                              isLagging ? styles.accentPercentText : null,
+                            ]}
+                          >
+                            {subj.coverage}%
                           </Text>
                         </View>
                       </View>
-                    </View>
-                    
-                    <View style={styles.progressBlock}>
-                      <View style={styles.progressLabelRow}>
-                        <Text style={styles.progressLabel}>Coverage Progress</Text>
-                        <Text style={styles.progressValue}>{subj.coverage}%</Text>
+
+                      {/* 25-Segment Bar */}
+                      <View style={styles.segBarWrapper}>
+                        <SegBar
+                          totalSegments={25}
+                          filledSegments={Math.round((subj.coverage / 100) * 25)}
+                          isLagging={isLagging}
+                        />
                       </View>
-                      <ProgressBar
-                        progress={subj.coverage / 100}
-                        color={subj.status === 'Submitted' ? Palette.primary : Palette.error}
-                        style={styles.progressBar}
-                      />
-                      <Text style={styles.topicsCount}>
-                        {subj.completedTopicsCount} of {subj.totalTopicsCount} syllabus units completed
-                      </Text>
                     </View>
-                  </Card.Content>
-                </Card>
-              );
-            })
-          )}
-        </>
-      ) : (
-        <View style={{ marginBottom: ms(20) }}>
-          {existingReport ? (
-            <WeeklyCourseCoverageReportCard report={existingReport} showDownloadButton={false} />
-          ) : (
-            <Card style={styles.emptyCard}>
-              <Card.Content>
-                <Text style={styles.emptyText}>No consolidated report has been compiled for this class this week.</Text>
-              </Card.Content>
-            </Card>
-          )}
-        </View>
-      )}
+                  );
+                })}
+              </View>
+            )}
+          </>
+        ) : (
+          <View style={styles.spreadsheetWrapper}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionHeaderTitle}>WEEK {selectedWeek} SPREADSHEET</Text>
+              <Label text="CONSOLIDATED" />
+            </View>
 
-      {/* ── PENDING REVIEWS SPECIFIC TO THIS CLASS ── */}
-      <Text style={styles.sectionTitle}>Pending Reviews for {classId}</Text>
-      
-      {/* Review Consolidated Reports */}
-      <Card style={styles.reviewCard}>
-        <Card.Content>
-          <View style={styles.reviewHeader}>
-            <Text style={styles.reviewTitle}>CC Consolidated Reports</Text>
-            {PENDING_REPORTS > 0 && (
-              <Badge style={styles.errorBadge}>{PENDING_REPORTS}</Badge>
+            {existingReport ? (
+              <WeeklyCourseCoverageReportCard report={existingReport} showDownloadButton={true} />
+            ) : (
+              <View style={styles.emptyContainer}>
+                <Label text="NO CONSOLIDATED REPORT SUBMITTED" />
+              </View>
             )}
           </View>
-          <Text style={styles.reviewSubtitle}>
-            {PENDING_REPORTS > 0 
-              ? `${PENDING_REPORTS} class report is awaiting HOD feedback and approval remarks.`
-              : `No reports submitted for HOD review for ${classId} this week.`}
-          </Text>
-          <Button
-            mode="contained"
-            disabled={PENDING_REPORTS === 0}
-            style={styles.reviewBtn}
-            buttonColor={Palette.primary}
-            onPress={() => {
-              if (PENDING_REPORTS > 0) {
-                navigation.navigate('RequestDetails', {
-                  requestId: classPendingReports[0].id,
-                  requestType: 'CC_REPORT',
-                });
-              }
-            }}
-          >
-            Review Reports
-          </Button>
-        </Card.Content>
-      </Card>
-
-      {/* Review Extra Hour Requests */}
-      <Card style={styles.reviewCard}>
-        <Card.Content>
-          <View style={styles.reviewHeader}>
-            <Text style={styles.reviewTitle}>Extra Hour Slot Requests</Text>
-            {PENDING_EXTRA_HOURS > 0 && (
-              <Badge style={styles.warningBadge}>{PENDING_EXTRA_HOURS}</Badge>
-            )}
-          </View>
-          <Text style={styles.reviewSubtitle}>
-            {PENDING_EXTRA_HOURS > 0
-              ? `${PENDING_EXTRA_HOURS} faculty requested an extra Slot for ${classId} subjects.`
-              : `No pending compensatory slot requests for ${classId}.`}
-          </Text>
-          <Button
-            mode="outlined"
-            disabled={PENDING_EXTRA_HOURS === 0}
-            style={styles.reviewBtn}
-            textColor={Palette.warning}
-            onPress={() =>
-              navigation.navigate('RequestDetails', {
-                requestId: 'sample-extra-001',
-                requestType: 'EXTRA_HOURS',
-              })
-            }
-          >
-            Review Requests
-          </Button>
-        </Card.Content>
-      </Card>
-    </ScrollView>
+        )}
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screenWrapper: {
+    flex: 1,
+    backgroundColor: EditorialColors.bg,
+  },
   container: {
     flex: 1,
-    backgroundColor: Palette.background,
+    backgroundColor: EditorialColors.bg,
   },
   content: {
-    padding: ms(16),
-    paddingBottom: ms(32),
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
   },
-
-  // Class Header styles
-  classHeader: {
+  header: {
+    marginBottom: 4,
+  },
+  headerTitle: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 36,
+    lineHeight: 40,
+    color: EditorialColors.ink,
+    letterSpacing: -0.5,
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  accentDot: {
+    color: EditorialColors.accent,
+  },
+  headerSubtitle: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 12,
+    color: EditorialColors.muted,
+    lineHeight: 18,
+  },
+  heavySpacer: {
+    marginVertical: 18,
+  },
+  hairlineSpacer: {
+    marginVertical: 16,
+  },
+  statRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Palette.primary,
-    borderRadius: ms(20),
-    padding: ms(16),
-    marginBottom: ms(20),
-    elevation: 3,
-    shadowColor: Palette.primary,
-    shadowOffset: { width: ms(0), height: ms(6) },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
+    justifyContent: 'space-between',
+    paddingVertical: 6,
   },
-  headerIconBox: {
-    width: ms(44),
-    height: ms(44),
-    borderRadius: ms(12),
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: ms(14),
-  },
-  headerInfo: {
+  statCol: {
     flex: 1,
+    alignItems: 'center',
   },
-  classTitle: {
-    fontSize: ms(16),
-    fontWeight: '900',
-    color: '#FFFFFF',
+  statNum: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 30,
+    lineHeight: 34,
+    color: EditorialColors.ink,
+    marginBottom: 2,
   },
-  classSubtitle: {
-    fontSize: ms(11.5),
-    color: 'rgba(255, 255, 255, 0.85)',
-    fontWeight: '500',
-    marginTop: ms(2),
+  accentStatNum: {
+    color: EditorialColors.accent,
   },
-
-  // Section titles
-  sectionTitle: {
-    fontSize: ms(11),
-    fontWeight: '800',
-    color: Palette.textLight,
-    letterSpacing: 1.0,
-    textTransform: 'uppercase',
-    marginBottom: ms(10),
-    marginTop: ms(12),
-    paddingLeft: ms(4),
+  statDivider: {
+    width: 1,
+    height: 38,
+    backgroundColor: EditorialColors.ink,
   },
-
-  // Subject Cards
-  subjectCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(20),
-    marginBottom: ms(12),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: ms(0), height: ms(4) },
-    shadowOpacity: 0.02,
-    shadowRadius: 8,
-    elevation: 1,
+  tabToggleRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 20,
   },
-  subjRow: {
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  sectionHeaderTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
+  },
+  subjectList: {
+    borderTopWidth: EditorialRules.hairline,
+    borderTopColor: EditorialColors.ink,
+  },
+  subjectRow: {
+    borderBottomWidth: EditorialRules.hairline,
+    borderBottomColor: EditorialColors.ink,
+    paddingVertical: 14,
+  },
+  rowTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: ms(12),
+    marginBottom: 10,
   },
-  subjLeft: {
+  subjectInfo: {
     flex: 1,
-    paddingRight: ms(8),
+    marginRight: 12,
   },
-  subjCode: {
-    fontSize: ms(11),
-    fontWeight: '800',
-    color: Palette.primary,
-    letterSpacing: 0.3,
+  codeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
   },
-  subjName: {
-    fontSize: ms(15),
-    fontWeight: '800',
-    color: Palette.textDark,
-    marginTop: ms(2),
+  subjectCode: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 12,
+    letterSpacing: 1,
+    color: EditorialColors.muted,
   },
-  subjFaculty: {
-    fontSize: ms(12),
-    color: Palette.textLight,
-    fontWeight: '500',
-    marginTop: ms(2),
+  statusBadge: {
+    borderWidth: 1,
+    borderColor: EditorialColors.ink,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
   },
-  subjRight: {
+  statusText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 9,
+    letterSpacing: 1,
+    color: EditorialColors.ink,
+  },
+  accentStatusText: {
+    color: EditorialColors.accent,
+  },
+  subjectName: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 16,
+    lineHeight: 20,
+    color: EditorialColors.ink,
+    marginBottom: 4,
+  },
+  facultyMeta: {
+    letterSpacing: 1.5,
+  },
+  rightValueBox: {
     alignItems: 'flex-end',
-  },
-  badgeStyle: {
-    paddingVertical: ms(4),
-    paddingHorizontal: ms(8),
-    borderRadius: ms(8),
-  },
-  badgeText: {
-    fontSize: ms(9),
-    fontWeight: '800',
-  },
-  progressBlock: {
-    marginTop: ms(6),
-  },
-  progressLabelRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: ms(6),
-  },
-  progressLabel: {
-    fontSize: ms(11),
-    color: Palette.textLight,
-    fontWeight: '600',
-  },
-  progressValue: {
-    fontSize: ms(12.5),
-    fontWeight: '800',
-    color: Palette.primary,
-  },
-  progressBar: {
-    height: ms(6),
-    borderRadius: ms(3),
-    marginBottom: ms(6),
-  },
-  topicsCount: {
-    fontSize: ms(10.5),
-    color: Palette.textLight,
-    fontWeight: '500',
-  },
-
-  // Review card styles
-  reviewCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(20),
-    marginBottom: ms(12),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    shadowColor: '#000',
-    shadowOffset: { width: ms(0), height: ms(4) },
-    shadowOpacity: 0.01,
-    shadowRadius: 6,
-    elevation: 1,
-  },
-  reviewHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: ms(6),
-  },
-  reviewTitle: {
-    fontSize: ms(14.5),
-    fontWeight: '800',
-    color: Palette.textDark,
-  },
-  reviewSubtitle: {
-    fontSize: ms(12),
-    color: Palette.textLight,
-    lineHeight: 18,
-    marginBottom: ms(12),
-  },
-  errorBadge: {
-    backgroundColor: Palette.error,
-    color: '#FFFFFF',
-  },
-  warningBadge: {
-    backgroundColor: Palette.warning,
-    color: '#FFFFFF',
-  },
-  reviewBtn: {
-    borderRadius: ms(10),
-    paddingVertical: ms(2),
-  },
-
-  // Empty styles
-  emptyCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    alignItems: 'center',
-    paddingVertical: ms(20),
-  },
-  emptyText: {
-    fontSize: ms(13),
-    color: Palette.textLight,
-    fontStyle: 'italic',
-  },
-  // Tab switcher styles
-  tabContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#EEF2FF',
-    borderRadius: ms(12),
-    padding: ms(4),
-    marginBottom: ms(16),
-  },
-  tabButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: ms(10),
-    borderRadius: ms(8),
-    gap: ms(6),
   },
-  activeTabButton: {
-    backgroundColor: Palette.primary,
-    elevation: 2,
-    shadowColor: Palette.primary,
-    shadowOffset: { width: ms(0), height: ms(2) },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+  percentText: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 28,
+    lineHeight: 32,
+    color: EditorialColors.ink,
   },
-  tabText: {
-    fontSize: ms(13),
-    fontWeight: '700',
-    color: Palette.textLight,
+  accentPercentText: {
+    color: EditorialColors.accent,
   },
-  activeTabText: {
-    color: '#FFFFFF',
+  segBarWrapper: {
+    marginTop: 2,
+  },
+  spreadsheetWrapper: {
+    marginTop: 4,
+  },
+  emptyContainer: {
+    paddingVertical: 36,
+    alignItems: 'center',
   },
 });
-
-export default FacultyProgressScreen;
