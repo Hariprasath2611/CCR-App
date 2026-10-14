@@ -17,6 +17,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore, UserSession } from '../store/useAuthStore';
 import { Palette } from '@theme/colors';
+import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing, EditorialType } from '@theme/editorial';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -769,7 +770,7 @@ export const LoginScreen = () => {
       style={styles.keyboardContainer}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
 
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
@@ -777,8 +778,8 @@ export const LoginScreen = () => {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.mainContainer}>
-          {/* College Logo and Header */}
-          <View style={styles.headerContainer}>
+          {/* Top Logo slot top-left */}
+          <View style={styles.topLogoRow}>
             <View style={styles.logoFrame}>
               <Image
                 source={require('../../../assets/logo-removebg-preview.png')}
@@ -786,169 +787,147 @@ export const LoginScreen = () => {
                 resizeMode="contain"
               />
             </View>
-            <Text style={styles.collegeTitle}>JAYA ENGINEERING COLLEGE</Text>
-            <Text style={styles.appTitle}>CCR Generator</Text>
-            <Text style={styles.appSubtitle}>Course Coverage Report Management System</Text>
+            <View style={styles.collegeHeaderBox}>
+              <Text style={styles.collegeLabel}>JAYA ENGINEERING COLLEGE</Text>
+              <Text style={styles.appSystemLabel}>CCR ERP • COURSE COVERAGE SYSTEM</Text>
+            </View>
           </View>
 
-          {/* Sleek Floating Glassmorphic Login Card */}
-          <View style={styles.loginCard}>
-            <Text style={styles.cardHeader}>Welcome Back</Text>
-            <Text style={styles.cardSubHeader}>Sign in to your account to continue</Text>
+          {/* Big display-font headline ending in vermilion full stop */}
+          <View style={styles.headlineRow}>
+            <Text style={styles.displayHeadline}>
+              SIGN IN
+              <Text style={styles.accentDot}>.</Text>
+            </Text>
+          </View>
 
-            {/* Email Field */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Email Address</Text>
-              <TouchableOpacity
-                activeOpacity={1}
-                onPress={() => emailRef.current?.focus()}
-                style={[
-                  styles.inputWrapper,
-                  isEmailFocused && styles.inputWrapperFocused,
-                ]}
-              >
-                <View style={[styles.inputIconBox, isEmailFocused && styles.inputIconBoxFocused]}>
-                  <Feather
-                    name="mail"
-                    size={18}
-                    color={isEmailFocused ? Palette.primary : Palette.textLight}
-                  />
-                </View>
-                <TextInput
-                  ref={emailRef}
-                  style={styles.textInput}
-                  placeholder="Enter email id"
-                  placeholderTextColor={Palette.textLight}
-                  value={email}
-                  onChangeText={setEmail}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  autoCorrect={false}
-                  autoComplete="email"
-                  textContentType="emailAddress"
-                  onFocus={() => setIsEmailFocused(true)}
-                  onBlur={() => setIsEmailFocused(false)}
-                />
-              </TouchableOpacity>
+          {/* 4px ink rule divider */}
+          <View style={styles.heavyRule} />
+
+          {/* Labelled underline Email Field */}
+          <View style={styles.fieldGroup}>
+            <Text style={styles.fieldLabel}>INSTITUTIONAL EMAIL</Text>
+            <View style={[styles.underlineInputWrapper, isEmailFocused && styles.underlineInputFocused]}>
+              <TextInput
+                ref={emailRef}
+                style={styles.underlineInput}
+                placeholder="faculty@jec.ac.in"
+                placeholderTextColor={EditorialColors.muted}
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                autoCorrect={false}
+                autoComplete="email"
+                selectionColor={EditorialColors.ink}
+                onFocus={() => setIsEmailFocused(true)}
+                onBlur={() => setIsEmailFocused(false)}
+              />
             </View>
+          </View>
 
-            {/* Password Field */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Password</Text>
+          {/* Labelled underline Password Field */}
+          <View style={styles.fieldGroup}>
+            <Text style={styles.fieldLabel}>PASSWORD</Text>
+            <View style={[styles.underlineInputWrapper, isPasswordFocused && styles.underlineInputFocused]}>
+              <TextInput
+                ref={passwordRef}
+                style={styles.underlineInput}
+                placeholder="Enter password"
+                placeholderTextColor={EditorialColors.muted}
+                secureTextEntry={secureText}
+                value={password}
+                onChangeText={setPassword}
+                autoCapitalize="none"
+                selectionColor={EditorialColors.ink}
+                onFocus={() => setIsPasswordFocused(true)}
+                onBlur={() => setIsPasswordFocused(false)}
+              />
               <TouchableOpacity
-                activeOpacity={1}
-                onPress={() => passwordRef.current?.focus()}
-                style={[
-                  styles.inputWrapper,
-                  isPasswordFocused && styles.inputWrapperFocused,
-                ]}
-              >
-                <View style={[styles.inputIconBox, isPasswordFocused && styles.inputIconBoxFocused]}>
-                  <Feather
-                    name="lock"
-                    size={18}
-                    color={isPasswordFocused ? Palette.primary : Palette.textLight}
-                  />
-                </View>
-                <TextInput
-                  ref={passwordRef}
-                  style={styles.textInput}
-                  placeholder="Enter password"
-                  placeholderTextColor={Palette.textLight}
-                  secureTextEntry={secureText}
-                  value={password}
-                  onChangeText={setPassword}
-                  autoCapitalize="none"
-                  onFocus={() => setIsPasswordFocused(true)}
-                  onBlur={() => setIsPasswordFocused(false)}
-                />
-                <TouchableOpacity
-                  onPress={() => setSecureText(!secureText)}
-                  style={styles.passwordToggle}
-                  activeOpacity={0.7}
-                >
-                  <Feather
-                    name={secureText ? 'eye-off' : 'eye'}
-                    size={18}
-                    color={Palette.textLight}
-                  />
-                </TouchableOpacity>
-              </TouchableOpacity>
-            </View>
-
-            {/* Smart Role Resolver Indicator */}
-            {email.trim().length > 0 && (
-              <View
-                style={[
-                  styles.roleDetectorContainer,
-                  {
-                    backgroundColor: currentRoleInfo.bgColor,
-                    borderColor: currentRoleInfo.borderColor,
-                  },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name={currentRoleInfo.icon as any}
-                  size={20}
-                  color={currentRoleInfo.color}
-                  style={styles.roleDetectorIcon}
-                />
-                <View style={styles.roleDetectorTextContainer}>
-                  <Text style={styles.roleDetectorLabel}>Signing in as:</Text>
-                  <Text style={[styles.roleDetectorValue, { color: currentRoleInfo.color }]}>
-                    {currentRoleInfo.label}
-                  </Text>
-                </View>
-              </View>
-            )}
-
-            {/* Remember Me and Forgot Password Container */}
-            <View style={styles.rememberForgotRow}>
-              <TouchableOpacity
-                style={styles.rememberMeContainer}
-                onPress={() => setRememberMe(!rememberMe)}
+                onPress={() => setSecureText(!secureText)}
+                style={styles.passwordToggle}
                 activeOpacity={0.7}
+                accessibilityLabel="Toggle password visibility"
               >
-                <MaterialCommunityIcons
-                  name={rememberMe ? 'checkbox-marked' : 'checkbox-blank-outline'}
-                  size={20}
-                  color={rememberMe ? Palette.primary : Palette.textLight}
+                <Feather
+                  name={secureText ? 'eye-off' : 'eye'}
+                  size={18}
+                  color={EditorialColors.ink}
                 />
-                <Text style={[styles.rememberMeText, rememberMe && styles.rememberMeTextActive]}>
-                  Remember Me
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => navigation.navigate('ForgotPassword')}
-                style={styles.forgotPasswordContainer}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
               </TouchableOpacity>
             </View>
+          </View>
 
-            {/* Modern Sign In Button */}
+          {/* Remember Me and Forgot Password Row */}
+          <View style={styles.rememberForgotRow}>
             <TouchableOpacity
-              style={styles.signInButton}
-              onPress={handleLogin}
-              activeOpacity={0.85}
-              disabled={isLoading}
+              style={styles.rememberMeContainer}
+              onPress={() => setRememberMe(!rememberMe)}
+              activeOpacity={0.7}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: rememberMe }}
             >
-              {isLoading ? (
-                <ActivityIndicator color="#FFFFFF" size="small" style={{ alignSelf: 'center', flex: 1 }} />
-              ) : (
-                <>
-                  <Text style={styles.signInButtonText}>Sign In</Text>
-                  <View style={styles.signInButtonIconBox}>
-                    <Feather name="arrow-right" size={16} color={Palette.primary} />
-                  </View>
-                </>
-              )}
+              <View style={[styles.squareCheckbox, rememberMe && styles.squareCheckboxChecked]}>
+                {rememberMe ? <View style={styles.squareCheckboxInner} /> : null}
+              </View>
+              <Text style={styles.rememberMeLabel}>REMEMBER ME</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate('ForgotPassword')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.forgotPasswordLink}>FORGOT PASSWORD?</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Bottom subtle guidance for tester */}
+          {/* Full width primary button: Height 54, square, ink fill + white uppercase text */}
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={handleLogin}
+            activeOpacity={0.8}
+            disabled={isLoading}
+            accessibilityRole="button"
+          >
+            {isLoading ? (
+              <ActivityIndicator color={EditorialColors.white} size="small" />
+            ) : (
+              <Text style={styles.primaryButtonText}>SIGN IN</Text>
+            )}
+          </TouchableOpacity>
+
+          {/* Small muted help text */}
+          <Text style={styles.helpText}>
+            AUTHORIZED FACULTY & CENTRAL ADMINISTRATION AUDIT ACCESS ONLY
+          </Text>
+
+          {/* 1px ink rule divider */}
+          <View style={styles.hairlineRule} />
+
+          {/* Quick Preset Selector */}
+          <View style={styles.presetsBlock}>
+            <Text style={styles.presetsLabel}>TEST CREDENTIAL PRESETS</Text>
+            <View style={styles.presetsGrid}>
+              {[
+                { label: 'STAFF (REVATHI)', email: 'revathi@gmail.com', pass: 'revathi123' },
+                { label: 'CC (KARUPPAIYA)', email: 'karuppaiya@gmail.com', pass: 'karuppaiya123' },
+                { label: 'HOD (SELVA LAKSHMI)', email: 'selvalakshmi@jec.ac.in', pass: 'selva123' },
+                { label: 'PRINCIPAL', email: 'principal@jec.ac.in', pass: 'admin123' },
+              ].map((p, i) => (
+                <TouchableOpacity
+                  key={i}
+                  style={styles.presetChip}
+                  onPress={() => {
+                    setEmail(p.email);
+                    setPassword(p.pass);
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.presetChipText}>{p.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -958,254 +937,206 @@ export const LoginScreen = () => {
 const styles = StyleSheet.create({
   keyboardContainer: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: EditorialColors.bg,
   },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: ms(24),
-    paddingVertical: ms(40),
+    paddingHorizontal: EditorialSpacing.screenPaddingHorizontal,
+    paddingTop: 48,
+    paddingBottom: 40,
   },
   mainContainer: {
     width: '100%',
-    alignItems: 'center',
-    zIndex: 2,
   },
-  
-  // Header styles
-  headerContainer: {
+  topLogoRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: ms(28),
+    marginBottom: 24,
   },
   logoFrame: {
-    width: ms(60),
-    height: ms(60),
-    borderRadius: ms(12),
-    backgroundColor: '#FFFFFF',
+    width: 48,
+    height: 48,
+    borderWidth: EditorialRules.borderWidth,
+    borderColor: EditorialColors.ink,
+    borderRadius: 0,
+    backgroundColor: EditorialColors.white,
+    padding: 4,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: ms(0), height: ms(6) },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: 'rgba(15, 82, 186, 0.06)',
-    marginBottom: ms(12),
+    marginRight: 14,
   },
   logo: {
-    width: ms(48),
-    height: ms(48),
-    borderRadius: ms(8),
+    width: 36,
+    height: 36,
   },
-  collegeTitle: {
-    fontSize: ms(11),
-    fontWeight: '800',
-    color: Palette.textLight,
-    textAlign: 'center',
-    letterSpacing: 1.8,
-    marginBottom: ms(6),
+  collegeHeaderBox: {
+    flex: 1,
   },
-  appTitle: {
-    fontSize: ms(28),
-    fontWeight: '900',
-    color: Palette.textDark,
-    textAlign: 'center',
-    letterSpacing: -0.5,
+  collegeLabel: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 12,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
   },
-  appSubtitle: {
-    fontSize: ms(11),
-    fontWeight: '500',
-    color: Palette.textLight,
-    textAlign: 'center',
-    marginTop: ms(4),
-    paddingHorizontal: ms(20),
+  appSystemLabel: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 10,
+    letterSpacing: 1,
+    color: EditorialColors.muted,
+    marginTop: 2,
   },
-
-  // Trendy Login Card
-  loginCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(24),
-    padding: ms(24),
+  headlineRow: {
+    marginBottom: 14,
+  },
+  displayHeadline: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 44,
+    lineHeight: 46,
+    color: EditorialColors.ink,
+    letterSpacing: -1,
+  },
+  accentDot: {
+    color: EditorialColors.accent,
+  },
+  heavyRule: {
     width: '100%',
-    shadowColor: '#0F52BA',
-    shadowOffset: { width: ms(0), height: ms(16) },
-    shadowOpacity: 0.06,
-    shadowRadius: 24,
-    elevation: 5,
-    borderWidth: 1,
-    borderColor: 'rgba(15, 82, 186, 0.05)',
-    marginBottom: ms(20),
+    height: EditorialRules.heavy, // 4px ink rule
+    backgroundColor: EditorialColors.ink,
+    marginBottom: 28,
   },
-  cardHeader: {
-    fontSize: ms(20),
-    fontWeight: '800',
-    color: Palette.textDark,
-    marginBottom: ms(4),
-  },
-  cardSubHeader: {
-    fontSize: ms(13),
-    color: Palette.textLight,
-    marginBottom: ms(24),
-  },
-
-  // Form Fields
-  inputGroup: {
-    marginBottom: ms(18),
+  fieldGroup: {
+    marginBottom: 24,
     width: '100%',
   },
-  inputLabel: {
-    fontSize: ms(13),
-    fontWeight: '700',
-    color: Palette.textDark,
-    marginBottom: ms(8),
-    paddingLeft: ms(2),
+  fieldLabel: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
+    textTransform: 'uppercase',
+    marginBottom: 6,
   },
-  inputWrapper: {
+  underlineInputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#E2E8F0',
-    borderRadius: ms(16),
-    height: ms(54),
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: ms(6),
+    borderBottomWidth: 2,
+    borderBottomColor: EditorialColors.ink,
+    paddingBottom: 6,
+    paddingTop: 4,
   },
-  inputWrapperFocused: {
-    borderColor: Palette.primary,
-    shadowColor: Palette.primary,
-    shadowOffset: { width: ms(0), height: ms(4) },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+  underlineInputFocused: {
+    borderBottomColor: EditorialColors.accent,
   },
-  inputIconBox: {
-    width: ms(42),
-    height: ms(42),
-    borderRadius: ms(12),
-    backgroundColor: '#F8FAFC',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: ms(10),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-  },
-  inputIconBoxFocused: {
-    backgroundColor: 'rgba(15, 82, 186, 0.04)',
-    borderColor: 'rgba(15, 82, 186, 0.1)',
-  },
-  textInput: {
+  underlineInput: {
     flex: 1,
-    alignSelf: 'stretch',
-    fontSize: ms(14.5),
-    color: Palette.textDark,
-    paddingHorizontal: ms(4),
-    fontWeight: '500',
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 16,
+    color: EditorialColors.ink,
+    paddingVertical: 0,
   },
   passwordToggle: {
-    padding: ms(10),
-    marginRight: ms(4),
+    padding: 6,
   },
-
-  // Smart Role Detector Badge
-  roleDetectorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderRadius: ms(16),
-    padding: ms(12),
-    marginTop: ms(4),
-    marginBottom: ms(16),
-    width: '100%',
-  },
-  roleDetectorIcon: {
-    marginRight: ms(12),
-  },
-  roleDetectorTextContainer: {
-    flex: 1,
-  },
-  roleDetectorLabel: {
-    fontSize: ms(10),
-    fontWeight: '600',
-    color: Palette.textLight,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  roleDetectorValue: {
-    fontSize: ms(14),
-    fontWeight: '800',
-    marginTop: ms(1),
-  },
-
-  // Remember Me & Forgot Password Row
   rememberForgotRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    width: '100%',
-    marginTop: ms(4),
-    marginBottom: ms(20),
+    alignItems: 'center',
+    marginBottom: 28,
+    marginTop: 4,
   },
   rememberMeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: ms(4),
   },
-  rememberMeText: {
-    fontSize: ms(13),
-    fontWeight: '600',
-    color: Palette.textLight,
-    marginLeft: ms(6),
+  squareCheckbox: {
+    width: 18,
+    height: 18,
+    borderWidth: EditorialRules.borderWidth,
+    borderColor: EditorialColors.ink,
+    borderRadius: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
   },
-  rememberMeTextActive: {
-    color: Palette.textDark,
-    fontWeight: '700',
+  squareCheckboxChecked: {
+    backgroundColor: EditorialColors.ink,
   },
-  forgotPasswordContainer: {
-    alignSelf: 'center',
+  squareCheckboxInner: {
+    width: 6,
+    height: 6,
+    backgroundColor: EditorialColors.white,
   },
-  forgotPasswordText: {
-    color: Palette.primary,
-    fontSize: ms(13),
-    fontWeight: '700',
+  rememberMeLabel: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    color: EditorialColors.ink,
   },
-
-  // Buttons
-  signInButton: {
-    flexDirection: 'row',
-    backgroundColor: Palette.primary,
+  forgotPasswordLink: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    color: EditorialColors.ink,
+  },
+  primaryButton: {
+    height: 54, // strict 54 height
     width: '100%',
-    height: ms(54),
-    borderRadius: ms(16),
+    backgroundColor: EditorialColors.ink, // ink fill
+    borderRadius: 0, // square
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: Palette.primary,
-    shadowOffset: { width: ms(0), height: ms(6) },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 3,
-    position: 'relative',
+    marginBottom: 16,
   },
-  signInButtonText: {
-    color: '#FFFFFF',
-    fontSize: ms(15),
-    fontWeight: '800',
-    letterSpacing: 0.5,
+  primaryButtonText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.white, // white text
+    textTransform: 'uppercase',
   },
-  signInButtonIconBox: {
-    position: 'absolute',
-    right: ms(8),
-    width: ms(38),
-    height: ms(38),
-    borderRadius: ms(12),
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  guidanceText: {
-    fontSize: ms(11),
-    fontWeight: '600',
-    color: Palette.textLight,
+  helpText: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    color: EditorialColors.muted,
     textAlign: 'center',
-    marginTop: ms(12),
+    lineHeight: 16,
+    marginBottom: 24,
+  },
+  hairlineRule: {
+    width: '100%',
+    height: EditorialRules.hairline,
+    backgroundColor: EditorialColors.ink,
+    marginBottom: 20,
+  },
+  presetsBlock: {
+    width: '100%',
+  },
+  presetsLabel: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
+    marginBottom: 10,
+  },
+  presetsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  presetChip: {
+    borderWidth: EditorialRules.hairline,
+    borderColor: EditorialColors.ink,
+    borderRadius: 0,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: 'transparent',
+  },
+  presetChipText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1,
+    color: EditorialColors.ink,
   },
 });
+
