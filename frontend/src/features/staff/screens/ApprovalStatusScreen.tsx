@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
-import { Text, Card, Chip, Badge, Divider, Button } from 'react-native-paper';
-import { Palette } from '@theme/colors';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Text } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
-import { useReportStore } from '@features/cc/store/useReportStore';
+import { EditorialColors, EditorialFonts, EditorialSpacing } from '@theme/editorial';
+import { Rule } from '@components/editorial/Rule';
+import { Label } from '@components/editorial/Label';
+import { EmptyState } from '@components/editorial/EmptyState';
+import { AppButton } from '@components/common/AppButton';
 import { ms } from '@theme/responsive';
 
 interface ApprovalItem {
@@ -82,32 +84,23 @@ export const ApprovalStatusScreen = () => {
     return item.status === filter;
   });
 
-  const getStatusBadge = (status: 'APPROVED' | 'PENDING' | 'RETURNED') => {
-    switch (status) {
-      case 'APPROVED':
-        return { label: 'APPROVED', color: Palette.success, bg: '#ECFDF5', border: '#A7F3D0' };
-      case 'PENDING':
-        return { label: 'PENDING HOD', color: Palette.warning, bg: '#FFFBEB', border: '#FDE68A' };
-      case 'RETURNED':
-        return { label: 'REVISION NEEDED', color: Palette.error, bg: '#FEF2F2', border: '#FECACA' };
-    }
-  };
-
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      {/* Header Info */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Approvals Tracker</Text>
-        <Text style={styles.headerSub}>
-          Track HOD and Administrative decisions on your teaching plans, course logs, and extra hour requests.
+      {/* ── HEADER ── */}
+      <View style={styles.headerBox}>
+        <Label text="DECISION AUDIT" />
+        <Text style={styles.headingText}>APPROVAL TRACKER.</Text>
+        <Text style={styles.subHeadingText}>
+          TRACK HOD & ADMINISTRATIVE DECISIONS ON TEACHING PLANS, LOGS & REQUISITIONS
         </Text>
       </View>
+      <Rule thick style={styles.heroRule} />
 
-      {/* Filter Chips */}
+      {/* ── FILTER CHIPS ── */}
       <View style={styles.filtersRow}>
         {(['ALL', 'APPROVED', 'PENDING', 'RETURNED'] as const).map((f) => {
           const isSelected = filter === f;
@@ -116,7 +109,7 @@ export const ApprovalStatusScreen = () => {
               key={f}
               onPress={() => setFilter(f)}
               style={[styles.filterChip, isSelected && styles.filterChipActive]}
-              activeOpacity={0.7}
+              activeOpacity={0.8}
             >
               <Text style={[styles.filterText, isSelected && styles.filterTextActive]}>
                 {f}
@@ -126,82 +119,87 @@ export const ApprovalStatusScreen = () => {
         })}
       </View>
 
-      {/* Approvals Cards */}
+      {/* ── APPROVALS LIST ── */}
       {filtered.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <MaterialCommunityIcons name="file-search-outline" size={56} color="#94A3B8" />
-          <Text style={styles.emptyTitle}>No Submissions Found</Text>
-          <Text style={styles.emptySub}>No requests match the selected status filter.</Text>
-        </View>
+        <EmptyState
+          title="NO SUBMISSIONS LOCATED"
+          subtitle="No requests match the selected audit status."
+        />
       ) : (
         filtered.map((item) => {
-          const badge = getStatusBadge(item.status);
+          const isReturned = item.status === 'RETURNED';
+          const isApproved = item.status === 'APPROVED';
+
           return (
-            <Card key={item.id} style={styles.card}>
-              <Card.Content>
-                <View style={styles.cardHeader}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.itemTitle}>{item.title}</Text>
-                    <Text style={styles.subjectText}>
-                      {item.subjectCode} · {item.subjectName}
-                    </Text>
-                    <Text style={styles.classText}>
-                      {item.classSection} · {item.weekOrDate}
-                    </Text>
-                  </View>
-                  <View
-                    style={[
-                      styles.statusPill,
-                      { backgroundColor: badge.bg, borderColor: badge.border },
-                    ]}
-                  >
-                    <Text style={[styles.statusPillText, { color: badge.color }]}>
-                      {badge.label}
-                    </Text>
-                  </View>
+            <View key={item.id} style={styles.card}>
+              <View style={styles.cardHeader}>
+                <View style={{ flex: 1 }}>
+                  <Label text={item.type.replace('_', ' ')} />
+                  <Text style={styles.itemTitle}>{item.title.toUpperCase()}</Text>
+                  <Text style={styles.subjectText}>
+                    {item.subjectCode} · {item.subjectName}
+                  </Text>
+                  <Text style={styles.classText}>
+                    {item.classSection} · {item.weekOrDate}
+                  </Text>
                 </View>
 
-                {item.hodRemarks && (
-                  <View
+                <View
+                  style={[
+                    styles.statusTag,
+                    isReturned && styles.statusTagReturned,
+                    isApproved && styles.statusTagApproved,
+                  ]}
+                >
+                  <Text
                     style={[
-                      styles.remarksBox,
-                      item.status === 'RETURNED' && styles.remarksBoxReturned,
+                      styles.statusTagText,
+                      isReturned && styles.statusTagTextReturned,
+                      isApproved && styles.statusTagTextApproved,
                     ]}
                   >
-                    <Text
-                      style={[
-                        styles.remarksLabel,
-                        item.status === 'RETURNED' && { color: Palette.error },
-                      ]}
-                    >
-                      HOD Feedback:
-                    </Text>
-                    <Text style={styles.remarksText}>"{item.hodRemarks}"</Text>
-                  </View>
+                    {item.status === 'RETURNED'
+                      ? 'REVISION NEEDED'
+                      : item.status === 'APPROVED'
+                      ? 'APPROVED'
+                      : 'PENDING HOD'}
+                  </Text>
+                </View>
+              </View>
+
+              {item.hodRemarks && (
+                <View
+                  style={[
+                    styles.remarksBox,
+                    isReturned && styles.remarksBoxReturned,
+                  ]}
+                >
+                  <Label
+                    text="HOD FEEDBACK:"
+                    color={isReturned ? EditorialColors.accent : EditorialColors.ink}
+                  />
+                  <Text style={styles.remarksText}>"{item.hodRemarks}"</Text>
+                </View>
+              )}
+
+              <View style={styles.cardFooter}>
+                <Text style={styles.footerDate}>SUBMITTED: {item.submittedAt}</Text>
+                {isReturned && (
+                  <TouchableOpacity
+                    style={styles.resubmitBtn}
+                    onPress={() =>
+                      navigation.navigate('WeeklyProgress', {
+                        subjectCode: item.subjectCode,
+                        weekNumber: 12,
+                        classSection: item.classSection,
+                      })
+                    }
+                  >
+                    <Text style={styles.resubmitBtnText}>UPDATE & RESUBMIT</Text>
+                  </TouchableOpacity>
                 )}
-
-                <View style={styles.cardFooter}>
-                  <Text style={styles.footerDate}>Submitted: {item.submittedAt}</Text>
-                  {item.status === 'RETURNED' && (
-                    <Button
-                      mode="contained-tonal"
-                      compact
-                      icon="playlist-edit"
-                      onPress={() =>
-                        navigation.navigate('WeeklyProgress', {
-                          subjectCode: item.subjectCode,
-                          weekNumber: 12,
-                          classSection: item.classSection,
-                        })
-                      }
-                      style={styles.resubmitBtn}
-                    >
-                      Update & Resubmit
-                    </Button>
-                  )}
-                </View>
-              </Card.Content>
-            </Card>
+              </View>
+            </View>
           );
         })
       )}
@@ -212,25 +210,32 @@ export const ApprovalStatusScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: EditorialColors.bg,
   },
   content: {
-    padding: ms(16),
-    paddingBottom: ms(40),
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingTop: EditorialSpacing.topSafeArea,
+    paddingBottom: ms(48),
   },
-  header: {
-    marginBottom: ms(16),
+  headerBox: {
+    marginBottom: ms(8),
   },
-  headerTitle: {
-    fontSize: ms(20),
-    fontWeight: '900',
-    color: Palette.textDark,
+  headingText: {
+    fontFamily: EditorialFonts.display,
+    fontSize: ms(24),
+    lineHeight: ms(28),
+    color: EditorialColors.ink,
+    marginTop: ms(4),
   },
-  headerSub: {
-    fontSize: ms(12.5),
-    color: Palette.textLight,
-    marginTop: ms(2),
-    lineHeight: ms(18),
+  subHeadingText: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: ms(11),
+    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    marginTop: ms(4),
+  },
+  heroRule: {
+    marginBottom: ms(20),
   },
   filtersRow: {
     flexDirection: 'row',
@@ -238,32 +243,30 @@ const styles = StyleSheet.create({
   },
   filterChip: {
     paddingVertical: ms(6),
-    paddingHorizontal: ms(14),
-    borderRadius: ms(20),
-    backgroundColor: '#FFFFFF',
+    paddingHorizontal: ms(12),
+    backgroundColor: EditorialColors.white,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: EditorialColors.ink,
     marginRight: ms(8),
   },
   filterChipActive: {
-    backgroundColor: Palette.primary,
-    borderColor: Palette.primary,
+    backgroundColor: EditorialColors.ink,
   },
   filterText: {
-    fontSize: ms(12),
-    fontWeight: '700',
-    color: Palette.textLight,
+    fontFamily: EditorialFonts.bold,
+    fontSize: ms(11),
+    letterSpacing: 0.5,
+    color: EditorialColors.ink,
   },
   filterTextActive: {
-    color: '#FFFFFF',
+    color: EditorialColors.white,
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    marginBottom: ms(12),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    elevation: 1,
+    backgroundColor: EditorialColors.white,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    padding: ms(14),
+    marginBottom: ms(14),
   },
   cardHeader: {
     flexDirection: 'row',
@@ -271,54 +274,65 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   itemTitle: {
-    fontSize: ms(15),
-    fontWeight: '800',
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.heavy,
+    fontSize: ms(14),
+    color: EditorialColors.ink,
+    marginTop: ms(2),
   },
   subjectText: {
-    fontSize: ms(13),
-    fontWeight: '700',
-    color: Palette.primary,
+    fontFamily: EditorialFonts.semibold,
+    fontSize: ms(12),
+    color: EditorialColors.ink,
     marginTop: ms(2),
   },
   classText: {
-    fontSize: ms(12),
-    color: Palette.textLight,
+    fontFamily: EditorialFonts.regular,
+    fontSize: ms(11),
+    color: EditorialColors.muted,
     marginTop: ms(2),
   },
-  statusPill: {
-    paddingHorizontal: ms(10),
+  statusTag: {
+    paddingHorizontal: ms(8),
     paddingVertical: ms(4),
-    borderRadius: ms(8),
     borderWidth: 1,
+    borderColor: EditorialColors.muted,
+    backgroundColor: EditorialColors.bg,
   },
-  statusPillText: {
-    fontSize: ms(10.5),
-    fontWeight: '800',
+  statusTagApproved: {
+    borderColor: EditorialColors.ink,
+    backgroundColor: EditorialColors.ink,
+  },
+  statusTagReturned: {
+    borderWidth: 1.5,
+    borderColor: EditorialColors.accent,
+    backgroundColor: EditorialColors.white,
+  },
+  statusTagText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: ms(9.5),
     letterSpacing: 0.5,
+    color: EditorialColors.muted,
+  },
+  statusTagTextApproved: {
+    color: EditorialColors.white,
+  },
+  statusTagTextReturned: {
+    color: EditorialColors.accent,
   },
   remarksBox: {
-    backgroundColor: '#F8FAFC',
-    borderRadius: ms(8),
+    backgroundColor: EditorialColors.bg,
     padding: ms(10),
-    marginTop: ms(12),
+    marginTop: ms(10),
     borderLeftWidth: 3,
-    borderLeftColor: Palette.primary,
+    borderLeftColor: EditorialColors.ink,
   },
   remarksBoxReturned: {
-    backgroundColor: '#FEF2F2',
-    borderLeftColor: Palette.error,
-  },
-  remarksLabel: {
-    fontSize: ms(11),
-    fontWeight: '800',
-    color: Palette.primary,
-    textTransform: 'uppercase',
+    borderLeftColor: EditorialColors.accent,
   },
   remarksText: {
-    fontSize: ms(12.5),
-    color: '#334155',
-    fontStyle: 'italic',
+    fontFamily: EditorialFonts.regular,
+    fontSize: ms(12),
+    color: EditorialColors.ink,
     marginTop: ms(2),
   },
   cardFooter: {
@@ -328,31 +342,26 @@ const styles = StyleSheet.create({
     marginTop: ms(12),
     paddingTop: ms(8),
     borderTopWidth: 1,
-    borderTopColor: '#F8FAFC',
+    borderTopColor: EditorialColors.track,
   },
   footerDate: {
-    fontSize: ms(11.5),
-    color: '#94A3B8',
-    fontWeight: '500',
+    fontFamily: EditorialFonts.semibold,
+    fontSize: ms(10),
+    color: EditorialColors.muted,
+    letterSpacing: 0.5,
   },
   resubmitBtn: {
-    borderRadius: ms(8),
+    backgroundColor: EditorialColors.accent,
+    paddingHorizontal: ms(10),
+    paddingVertical: ms(6),
   },
-  emptyContainer: {
-    alignItems: 'center',
-    paddingVertical: ms(50),
-  },
-  emptyTitle: {
-    fontSize: ms(16),
-    fontWeight: '800',
-    color: Palette.textDark,
-    marginTop: ms(10),
-  },
-  emptySub: {
-    fontSize: ms(13),
-    color: Palette.textLight,
-    marginTop: ms(4),
+  resubmitBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: ms(10),
+    letterSpacing: 0.5,
+    color: EditorialColors.white,
   },
 });
 
 export default ApprovalStatusScreen;
+
