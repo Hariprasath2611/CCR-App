@@ -3,7 +3,8 @@ import { Text, TextStyle, StyleSheet } from 'react-native';
 import { EditorialColors, EditorialFonts } from '@theme/editorial';
 
 interface LabelProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  text?: string;
   color?: string;
   style?: TextStyle;
   numberOfLines?: number;
@@ -11,10 +12,12 @@ interface LabelProps {
 
 export const Label: React.FC<LabelProps> = ({
   children,
+  text,
   color = EditorialColors.muted,
   style,
   numberOfLines,
 }) => {
+  const content = text !== undefined ? text : children;
   return (
     <Text
       numberOfLines={numberOfLines}
@@ -24,7 +27,7 @@ export const Label: React.FC<LabelProps> = ({
         style,
       ]}
     >
-      {typeof children === 'string' ? children.toUpperCase() : children}
+      {typeof content === 'string' ? content.toUpperCase() : content}
     </Text>
   );
 };

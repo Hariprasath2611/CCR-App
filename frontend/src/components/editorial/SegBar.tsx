@@ -4,21 +4,30 @@ import { EditorialColors } from '@theme/editorial';
 
 interface SegBarProps {
   /** Percentage (0-100) or completed count */
-  progress: number;
+  progress?: number;
   total?: number;
+  totalSegments?: number;
+  filledSegments?: number;
   isLagging?: boolean;
   style?: ViewStyle;
 }
 
 export const SegBar: React.FC<SegBarProps> = ({
-  progress,
+  progress = 0,
   total = 100,
+  totalSegments = 25,
+  filledSegments,
   isLagging = false,
   style,
 }) => {
-  const TOTAL_SEGMENTS = 25;
-  const ratio = Math.max(0, Math.min(1, total > 0 ? progress / total : 0));
-  const filledCount = Math.round(ratio * TOTAL_SEGMENTS);
+  const TOTAL_SEGMENTS = totalSegments;
+  let filledCount = 0;
+  if (filledSegments !== undefined) {
+    filledCount = Math.max(0, Math.min(TOTAL_SEGMENTS, filledSegments));
+  } else {
+    const ratio = Math.max(0, Math.min(1, total > 0 ? progress / total : 0));
+    filledCount = Math.round(ratio * TOTAL_SEGMENTS);
+  }
 
   const fillColor = isLagging ? EditorialColors.accent : EditorialColors.ink;
 

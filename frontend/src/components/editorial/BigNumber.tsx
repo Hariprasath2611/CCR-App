@@ -5,6 +5,7 @@ import { EditorialColors, EditorialFonts } from '@theme/editorial';
 interface BigNumberProps {
   value: string | number;
   suffix?: string;
+  showPercent?: boolean;
   size?: 'hero' | 'big' | 'section';
   color?: string;
   suffixColor?: string;
@@ -15,12 +16,14 @@ interface BigNumberProps {
 export const BigNumber: React.FC<BigNumberProps> = ({
   value,
   suffix,
+  showPercent = false,
   size = 'big',
   color = EditorialColors.ink,
   suffixColor = EditorialColors.accent,
   style,
   textStyle,
 }) => {
+  const finalSuffix = suffix !== undefined ? suffix : (showPercent ? '%' : undefined);
   const getFontSize = () => {
     switch (size) {
       case 'hero':
@@ -62,7 +65,7 @@ export const BigNumber: React.FC<BigNumberProps> = ({
         ]}
       >
         {value}
-        {suffix ? (
+        {finalSuffix ? (
           <Text
             style={[
               styles.suffix,
@@ -72,7 +75,7 @@ export const BigNumber: React.FC<BigNumberProps> = ({
               },
             ]}
           >
-            {suffix}
+            {finalSuffix}
           </Text>
         ) : null}
       </Text>
