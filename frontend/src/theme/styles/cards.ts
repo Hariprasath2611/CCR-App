@@ -1,30 +1,26 @@
 import { StyleSheet } from 'react-native';
-import { Palette } from '../colors';
+import { EditorialColors, EditorialFonts, EditorialRules } from '../editorial';
 
 export const cardStyles = StyleSheet.create({
   dashboardCard: {
-    backgroundColor: Palette.surface,
-    borderRadius: 12,
+    backgroundColor: EditorialColors.bg,
+    borderRadius: 0,
     padding: 16,
     marginBottom: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: Palette.primary,
-    // iOS shadow properties
-    shadowColor: Palette.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    // Android shadow
-    elevation: 3,
+    borderWidth: EditorialRules.borderWidth,
+    borderColor: EditorialColors.ink,
+    elevation: 0,
+    shadowOpacity: 0,
   },
   cardTitle: {
+    fontFamily: EditorialFonts.heavy,
     fontSize: 16,
-    fontWeight: 'bold',
-    color: Palette.textDark,
+    color: EditorialColors.ink,
     marginBottom: 4,
   },
   cardSubtitle: {
+    fontFamily: EditorialFonts.semibold,
     fontSize: 12,
-    color: Palette.textLight,
+    color: EditorialColors.muted,
   },
 });

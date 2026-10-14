@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TouchableOpacity, ScrollView } from 'react-native';
-import { TextInput, Portal, Dialog, RadioButton, Text, Button } from 'react-native-paper';
-import { Palette } from '@theme/colors';
-
-import { ms } from '@theme/responsive';
+import { StyleSheet, View, TouchableOpacity, ScrollView, Text } from 'react-native';
+import { Portal, Dialog } from 'react-native-paper';
+import { Feather } from '@expo/vector-icons';
+import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
 
 interface DropdownOption {
   label: string;
@@ -29,59 +28,72 @@ export const AppDropdown: React.FC<AppDropdownProps> = ({
 }) => {
   const [visible, setVisible] = useState(false);
   const selectedLabel = options.find((opt) => opt.value === value)?.label || 'Select option';
+  const hasError = !!error;
 
   return (
     <View style={[styles.container, style]}>
-      <TouchableOpacity onPress={() => setVisible(true)} activeOpacity={0.7}>
-        <View pointerEvents="none">
-          <TextInput
-            label={label}
-            value={selectedLabel}
-            mode="outlined"
-            error={!!error}
-            right={<TextInput.Icon icon="chevron-down" />}
-            outlineColor={Palette.border}
-            activeOutlineColor={Palette.primary}
-            style={styles.input}
-          />
-        </View>
+      {label ? (
+        <Text style={[styles.label, hasError && styles.labelError]}>
+          {label.toUpperCase()}
+        </Text>
+      ) : null}
+
+      <TouchableOpacity
+        onPress={() => setVisible(true)}
+        activeOpacity={0.7}
+        style={[styles.inputRow, hasError ? styles.inputRowError : styles.inputRowNormal]}
+      >
+        <Text
+          style={[
+            styles.valueText,
+            !value && styles.placeholderText,
+          ]}
+          numberOfLines={1}
+        >
+          {selectedLabel}
+        </Text>
+        <Feather name="chevron-down" size={18} color={EditorialColors.ink} />
       </TouchableOpacity>
 
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      {hasError ? <Text style={styles.errorText}>{error.toUpperCase()}</Text> : null}
 
       <Portal>
         <Dialog visible={visible} onDismiss={() => setVisible(false)} style={styles.dialog}>
-          <Dialog.Title style={styles.title}>Select {label}</Dialog.Title>
+          <Dialog.Title style={styles.dialogTitle}>{label.toUpperCase()}</Dialog.Title>
           <Dialog.Content style={styles.dialogContent}>
-            <ScrollView>
-              <RadioButton.Group
-                onValueChange={(val) => {
-                  onSelect(val);
-                  setVisible(false);
-                }}
-                value={value}
-              >
-                {options.map((option) => (
-                  <View key={option.value} style={styles.optionRow}>
-                    <RadioButton.Android value={option.value} color={Palette.primary} />
-                    <TouchableOpacity
-                      onPress={() => {
-                        onSelect(option.value);
-                        setVisible(false);
-                      }}
-                      style={styles.labelTouch}
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {options.map((option) => {
+                const isSelected = option.value === value;
+                return (
+                  <TouchableOpacity
+                    key={option.value}
+                    onPress={() => {
+                      onSelect(option.value);
+                      setVisible(false);
+                    }}
+                    style={[styles.optionRow, isSelected && styles.optionRowSelected]}
+                    activeOpacity={0.7}
+                  >
+                    <View style={[styles.squareRadio, isSelected && styles.squareRadioSelected]}>
+                      {isSelected ? <View style={styles.squareRadioInner} /> : null}
+                    </View>
+                    <Text
+                      style={[
+                        styles.optionLabel,
+                        isSelected && styles.optionLabelSelected,
+                      ]}
                     >
-                      <Text style={styles.optionLabel}>{option.label}</Text>
-                    </TouchableOpacity>
-                  </View>
-                ))}
-              </RadioButton.Group>
+                      {option.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </ScrollView>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={() => setVisible(false)} textColor={Palette.primary}>
-              Cancel
-            </Button>
+            <TouchableOpacity onPress={() => setVisible(false)} style={styles.cancelBtn}>
+              <Text style={styles.cancelBtnText}>CANCEL</Text>
+            </TouchableOpacity>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -92,41 +104,111 @@ export const AppDropdown: React.FC<AppDropdownProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginBottom: ms(8),
+    marginBottom: 18,
   },
-  input: {
-    backgroundColor: Palette.surface,
+  label: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
+    textTransform: 'uppercase',
+    marginBottom: 6,
+  },
+  labelError: {
+    color: EditorialColors.accent,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 2,
+    paddingBottom: 8,
+    paddingTop: 4,
+  },
+  inputRowNormal: {
+    borderBottomColor: EditorialColors.ink,
+  },
+  inputRowError: {
+    borderBottomColor: EditorialColors.accent,
+  },
+  valueText: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 16,
+    color: EditorialColors.ink,
+    flex: 1,
+  },
+  placeholderText: {
+    color: EditorialColors.muted,
   },
   errorText: {
-    color: Palette.error,
-    fontSize: ms(12),
-    marginTop: ms(4),
-    paddingLeft: ms(4),
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1,
+    color: EditorialColors.accent,
+    textTransform: 'uppercase',
+    marginTop: 4,
   },
   dialog: {
-    backgroundColor: Palette.surface,
-    borderRadius: ms(12),
+    backgroundColor: EditorialColors.bg,
+    borderRadius: 0,
+    borderWidth: EditorialRules.borderWidth,
+    borderColor: EditorialColors.ink,
     maxHeight: '80%',
   },
-  title: {
-    color: Palette.textDark,
+  dialogTitle: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 18,
+    color: EditorialColors.ink,
+    letterSpacing: -0.3,
   },
   dialogContent: {
-    paddingHorizontal: ms(10),
+    paddingHorizontal: 16,
   },
   optionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: ms(8),
-    borderBottomWidth: 1,
-    borderBottomColor: Palette.secondary,
+    paddingVertical: 12,
+    borderBottomWidth: EditorialRules.hairline,
+    borderBottomColor: EditorialColors.track,
   },
-  labelTouch: {
-    flex: 1,
-    paddingLeft: ms(12),
+  optionRowSelected: {
+    backgroundColor: EditorialColors.white,
+  },
+  squareRadio: {
+    width: 18,
+    height: 18,
+    borderWidth: EditorialRules.borderWidth,
+    borderColor: EditorialColors.ink,
+    borderRadius: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  squareRadioSelected: {
+    backgroundColor: EditorialColors.ink,
+  },
+  squareRadioInner: {
+    width: 6,
+    height: 6,
+    backgroundColor: EditorialColors.white,
   },
   optionLabel: {
-    fontSize: ms(16),
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 15,
+    color: EditorialColors.ink,
+    flex: 1,
+  },
+  optionLabelSelected: {
+    fontFamily: EditorialFonts.heavy,
+  },
+  cancelBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  cancelBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 12,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
   },
 });
