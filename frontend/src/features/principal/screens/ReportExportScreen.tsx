@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { Text, Card, Button, ActivityIndicator, Chip, Divider, Avatar } from 'react-native-paper';
-import { Palette } from '@theme/colors';
+import { Text, ActivityIndicator } from 'react-native-paper';
+import { EditorialColors, EditorialFonts, EditorialSpacing } from '@theme/editorial';
+import { Rule } from '@components/editorial/Rule';
+import { Label } from '@components/editorial/Label';
+import { AppButton } from '@components/common/AppButton';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
@@ -10,21 +13,21 @@ import { generateReportWord } from '@services/api/reportWordTemplate';
 import { ms } from '@theme/responsive';
 
 const DEPARTMENTS = [
-  { id: 'ALL', name: 'All Departments (Institutional)' },
-  { id: 'CSE', name: 'Computer Science and Engineering' },
-  { id: 'AI&DS', name: 'Artificial Intelligence & Data Science' },
-  { id: 'IT', name: 'Information Technology' },
-  { id: 'ECE', name: 'Electronics and Communication' },
-  { id: 'EEE', name: 'Electrical and Electronics' },
-  { id: 'MECH', name: 'Mechanical Engineering' },
+  { id: 'ALL', name: 'All Departments' },
+  { id: 'CSE', name: 'Computer Science' },
+  { id: 'AI&DS', name: 'AI & Data Science' },
+  { id: 'IT', name: 'Information Tech' },
+  { id: 'ECE', name: 'Electronics' },
+  { id: 'EEE', name: 'Electrical' },
+  { id: 'MECH', name: 'Mechanical' },
 ];
 
 const WEEKS = [
-  { id: 12, label: 'Academic Week 12 (Current)' },
-  { id: 11, label: 'Academic Week 11' },
-  { id: 10, label: 'Academic Week 10' },
-  { id: 9, label: 'Academic Week 9' },
-  { id: 8, label: 'Academic Week 8' },
+  { id: 12, label: 'Week 12 (Current)' },
+  { id: 11, label: 'Week 11' },
+  { id: 10, label: 'Week 10' },
+  { id: 9, label: 'Week 9' },
+  { id: 8, label: 'Week 8' },
 ];
 
 interface RecentExport {
@@ -144,7 +147,6 @@ export const ReportExportScreen = () => {
           Alert.alert('Export Ready', `Word report successfully generated at: ${uri}`);
         }
       } else {
-        // Excel simulation
         Alert.alert(
           'Excel Export Initiated',
           `Institutional Spreadsheet for ${selectedDept} (Week ${selectedWeek}) compiled and exported successfully.`
@@ -161,69 +163,79 @@ export const ReportExportScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
-        {/* ── HEADER BANNER ── */}
-        <View style={styles.headerCard}>
-          <View style={styles.headerIconBox}>
-            <MaterialCommunityIcons name="file-export-outline" size={32} color={Palette.primary} />
-          </View>
-          <View style={styles.headerText}>
-            <Text style={styles.headerTitle}>Central Export Center</Text>
-            <Text style={styles.headerSubtitle}>
-              Export Anna University regulation compliant course coverage dossiers for executive inspection.
-            </Text>
-          </View>
+        {/* ── HEADER ── */}
+        <View style={styles.headerBox}>
+          <Label text="EXECUTIVE DOSSIER" />
+          <Text style={styles.headingText}>CENTRAL EXPORT CENTER.</Text>
+          <Text style={styles.subHeadingText}>
+            ANNA UNIVERSITY REGULATION-COMPLIANT DOSSIERS FOR EXECUTIVE INSPECTION
+          </Text>
         </View>
+        <Rule thick style={styles.heroRule} />
 
-        {/* ── DEPARTMENT SCOPE SELECTOR ── */}
-        <View style={styles.configCard}>
-          <Text style={styles.configLabel}>1. Select Target Department Scope</Text>
+        {/* ── CONFIGURATION BLOCK ── */}
+        <View style={styles.configBlock}>
+          {/* Department Scope Selector */}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionNumber}>01</Text>
+            <Text style={styles.sectionTitle}>DEPARTMENTAL SCOPE</Text>
+          </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsRow}>
-            {DEPARTMENTS.map((dept) => (
-              <Chip
-                key={dept.id}
-                selected={selectedDept === dept.id}
-                onPress={() => setSelectedDept(dept.id)}
-                style={[styles.chip, selectedDept === dept.id && styles.chipActive]}
-                textStyle={[styles.chipText, selectedDept === dept.id && styles.chipTextActive]}
-              >
-                {dept.id === 'ALL' ? 'All Departments' : dept.id}
-              </Chip>
-            ))}
+            {DEPARTMENTS.map((dept) => {
+              const isActive = selectedDept === dept.id;
+              return (
+                <TouchableOpacity
+                  key={dept.id}
+                  onPress={() => setSelectedDept(dept.id)}
+                  style={[styles.squareChip, isActive && styles.squareChipActive]}
+                >
+                  <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
+                    {dept.name.toUpperCase()}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
 
-          {/* ── ACADEMIC WEEK SELECTOR ── */}
-          <Text style={[styles.configLabel, { marginTop: ms(16) }]}>2. Select Academic Week</Text>
+          {/* Academic Week Selector */}
+          <View style={[styles.sectionHeader, { marginTop: ms(20) }]}>
+            <Text style={styles.sectionNumber}>02</Text>
+            <Text style={styles.sectionTitle}>ACADEMIC AUDIT WEEK</Text>
+          </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsRow}>
-            {WEEKS.map((w) => (
-              <Chip
-                key={w.id}
-                selected={selectedWeek === w.id}
-                onPress={() => setSelectedWeek(w.id)}
-                style={[styles.chip, selectedWeek === w.id && styles.chipActive]}
-                textStyle={[styles.chipText, selectedWeek === w.id && styles.chipTextActive]}
-              >
-                {w.label}
-              </Chip>
-            ))}
+            {WEEKS.map((w) => {
+              const isActive = selectedWeek === w.id;
+              return (
+                <TouchableOpacity
+                  key={w.id}
+                  onPress={() => setSelectedWeek(w.id)}
+                  style={[styles.squareChip, isActive && styles.squareChipActive]}
+                >
+                  <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
+                    {w.label.toUpperCase()}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
 
-          {/* ── FORMAT SELECTOR ── */}
-          <Text style={[styles.configLabel, { marginTop: ms(16) }]}>3. Choose Export Format</Text>
+          {/* Format Selector */}
+          <View style={[styles.sectionHeader, { marginTop: ms(20) }]}>
+            <Text style={styles.sectionNumber}>03</Text>
+            <Text style={styles.sectionTitle}>EXPORT DOSSIER FORMAT</Text>
+          </View>
           <View style={styles.formatRow}>
             <TouchableOpacity
               style={[styles.formatCard, exportFormat === 'PDF' && styles.formatCardActive]}
               onPress={() => setExportFormat('PDF')}
               activeOpacity={0.8}
             >
-              <MaterialCommunityIcons
-                name="file-pdf-box"
-                size={32}
-                color={exportFormat === 'PDF' ? '#DC2626' : '#64748B'}
-              />
               <Text style={[styles.formatTitle, exportFormat === 'PDF' && styles.formatTitleActive]}>
-                PDF Document
+                PDF
               </Text>
-              <Text style={styles.formatSub}>Official signed report</Text>
+              <Text style={[styles.formatSub, exportFormat === 'PDF' && styles.formatSubActive]}>
+                OFFICIAL SIGNED
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -231,15 +243,12 @@ export const ReportExportScreen = () => {
               onPress={() => setExportFormat('DOCX')}
               activeOpacity={0.8}
             >
-              <MaterialCommunityIcons
-                name="file-word-box"
-                size={32}
-                color={exportFormat === 'DOCX' ? '#2563EB' : '#64748B'}
-              />
               <Text style={[styles.formatTitle, exportFormat === 'DOCX' && styles.formatTitleActive]}>
-                MS Word (.docx)
+                DOCX
               </Text>
-              <Text style={styles.formatSub}>Editable syllabus tables</Text>
+              <Text style={[styles.formatSub, exportFormat === 'DOCX' && styles.formatSubActive]}>
+                EDITABLE TABLES
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -247,61 +256,49 @@ export const ReportExportScreen = () => {
               onPress={() => setExportFormat('EXCEL')}
               activeOpacity={0.8}
             >
-              <MaterialCommunityIcons
-                name="file-excel-box"
-                size={32}
-                color={exportFormat === 'EXCEL' ? '#16A34A' : '#64748B'}
-              />
               <Text style={[styles.formatTitle, exportFormat === 'EXCEL' && styles.formatTitleActive]}>
-                Excel (.xlsx)
+                XLSX
               </Text>
-              <Text style={styles.formatSub}>Data audit spreadsheet</Text>
+              <Text style={[styles.formatSub, exportFormat === 'EXCEL' && styles.formatSubActive]}>
+                DATA AUDIT
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* ── EXPORT ACTION BUTTON ── */}
-        <Button
-          mode="contained"
-          icon={isExporting ? undefined : 'download'}
-          onPress={handleExport}
-          disabled={isExporting}
-          style={styles.exportBtn}
-          labelStyle={styles.exportBtnLabel}
-          contentStyle={{ height: ms(48) }}
-          buttonColor={Palette.primary}
-        >
-          {isExporting ? <ActivityIndicator color="#FFFFFF" size="small" /> : `Generate ${exportFormat} Dossier`}
-        </Button>
+        <View style={styles.buttonSpacing}>
+          <AppButton
+            mode="contained"
+            title={`GENERATE ${exportFormat} DOSSIER`}
+            onPress={handleExport}
+            loading={isExporting}
+            disabled={isExporting}
+          />
+        </View>
 
         {/* ── RECENT AUDIT EXPORTS ── */}
         <View style={styles.recentSection}>
-          <Text style={styles.recentHeading}>Recent Generated Dossiers</Text>
+          <Label text="ARCHIVAL LOG" />
+          <Text style={styles.recentHeading}>RECENT GENERATED DOSSIERS</Text>
+          <Rule thickness="hairline" style={{ marginBottom: ms(12) }} />
+
           {RECENT_EXPORTS.map((item) => (
-            <Card key={item.id} style={styles.recentCard}>
-              <Card.Content style={styles.recentCardContent}>
-                <View style={styles.recentIconBox}>
-                  <MaterialCommunityIcons
-                    name={item.format === 'PDF' ? 'file-pdf-box' : 'file-word-box'}
-                    size={28}
-                    color={item.format === 'PDF' ? '#DC2626' : '#2563EB'}
-                  />
-                </View>
-                <View style={styles.recentDetails}>
-                  <Text style={styles.recentTitle}>{item.title}</Text>
-                  <Text style={styles.recentMeta}>
-                    {item.scope} • {item.size}
-                  </Text>
-                  <Text style={styles.recentDate}>Generated: {item.date}</Text>
-                </View>
-                <TouchableOpacity
-                  style={styles.shareIconBtn}
-                  onPress={() => Alert.alert('Share File', `Dispatching ${item.title}...`)}
-                >
-                  <Feather name="share-2" size={18} color={Palette.primary} />
-                </TouchableOpacity>
-              </Card.Content>
-            </Card>
+            <View key={item.id} style={styles.recentRow}>
+              <View style={styles.recentDetails}>
+                <Text style={styles.recentTitle}>{item.title}</Text>
+                <Text style={styles.recentMeta}>
+                  {item.scope} · {item.size}
+                </Text>
+                <Text style={styles.recentDate}>GENERATED: {item.date}</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.shareBtn}
+                onPress={() => Alert.alert('Share File', `Dispatching ${item.title}...`)}
+              >
+                <Text style={styles.shareBtnText}>SHARE</Text>
+              </TouchableOpacity>
+            </View>
           ))}
         </View>
       </ScrollView>
@@ -312,188 +309,181 @@ export const ReportExportScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: EditorialColors.bg,
   },
   scroll: {
     flex: 1,
   },
   scrollContent: {
-    padding: ms(16),
-    paddingBottom: ms(40),
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingTop: EditorialSpacing.topSafeArea,
+    paddingBottom: ms(48),
   },
-  headerCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
+  headerBox: {
+    marginBottom: ms(8),
+  },
+  headingText: {
+    fontFamily: EditorialFonts.display,
+    fontSize: ms(24),
+    lineHeight: ms(28),
+    color: EditorialColors.ink,
+    marginTop: ms(4),
+  },
+  subHeadingText: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: ms(11),
+    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    marginTop: ms(4),
+  },
+  heroRule: {
+    marginBottom: ms(20),
+  },
+  configBlock: {
+    backgroundColor: EditorialColors.white,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
     padding: ms(16),
-    marginBottom: ms(16),
+    marginBottom: ms(20),
+  },
+  sectionHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-    elevation: 2,
+    alignItems: 'baseline',
+    borderBottomWidth: 1,
+    borderBottomColor: EditorialColors.ink,
+    paddingBottom: ms(6),
+    marginBottom: ms(12),
   },
-  headerIconBox: {
-    width: ms(52),
-    height: ms(52),
-    borderRadius: ms(14),
-    backgroundColor: '#EFF6FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: ms(14),
-  },
-  headerText: {
-    flex: 1,
-  },
-  headerTitle: {
+  sectionNumber: {
+    fontFamily: EditorialFonts.display,
     fontSize: ms(18),
-    fontWeight: '900',
-    color: Palette.textDark,
+    color: EditorialColors.accent,
+    marginRight: ms(8),
   },
-  headerSubtitle: {
-    fontSize: ms(12),
-    color: Palette.textLight,
-    marginTop: ms(3),
-    lineHeight: ms(16),
-  },
-  configCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    padding: ms(16),
-    marginBottom: ms(16),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-  },
-  configLabel: {
+  sectionTitle: {
+    fontFamily: EditorialFonts.bold,
     fontSize: ms(13),
-    fontWeight: '800',
-    color: '#475569',
-    marginBottom: ms(10),
+    letterSpacing: 1,
+    color: EditorialColors.ink,
   },
   chipsRow: {
     flexDirection: 'row',
     marginBottom: ms(4),
   },
-  chip: {
-    marginRight: ms(8),
-    backgroundColor: '#F8FAFC',
-    borderRadius: ms(8),
+  squareChip: {
+    backgroundColor: EditorialColors.white,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: EditorialColors.ink,
+    paddingHorizontal: ms(12),
+    paddingVertical: ms(8),
+    marginRight: ms(8),
   },
-  chipActive: {
-    backgroundColor: Palette.primary,
-    borderColor: Palette.primary,
+  squareChipActive: {
+    backgroundColor: EditorialColors.ink,
   },
   chipText: {
-    fontSize: ms(12),
-    fontWeight: '600',
-    color: '#64748B',
+    fontFamily: EditorialFonts.semibold,
+    fontSize: ms(11),
+    color: EditorialColors.ink,
   },
   chipTextActive: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    color: EditorialColors.white,
   },
   formatRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: ms(8),
-  },
-  formatCard: {
-    flex: 1,
-    backgroundColor: '#F8FAFC',
-    borderRadius: ms(12),
-    padding: ms(12),
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#E2E8F0',
-  },
-  formatCardActive: {
-    borderColor: Palette.primary,
-    backgroundColor: '#EFF6FF',
-  },
-  formatTitle: {
-    fontSize: ms(12),
-    fontWeight: '700',
-    color: Palette.textDark,
-    marginTop: ms(6),
-    textAlign: 'center',
-  },
-  formatTitleActive: {
-    color: Palette.primary,
-    fontWeight: '800',
-  },
-  formatSub: {
-    fontSize: ms(10),
-    color: '#64748B',
-    textAlign: 'center',
-    marginTop: ms(2),
-  },
-  exportBtn: {
-    borderRadius: ms(12),
-    marginBottom: ms(20),
-    shadowColor: Palette.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  exportBtnLabel: {
-    fontSize: ms(14),
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
-  recentSection: {
     marginTop: ms(4),
   },
-  recentHeading: {
+  formatCard: {
+    flex: 0.31,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    backgroundColor: EditorialColors.white,
+    paddingVertical: ms(12),
+    alignItems: 'center',
+  },
+  formatCardActive: {
+    backgroundColor: EditorialColors.ink,
+  },
+  formatTitle: {
+    fontFamily: EditorialFonts.heavy,
     fontSize: ms(14),
-    fontWeight: '800',
-    color: Palette.textDark,
-    marginBottom: ms(10),
+    color: EditorialColors.ink,
+    letterSpacing: 0.5,
   },
-  recentCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(12),
-    marginBottom: ms(10),
+  formatTitleActive: {
+    color: EditorialColors.white,
+  },
+  formatSub: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: ms(9),
+    color: EditorialColors.muted,
+    marginTop: ms(2),
+    letterSpacing: 0.5,
+  },
+  formatSubActive: {
+    color: EditorialColors.white,
+  },
+  buttonSpacing: {
+    marginBottom: ms(28),
+  },
+  recentSection: {
+    marginTop: ms(8),
+  },
+  recentHeading: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: ms(15),
+    letterSpacing: 0.5,
+    color: EditorialColors.ink,
+    marginBottom: ms(8),
+    marginTop: ms(2),
+  },
+  recentRow: {
+    backgroundColor: EditorialColors.white,
     borderWidth: 1,
-    borderColor: '#F1F5F9',
-  },
-  recentCardContent: {
+    borderColor: EditorialColors.ink,
+    padding: ms(14),
+    marginBottom: ms(10),
     flexDirection: 'row',
     alignItems: 'center',
-    padding: ms(12),
-  },
-  recentIconBox: {
-    marginRight: ms(12),
+    justifyContent: 'space-between',
   },
   recentDetails: {
     flex: 1,
+    marginRight: ms(12),
   },
   recentTitle: {
+    fontFamily: EditorialFonts.bold,
     fontSize: ms(13),
-    fontWeight: '700',
-    color: Palette.textDark,
+    color: EditorialColors.ink,
   },
   recentMeta: {
+    fontFamily: EditorialFonts.regular,
     fontSize: ms(11),
-    color: '#64748B',
-    marginTop: ms(1),
+    color: EditorialColors.muted,
+    marginTop: ms(2),
   },
   recentDate: {
+    fontFamily: EditorialFonts.semibold,
     fontSize: ms(10),
-    color: '#94A3B8',
-    marginTop: ms(1),
+    color: EditorialColors.ink,
+    marginTop: ms(4),
+    letterSpacing: 0.5,
   },
-  shareIconBtn: {
-    padding: ms(8),
-    borderRadius: ms(8),
-    backgroundColor: '#EFF6FF',
-    marginLeft: ms(8),
+  shareBtn: {
+    borderWidth: 1,
+    borderColor: EditorialColors.ink,
+    paddingHorizontal: ms(10),
+    paddingVertical: ms(6),
+    backgroundColor: EditorialColors.bg,
+  },
+  shareBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: ms(10),
+    color: EditorialColors.ink,
+    letterSpacing: 0.5,
   },
 });
 
 export default ReportExportScreen;
+

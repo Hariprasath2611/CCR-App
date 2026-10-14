@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, StyleSheet, View, ScrollView } from 'react-native';
-import { Card } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -10,9 +10,10 @@ import { AppDropdown } from '@components/common/AppDropdown';
 import { DatePickerField } from '@components/common/DatePickerField';
 import { SyncQueueRepository } from '@database/repositories/SyncQueueRepository';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
-import { Palette } from '@theme/colors';
+import { EditorialColors, EditorialFonts, EditorialSpacing } from '@theme/editorial';
+import { Rule } from '@components/editorial/Rule';
+import { Label } from '@components/editorial/Label';
 import { syncEngine } from '@features/sync/syncEngine';
-
 import { ms } from '@theme/responsive';
 
 const ddmmToYyyymmdd = (dateStr: string): string => {
@@ -86,27 +87,42 @@ export const ExtraHoursRequestScreen = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <Card style={styles.formCard}>
-        <Card.Title title="Extra teaching Slot Request" subtitle="Apply for compensatory class hours" />
-        <Card.Content>
-          <Controller
-            control={control}
-            name="subjectCode"
-            render={({ field: { onChange, value } }) => (
-              <AppDropdown
-                label="Course Subject"
-                value={value}
-                options={[
-                  { label: 'CS8501 - Theory of Computation', value: 'CS8501' },
-                  { label: 'CS8502 - Database Systems', value: 'CS8502' },
-                  { label: 'CS8503 - Computer Networks', value: 'CS8503' },
-                ]}
-                onSelect={onChange}
-                error={errors.subjectCode?.message}
-              />
-            )}
-          />
+      {/* ── HEADER ── */}
+      <View style={styles.headerBox}>
+        <Label text="FACULTY REQUISITION" />
+        <Text style={styles.headingText}>EXTRA TEACHING HOURS.</Text>
+        <Text style={styles.subHeadingText}>
+          APPLY FOR COMPENSATORY CLASS PERIODS & DEFICIT RECOVERY
+        </Text>
+      </View>
+      <Rule thick style={styles.heroRule} />
 
+      {/* ── FORM CONTAINER ── */}
+      <View style={styles.formBlock}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionNumber}>01</Text>
+          <Text style={styles.sectionTitle}>REQUISITION DETAILS</Text>
+        </View>
+
+        <Controller
+          control={control}
+          name="subjectCode"
+          render={({ field: { onChange, value } }) => (
+            <AppDropdown
+              label="Course Subject"
+              value={value}
+              options={[
+                { label: 'CS8501 - Theory of Computation', value: 'CS8501' },
+                { label: 'CS8502 - Database Systems', value: 'CS8502' },
+                { label: 'CS8503 - Computer Networks', value: 'CS8503' },
+              ]}
+              onSelect={onChange}
+              error={errors.subjectCode?.message}
+            />
+          )}
+        />
+
+        <View style={styles.fieldSpacing}>
           <Controller
             control={control}
             name="requestedDate"
@@ -119,7 +135,9 @@ export const ExtraHoursRequestScreen = () => {
               />
             )}
           />
+        </View>
 
+        <View style={styles.fieldSpacing}>
           <Controller
             control={control}
             name="period"
@@ -138,7 +156,9 @@ export const ExtraHoursRequestScreen = () => {
               />
             )}
           />
+        </View>
 
+        <View style={styles.fieldSpacing}>
           <Controller
             control={control}
             name="reason"
@@ -150,20 +170,20 @@ export const ExtraHoursRequestScreen = () => {
                 error={errors.reason?.message}
                 multiline
                 numberOfLines={4}
-                style={styles.textInput}
               />
             )}
           />
+        </View>
+      </View>
 
-          <AppButton
-            mode="contained"
-            title="Submit Request"
-            onPress={handleSubmit(onSubmit)}
-            loading={isSubmitting}
-            style={styles.submitBtn}
-          />
-        </Card.Content>
-      </Card>
+      <View style={styles.buttonContainer}>
+        <AppButton
+          mode="contained"
+          title="SUBMIT EXTRA HOURS REQUISITION"
+          onPress={handleSubmit(onSubmit)}
+          loading={isSubmitting}
+        />
+      </View>
     </ScrollView>
   );
 };
@@ -171,21 +191,65 @@ export const ExtraHoursRequestScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Palette.background,
+    backgroundColor: EditorialColors.bg,
   },
   contentContainer: {
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingTop: EditorialSpacing.topSafeArea,
+    paddingBottom: ms(48),
+  },
+  headerBox: {
+    marginBottom: ms(8),
+  },
+  headingText: {
+    fontFamily: EditorialFonts.display,
+    fontSize: ms(24),
+    lineHeight: ms(28),
+    color: EditorialColors.ink,
+    marginTop: ms(4),
+  },
+  subHeadingText: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: ms(11),
+    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    marginTop: ms(4),
+  },
+  heroRule: {
+    marginBottom: ms(24),
+  },
+  formBlock: {
+    backgroundColor: EditorialColors.white,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
     padding: ms(16),
-    paddingBottom: ms(40),
+    marginBottom: ms(24),
   },
-  formCard: {
-    backgroundColor: Palette.surface,
-    borderRadius: ms(12),
-    marginBottom: ms(32),
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    borderBottomWidth: 1,
+    borderBottomColor: EditorialColors.ink,
+    paddingBottom: ms(8),
+    marginBottom: ms(16),
   },
-  textInput: {
-    marginTop: ms(12),
+  sectionNumber: {
+    fontFamily: EditorialFonts.display,
+    fontSize: ms(18),
+    color: EditorialColors.accent,
+    marginRight: ms(8),
   },
-  submitBtn: {
-    marginTop: ms(24),
+  sectionTitle: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: ms(13),
+    letterSpacing: 1,
+    color: EditorialColors.ink,
+  },
+  fieldSpacing: {
+    marginTop: ms(16),
+  },
+  buttonContainer: {
+    marginTop: ms(8),
   },
 });
+

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Alert, StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
-import { Text, Card, ActivityIndicator, Chip } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,7 +15,9 @@ import { SyncQueueRepository } from '@database/repositories/SyncQueueRepository'
 import { SQLiteSyllabusNode } from '@database/types';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { useReportStore } from '@features/cc/store/useReportStore';
-import { Palette } from '@theme/colors';
+import { EditorialColors, EditorialFonts, EditorialSpacing } from '@theme/editorial';
+import { Rule } from '@components/editorial/Rule';
+import { Label } from '@components/editorial/Label';
 import { syncEngine } from '@features/sync/syncEngine';
 import { apiClient } from '@services/api/apiClient';
 import { StaffStackParamList } from '@navigation/types';
@@ -352,24 +354,21 @@ export const WeeklyProgressScreen = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* ── HEADER CARD ── */}
-      <View style={styles.headerRow}>
-        <View style={styles.subjectIconBox}>
-          <Feather name="edit-3" size={24} color={Palette.primary} />
-        </View>
-        <View style={styles.headerInfo}>
-          <Text style={styles.headingText}>Course Coverage Log</Text>
-          <Text style={styles.subHeadingText}>
-            Manual Academic Selection & Lesson Plan Tracking
-          </Text>
-        </View>
+      {/* ── HEADER ── */}
+      <View style={styles.headerBox}>
+        <Label text="ACADEMIC PROGRESS ENTRY" />
+        <Text style={styles.headingText}>WEEKLY COURSE COVERAGE.</Text>
+        <Text style={styles.subHeadingText}>
+          MANUAL SELECTION · LESSON PLAN VERIFICATION · SYLLABUS PACE AUDIT
+        </Text>
       </View>
+      <Rule thick style={styles.heroRule} />
 
       {/* ── SECTION 1: ACADEMIC HIERARCHY SELECTOR ── */}
-      <Card style={styles.cardContainer}>
-        <View style={styles.cardHeader}>
-          <MaterialCommunityIcons name="school" size={20} color={Palette.primary} />
-          <Text style={styles.cardTitle}>1. Academic Year & Department</Text>
+      <View style={styles.sectionBlock}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionNumber}>01</Text>
+          <Text style={styles.sectionTitle}>ACADEMIC HIERARCHY</Text>
         </View>
 
         {/* Academic Year Dropdown */}
@@ -411,7 +410,7 @@ export const WeeklyProgressScreen = () => {
                   setValue('classSection', `${selectedYear} ${val}-A`);
                 }}
                 error={errors.department?.message}
-                style={styles.dropdownSpacing}
+                style={styles.fieldSpacing}
               />
             )}
           />
@@ -428,51 +427,54 @@ export const WeeklyProgressScreen = () => {
               options={availableSectionOptions}
               onSelect={onChange}
               error={errors.classSection?.message}
-              style={styles.dropdownSpacing}
+              style={styles.fieldSpacing}
             />
           )}
         />
 
         {/* CC Information Banner */}
         <View style={styles.ccBanner}>
-          <Feather name="user-check" size={16} color={Palette.primary} />
+          <Label text="DESIGNATED CLASS COORDINATOR" />
           <Text style={styles.ccBannerText}>
-            Class Coordinator: <Text style={{ fontWeight: '700' }}>{getCCForSection(selectedClass)?.facultyName || 'Designated CC'}</Text>
+            {getCCForSection(selectedClass)?.facultyName || 'Designated CC'}
           </Text>
         </View>
-      </Card>
+      </View>
 
       {/* ── SECTION 2: SUBJECT DETAILS ── */}
-      <Card style={styles.cardContainer}>
-        <View style={styles.cardHeader}>
-          <MaterialCommunityIcons name="book-open-page-variant" size={20} color={Palette.primary} />
-          <Text style={styles.cardTitle}>2. Subject Information</Text>
+      <View style={styles.sectionBlock}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionNumber}>02</Text>
+          <Text style={styles.sectionTitle}>SUBJECT INFORMATION</Text>
         </View>
 
         {/* Quick Template Subject Chips */}
         {suggestedSubjects.length > 0 && (
           <View style={styles.chipsSection}>
-            <Text style={styles.chipsLabel}>Quick Select Subjects for {selectedClass}:</Text>
+            <Label text={`QUICK SELECT FOR ${selectedClass.toUpperCase()}:`} />
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll}>
-              {suggestedSubjects.map((sub) => (
-                <TouchableOpacity
-                  key={sub.subjectCode}
-                  onPress={() => onPickSuggestedSubject(sub)}
-                  style={[
-                    styles.subjectChip,
-                    selectedSubjectCode === sub.subjectCode && styles.subjectChipActive,
-                  ]}
-                >
-                  <Text
+              {suggestedSubjects.map((sub) => {
+                const isSelected = selectedSubjectCode === sub.subjectCode;
+                return (
+                  <TouchableOpacity
+                    key={sub.subjectCode}
+                    onPress={() => onPickSuggestedSubject(sub)}
                     style={[
-                      styles.subjectChipText,
-                      selectedSubjectCode === sub.subjectCode && styles.subjectChipTextActive,
+                      styles.subjectChip,
+                      isSelected && styles.subjectChipActive,
                     ]}
                   >
-                    {sub.subjectCode} · {sub.subjectName}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+                    <Text
+                      style={[
+                        styles.subjectChipText,
+                        isSelected && styles.subjectChipTextActive,
+                      ]}
+                    >
+                      {sub.subjectCode} · {sub.subjectName}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </ScrollView>
           </View>
         )}
@@ -503,7 +505,7 @@ export const WeeklyProgressScreen = () => {
               onChangeText={onChange}
               error={errors.subjectName?.message}
               placeholder="e.g. Applied Calculus, Computer Networks"
-              style={styles.dropdownSpacing}
+              style={styles.fieldSpacing}
             />
           )}
         />
@@ -519,17 +521,17 @@ export const WeeklyProgressScreen = () => {
               options={WEEK_OPTIONS}
               onSelect={onChange}
               error={errors.weekNumber?.message}
-              style={styles.dropdownSpacing}
+              style={styles.fieldSpacing}
             />
           )}
         />
-      </Card>
+      </View>
 
       {/* ── SECTION 3: COURSE DURATION & LESSON PLAN COVERAGE ── */}
-      <Card style={styles.cardContainer}>
-        <View style={styles.cardHeader}>
-          <MaterialCommunityIcons name="calendar-clock" size={20} color={Palette.primary} />
-          <Text style={styles.cardTitle}>3. Weekly Duration & Unit Coverage</Text>
+      <View style={styles.sectionBlock}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionNumber}>03</Text>
+          <Text style={styles.sectionTitle}>WEEKLY DURATION & COVERAGE</Text>
         </View>
 
         {/* Date Range Row */}
@@ -575,7 +577,7 @@ export const WeeklyProgressScreen = () => {
               options={UNIT_OPTIONS}
               onSelect={onChange}
               error={errors.unit?.message}
-              style={styles.dropdownSpacing}
+              style={styles.fieldSpacing}
             />
           )}
         />
@@ -591,7 +593,7 @@ export const WeeklyProgressScreen = () => {
               options={TEMP_UNIT_OPTIONS}
               onSelect={onChange}
               error={errors.tempUnit?.message}
-              style={styles.dropdownSpacing}
+              style={styles.fieldSpacing}
             />
           )}
         />
@@ -607,33 +609,35 @@ export const WeeklyProgressScreen = () => {
               onChangeText={onChange}
               error={errors.cumulativePercent?.message}
               placeholder="e.g. Unit 1 - 75%, 2/12"
-              style={styles.dropdownSpacing}
+              style={styles.fieldSpacing}
             />
           )}
         />
 
         {/* Topics Covered Box */}
-        <Controller
-          control={control}
-          name="topicsCovered"
-          render={({ field: { onChange, value } }) => (
-            <CreatableTopicSelect
-              label="Topics Covered (Type topics covered)"
-              unit={unit}
-              syllabusNodes={syllabusNodes}
-              value={value || ''}
-              onChangeText={onChange}
-              error={errors.topicsCovered?.message}
-            />
-          )}
-        />
-      </Card>
+        <View style={styles.fieldSpacing}>
+          <Controller
+            control={control}
+            name="topicsCovered"
+            render={({ field: { onChange, value } }) => (
+              <CreatableTopicSelect
+                label="Topics Covered (Type topics covered)"
+                unit={unit}
+                syllabusNodes={syllabusNodes}
+                value={value || ''}
+                onChangeText={onChange}
+                error={errors.topicsCovered?.message}
+              />
+            )}
+          />
+        </View>
+      </View>
 
       {/* ── SECTION 4: PERIODS & ALGORITHM 1 PACE CALCULATOR ── */}
-      <Card style={styles.cardContainer}>
-        <View style={styles.cardHeader}>
-          <MaterialCommunityIcons name="calculator-variant" size={20} color={Palette.primary} />
-          <Text style={styles.cardTitle}>4. Periods & Syllabus Pace</Text>
+      <View style={styles.sectionBlock}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionNumber}>04</Text>
+          <Text style={styles.sectionTitle}>PERIODS & SYLLABUS PACE</Text>
         </View>
 
         {/* Planned vs Handled Periods */}
@@ -671,74 +675,63 @@ export const WeeklyProgressScreen = () => {
         </View>
 
         {/* Algorithm 1 Real-Time Analytics Badge */}
-        <View style={[styles.paceBadge, isLagging ? styles.paceBadgeWarning : styles.paceBadgeSuccess]}>
+        <View style={[styles.paceBadge, isLagging && styles.paceBadgeWarning]}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.paceBadgeTitle}>
-              Pace Ratio: {paceRatio} · Status: {isLagging ? 'Lagging / Deficit' : 'On Track'}
+            <Label text="ALGORITHM 1 PACE AUDIT" color={isLagging ? EditorialColors.accent : EditorialColors.muted} />
+            <Text style={[styles.paceBadgeTitle, isLagging && { color: EditorialColors.accent }]}>
+              PACE RATIO: {paceRatio} · {isLagging ? 'BEHIND SCHEDULE' : 'ON TRACK'}
             </Text>
             {periodsDeficit > 0 && (
               <Text style={styles.paceBadgeSub}>
-                Deficit of {periodsDeficit} period(s). Recommendation: Schedule extra hours.
+                Deficit of {periodsDeficit} period(s). Extra compensation hours recommended.
               </Text>
             )}
           </View>
-          <MaterialCommunityIcons
-            name={isLagging ? 'alert-circle-outline' : 'check-decagram-outline'}
-            size={24}
-            color={isLagging ? Palette.warning : Palette.success}
-          />
         </View>
 
         {/* Completed Based on Plan Toggle */}
-        <Text style={styles.radioGroupLabel}>Completed based on plan?</Text>
-        <View style={styles.radioRow}>
-          <TouchableOpacity
-            style={[styles.radioCard, completedOnPlan === 'YES' && styles.radioCardSelected]}
-            onPress={() => setValue('completedOnPlan', 'YES')}
-            activeOpacity={0.7}
-          >
-            <MaterialCommunityIcons
-              name={completedOnPlan === 'YES' ? 'radiobox-marked' : 'radiobox-blank'}
-              size={20}
-              color={completedOnPlan === 'YES' ? Palette.success : Palette.textLight}
-            />
-            <Text style={[styles.radioLabel, completedOnPlan === 'YES' && styles.radioLabelSelected]}>
-              YES
-            </Text>
-          </TouchableOpacity>
+        <View style={styles.radioBlock}>
+          <Label text="COMPLETED BASED ON PLAN?" />
+          <View style={styles.radioRow}>
+            <TouchableOpacity
+              style={[styles.radioCard, completedOnPlan === 'YES' && styles.radioCardSelected]}
+              onPress={() => setValue('completedOnPlan', 'YES')}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.radioLabel, completedOnPlan === 'YES' && styles.radioLabelSelected]}>
+                YES
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.radioCard, completedOnPlan === 'NO' && styles.radioCardSelectedNo]}
-            onPress={() => setValue('completedOnPlan', 'NO')}
-            activeOpacity={0.7}
-          >
-            <MaterialCommunityIcons
-              name={completedOnPlan === 'NO' ? 'radiobox-marked' : 'radiobox-blank'}
-              size={20}
-              color={completedOnPlan === 'NO' ? Palette.error : Palette.textLight}
-            />
-            <Text style={[styles.radioLabel, completedOnPlan === 'NO' && styles.radioLabelSelectedNo]}>
-              NO
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.radioCard, completedOnPlan === 'NO' && styles.radioCardSelectedNo]}
+              onPress={() => setValue('completedOnPlan', 'NO')}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.radioLabel, completedOnPlan === 'NO' && styles.radioLabelSelectedNo]}>
+                NO
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Reasons for Pending if Deficit or NO */}
         {isLagging && (
           <View style={styles.deviationBlock}>
+            <Label text="EXPLANATION FOR DEFICIT *" color={EditorialColors.accent} />
             <Controller
               control={control}
               name="reasonsForPending"
               render={({ field: { onChange, value } }) => (
                 <AppTextInput
-                  label="Reason for Pending Topics / Deficit *"
+                  label="Reason for Pending Topics / Deficit"
                   value={value || ''}
                   onChangeText={onChange}
                   error={errors.reasonsForPending?.message}
                   multiline
                   numberOfLines={2}
-                  placeholder="e.g. Topics postponed due to college holiday / slow comprehension"
-                  style={styles.textInputReason}
+                  placeholder="e.g. Topics postponed due to college holiday / comprehension speed"
+                  style={styles.fieldSpacing}
                 />
               )}
             />
@@ -753,22 +746,23 @@ export const WeeklyProgressScreen = () => {
                   onChangeText={onChange}
                   error={errors.periodsRequired?.message}
                   keyboardType="numeric"
-                  style={styles.textInputPeriods}
+                  style={styles.fieldSpacing}
                 />
               )}
             />
           </View>
         )}
-      </Card>
+      </View>
 
       {/* ── SUBMIT BUTTON ── */}
-      <AppButton
-        mode="contained"
-        title="Submit Course Coverage to CCR"
-        onPress={handleSubmit(onSubmit)}
-        loading={isSubmitting}
-        style={styles.submitBtn}
-      />
+      <View style={styles.buttonContainer}>
+        <AppButton
+          mode="contained"
+          title="SUBMIT COURSE COVERAGE"
+          onPress={handleSubmit(onSubmit)}
+          loading={isSubmitting}
+        />
+      </View>
     </ScrollView>
   );
 };
@@ -776,214 +770,179 @@ export const WeeklyProgressScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Palette.background,
+    backgroundColor: EditorialColors.bg,
   },
   content: {
-    padding: ms(16),
-    paddingBottom: ms(40),
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingTop: EditorialSpacing.topSafeArea,
+    paddingBottom: ms(48),
   },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: ms(16),
-    backgroundColor: '#FFFFFF',
-    padding: ms(16),
-    borderRadius: ms(16),
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  subjectIconBox: {
-    width: ms(48),
-    height: ms(48),
-    borderRadius: ms(24),
-    backgroundColor: '#EDF5FD',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: ms(14),
-  },
-  headerInfo: {
-    flex: 1,
+  headerBox: {
+    marginBottom: ms(8),
   },
   headingText: {
-    fontSize: ms(19),
-    fontWeight: '900',
-    color: Palette.textDark,
-    letterSpacing: -0.3,
+    fontFamily: EditorialFonts.display,
+    fontSize: ms(24),
+    lineHeight: ms(28),
+    color: EditorialColors.ink,
+    marginTop: ms(4),
   },
   subHeadingText: {
-    fontSize: ms(12.5),
-    fontWeight: '500',
-    color: Palette.textLight,
-    marginTop: ms(2),
+    fontFamily: EditorialFonts.semibold,
+    fontSize: ms(11),
+    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    marginTop: ms(4),
   },
-  cardContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
+  heroRule: {
+    marginBottom: ms(24),
+  },
+  sectionBlock: {
+    backgroundColor: EditorialColors.white,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
     padding: ms(16),
-    marginBottom: ms(16),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    elevation: 2,
+    marginBottom: ms(20),
   },
-  cardHeader: {
+  sectionHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: ms(14),
+    alignItems: 'baseline',
+    borderBottomWidth: 1,
+    borderBottomColor: EditorialColors.ink,
+    paddingBottom: ms(8),
+    marginBottom: ms(16),
   },
-  cardTitle: {
-    fontSize: ms(15),
-    fontWeight: '800',
-    color: Palette.textDark,
-    marginLeft: ms(8),
+  sectionNumber: {
+    fontFamily: EditorialFonts.display,
+    fontSize: ms(18),
+    color: EditorialColors.accent,
+    marginRight: ms(8),
   },
-  dropdownSpacing: {
-    marginTop: ms(12),
+  sectionTitle: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: ms(13),
+    letterSpacing: 1,
+    color: EditorialColors.ink,
+  },
+  fieldSpacing: {
+    marginTop: ms(16),
   },
   ccBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F0FDF4',
-    padding: ms(10),
-    borderRadius: ms(10),
-    marginTop: ms(12),
+    backgroundColor: EditorialColors.bg,
     borderWidth: 1,
-    borderColor: '#DCFCE7',
+    borderColor: EditorialColors.ink,
+    padding: ms(12),
+    marginTop: ms(16),
   },
   ccBannerText: {
-    fontSize: ms(12),
-    color: '#166534',
-    marginLeft: ms(8),
+    fontFamily: EditorialFonts.bold,
+    fontSize: ms(14),
+    color: EditorialColors.ink,
+    marginTop: ms(4),
   },
   chipsSection: {
-    marginBottom: ms(12),
-  },
-  chipsLabel: {
-    fontSize: ms(12),
-    fontWeight: '600',
-    color: Palette.textLight,
-    marginBottom: ms(6),
+    marginBottom: ms(16),
   },
   chipsScroll: {
     flexDirection: 'row',
+    marginTop: ms(8),
   },
   subjectChip: {
-    backgroundColor: '#F1F5F9',
+    backgroundColor: EditorialColors.white,
     paddingHorizontal: ms(12),
-    paddingVertical: ms(6),
-    borderRadius: ms(14),
-    marginRight: ms(8),
+    paddingVertical: ms(8),
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: EditorialColors.ink,
+    marginRight: ms(8),
   },
   subjectChipActive: {
-    backgroundColor: '#EFF6FF',
-    borderColor: Palette.primary,
+    backgroundColor: EditorialColors.ink,
+    borderColor: EditorialColors.ink,
   },
   subjectChipText: {
-    fontSize: ms(11.5),
-    color: Palette.textDark,
-    fontWeight: '600',
+    fontFamily: EditorialFonts.semibold,
+    fontSize: ms(12),
+    color: EditorialColors.ink,
   },
   subjectChipTextActive: {
-    color: Palette.primary,
-    fontWeight: '700',
+    color: EditorialColors.white,
   },
   periodsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: ms(8),
   },
   periodCol: {
     flex: 0.48,
   },
   paceBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    backgroundColor: EditorialColors.bg,
     padding: ms(12),
-    borderRadius: ms(12),
-    marginTop: ms(14),
-    borderWidth: 1,
-  },
-  paceBadgeSuccess: {
-    backgroundColor: '#ECFDF5',
-    borderColor: '#A7F3D0',
+    marginTop: ms(16),
   },
   paceBadgeWarning: {
-    backgroundColor: '#FFFBEB',
-    borderColor: '#FDE68A',
+    borderColor: EditorialColors.accent,
+    borderWidth: 2,
   },
   paceBadgeTitle: {
+    fontFamily: EditorialFonts.heavy,
     fontSize: ms(13),
-    fontWeight: '700',
-    color: Palette.textDark,
+    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+    marginTop: ms(4),
   },
   paceBadgeSub: {
-    fontSize: ms(11.5),
-    color: Palette.textLight,
-    marginTop: ms(2),
+    fontFamily: EditorialFonts.semibold,
+    fontSize: ms(11),
+    color: EditorialColors.accent,
+    marginTop: ms(4),
   },
-  radioGroupLabel: {
-    fontSize: ms(13.5),
-    fontWeight: '700',
-    color: Palette.textDark,
+  radioBlock: {
     marginTop: ms(16),
-    marginBottom: ms(8),
   },
   radioRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: ms(8),
+    marginTop: ms(8),
   },
   radioCard: {
     flex: 0.48,
-    flexDirection: 'row',
+    height: ms(46),
+    justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: Palette.border,
-    borderRadius: ms(12),
-    padding: ms(10),
-    backgroundColor: '#FFFFFF',
+    borderColor: EditorialColors.ink,
+    backgroundColor: EditorialColors.white,
   },
   radioCardSelected: {
-    borderColor: Palette.success,
-    backgroundColor: '#ECFDF5',
+    backgroundColor: EditorialColors.ink,
   },
   radioCardSelectedNo: {
-    borderColor: Palette.error,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: EditorialColors.accent,
+    borderColor: EditorialColors.accent,
   },
   radioLabel: {
-    fontSize: ms(13.5),
-    fontWeight: '700',
-    color: Palette.textLight,
-    marginLeft: ms(8),
+    fontFamily: EditorialFonts.bold,
+    fontSize: ms(14),
+    letterSpacing: 1,
+    color: EditorialColors.ink,
   },
   radioLabelSelected: {
-    color: Palette.success,
+    color: EditorialColors.white,
   },
   radioLabelSelectedNo: {
-    color: Palette.error,
+    color: EditorialColors.white,
   },
   deviationBlock: {
-    marginTop: ms(8),
-    borderLeftWidth: 3,
-    borderLeftColor: Palette.error,
-    paddingLeft: ms(12),
-    backgroundColor: '#FEF2F2',
-    borderRadius: ms(8),
-    padding: ms(10),
-  },
-  textInputReason: {
-    marginTop: ms(4),
-  },
-  textInputPeriods: {
-    marginTop: ms(10),
-  },
-  submitBtn: {
     marginTop: ms(16),
-    backgroundColor: Palette.primary,
-    borderRadius: ms(12),
-    paddingVertical: ms(4),
+    borderLeftWidth: 3,
+    borderLeftColor: EditorialColors.accent,
+    paddingLeft: ms(12),
+    paddingVertical: ms(6),
+  },
+  buttonContainer: {
+    marginTop: ms(12),
   },
 });
+

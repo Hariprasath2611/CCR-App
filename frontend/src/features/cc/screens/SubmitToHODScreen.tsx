@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, Alert } from 'react-native';
-import { Text, Card } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,9 +10,10 @@ import { AppButton } from '@components/common/AppButton';
 import { useReportStore } from '../store/useReportStore';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { CCStackParamList } from '@navigation/types';
-import { Palette } from '@theme/colors';
-import { Feather } from '@expo/vector-icons';
-
+import { EditorialColors, EditorialFonts, EditorialSpacing } from '@theme/editorial';
+import { Rule } from '@components/editorial/Rule';
+import { Label } from '@components/editorial/Label';
+import { StatRow } from '@components/editorial/StatRow';
 import { ms } from '@theme/responsive';
 
 type RouteParams = RouteProp<CCStackParamList, 'SubmitToHOD'>;
@@ -63,94 +64,140 @@ export const SubmitToHODScreen = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Card style={styles.card}>
-        <Card.Content>
-          <View style={styles.iconHeader}>
-            <Feather name="send" size={32} color={Palette.primary} />
-          </View>
-          <Text style={styles.title}>Submit Report to HOD</Text>
-          <Text style={styles.subtitle}>
-            Submit the Week {weekNumber} consolidated syllabus completion audit for class {classId} to the HOD for review.
-          </Text>
+      {/* ── HEADER ── */}
+      <View style={styles.headerBox}>
+        <Label text="COORDINATOR FORWARDING" />
+        <Text style={styles.headingText}>SUBMIT TO HOD.</Text>
+        <Text style={styles.subHeadingText}>
+          CONSOLIDATED SYLLABUS AUDIT READY FOR EXECUTIVE DEPARTMENTAL REVIEW
+        </Text>
+      </View>
+      <Rule thick style={styles.heroRule} />
 
-          <DividerHorizontal />
+      {/* ── METRIC SNAPSHOT ── */}
+      <View style={styles.statBox}>
+        <StatRow
+          columns={[
+            { label: 'CLASS', value: classId },
+            { label: 'ACADEMIC WEEK', value: `W${weekNumber}` },
+            { label: 'REVIEWER', value: 'HOD CSE' },
+          ]}
+        />
+      </View>
 
-          <Controller
-            control={control}
-            name="ccRemarks"
-            render={({ field: { onChange, value } }) => (
-              <AppTextInput
-                label="Class Coordinator Remarks"
-                value={value}
-                onChangeText={onChange}
-                error={errors.ccRemarks?.message}
-                multiline
-                numberOfLines={4}
-                style={styles.textInput}
-              />
-            )}
-          />
+      {/* ── FORM CONTAINER ── */}
+      <View style={styles.formBlock}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionNumber}>01</Text>
+          <Text style={styles.sectionTitle}>AUDIT REMARKS & OBSERVATIONS</Text>
+        </View>
 
-          <AppButton
-            mode="contained"
-            title="Submit to HOD"
-            onPress={handleSubmit(onSubmit)}
-            loading={isSubmitting}
-            style={styles.submitBtn}
-          />
-        </Card.Content>
-      </Card>
+        <Text style={styles.instructionText}>
+          Provide executive notes on syllabus pacing, faculty attendance compliance, and recommended compensatory hours for pending units.
+        </Text>
+
+        <Controller
+          control={control}
+          name="ccRemarks"
+          render={({ field: { onChange, value } }) => (
+            <AppTextInput
+              label="Class Coordinator Remarks *"
+              value={value}
+              onChangeText={onChange}
+              error={errors.ccRemarks?.message}
+              multiline
+              numberOfLines={4}
+              placeholder="e.g. All core theory courses are on schedule. Unit 3 completion rate is 82%. Recommending 2 extra hours for CS8501."
+              style={styles.textInput}
+            />
+          )}
+        />
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <AppButton
+          mode="contained"
+          title="FORWARD REPORT TO HOD"
+          onPress={handleSubmit(onSubmit)}
+          loading={isSubmitting}
+        />
+      </View>
     </ScrollView>
   );
 };
 
-const DividerHorizontal = () => <View style={styles.divider} />;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Palette.background,
+    backgroundColor: EditorialColors.bg,
   },
   content: {
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingTop: EditorialSpacing.topSafeArea,
+    paddingBottom: ms(48),
+  },
+  headerBox: {
+    marginBottom: ms(8),
+  },
+  headingText: {
+    fontFamily: EditorialFonts.display,
+    fontSize: ms(24),
+    lineHeight: ms(28),
+    color: EditorialColors.ink,
+    marginTop: ms(4),
+  },
+  subHeadingText: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: ms(11),
+    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    marginTop: ms(4),
+  },
+  heroRule: {
+    marginBottom: ms(20),
+  },
+  statBox: {
+    marginBottom: ms(20),
+  },
+  formBlock: {
+    backgroundColor: EditorialColors.white,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
     padding: ms(16),
-    paddingBottom: ms(32),
-    justifyContent: 'center',
-    flexGrow: 1,
+    marginBottom: ms(24),
   },
-  card: {
-    backgroundColor: Palette.surface,
-    borderRadius: ms(12),
-    padding: ms(8),
-    elevation: 2,
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    borderBottomWidth: 1,
+    borderBottomColor: EditorialColors.ink,
+    paddingBottom: ms(8),
+    marginBottom: ms(12),
   },
-  iconHeader: {
-    alignItems: 'center',
-    marginVertical: ms(12),
+  sectionNumber: {
+    fontFamily: EditorialFonts.display,
+    fontSize: ms(18),
+    color: EditorialColors.accent,
+    marginRight: ms(8),
   },
-  title: {
-    fontSize: ms(20),
-    fontWeight: 'bold',
-    color: Palette.textDark,
-    textAlign: 'center',
-  },
-  subtitle: {
+  sectionTitle: {
+    fontFamily: EditorialFonts.bold,
     fontSize: ms(13),
-    color: Palette.textLight,
-    textAlign: 'center',
-    marginTop: ms(6),
-    lineHeight: 18,
-    paddingHorizontal: ms(8),
+    letterSpacing: 1,
+    color: EditorialColors.ink,
   },
-  divider: {
-    height: ms(1),
-    backgroundColor: Palette.border,
-    marginVertical: ms(20),
+  instructionText: {
+    fontFamily: EditorialFonts.regular,
+    fontSize: ms(12),
+    lineHeight: ms(18),
+    color: EditorialColors.muted,
+    marginBottom: ms(16),
   },
   textInput: {
     marginTop: ms(8),
   },
-  submitBtn: {
-    marginTop: ms(20),
-    backgroundColor: Palette.primary,
+  buttonContainer: {
+    marginTop: ms(8),
   },
 });
+
