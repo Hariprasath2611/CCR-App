@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
-import { Text, Card, ProgressBar, Chip, Avatar, Button } from 'react-native-paper';
+import { StyleSheet, View, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
-import { useReportStore } from '@features/cc/store/useReportStore';
-import { Palette } from '@theme/colors';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { ms } from '@theme/responsive';
-
-const { width } = Dimensions.get('window');
+import { Feather } from '@expo/vector-icons';
+import {
+  EditorialColors,
+  EditorialFonts,
+  EditorialSpacing,
+} from '@theme/editorial';
+import {
+  EditorialHeader,
+  Rule,
+  Label,
+  BigNumber,
+  SegBar,
+  EditorialButton,
+} from '@components/editorial';
 
 interface SectionStat {
   section: string;
@@ -54,45 +61,58 @@ export const DeptAnalyticsScreen = () => {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      {/* Overview Card */}
-      <View style={styles.overviewCard}>
-        <View style={styles.topRow}>
-          <View>
-            <Text style={styles.deptLabel}>
-              {user?.department || 'Computer Science Engineering'}
-            </Text>
-            <Text style={styles.overviewTitle}>Department Syllabus Analytics</Text>
-          </View>
-          <View style={styles.percentBadge}>
-            <Text style={styles.percentText}>{avgCoverage}%</Text>
-          </View>
+      <EditorialHeader
+        eyebrow={(user?.department || 'COMPUTER SCIENCE ENGINEERING').toUpperCase()}
+        title="SYLLABUS ANALYTICS"
+        subtitle="Department coverage & performance leaderboard"
+      />
+
+      {/* ── OVERVIEW METRICS BLOCK ── */}
+      <View style={styles.metricsBox}>
+        <Label text="COMPLETION BENCHMARK" variant="dark" />
+        <View style={{ marginTop: EditorialSpacing.sm, marginBottom: EditorialSpacing.xs }}>
+          <BigNumber value={avgCoverage} unit="%" label="AVERAGE SYLLABUS COVERAGE" />
         </View>
 
-        <ProgressBar
-          progress={avgCoverage / 100}
-          color={Palette.primary}
-          style={styles.mainProgressBar}
-        />
+        <View style={{ marginVertical: EditorialSpacing.md }}>
+          <SegBar
+            value={avgCoverage}
+            max={100}
+            segments={10}
+            color={avgCoverage < 75 ? EditorialColors.accent : EditorialColors.ink}
+          />
+        </View>
 
-        <View style={styles.overviewStatsRow}>
+        <Rule thickness={1} color={EditorialColors.track} />
+
+        <View style={styles.statsRow}>
           <View style={styles.statCell}>
-            <Text style={styles.statNum}>{filtered.length}</Text>
-            <Text style={styles.statLabel}>Monitored Sections</Text>
+            <Text style={styles.statLabel}>MONITORED</Text>
+            <Text style={styles.statValue}>{filtered.length}</Text>
           </View>
-          <View style={styles.statDivider} />
+          <View style={styles.vDivider} />
           <View style={styles.statCell}>
-            <Text style={[styles.statNum, { color: Palette.success }]}>{aheadCount + onTrackCount}</Text>
-            <Text style={styles.statLabel}>On Schedule</Text>
+            <Text style={styles.statLabel}>ON SCHEDULE</Text>
+            <Text style={styles.statValue}>{aheadCount + onTrackCount}</Text>
           </View>
-          <View style={styles.statDivider} />
+          <View style={styles.vDivider} />
           <View style={styles.statCell}>
-            <Text style={[styles.statNum, { color: Palette.error }]}>{laggingCount}</Text>
-            <Text style={styles.statLabel}>Lagging</Text>
+            <Text style={[styles.statLabel, laggingCount > 0 && { color: EditorialColors.accent }]}>
+              LAGGING
+            </Text>
+            <Text
+              style={[
+                styles.statValue,
+                laggingCount > 0 && { color: EditorialColors.accent },
+              ]}
+            >
+              {laggingCount}
+            </Text>
           </View>
         </View>
       </View>
 
-      {/* Year Filter */}
+      {/* ── YEAR FILTER SELECTOR ── */}
       <View style={styles.filterRow}>
         {['All', '1st Year', '3rd Year'].map((yr) => {
           const isSelected = selectedYear === yr;
@@ -104,86 +124,83 @@ export const DeptAnalyticsScreen = () => {
               activeOpacity={0.7}
             >
               <Text style={[styles.filterText, isSelected && styles.filterTextActive]}>
-                {yr}
+                {yr.toUpperCase()}
               </Text>
             </TouchableOpacity>
           );
         })}
       </View>
 
-      {/* Section Leaderboard */}
-      <Text style={styles.sectionHeader}>Section Performance Leaderboard</Text>
+      {/* ── SECTION LEADERBOARD ── */}
+      <View style={styles.sectionHeaderRow}>
+        <Label text="PERFORMANCE LEADERBOARD" variant="dark" />
+        <Text style={styles.countText}>{filtered.length} SECTIONS</Text>
+      </View>
+      <Rule thickness={4} color={EditorialColors.ink} style={{ marginBottom: EditorialSpacing.md }} />
 
       {filtered
         .sort((a, b) => b.coverage - a.coverage)
         .map((item, idx) => {
-          const isTop = idx === 0;
+          const isLagging = item.status === 'LAGGING';
           return (
-            <Card key={`${item.year}_${item.section}`} style={styles.sectionCard}>
-              <Card.Content>
-                <View style={styles.sectionCardHeader}>
-                  <View style={styles.rankBadge}>
-                    <Text style={styles.rankText}>#{idx + 1}</Text>
-                  </View>
-                  <View style={{ flex: 1, marginLeft: ms(10) }}>
-                    <Text style={styles.sectionTitle}>
-                      {item.year} {item.section}
-                    </Text>
-                    <Text style={styles.ccText}>CC: {item.cc}</Text>
-                  </View>
-                  <View style={styles.coverageBox}>
-                    <Text style={styles.coverageNum}>{item.coverage}%</Text>
-                    <Chip
-                      style={{
-                        backgroundColor:
-                          item.status === 'AHEAD'
-                            ? '#ECFDF5'
-                            : item.status === 'ON_TRACK'
-                            ? '#EFF6FF'
-                            : '#FEF2F2',
-                        height: ms(24),
-                      }}
-                      textStyle={{
-                        fontSize: ms(10),
-                        fontWeight: '800',
-                        color:
-                          item.status === 'AHEAD'
-                            ? Palette.success
-                            : item.status === 'ON_TRACK'
-                            ? Palette.primary
-                            : Palette.error,
-                      }}
+            <View
+              key={`${item.year}_${item.section}`}
+              style={[styles.card, idx === 0 && styles.topCard]}
+            >
+              <View style={styles.cardHeader}>
+                <View style={styles.rankBox}>
+                  <Text style={styles.rankText}>#{String(idx + 1).padStart(2, '0')}</Text>
+                </View>
+                <View style={{ flex: 1, marginLeft: EditorialSpacing.sm }}>
+                  <Text style={styles.sectionTitle}>
+                    {item.year.toUpperCase()} · {item.section}
+                  </Text>
+                  <Text style={styles.ccText}>CC: {item.cc}</Text>
+                </View>
+                <View style={styles.coverageBox}>
+                  <Text style={[styles.coverageNum, isLagging && { color: EditorialColors.accent }]}>
+                    {item.coverage}%
+                  </Text>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      isLagging ? styles.statusBadgeLagging : styles.statusBadgeNormal,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.statusBadgeText,
+                        isLagging ? styles.statusBadgeTextLagging : styles.statusBadgeTextNormal,
+                      ]}
                     >
                       {item.status.replace('_', ' ')}
-                    </Chip>
+                    </Text>
                   </View>
                 </View>
+              </View>
 
-                <ProgressBar
-                  progress={item.coverage / 100}
-                  color={
-                    item.status === 'LAGGING'
-                      ? Palette.error
-                      : item.coverage >= 80
-                      ? Palette.primary
-                      : Palette.warning
-                  }
-                  style={styles.cardProgressBar}
+              <View style={{ marginTop: EditorialSpacing.sm }}>
+                <SegBar
+                  value={item.coverage}
+                  max={100}
+                  segments={8}
+                  color={isLagging ? EditorialColors.accent : EditorialColors.ink}
                 />
-              </Card.Content>
-            </Card>
+              </View>
+            </View>
           );
         })}
 
-      {/* Audit Action */}
-      <Button
-        mode="contained"
-        icon="clipboard-check-outline"
-        style={styles.auditBtn}
-        onPress={() => navigation.navigate('ApprovalScreen')}
-      >
-        Open HOD Approval Queue
-      </Button>
+      {/* ── AUDIT ACTION ── */}
+      <View style={{ marginTop: EditorialSpacing.xl }}>
+        <EditorialButton
+          title="OPEN HOD APPROVAL QUEUE"
+          variant="primary"
+          fullWidth
+          onPress={() => navigation.navigate('ApprovalScreen')}
+          rightIcon={<Feather name="arrow-right" size={16} color={EditorialColors.white} />}
+        />
+      </View>
     </ScrollView>
   );
 };
@@ -191,172 +208,154 @@ export const DeptAnalyticsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: EditorialColors.bg,
   },
   content: {
-    padding: ms(16),
-    paddingBottom: ms(40),
+    padding: EditorialSpacing.lg,
+    paddingBottom: EditorialSpacing.xxxl,
   },
-  overviewCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(20),
-    padding: ms(18),
-    marginBottom: ms(16),
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    elevation: 2,
+  metricsBox: {
+    backgroundColor: EditorialColors.white,
+    borderWidth: 2,
+    borderColor: EditorialColors.ink,
+    borderRadius: 0,
+    padding: EditorialSpacing.lg,
+    marginBottom: EditorialSpacing.lg,
   },
-  topRow: {
+  statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: ms(12),
-  },
-  deptLabel: {
-    fontSize: ms(12),
-    color: Palette.primary,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-  },
-  overviewTitle: {
-    fontSize: ms(18),
-    fontWeight: '900',
-    color: Palette.textDark,
-    marginTop: ms(2),
-  },
-  percentBadge: {
-    backgroundColor: '#EFF6FF',
-    paddingHorizontal: ms(12),
-    paddingVertical: ms(6),
-    borderRadius: ms(12),
-    borderWidth: 1,
-    borderColor: '#BFDBFE',
-  },
-  percentText: {
-    fontSize: ms(18),
-    fontWeight: '900',
-    color: Palette.primary,
-  },
-  mainProgressBar: {
-    height: ms(8),
-    borderRadius: ms(4),
-    backgroundColor: '#E2E8F0',
-    marginBottom: ms(14),
-  },
-  overviewStatsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-    borderRadius: ms(12),
-    paddingVertical: ms(10),
+    paddingTop: EditorialSpacing.md,
   },
   statCell: {
-    alignItems: 'center',
     flex: 1,
+    alignItems: 'center',
   },
-  statNum: {
-    fontSize: ms(17),
-    fontWeight: '900',
-    color: Palette.textDark,
+  vDivider: {
+    width: 1,
+    backgroundColor: EditorialColors.track,
   },
   statLabel: {
-    fontSize: ms(11),
-    color: Palette.textLight,
-    marginTop: ms(2),
+    fontFamily: EditorialFonts.bold,
+    fontSize: 9,
+    color: EditorialColors.muted,
+    letterSpacing: 0.8,
+    marginBottom: 4,
   },
-  statDivider: {
-    width: 1,
-    height: ms(22),
-    backgroundColor: '#CBD5E1',
+  statValue: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 18,
+    color: EditorialColors.ink,
   },
   filterRow: {
     flexDirection: 'row',
-    marginBottom: ms(16),
+    marginBottom: EditorialSpacing.xl,
   },
   filterChip: {
-    paddingVertical: ms(6),
-    paddingHorizontal: ms(14),
-    borderRadius: ms(20),
-    backgroundColor: '#FFFFFF',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginRight: ms(8),
+    borderColor: EditorialColors.track,
+    backgroundColor: EditorialColors.white,
+    marginRight: EditorialSpacing.sm,
   },
   filterChipActive: {
-    backgroundColor: Palette.primary,
-    borderColor: Palette.primary,
+    backgroundColor: EditorialColors.ink,
+    borderColor: EditorialColors.ink,
   },
   filterText: {
-    fontSize: ms(12),
-    fontWeight: '700',
-    color: Palette.textLight,
+    fontFamily: EditorialFonts.bold,
+    fontSize: 11,
+    color: EditorialColors.ink,
+    letterSpacing: 0.5,
   },
   filterTextActive: {
-    color: '#FFFFFF',
+    color: EditorialColors.white,
   },
-  sectionHeader: {
-    fontSize: ms(15),
-    fontWeight: '800',
-    color: Palette.textDark,
-    marginBottom: ms(12),
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
   },
-  sectionCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    marginBottom: ms(10),
+  countText: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 11,
+    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+  },
+  card: {
+    backgroundColor: EditorialColors.white,
     borderWidth: 1,
-    borderColor: '#F1F5F9',
-    elevation: 1,
+    borderColor: EditorialColors.track,
+    borderRadius: 0,
+    padding: EditorialSpacing.md,
+    marginBottom: EditorialSpacing.md,
   },
-  sectionCardHeader: {
+  topCard: {
+    borderWidth: 2,
+    borderColor: EditorialColors.ink,
+  },
+  cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: ms(10),
   },
-  rankBadge: {
-    width: ms(32),
-    height: ms(32),
-    borderRadius: ms(16),
-    backgroundColor: '#F1F5F9',
-    justifyContent: 'center',
-    alignItems: 'center',
+  rankBox: {
+    borderWidth: 1,
+    borderColor: EditorialColors.ink,
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    backgroundColor: EditorialColors.bg,
   },
   rankText: {
-    fontSize: ms(12),
-    fontWeight: '900',
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.bold,
+    fontSize: 11,
+    color: EditorialColors.ink,
   },
   sectionTitle: {
-    fontSize: ms(14.5),
-    fontWeight: '800',
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.bold,
+    fontSize: 13,
+    color: EditorialColors.ink,
+    letterSpacing: 0.2,
   },
   ccText: {
-    fontSize: ms(12),
-    color: Palette.textLight,
-    marginTop: ms(1),
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 11,
+    color: EditorialColors.muted,
+    marginTop: 2,
   },
   coverageBox: {
     alignItems: 'flex-end',
   },
   coverageNum: {
-    fontSize: ms(14),
-    fontWeight: '900',
-    color: Palette.primary,
-    marginBottom: ms(4),
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 16,
+    color: EditorialColors.ink,
+    marginBottom: 3,
   },
-  cardProgressBar: {
-    height: ms(6),
-    borderRadius: ms(3),
-    backgroundColor: '#E2E8F0',
+  statusBadge: {
+    borderWidth: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
   },
-  auditBtn: {
-    backgroundColor: Palette.primary,
-    borderRadius: ms(12),
-    marginTop: ms(12),
-    paddingVertical: ms(4),
+  statusBadgeNormal: {
+    borderColor: EditorialColors.ink,
+    backgroundColor: EditorialColors.white,
+  },
+  statusBadgeLagging: {
+    borderColor: EditorialColors.accent,
+    backgroundColor: EditorialColors.white,
+  },
+  statusBadgeText: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 9,
+    letterSpacing: 0.5,
+  },
+  statusBadgeTextNormal: {
+    color: EditorialColors.ink,
+  },
+  statusBadgeTextLagging: {
+    color: EditorialColors.accent,
   },
 });
 

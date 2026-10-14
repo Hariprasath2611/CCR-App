@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
-import { Text, Card, ProgressBar, Chip, Avatar, Button } from 'react-native-paper';
+import { StyleSheet, View, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Palette } from '@theme/colors';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
-import { ms } from '@theme/responsive';
+import { Feather } from '@expo/vector-icons';
+import {
+  EditorialColors,
+  EditorialFonts,
+  EditorialSpacing,
+} from '@theme/editorial';
+import {
+  EditorialHeader,
+  Rule,
+  Label,
+  SegBar,
+} from '@components/editorial';
 
 interface DeptMetric {
   id: string;
@@ -134,7 +142,7 @@ const DEPT_METRICS: DeptMetric[] = [
 export const InstitutionAnalyticsScreen = () => {
   const navigation = useNavigation<any>();
   const [selectedCategory, setSelectedCategory] = useState<'ALL' | 'CIRCUIT' | 'CORE' | 'ALLIED'>('ALL');
-  const [selectedWeek, setSelectedWeek] = useState('Week 12');
+  const selectedWeek = 'Week 12';
 
   const filteredDepts = DEPT_METRICS.filter((d) => {
     if (selectedCategory === 'ALL') return true;
@@ -145,311 +153,298 @@ export const InstitutionAnalyticsScreen = () => {
     DEPT_METRICS.reduce((acc, d) => acc + d.overallCoverage, 0) / DEPT_METRICS.length
   );
 
-  const getStatusBadge = (status: DeptMetric['status']) => {
+  const getStatusLabel = (status: DeptMetric['status']) => {
     switch (status) {
       case 'AHEAD':
-        return { bg: '#DCFCE7', text: '#15803D', label: 'Ahead of AU Target' };
+        return 'AHEAD OF TARGET';
       case 'STEADY':
-        return { bg: '#DBEAFE', text: '#1D4ED8', label: 'On Track' };
+        return 'ON TRACK';
       case 'ATTENTION':
-        return { bg: '#FEE2E2', text: '#B91C1C', label: 'Pace Attention' };
+        return 'PACE ATTENTION';
     }
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
-        {/* ── CENTRAL KPI OVERVIEW ── */}
-        <View style={styles.kpiContainer}>
-          <Text style={styles.kpiHeading}>Institution Pace Performance</Text>
-          <Text style={styles.kpiSubtitle}>Anna University Regulation Audit • Academic {selectedWeek}</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <EditorialHeader
+        eyebrow="EXECUTIVE OVERSIGHT"
+        title="INSTITUTION ANALYTICS"
+        subtitle={`Anna University regulation audit · Academic ${selectedWeek}`}
+      />
 
-          <View style={styles.kpiGrid}>
-            <View style={styles.kpiCell}>
-              <View style={[styles.kpiIconBox, { backgroundColor: '#EFF6FF' }]}>
-                <MaterialCommunityIcons name="school-outline" size={24} color="#2563EB" />
-              </View>
-              <Text style={styles.kpiNumber}>{avgInstituteCoverage}%</Text>
-              <Text style={styles.kpiLabel}>Avg Institute Pace</Text>
-            </View>
+      {/* ── CENTRAL KPI OVERVIEW ── */}
+      <View style={styles.kpiContainer}>
+        <Label text="INSTITUTION BENCHMARK SUMMARY" variant="dark" />
+        <View style={styles.kpiGrid}>
+          <View style={[styles.kpiCell, styles.kpiCellBorderRight, styles.kpiCellBorderBottom]}>
+            <Text style={styles.kpiLabel}>AVG INSTITUTE PACE</Text>
+            <Text style={styles.kpiNumber}>{avgInstituteCoverage}%</Text>
+          </View>
 
-            <View style={styles.kpiCell}>
-              <View style={[styles.kpiIconBox, { backgroundColor: '#ECFDF5' }]}>
-                <MaterialCommunityIcons name="office-building" size={24} color="#10B981" />
-              </View>
-              <Text style={styles.kpiNumber}>{DEPT_METRICS.length}</Text>
-              <Text style={styles.kpiLabel}>Departments Audited</Text>
-            </View>
+          <View style={[styles.kpiCell, styles.kpiCellBorderBottom]}>
+            <Text style={styles.kpiLabel}>DEPARTMENTS AUDITED</Text>
+            <Text style={styles.kpiNumber}>{DEPT_METRICS.length}</Text>
+          </View>
 
-            <View style={styles.kpiCell}>
-              <View style={[styles.kpiIconBox, { backgroundColor: '#FFF7ED' }]}>
-                <MaterialCommunityIcons name="google-classroom" size={24} color="#F97316" />
-              </View>
-              <Text style={styles.kpiNumber}>48</Text>
-              <Text style={styles.kpiLabel}>Active Class Batches</Text>
-            </View>
+          <View style={[styles.kpiCell, styles.kpiCellBorderRight]}>
+            <Text style={styles.kpiLabel}>ACTIVE CLASS BATCHES</Text>
+            <Text style={styles.kpiNumber}>48</Text>
+          </View>
 
-            <View style={styles.kpiCell}>
-              <View style={[styles.kpiIconBox, { backgroundColor: '#F5F3FF' }]}>
-                <MaterialCommunityIcons name="shield-check-outline" size={24} color="#8B5CF6" />
-              </View>
-              <Text style={styles.kpiNumber}>96.4%</Text>
-              <Text style={styles.kpiLabel}>Compliance Index</Text>
-            </View>
+          <View style={styles.kpiCell}>
+            <Text style={styles.kpiLabel}>COMPLIANCE INDEX</Text>
+            <Text style={styles.kpiNumber}>96.4%</Text>
           </View>
         </View>
+      </View>
 
-        {/* ── CATEGORY FILTER CHIPS ── */}
-        <View style={styles.filterSection}>
-          <Text style={styles.filterTitle}>Discipline Filter</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll}>
-            {[
-              { id: 'ALL', label: 'All Departments (10)' },
-              { id: 'CIRCUIT', label: 'Circuit Branches (6)' },
-              { id: 'CORE', label: 'Core Engineering (2)' },
-              { id: 'ALLIED', label: 'Allied Sciences (2)' },
-            ].map((cat) => (
-              <Chip
+      {/* ── DISCIPLINE FILTER CHIPS ── */}
+      <View style={styles.filterSection}>
+        <Text style={styles.filterTitle}>DISCIPLINE FILTER</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll}>
+          {[
+            { id: 'ALL', label: 'ALL DEPARTMENTS (10)' },
+            { id: 'CIRCUIT', label: 'CIRCUIT BRANCHES (6)' },
+            { id: 'CORE', label: 'CORE ENGINEERING (2)' },
+            { id: 'ALLIED', label: 'ALLIED SCIENCES (2)' },
+          ].map((cat) => {
+            const isSelected = selectedCategory === cat.id;
+            return (
+              <TouchableOpacity
                 key={cat.id}
-                selected={selectedCategory === cat.id}
                 onPress={() => setSelectedCategory(cat.id as any)}
-                style={[styles.chip, selectedCategory === cat.id && styles.chipActive]}
-                textStyle={[styles.chipText, selectedCategory === cat.id && styles.chipTextActive]}
+                style={[styles.filterChip, isSelected && styles.filterChipActive]}
+                activeOpacity={0.7}
               >
-                {cat.label}
-              </Chip>
-            ))}
-          </ScrollView>
-        </View>
+                <Text style={[styles.filterChipText, isSelected && styles.filterChipTextActive]}>
+                  {cat.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
 
-        {/* ── DEPARTMENT RANKINGS LEADERBOARD ── */}
-        <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionTitle}>Department Velocity Leaderboard</Text>
-          <Text style={styles.sectionSubtitle}>Ranked by cumulative syllabus completion</Text>
-        </View>
+      {/* ── DEPARTMENT RANKINGS LEADERBOARD ── */}
+      <View style={styles.sectionHeaderRow}>
+        <Label text="DEPARTMENT VELOCITY LEADERBOARD" variant="dark" />
+        <Text style={styles.sectionCountText}>{filteredDepts.length} DEPARTMENTS</Text>
+      </View>
+      <Rule thickness={4} color={EditorialColors.ink} style={{ marginBottom: EditorialSpacing.md }} />
 
-        {filteredDepts.map((dept, index) => {
-          const statusInfo = getStatusBadge(dept.status);
-          const rank = index + 1;
-          const isTop3 = rank <= 3;
+      {filteredDepts.map((dept, index) => {
+        const isAttention = dept.status === 'ATTENTION';
+        const rank = index + 1;
+        const isTop = rank === 1;
 
-          return (
-            <Card key={dept.id} style={styles.deptCard}>
-              <Card.Content style={styles.deptCardContent}>
-                {/* Header Row: Rank Badge, Dept Code & Status */}
-                <View style={styles.cardTopRow}>
-                  <View style={styles.deptMainInfo}>
-                    <View style={[styles.rankBadge, isTop3 && styles.rankBadgeTop]}>
-                      <Text style={[styles.rankText, isTop3 && styles.rankTextTop]}>#{rank}</Text>
-                    </View>
-                    <View style={styles.deptNameContainer}>
-                      <Text style={styles.deptCodeText}>{dept.code}</Text>
-                      <Text style={styles.deptFullName} numberOfLines={1}>
-                        {dept.name}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <View style={[styles.statusBadge, { backgroundColor: statusInfo.bg }]}>
-                    <Text style={[styles.statusText, { color: statusInfo.text }]}>{statusInfo.label}</Text>
-                  </View>
+        return (
+          <View key={dept.id} style={[styles.deptCard, isTop && styles.deptCardTop]}>
+            {/* Header Row: Rank Badge, Dept Code & Status */}
+            <View style={styles.cardTopRow}>
+              <View style={styles.deptMainInfo}>
+                <View style={styles.rankBadge}>
+                  <Text style={styles.rankText}>#{String(rank).padStart(2, '0')}</Text>
                 </View>
-
-                {/* Overall Coverage Progress */}
-                <View style={styles.coverageRow}>
-                  <Text style={styles.coverageLabel}>Cumulative Coverage</Text>
-                  <Text style={styles.coverageValue}>{dept.overallCoverage}%</Text>
+                <View style={styles.deptNameContainer}>
+                  <Text style={styles.deptCodeText}>{dept.code}</Text>
+                  <Text style={styles.deptFullName} numberOfLines={1}>
+                    {dept.name.toUpperCase()}
+                  </Text>
                 </View>
-                <ProgressBar
-                  progress={dept.overallCoverage / 100}
-                  color={dept.overallCoverage >= 85 ? Palette.primary : dept.overallCoverage >= 75 ? '#F59E0B' : '#EF4444'}
-                  style={styles.progressBar}
-                />
+              </View>
 
-                {/* Year 1-4 Mini Breakdown Grid */}
-                <View style={styles.yearGrid}>
-                  <View style={styles.yearCell}>
-                    <Text style={styles.yearLbl}>1st Year</Text>
-                    <Text style={styles.yearVal}>{dept.yearCoverage.y1}%</Text>
-                  </View>
-                  <View style={styles.yearDivider} />
-                  <View style={styles.yearCell}>
-                    <Text style={styles.yearLbl}>2nd Year</Text>
-                    <Text style={styles.yearVal}>{dept.yearCoverage.y2}%</Text>
-                  </View>
-                  <View style={styles.yearDivider} />
-                  <View style={styles.yearCell}>
-                    <Text style={styles.yearLbl}>3rd Year</Text>
-                    <Text style={styles.yearVal}>{dept.yearCoverage.y3}%</Text>
-                  </View>
-                  <View style={styles.yearDivider} />
-                  <View style={styles.yearCell}>
-                    <Text style={styles.yearLbl}>4th Year</Text>
-                    <Text style={styles.yearVal}>{dept.yearCoverage.y4}%</Text>
-                  </View>
-                </View>
+              <View
+                style={[
+                  styles.statusBadge,
+                  isAttention ? styles.statusBadgeAttention : styles.statusBadgeNormal,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.statusBadgeText,
+                    isAttention ? styles.statusBadgeTextAttention : styles.statusBadgeTextNormal,
+                  ]}
+                >
+                  {getStatusLabel(dept.status)}
+                </Text>
+              </View>
+            </View>
 
-                {/* Footer: HOD and Audit Navigation */}
-                <View style={styles.cardFooter}>
-                  <View style={styles.hodInfoRow}>
-                    <Feather name="user-check" size={13} color="#64748B" />
-                    <Text style={styles.hodNameText}>HOD: {dept.hodName}</Text>
-                  </View>
-                  <TouchableOpacity
-                    style={styles.inspectBtn}
-                    onPress={() => navigation.navigate('DeptSummary', { departmentId: dept.id })}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.inspectBtnText}>Audit Classes</Text>
-                    <Feather name="arrow-right" size={13} color={Palette.primary} />
-                  </TouchableOpacity>
-                </View>
-              </Card.Content>
-            </Card>
-          );
-        })}
-      </ScrollView>
-    </View>
+            {/* Overall Coverage Progress */}
+            <View style={styles.coverageRow}>
+              <Text style={styles.coverageLabel}>CUMULATIVE COVERAGE</Text>
+              <Text style={[styles.coverageValue, isAttention && { color: EditorialColors.accent }]}>
+                {dept.overallCoverage}%
+              </Text>
+            </View>
+            <View style={{ marginBottom: EditorialSpacing.md }}>
+              <SegBar
+                value={dept.overallCoverage}
+                max={100}
+                segments={10}
+                color={isAttention ? EditorialColors.accent : EditorialColors.ink}
+              />
+            </View>
+
+            {/* Year 1-4 Mini Breakdown Grid */}
+            <View style={styles.yearGrid}>
+              <View style={styles.yearCell}>
+                <Text style={styles.yearLbl}>1ST YR</Text>
+                <Text style={styles.yearVal}>{dept.yearCoverage.y1}%</Text>
+              </View>
+              <View style={styles.yearDivider} />
+              <View style={styles.yearCell}>
+                <Text style={styles.yearLbl}>2ND YR</Text>
+                <Text style={styles.yearVal}>{dept.yearCoverage.y2}%</Text>
+              </View>
+              <View style={styles.yearDivider} />
+              <View style={styles.yearCell}>
+                <Text style={styles.yearLbl}>3RD YR</Text>
+                <Text style={styles.yearVal}>{dept.yearCoverage.y3}%</Text>
+              </View>
+              <View style={styles.yearDivider} />
+              <View style={styles.yearCell}>
+                <Text style={styles.yearLbl}>4TH YR</Text>
+                <Text style={styles.yearVal}>{dept.yearCoverage.y4}%</Text>
+              </View>
+            </View>
+
+            {/* Footer: HOD and Audit Navigation */}
+            <View style={styles.cardFooter}>
+              <View style={styles.hodInfoRow}>
+                <Text style={styles.hodLabel}>HOD</Text>
+                <Text style={styles.hodNameText} numberOfLines={1}>
+                  {dept.hodName}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.inspectBtn}
+                onPress={() => navigation.navigate('DeptSummary', { departmentId: dept.id })}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.inspectBtnText}>AUDIT CLASSES</Text>
+                <Feather name="arrow-right" size={13} color={EditorialColors.ink} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        );
+      })}
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: EditorialColors.bg,
   },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: ms(16),
-    paddingBottom: ms(40),
+  content: {
+    padding: EditorialSpacing.lg,
+    paddingBottom: EditorialSpacing.xxxl,
   },
   kpiContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(20),
-    padding: ms(18),
-    marginBottom: ms(16),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.03,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  kpiHeading: {
-    fontSize: ms(18),
-    fontWeight: '900',
-    color: Palette.textDark,
-    letterSpacing: -0.3,
-  },
-  kpiSubtitle: {
-    fontSize: ms(12),
-    color: Palette.textLight,
-    marginTop: ms(2),
-    marginBottom: ms(16),
+    backgroundColor: EditorialColors.white,
+    borderWidth: 2,
+    borderColor: EditorialColors.ink,
+    borderRadius: 0,
+    padding: EditorialSpacing.lg,
+    marginBottom: EditorialSpacing.xl,
   },
   kpiGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    marginTop: EditorialSpacing.md,
+    borderWidth: 1,
+    borderColor: EditorialColors.track,
   },
   kpiCell: {
-    width: '48%',
-    backgroundColor: '#F8FAFC',
-    borderRadius: ms(12),
-    padding: ms(12),
-    marginBottom: ms(10),
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+    width: '50%',
+    padding: EditorialSpacing.md,
+    backgroundColor: EditorialColors.white,
   },
-  kpiIconBox: {
-    width: ms(36),
-    height: ms(36),
-    borderRadius: ms(8),
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: ms(8),
+  kpiCellBorderRight: {
+    borderRightWidth: 1,
+    borderRightColor: EditorialColors.track,
+  },
+  kpiCellBorderBottom: {
+    borderBottomWidth: 1,
+    borderBottomColor: EditorialColors.track,
   },
   kpiNumber: {
-    fontSize: ms(20),
-    fontWeight: '900',
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 22,
+    color: EditorialColors.ink,
+    marginTop: 2,
   },
   kpiLabel: {
-    fontSize: ms(11),
-    fontWeight: '600',
-    color: '#64748B',
-    marginTop: ms(2),
+    fontFamily: EditorialFonts.bold,
+    fontSize: 9,
+    color: EditorialColors.muted,
+    letterSpacing: 0.8,
   },
   filterSection: {
-    marginBottom: ms(14),
+    marginBottom: EditorialSpacing.xl,
   },
   filterTitle: {
-    fontSize: ms(12),
-    fontWeight: '700',
-    color: Palette.textLight,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: ms(8),
+    fontFamily: EditorialFonts.bold,
+    fontSize: 10,
+    color: EditorialColors.muted,
+    letterSpacing: 0.8,
+    marginBottom: EditorialSpacing.xs,
   },
   chipsScroll: {
     flexDirection: 'row',
   },
-  chip: {
-    marginRight: ms(8),
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(8),
+  filterChip: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: EditorialColors.track,
+    backgroundColor: EditorialColors.white,
+    marginRight: EditorialSpacing.sm,
   },
-  chipActive: {
-    backgroundColor: Palette.primary,
-    borderColor: Palette.primary,
+  filterChipActive: {
+    backgroundColor: EditorialColors.ink,
+    borderColor: EditorialColors.ink,
   },
-  chipText: {
-    fontSize: ms(12),
-    fontWeight: '600',
-    color: '#475569',
+  filterChipText: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 11,
+    color: EditorialColors.ink,
+    letterSpacing: 0.5,
   },
-  chipTextActive: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+  filterChipTextActive: {
+    color: EditorialColors.white,
   },
   sectionHeaderRow: {
-    marginBottom: ms(12),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
   },
-  sectionTitle: {
-    fontSize: ms(16),
-    fontWeight: '900',
-    color: Palette.textDark,
-  },
-  sectionSubtitle: {
-    fontSize: ms(12),
-    color: Palette.textLight,
-    marginTop: ms(1),
+  sectionCountText: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 11,
+    color: EditorialColors.muted,
+    letterSpacing: 0.5,
   },
   deptCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    marginBottom: ms(12),
+    backgroundColor: EditorialColors.white,
     borderWidth: 1,
-    borderColor: '#F1F5F9',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.02,
-    shadowRadius: 6,
-    elevation: 1,
+    borderColor: EditorialColors.track,
+    borderRadius: 0,
+    padding: EditorialSpacing.md,
+    marginBottom: EditorialSpacing.md,
   },
-  deptCardContent: {
-    padding: ms(14),
+  deptCardTop: {
+    borderWidth: 2,
+    borderColor: EditorialColors.ink,
   },
   cardTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: ms(10),
+    marginBottom: EditorialSpacing.sm,
   },
   deptMainInfo: {
     flexDirection: 'row',
@@ -457,132 +452,146 @@ const styles = StyleSheet.create({
     flex: 0.68,
   },
   rankBadge: {
-    width: ms(28),
-    height: ms(28),
-    borderRadius: ms(14),
-    backgroundColor: '#F1F5F9',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: ms(10),
-  },
-  rankBadgeTop: {
-    backgroundColor: '#EFF6FF',
+    borderWidth: 1,
+    borderColor: EditorialColors.ink,
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    backgroundColor: EditorialColors.bg,
+    marginRight: EditorialSpacing.sm,
   },
   rankText: {
-    fontSize: ms(12),
-    fontWeight: '800',
-    color: '#64748B',
-  },
-  rankTextTop: {
-    color: Palette.primary,
+    fontFamily: EditorialFonts.bold,
+    fontSize: 11,
+    color: EditorialColors.ink,
   },
   deptNameContainer: {
     flex: 1,
   },
   deptCodeText: {
-    fontSize: ms(16),
-    fontWeight: '900',
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 15,
+    color: EditorialColors.ink,
+    letterSpacing: 0.2,
   },
   deptFullName: {
-    fontSize: ms(11),
-    color: Palette.textLight,
-    fontWeight: '500',
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 10,
+    color: EditorialColors.muted,
+    marginTop: 1,
   },
   statusBadge: {
-    paddingHorizontal: ms(8),
-    paddingVertical: ms(4),
-    borderRadius: ms(6),
+    borderWidth: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
   },
-  statusText: {
-    fontSize: ms(10),
-    fontWeight: '800',
+  statusBadgeNormal: {
+    borderColor: EditorialColors.ink,
+    backgroundColor: EditorialColors.white,
+  },
+  statusBadgeAttention: {
+    borderColor: EditorialColors.accent,
+    backgroundColor: EditorialColors.white,
+  },
+  statusBadgeText: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 9,
+    letterSpacing: 0.5,
+  },
+  statusBadgeTextNormal: {
+    color: EditorialColors.ink,
+  },
+  statusBadgeTextAttention: {
+    color: EditorialColors.accent,
   },
   coverageRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: ms(4),
+    alignItems: 'center',
+    marginBottom: 4,
   },
   coverageLabel: {
-    fontSize: ms(12),
-    color: '#64748B',
-    fontWeight: '600',
+    fontFamily: EditorialFonts.bold,
+    fontSize: 10,
+    color: EditorialColors.muted,
+    letterSpacing: 0.6,
   },
   coverageValue: {
-    fontSize: ms(13),
-    fontWeight: '800',
-    color: Palette.textDark,
-  },
-  progressBar: {
-    height: ms(6),
-    borderRadius: ms(3),
-    backgroundColor: '#E2E8F0',
-    marginBottom: ms(12),
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 15,
+    color: EditorialColors.ink,
   },
   yearGrid: {
     flexDirection: 'row',
-    backgroundColor: '#F8FAFC',
-    borderRadius: ms(10),
-    paddingVertical: ms(8),
-    paddingHorizontal: ms(10),
+    backgroundColor: EditorialColors.bg,
+    borderWidth: 1,
+    borderColor: EditorialColors.track,
+    paddingVertical: 6,
+    paddingHorizontal: EditorialSpacing.sm,
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: ms(10),
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+    marginBottom: EditorialSpacing.sm,
   },
   yearCell: {
     alignItems: 'center',
     flex: 1,
   },
   yearLbl: {
-    fontSize: ms(10),
-    color: '#64748B',
-    fontWeight: '600',
+    fontFamily: EditorialFonts.bold,
+    fontSize: 9,
+    color: EditorialColors.muted,
+    letterSpacing: 0.5,
   },
   yearVal: {
-    fontSize: ms(12),
-    fontWeight: '800',
-    color: Palette.textDark,
-    marginTop: ms(1),
+    fontFamily: EditorialFonts.bold,
+    fontSize: 12,
+    color: EditorialColors.ink,
+    marginTop: 2,
   },
   yearDivider: {
     width: 1,
-    height: ms(18),
-    backgroundColor: '#CBD5E1',
+    height: 16,
+    backgroundColor: EditorialColors.track,
   },
   cardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
-    paddingTop: ms(8),
+    borderTopColor: EditorialColors.track,
+    paddingTop: EditorialSpacing.sm,
   },
   hodInfoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: ms(4),
     flex: 0.65,
   },
+  hodLabel: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 9,
+    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    marginRight: 6,
+  },
   hodNameText: {
-    fontSize: ms(11),
-    color: '#64748B',
-    fontWeight: '600',
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 11,
+    color: EditorialColors.ink,
   },
   inspectBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: ms(3),
-    paddingVertical: ms(3),
-    paddingHorizontal: ms(8),
-    borderRadius: ms(6),
-    backgroundColor: '#EFF6FF',
+    borderWidth: 1,
+    borderColor: EditorialColors.ink,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    backgroundColor: EditorialColors.white,
   },
   inspectBtnText: {
-    fontSize: ms(11),
-    fontWeight: '700',
-    color: Palette.primary,
+    fontFamily: EditorialFonts.bold,
+    fontSize: 10,
+    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+    marginRight: 4,
   },
 });
 

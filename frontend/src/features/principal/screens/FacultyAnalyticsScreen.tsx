@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity, RefreshControl, TextInput as RNTextInput } from 'react-native';
-import { Text, Card, Avatar, ProgressBar, Chip, Badge } from 'react-native-paper';
-import { Palette } from '@theme/colors';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
-import { ms } from '@theme/responsive';
+import { StyleSheet, View, ScrollView, TouchableOpacity, RefreshControl, TextInput as RNTextInput, Text } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import {
+  EditorialColors,
+  EditorialFonts,
+  EditorialSpacing,
+} from '@theme/editorial';
+import {
+  EditorialHeader,
+  Rule,
+  Label,
+  SegBar,
+} from '@components/editorial';
 
 interface FacultyMetric {
   id: string;
@@ -153,84 +161,108 @@ export const FacultyAnalyticsScreen = () => {
     return matchesFilter && matchesQuery;
   });
 
-  const getStatusBadge = (status: FacultyMetric['status']) => {
+  const getStatusLabel = (status: FacultyMetric['status']) => {
     switch (status) {
       case 'EXEMPLARY':
-        return { bg: '#DCFCE7', text: '#15803D', label: 'Exemplary Compliance' };
+        return 'EXEMPLARY';
       case 'ON_TRACK':
-        return { bg: '#DBEAFE', text: '#1D4ED8', label: 'On Schedule' };
+        return 'ON SCHEDULE';
       case 'ATTENTION':
-        return { bg: '#FEE2E2', text: '#B91C1C', label: 'Pace Delay Review' };
+        return 'PACE DELAY';
     }
   };
 
   return (
     <View style={styles.container}>
-      {/* ── TOP SEARCH & STATS HEADER ── */}
-      <View style={styles.headerBlock}>
+      <ScrollView
+        style={styles.scrollList}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={EditorialColors.ink}
+            colors={[EditorialColors.ink]}
+          />
+        }
+      >
+        <EditorialHeader
+          eyebrow="FACULTY PERFORMANCE"
+          title="FACULTY AUDIT"
+          subtitle="Punctuality, logging velocity & syllabus delivery"
+        />
+
+        {/* ── KPI ROW ── */}
+        <View style={styles.kpiBox}>
+          <View style={styles.kpiCell}>
+            <Text style={styles.kpiLbl}>AUDITED</Text>
+            <Text style={styles.kpiNum}>{FACULTY_DATA.length}</Text>
+          </View>
+          <View style={styles.kpiDivider} />
+          <View style={styles.kpiCell}>
+            <Text style={styles.kpiLbl}>AVG PUNCTUALITY</Text>
+            <Text style={styles.kpiNum}>94.2%</Text>
+          </View>
+          <View style={styles.kpiDivider} />
+          <View style={styles.kpiCell}>
+            <Text style={styles.kpiLbl}>AVG COMPLETION</Text>
+            <Text style={styles.kpiNum}>85%</Text>
+          </View>
+        </View>
+
+        {/* ── SEARCH BAR ── */}
         <View style={styles.searchBar}>
-          <Feather name="search" size={18} color="#64748B" />
+          <Feather name="search" size={16} color={EditorialColors.ink} />
           <RNTextInput
             style={styles.searchInput}
             placeholder="Search faculty name, course or dept..."
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={EditorialColors.muted}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
           {searchQuery ? (
             <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Feather name="x" size={16} color="#64748B" />
+              <Feather name="x" size={16} color={EditorialColors.ink} />
             </TouchableOpacity>
           ) : null}
         </View>
 
-        {/* Status Filter Chips */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll}>
-          {[
-            { id: 'ALL', label: `All Faculty (${FACULTY_DATA.length})` },
-            { id: 'EXEMPLARY', label: 'Exemplary (100% Punctual)' },
-            { id: 'ON_TRACK', label: 'On Schedule' },
-            { id: 'ATTENTION', label: 'Requires Attention' },
-          ].map((item) => (
-            <Chip
-              key={item.id}
-              selected={statusFilter === item.id}
-              onPress={() => setStatusFilter(item.id as any)}
-              style={[styles.chip, statusFilter === item.id && styles.chipActive]}
-              textStyle={[styles.chipText, statusFilter === item.id && styles.chipTextActive]}
-            >
-              {item.label}
-            </Chip>
-          ))}
-        </ScrollView>
-      </View>
-
-      {/* ── FACULTY METRIC CARDS ── */}
-      <ScrollView
-        style={styles.scrollList}
-        contentContainerStyle={styles.scrollContent}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Palette.primary]} />}
-      >
-        {/* KPI Mini Header */}
-        <View style={styles.kpiRow}>
-          <View style={styles.kpiBox}>
-            <Text style={styles.kpiNum}>{FACULTY_DATA.length}</Text>
-            <Text style={styles.kpiLbl}>Faculty Audited</Text>
-          </View>
-          <View style={styles.kpiDivider} />
-          <View style={styles.kpiBox}>
-            <Text style={[styles.kpiNum, { color: Palette.primary }]}>94.2%</Text>
-            <Text style={styles.kpiLbl}>Avg Punctuality</Text>
-          </View>
-          <View style={styles.kpiDivider} />
-          <View style={styles.kpiBox}>
-            <Text style={[styles.kpiNum, { color: '#16A34A' }]}>85%</Text>
-            <Text style={styles.kpiLbl}>Avg Completion</Text>
-          </View>
+        {/* ── STATUS FILTER CHIPS ── */}
+        <View style={styles.filterSection}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll}>
+            {[
+              { id: 'ALL', label: `ALL (${FACULTY_DATA.length})` },
+              { id: 'EXEMPLARY', label: 'EXEMPLARY' },
+              { id: 'ON_TRACK', label: 'ON SCHEDULE' },
+              { id: 'ATTENTION', label: 'REQUIRES ATTENTION' },
+            ].map((item) => {
+              const isSelected = statusFilter === item.id;
+              return (
+                <TouchableOpacity
+                  key={item.id}
+                  onPress={() => setStatusFilter(item.id as any)}
+                  style={[styles.filterChip, isSelected && styles.filterChipActive]}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.filterChipText, isSelected && styles.filterChipTextActive]}>
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
         </View>
 
+        {/* ── SECTION HEADER ── */}
+        <View style={styles.sectionHeaderRow}>
+          <Label text="FACULTY DOSSIERS" variant="dark" />
+          <Text style={styles.sectionCountText}>{filteredFaculty.length} INSTRUCTORS</Text>
+        </View>
+        <Rule thickness={4} color={EditorialColors.ink} style={{ marginBottom: EditorialSpacing.md }} />
+
+        {/* ── FACULTY CARDS ── */}
         {filteredFaculty.map((fac) => {
-          const statusInfo = getStatusBadge(fac.status);
+          const isAttention = fac.status === 'ATTENTION';
           const initials = fac.name
             .split(' ')
             .map((w) => w[0])
@@ -239,75 +271,94 @@ export const FacultyAnalyticsScreen = () => {
             .toUpperCase();
 
           return (
-            <Card key={fac.id} style={styles.card}>
-              <Card.Content style={styles.cardContent}>
-                {/* Header: Avatar, Name, Designation & Status */}
-                <View style={styles.topRow}>
-                  <View style={styles.profileRow}>
-                    <Avatar.Text size={44} label={initials} style={styles.avatar} labelStyle={styles.avatarLabel} />
-                    <View style={styles.profileText}>
-                      <Text style={styles.facultyName}>{fac.name}</Text>
-                      <Text style={styles.designationText}>
-                        {fac.designation} • {fac.department}
-                      </Text>
-                    </View>
+            <View key={fac.id} style={styles.card}>
+              {/* Header: Avatar, Name, Designation & Status */}
+              <View style={styles.cardHeader}>
+                <View style={styles.profileRow}>
+                  <View style={styles.avatarSquare}>
+                    <Text style={styles.avatarText}>{initials}</Text>
                   </View>
-                  <View style={[styles.statusBadge, { backgroundColor: statusInfo.bg }]}>
-                    <Text style={[styles.statusBadgeText, { color: statusInfo.text }]}>{statusInfo.label}</Text>
-                  </View>
-                </View>
-
-                {/* Performance Progress */}
-                <View style={styles.coverageRow}>
-                  <Text style={styles.coverageLabel}>Average Syllabus Pace</Text>
-                  <Text style={styles.coveragePercent}>{fac.avgCoverage}%</Text>
-                </View>
-                <ProgressBar
-                  progress={fac.avgCoverage / 100}
-                  color={fac.avgCoverage >= 85 ? Palette.primary : fac.avgCoverage >= 75 ? '#F59E0B' : '#EF4444'}
-                  style={styles.progressBar}
-                />
-
-                {/* Punctuality and Extra Hours Metrics */}
-                <View style={styles.metricsGrid}>
-                  <View style={styles.metricItem}>
-                    <Text style={styles.metricItemVal}>{fac.punctualityScore}%</Text>
-                    <Text style={styles.metricItemLbl}>Submission Punctuality</Text>
-                  </View>
-                  <View style={styles.metricDivider} />
-                  <View style={styles.metricItem}>
-                    <Text style={styles.metricItemVal}>
-                      {fac.onTimeSubmissions}/{fac.totalSubmissions}
+                  <View style={styles.profileText}>
+                    <Text style={styles.facultyName}>{fac.name}</Text>
+                    <Text style={styles.designationText}>
+                      {fac.designation.toUpperCase()} · {fac.department.toUpperCase()}
                     </Text>
-                    <Text style={styles.metricItemLbl}>On-Time Weekly Logs</Text>
-                  </View>
-                  <View style={styles.metricDivider} />
-                  <View style={styles.metricItem}>
-                    <Text style={styles.metricItemVal}>{fac.extraHoursTaken} hrs</Text>
-                    <Text style={styles.metricItemLbl}>Extra Slots Logged</Text>
                   </View>
                 </View>
+                <View
+                  style={[
+                    styles.statusBadge,
+                    isAttention ? styles.statusBadgeAttention : styles.statusBadgeNormal,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.statusBadgeText,
+                      isAttention ? styles.statusBadgeTextAttention : styles.statusBadgeTextNormal,
+                    ]}
+                  >
+                    {getStatusLabel(fac.status)}
+                  </Text>
+                </View>
+              </View>
 
-                {/* Handled Subjects */}
-                <View style={styles.subjectsContainer}>
-                  <Text style={styles.subjectsTitle}>Assigned Subjects & Class Pace:</Text>
-                  {fac.assignedSubjects.map((subj, idx) => (
-                    <View key={idx} style={styles.subjectRow}>
-                      <View style={styles.subjCodeBadge}>
-                        <Text style={styles.subjCodeText}>{subj.code}</Text>
-                      </View>
-                      <View style={styles.subjInfo}>
-                        <Text style={styles.subjName} numberOfLines={1}>
-                          {subj.name}
-                        </Text>
-                        <Text style={styles.subjSection}>{subj.section}</Text>
-                      </View>
-                      <Text style={styles.subjCoverageText}>{subj.coverage}%</Text>
-                    </View>
-                  ))}
+              {/* Performance Progress */}
+              <View style={styles.coverageRow}>
+                <Text style={styles.coverageLabel}>AVERAGE SYLLABUS PACE</Text>
+                <Text style={[styles.coveragePercent, isAttention && { color: EditorialColors.accent }]}>
+                  {fac.avgCoverage}%
+                </Text>
+              </View>
+              <View style={{ marginBottom: EditorialSpacing.md }}>
+                <SegBar
+                  value={fac.avgCoverage}
+                  max={100}
+                  segments={8}
+                  color={isAttention ? EditorialColors.accent : EditorialColors.ink}
+                />
+              </View>
+
+              {/* Punctuality and Extra Hours Metrics */}
+              <View style={styles.metricsGrid}>
+                <View style={styles.metricItem}>
+                  <Text style={styles.metricItemVal}>{fac.punctualityScore}%</Text>
+                  <Text style={styles.metricItemLbl}>PUNCTUALITY</Text>
                 </View>
-              </Card.Content>
-            </Card>
+                <View style={styles.metricDivider} />
+                <View style={styles.metricItem}>
+                  <Text style={styles.metricItemVal}>
+                    {fac.onTimeSubmissions}/{fac.totalSubmissions}
+                  </Text>
+                  <Text style={styles.metricItemLbl}>ON-TIME LOGS</Text>
+                </View>
+                <View style={styles.metricDivider} />
+                <View style={styles.metricItem}>
+                  <Text style={styles.metricItemVal}>{fac.extraHoursTaken} HRS</Text>
+                  <Text style={styles.metricItemLbl}>EXTRA SLOTS</Text>
+                </View>
+              </View>
+
+              {/* Handled Subjects */}
+              <View style={styles.subjectsContainer}>
+                <Text style={styles.subjectsTitle}>ASSIGNED SUBJECTS & PACE</Text>
+                {fac.assignedSubjects.map((subj, idx) => (
+                  <View key={idx} style={styles.subjectRow}>
+                    <View style={styles.subjCodeBadge}>
+                      <Text style={styles.subjCodeText}>{subj.code}</Text>
+                    </View>
+                    <View style={styles.subjInfo}>
+                      <Text style={styles.subjName} numberOfLines={1}>
+                        {subj.name}
+                      </Text>
+                      <Text style={styles.subjSection}>{subj.section}</Text>
+                    </View>
+                    <Text style={[styles.subjCoverageText, subj.coverage < 75 && { color: EditorialColors.accent }]}>
+                      {subj.coverage}%
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
           );
         })}
       </ScrollView>
@@ -318,250 +369,270 @@ export const FacultyAnalyticsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
-  },
-  headerBlock: {
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: ms(16),
-    paddingTop: ms(14),
-    paddingBottom: ms(10),
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-  },
-  searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F1F5F9',
-    borderRadius: ms(12),
-    paddingHorizontal: ms(12),
-    height: ms(42),
-    marginBottom: ms(10),
-  },
-  searchInput: {
-    flex: 1,
-    marginLeft: ms(8),
-    fontSize: ms(14),
-    color: Palette.textDark,
-  },
-  chipsScroll: {
-    flexDirection: 'row',
-  },
-  chip: {
-    marginRight: ms(8),
-    backgroundColor: '#F8FAFC',
-    borderRadius: ms(8),
-  },
-  chipActive: {
-    backgroundColor: Palette.primary,
-  },
-  chipText: {
-    fontSize: ms(12),
-    fontWeight: '600',
-    color: '#64748B',
-  },
-  chipTextActive: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    backgroundColor: EditorialColors.bg,
   },
   scrollList: {
     flex: 1,
   },
   scrollContent: {
-    padding: ms(16),
-    paddingBottom: ms(40),
-  },
-  kpiRow: {
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    paddingVertical: ms(12),
-    paddingHorizontal: ms(16),
-    marginBottom: ms(14),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.02,
-    shadowRadius: 6,
-    elevation: 1,
+    padding: EditorialSpacing.lg,
+    paddingBottom: EditorialSpacing.xxxl,
   },
   kpiBox: {
-    alignItems: 'center',
+    flexDirection: 'row',
+    backgroundColor: EditorialColors.white,
+    borderWidth: 2,
+    borderColor: EditorialColors.ink,
+    borderRadius: 0,
+    paddingVertical: EditorialSpacing.md,
+    paddingHorizontal: EditorialSpacing.md,
+    marginBottom: EditorialSpacing.lg,
+  },
+  kpiCell: {
     flex: 1,
-  },
-  kpiNum: {
-    fontSize: ms(18),
-    fontWeight: '900',
-    color: Palette.textDark,
-  },
-  kpiLbl: {
-    fontSize: ms(11),
-    fontWeight: '600',
-    color: Palette.textLight,
-    marginTop: ms(2),
+    alignItems: 'center',
   },
   kpiDivider: {
     width: 1,
-    height: ms(24),
-    backgroundColor: '#E2E8F0',
+    backgroundColor: EditorialColors.track,
   },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    marginBottom: ms(14),
+  kpiLbl: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 9,
+    color: EditorialColors.muted,
+    letterSpacing: 0.8,
+    marginBottom: 4,
+  },
+  kpiNum: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 18,
+    color: EditorialColors.ink,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: EditorialColors.white,
     borderWidth: 1,
-    borderColor: '#F1F5F9',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-    elevation: 2,
+    borderColor: EditorialColors.ink,
+    paddingHorizontal: EditorialSpacing.md,
+    height: 48,
+    marginBottom: EditorialSpacing.md,
   },
-  cardContent: {
-    padding: ms(14),
+  searchInput: {
+    flex: 1,
+    marginLeft: EditorialSpacing.sm,
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 13,
+    color: EditorialColors.ink,
   },
-  topRow: {
+  filterSection: {
+    marginBottom: EditorialSpacing.xl,
+  },
+  chipsScroll: {
+    flexDirection: 'row',
+  },
+  filterChip: {
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: EditorialColors.track,
+    backgroundColor: EditorialColors.white,
+    marginRight: EditorialSpacing.sm,
+  },
+  filterChipActive: {
+    backgroundColor: EditorialColors.ink,
+    borderColor: EditorialColors.ink,
+  },
+  filterChipText: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 10,
+    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+  },
+  filterChipTextActive: {
+    color: EditorialColors.white,
+  },
+  sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: ms(12),
+    marginBottom: 4,
+  },
+  sectionCountText: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 11,
+    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+  },
+  card: {
+    backgroundColor: EditorialColors.white,
+    borderWidth: 1,
+    borderColor: EditorialColors.track,
+    borderRadius: 0,
+    padding: EditorialSpacing.md,
+    marginBottom: EditorialSpacing.md,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: EditorialSpacing.sm,
   },
   profileRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 0.7,
+    flex: 0.72,
   },
-  avatar: {
-    backgroundColor: Palette.primary,
+  avatarSquare: {
+    width: 40,
+    height: 40,
+    borderWidth: 1,
+    borderColor: EditorialColors.ink,
+    backgroundColor: EditorialColors.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: EditorialSpacing.sm,
   },
-  avatarLabel: {
-    fontWeight: '800',
-    color: '#FFFFFF',
+  avatarText: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 14,
+    color: EditorialColors.ink,
   },
   profileText: {
-    marginLeft: ms(10),
     flex: 1,
   },
   facultyName: {
-    fontSize: ms(15),
-    fontWeight: '800',
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.bold,
+    fontSize: 14,
+    color: EditorialColors.ink,
   },
   designationText: {
-    fontSize: ms(11),
-    color: Palette.textLight,
-    marginTop: ms(1),
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 10,
+    color: EditorialColors.muted,
+    marginTop: 2,
+    letterSpacing: 0.4,
   },
   statusBadge: {
-    paddingHorizontal: ms(8),
-    paddingVertical: ms(4),
-    borderRadius: ms(6),
+    borderWidth: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+  },
+  statusBadgeNormal: {
+    borderColor: EditorialColors.ink,
+    backgroundColor: EditorialColors.white,
+  },
+  statusBadgeAttention: {
+    borderColor: EditorialColors.accent,
+    backgroundColor: EditorialColors.white,
   },
   statusBadgeText: {
-    fontSize: ms(10),
-    fontWeight: '700',
+    fontFamily: EditorialFonts.bold,
+    fontSize: 9,
+    letterSpacing: 0.5,
+  },
+  statusBadgeTextNormal: {
+    color: EditorialColors.ink,
+  },
+  statusBadgeTextAttention: {
+    color: EditorialColors.accent,
   },
   coverageRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: ms(4),
+    alignItems: 'center',
+    marginBottom: 4,
   },
   coverageLabel: {
-    fontSize: ms(11),
-    fontWeight: '600',
-    color: '#64748B',
+    fontFamily: EditorialFonts.bold,
+    fontSize: 10,
+    color: EditorialColors.muted,
+    letterSpacing: 0.6,
   },
   coveragePercent: {
-    fontSize: ms(12),
-    fontWeight: '800',
-    color: Palette.textDark,
-  },
-  progressBar: {
-    height: ms(6),
-    borderRadius: ms(3),
-    backgroundColor: '#E2E8F0',
-    marginBottom: ms(12),
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 14,
+    color: EditorialColors.ink,
   },
   metricsGrid: {
     flexDirection: 'row',
-    backgroundColor: '#F8FAFC',
-    borderRadius: ms(10),
-    paddingVertical: ms(8),
-    paddingHorizontal: ms(8),
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    marginBottom: ms(12),
+    backgroundColor: EditorialColors.bg,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: EditorialColors.track,
+    paddingVertical: 6,
+    paddingHorizontal: EditorialSpacing.sm,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: EditorialSpacing.md,
   },
   metricItem: {
     alignItems: 'center',
     flex: 1,
   },
   metricItemVal: {
-    fontSize: ms(13),
-    fontWeight: '800',
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.bold,
+    fontSize: 12,
+    color: EditorialColors.ink,
   },
   metricItemLbl: {
-    fontSize: ms(10),
-    color: '#64748B',
-    fontWeight: '600',
-    marginTop: ms(1),
+    fontFamily: EditorialFonts.bold,
+    fontSize: 8,
+    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    marginTop: 2,
   },
   metricDivider: {
     width: 1,
-    height: ms(20),
-    backgroundColor: '#CBD5E1',
+    height: 18,
+    backgroundColor: EditorialColors.track,
   },
   subjectsContainer: {
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
-    paddingTop: ms(10),
+    borderTopColor: EditorialColors.track,
+    paddingTop: EditorialSpacing.sm,
   },
   subjectsTitle: {
-    fontSize: ms(11),
-    fontWeight: '700',
-    color: '#64748B',
-    marginBottom: ms(6),
-    textTransform: 'uppercase',
+    fontFamily: EditorialFonts.bold,
+    fontSize: 9,
+    color: EditorialColors.muted,
+    letterSpacing: 0.8,
+    marginBottom: EditorialSpacing.xs,
   },
   subjectRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: ms(4),
+    paddingVertical: 4,
   },
   subjCodeBadge: {
-    backgroundColor: '#EFF6FF',
-    borderRadius: ms(4),
-    paddingHorizontal: ms(6),
-    paddingVertical: ms(2),
-    marginRight: ms(8),
+    borderWidth: 1,
+    borderColor: EditorialColors.ink,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+    backgroundColor: EditorialColors.white,
+    marginRight: 6,
   },
   subjCodeText: {
-    fontSize: ms(10),
-    fontWeight: '800',
-    color: '#1D4ED8',
+    fontFamily: EditorialFonts.bold,
+    fontSize: 9,
+    color: EditorialColors.ink,
   },
   subjInfo: {
     flex: 1,
   },
   subjName: {
-    fontSize: ms(12),
-    fontWeight: '700',
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 11,
+    color: EditorialColors.ink,
   },
   subjSection: {
-    fontSize: ms(10),
-    color: '#64748B',
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 9,
+    color: EditorialColors.muted,
   },
   subjCoverageText: {
-    fontSize: ms(12),
-    fontWeight: '800',
-    color: Palette.primary,
-    marginLeft: ms(8),
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 12,
+    color: EditorialColors.ink,
   },
 });
 
