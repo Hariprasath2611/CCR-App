@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 type CCNav = NativeStackNavigationProp<CCStackParamList>;
 
 export const CCDashboardScreen = () => {
+  const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
   const navigation = useNavigation<any>();
   const isFocused = useIsFocused();
@@ -59,7 +60,13 @@ export const CCDashboardScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[
+        styles.content,
+        { paddingTop: Math.max(insets.top, ms(16)) }
+      ]}
+    >
       {/* ── HEADER BANNER ── */}
       <View style={styles.headerCard}>
         <View style={styles.headerTop}>
