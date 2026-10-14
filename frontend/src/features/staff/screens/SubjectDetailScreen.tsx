@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
-import { Text, Card, ProgressBar, Checkbox, ActivityIndicator, Button } from 'react-native-paper';
+import { StyleSheet, View, ScrollView, TouchableOpacity, Text, StatusBar, ActivityIndicator } from 'react-native';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StaffStackParamList } from '@navigation/types';
 import { SyllabusRepository } from '@database/repositories/SyllabusRepository';
 import { SQLiteSyllabusNode } from '@database/types';
-import { Palette } from '@theme/colors';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
-import { ms } from '@theme/responsive';
+import { Feather } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { BigNumber } from '@components/editorial/BigNumber';
+import { Label } from '@components/editorial/Label';
+import { Rule } from '@components/editorial/Rule';
 
 type RouteParams = RouteProp<StaffStackParamList, 'SubjectDetail'>;
 type NavProp = NativeStackNavigationProp<StaffStackParamList>;
 
 export const SubjectDetailScreen = () => {
+  const insets = useSafeAreaInsets();
   const route = useRoute<RouteParams>();
   const navigation = useNavigation<NavProp>();
   const subjectCode = route.params?.subjectCode || 'CS3591';
@@ -53,7 +56,6 @@ export const SubjectDetailScreen = () => {
     }
   };
 
-  // Group topics by unit
   const unitsMap: Record<string, SQLiteSyllabusNode[]> = {};
   for (const t of topics) {
     const u = t.unit || 'Unit 1';
@@ -66,282 +68,332 @@ export const SubjectDetailScreen = () => {
   const overallPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* Header Banner */}
-      <View style={styles.headerCard}>
-        <View style={styles.headerTop}>
-          <View style={styles.codeBadge}>
-            <Text style={styles.codeBadgeText}>{subjectCode}</Text>
-          </View>
-          <Text style={styles.percentText}>{overallPercent}% Completed</Text>
+    <View style={styles.screenWrapper}>
+      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingBottom: insets.bottom + 80,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Top Header */}
+        <View style={styles.topHeader}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+            activeOpacity={0.7}
+            accessibilityLabel="Go back"
+          >
+            <Feather name="arrow-left" size={20} color={EditorialColors.ink} />
+          </TouchableOpacity>
+          <Label text={`COURSE CODE • ${subjectCode}`} />
         </View>
 
-        <Text style={styles.subjectTitle}>Syllabus Units & Topics Structure</Text>
-        <Text style={styles.subjectSub}>
-          {completedCount} of {totalCount} topics marked as completed
+        {/* Title heavy 24 */}
+        <Text style={styles.subjectTitle}>{subjectCode} SYLLABUS STRUCTURE</Text>
+        <Text style={styles.subjectSubtitle}>
+          Complete unit-wise syllabus breakdown and verified topic coverage logs.
         </Text>
 
-        <ProgressBar
-          progress={totalCount > 0 ? completedCount / totalCount : 0}
-          color={Palette.primary}
-          style={styles.headerProgressBar}
-        />
+        {/* Big Number Section */}
+        <View style={styles.heroSection}>
+          <Label text="COURSE COMPLETION" />
+          <View style={styles.heroRow}>
+            <BigNumber value={overallPercent} size="big" showPercent />
+          </View>
+        </View>
 
-        <Button
-          mode="contained"
-          icon="playlist-edit"
-          style={styles.logBtn}
+        {/* 4px Heavy Section Rule */}
+        <Rule thickness="heavy" style={styles.heavySpacer} />
+
+        {/* 3-Column Stat Row */}
+        <View style={styles.statRow}>
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>{completedCount}</Text>
+            <Label text="COMPLETED" />
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>{totalCount}</Text>
+            <Label text="TOTAL" />
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>{totalCount - completedCount}</Text>
+            <Label text="REMAINING" />
+          </View>
+        </View>
+
+        {/* 1px Hairline Rule */}
+        <Rule thickness="hairline" style={styles.hairlineSpacer} />
+
+        {/* Action Button: Log Weekly Progress */}
+        <TouchableOpacity
+          style={styles.primaryActionButton}
           onPress={() =>
             navigation.navigate('WeeklyProgress', {
               subjectCode,
               weekNumber: 12,
             })
           }
+          activeOpacity={0.85}
         >
-          Log Weekly Progress for {subjectCode}
-        </Button>
-      </View>
+          <Text style={styles.primaryActionText}>LOG WEEKLY PROGRESS</Text>
+          <Feather name="arrow-right" size={18} color={EditorialColors.white} />
+        </TouchableOpacity>
 
-      {/* Topics by Unit */}
-      {loading ? (
-        <View style={styles.loader}>
-          <ActivityIndicator size="large" color={Palette.primary} />
-          <Text style={styles.loaderText}>Loading syllabus tree...</Text>
-        </View>
-      ) : totalCount === 0 ? (
-        <Card style={styles.emptyCard}>
-          <Card.Content style={styles.emptyContent}>
-            <MaterialCommunityIcons name="book-open-outline" size={48} color="#94A3B8" />
-            <Text style={styles.emptyTitle}>No Syllabus Topics Found</Text>
+        {/* Topics by Unit */}
+        {loading ? (
+          <View style={styles.skeletonContainer}>
+            <View style={styles.skeletonBlock} />
+            <View style={styles.skeletonBlock} />
+          </View>
+        ) : totalCount === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyTitle}>NO SYLLABUS TOPICS FOUND</Text>
             <Text style={styles.emptySub}>
               Syllabus topics for {subjectCode} have not yet been seeded into local storage.
             </Text>
-            <Button
-              mode="outlined"
-              style={{ marginTop: ms(16) }}
-              onPress={() =>
-                navigation.navigate('WeeklyProgress', {
-                  subjectCode,
-                  weekNumber: 12,
-                })
-              }
-            >
-              Manual Course Coverage Entry
-            </Button>
-          </Card.Content>
-        </Card>
-      ) : (
-        Object.keys(unitsMap).map((unitName) => {
-          const unitTopics = unitsMap[unitName];
-          const unitCompleted = unitTopics.filter((t) => t.is_completed === 1).length;
-          const unitPercent = Math.round((unitCompleted / unitTopics.length) * 100);
+          </View>
+        ) : (
+          Object.keys(unitsMap).map((unitName) => {
+            const unitTopics = unitsMap[unitName];
+            const unitCompleted = unitTopics.filter((t) => t.is_completed === 1).length;
+            const unitPercent = Math.round((unitCompleted / (unitTopics.length || 1)) * 100);
 
-          return (
-            <Card key={unitName} style={styles.unitCard}>
-              <Card.Content>
-                <View style={styles.unitHeader}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.unitName}>{unitName}</Text>
-                    <Text style={styles.unitProgressSub}>
-                      {unitCompleted}/{unitTopics.length} Topics Completed ({unitPercent}%)
-                    </Text>
-                  </View>
-                  <ProgressBar
-                    progress={unitTopics.length > 0 ? unitCompleted / unitTopics.length : 0}
-                    color={unitPercent === 100 ? Palette.success : Palette.primary}
-                    style={styles.unitProgressBar}
-                  />
+            return (
+              <View key={unitName} style={styles.unitBlock}>
+                <View style={styles.unitHeaderRow}>
+                  <Text style={styles.unitTitle}>{unitName.toUpperCase()}</Text>
+                  <Label text={`${unitCompleted}/${unitTopics.length} (${unitPercent}%)`} />
                 </View>
 
-                {unitTopics.map((topic) => {
-                  const isDone = topic.is_completed === 1;
-                  return (
-                    <TouchableOpacity
-                      key={topic.topic_id}
-                      style={[styles.topicRow, isDone && styles.topicRowDone]}
-                      onPress={() => toggleTopic(topic)}
-                      activeOpacity={0.7}
-                    >
-                      <Checkbox.Android
-                        status={isDone ? 'checked' : 'unchecked'}
-                        color={Palette.primary}
+                <View style={styles.topicList}>
+                  {unitTopics.map((topic) => {
+                    const isDone = topic.is_completed === 1;
+                    return (
+                      <TouchableOpacity
+                        key={topic.topic_id}
+                        style={styles.topicRow}
                         onPress={() => toggleTopic(topic)}
-                      />
-                      <View style={{ flex: 1, marginLeft: ms(6) }}>
-                        <Text style={[styles.topicTitle, isDone && styles.topicTitleDone]}>
-                          {topic.topic_title}
-                        </Text>
-                        <Text style={styles.topicHours}>
-                          Allotted Period Duration: 1.5 hrs
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
-              </Card.Content>
-            </Card>
-          );
-        })
-      )}
-    </ScrollView>
+                        activeOpacity={0.7}
+                      >
+                        <View
+                          style={[
+                            styles.checkboxSquare,
+                            isDone ? styles.checkboxSquareChecked : null,
+                          ]}
+                        >
+                          {isDone && (
+                            <Feather name="check" size={14} color={EditorialColors.white} />
+                          )}
+                        </View>
+
+                        <View style={styles.topicInfo}>
+                          <Text
+                            style={[
+                              styles.topicName,
+                              isDone ? styles.topicNameDone : null,
+                            ]}
+                          >
+                            {topic.topic_name}
+                          </Text>
+                          {topic.hours_allotted ? (
+                            <Label text={`${topic.hours_allotted} HOURS ALLOTTED`} />
+                          ) : null}
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              </View>
+            );
+          })
+        )}
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screenWrapper: {
+    flex: 1,
+    backgroundColor: EditorialColors.bg,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: EditorialColors.bg,
   },
   content: {
-    padding: ms(16),
-    paddingBottom: ms(40),
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
   },
-  headerCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(20),
-    padding: ms(18),
-    marginBottom: ms(16),
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    elevation: 2,
-  },
-  headerTop: {
+  topHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: ms(10),
+    justifyContent: 'space-between',
+    marginBottom: 16,
   },
-  codeBadge: {
-    backgroundColor: '#EFF6FF',
-    paddingHorizontal: ms(12),
-    paddingVertical: ms(4),
-    borderRadius: ms(8),
-    borderWidth: 1,
-    borderColor: '#BFDBFE',
-  },
-  codeBadgeText: {
-    fontSize: ms(14),
-    fontWeight: '800',
-    color: Palette.primary,
-  },
-  percentText: {
-    fontSize: ms(14),
-    fontWeight: '800',
-    color: Palette.primary,
+  backButton: {
+    width: 44,
+    height: 44,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    backgroundColor: EditorialColors.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   subjectTitle: {
-    fontSize: ms(18),
-    fontWeight: '900',
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 24,
+    lineHeight: 28,
+    color: EditorialColors.ink,
+    marginBottom: 4,
   },
-  subjectSub: {
-    fontSize: ms(12.5),
-    color: Palette.textLight,
-    marginTop: ms(2),
-    marginBottom: ms(12),
+  subjectSubtitle: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 13,
+    color: EditorialColors.muted,
+    lineHeight: 18,
+    marginBottom: 12,
   },
-  headerProgressBar: {
-    height: ms(8),
-    borderRadius: ms(4),
-    backgroundColor: '#E2E8F0',
-    marginBottom: ms(16),
+  heroSection: {
+    marginTop: 8,
   },
-  logBtn: {
-    backgroundColor: Palette.primary,
-    borderRadius: ms(12),
+  heroRow: {
+    marginTop: 4,
   },
-  loader: {
-    alignItems: 'center',
-    paddingVertical: ms(40),
+  heavySpacer: {
+    marginVertical: 18,
   },
-  loaderText: {
-    fontSize: ms(13),
-    color: Palette.textLight,
-    marginTop: ms(8),
+  hairlineSpacer: {
+    marginVertical: 16,
   },
-  emptyCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    padding: ms(20),
-  },
-  emptyContent: {
-    alignItems: 'center',
-  },
-  emptyTitle: {
-    fontSize: ms(16),
-    fontWeight: '800',
-    color: Palette.textDark,
-    marginTop: ms(10),
-  },
-  emptySub: {
-    fontSize: ms(13),
-    color: Palette.textLight,
-    textAlign: 'center',
-    marginTop: ms(4),
-  },
-  unitCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    marginBottom: ms(12),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    elevation: 1,
-  },
-  unitHeader: {
+  statRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingBottom: ms(10),
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-    marginBottom: ms(8),
+    paddingVertical: 6,
   },
-  unitName: {
-    fontSize: ms(15),
-    fontWeight: '800',
-    color: Palette.textDark,
+  statCol: {
+    flex: 1,
+    alignItems: 'center',
   },
-  unitProgressSub: {
-    fontSize: ms(11.5),
-    color: Palette.textLight,
-    marginTop: ms(2),
+  statNum: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 30,
+    lineHeight: 34,
+    color: EditorialColors.ink,
+    marginBottom: 2,
   },
-  unitProgressBar: {
-    width: ms(80),
-    height: ms(6),
-    borderRadius: ms(3),
-    backgroundColor: '#E2E8F0',
+  statDivider: {
+    width: 1,
+    height: 38,
+    backgroundColor: EditorialColors.ink,
+  },
+  primaryActionButton: {
+    height: 54,
+    width: '100%',
+    backgroundColor: EditorialColors.ink,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    marginBottom: 24,
+  },
+  primaryActionText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.white,
+  },
+  unitBlock: {
+    marginBottom: 24,
+  },
+  unitHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+    borderBottomWidth: 1.5,
+    borderBottomColor: EditorialColors.ink,
+    paddingBottom: 6,
+  },
+  unitTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 14,
+    letterSpacing: 1.5,
+    color: EditorialColors.ink,
+  },
+  topicList: {
+    borderTopWidth: EditorialRules.hairline,
+    borderTopColor: EditorialColors.track,
   },
   topicRow: {
     flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 12,
+    borderBottomWidth: EditorialRules.hairline,
+    borderBottomColor: EditorialColors.track,
+    gap: 12,
+  },
+  checkboxSquare: {
+    width: 22,
+    height: 22,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    backgroundColor: 'transparent',
     alignItems: 'center',
-    paddingVertical: ms(8),
-    borderBottomWidth: 1,
-    borderBottomColor: '#F8FAFC',
+    justifyContent: 'center',
+    marginTop: 2,
   },
-  topicRowDone: {
-    backgroundColor: '#F8FAFC',
-    borderRadius: ms(8),
-    paddingHorizontal: ms(4),
+  checkboxSquareChecked: {
+    backgroundColor: EditorialColors.ink,
   },
-  topicTitle: {
-    fontSize: ms(13.5),
-    fontWeight: '600',
-    color: Palette.textDark,
+  topicInfo: {
+    flex: 1,
   },
-  topicTitleDone: {
-    color: '#64748B',
+  topicName: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 14,
+    lineHeight: 20,
+    color: EditorialColors.ink,
+    marginBottom: 2,
+  },
+  topicNameDone: {
     textDecorationLine: 'line-through',
+    color: EditorialColors.muted,
   },
-  topicHours: {
-    fontSize: ms(11),
-    color: '#94A3B8',
-    marginTop: ms(1),
+  skeletonContainer: {
+    gap: 12,
+    paddingVertical: 16,
+  },
+  skeletonBlock: {
+    height: 80,
+    backgroundColor: EditorialColors.track,
+  },
+  emptyContainer: {
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    padding: 24,
+    alignItems: 'center',
+  },
+  emptyTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 14,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
+    marginBottom: 6,
+  },
+  emptySub: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 12,
+    color: EditorialColors.muted,
+    textAlign: 'center',
+    lineHeight: 18,
   },
 });
-
-export default SubjectDetailScreen;
