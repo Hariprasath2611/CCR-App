@@ -1,21 +1,28 @@
 import { MD3LightTheme, configureFonts } from 'react-native-paper';
-import { Palette } from './colors';
+import { EditorialColors, EditorialFonts } from './editorial';
 
 const fontConfig = {
-  fontFamily: 'System',
+  fontFamily: EditorialFonts.semibold,
 };
 
 export const AppTheme = {
   ...MD3LightTheme,
+  roundness: 0,
   colors: {
     ...MD3LightTheme.colors,
-    primary: Palette.primary,
-    primaryContainer: Palette.secondary,
-    secondary: Palette.accent,
-    background: Palette.background,
-    surface: Palette.surface,
-    error: Palette.error,
-    outline: Palette.border,
+    primary: EditorialColors.ink,
+    primaryContainer: EditorialColors.track,
+    secondary: EditorialColors.ink,
+    secondaryContainer: EditorialColors.track,
+    background: EditorialColors.bg,
+    surface: EditorialColors.bg,
+    surfaceVariant: EditorialColors.bg,
+    error: EditorialColors.accent,
+    outline: EditorialColors.ink,
+    outlineVariant: EditorialColors.track,
+    onPrimary: EditorialColors.white,
+    onSurface: EditorialColors.ink,
+    onBackground: EditorialColors.ink,
   },
   fonts: configureFonts({ config: fontConfig }),
 };
