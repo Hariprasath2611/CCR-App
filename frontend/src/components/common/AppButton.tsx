@@ -1,9 +1,6 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Button } from 'react-native-paper';
-import { Palette } from '@theme/colors';
-
-import { ms } from '@theme/responsive';
+import { StyleSheet, TouchableOpacity, Text, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
+import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
 
 interface AppButtonProps {
   title: string;
@@ -11,8 +8,10 @@ interface AppButtonProps {
   mode?: 'text' | 'outlined' | 'contained';
   loading?: boolean;
   disabled?: boolean;
-  style?: any;
+  style?: ViewStyle;
   textColor?: string;
+  labelStyle?: TextStyle;
+  icon?: string;
 }
 
 export const AppButton: React.FC<AppButtonProps> = ({
@@ -23,39 +22,74 @@ export const AppButton: React.FC<AppButtonProps> = ({
   disabled = false,
   style,
   textColor,
+  labelStyle,
 }) => {
   const isContained = mode === 'contained';
+  const isOutlined = mode === 'outlined';
+
+  const containerStyle = disabled
+    ? styles.disabled
+    : isContained
+    ? styles.contained
+    : isOutlined
+    ? styles.outlined
+    : styles.textMode;
+
+  const fontColor = disabled
+    ? EditorialColors.muted
+    : textColor
+    ? textColor
+    : isContained
+    ? EditorialColors.white
+    : EditorialColors.ink;
 
   return (
-    <Button
-      mode={mode}
+    <TouchableOpacity
+      style={[styles.button, containerStyle, style]}
       onPress={onPress}
-      loading={loading}
       disabled={disabled || loading}
-      style={[
-        styles.button,
-        isContained && !disabled && styles.containedButton,
-        style,
-      ]}
-      labelStyle={styles.label}
-      textColor={textColor || (isContained ? Palette.surface : Palette.primary)}
+      activeOpacity={0.75}
+      accessibilityRole="button"
     >
-      {title}
-    </Button>
+      {loading ? (
+        <ActivityIndicator size="small" color={fontColor} />
+      ) : (
+        <Text style={[styles.label, { color: fontColor }, labelStyle]}>
+          {title.toUpperCase()}
+        </Text>
+      )}
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: ms(8),
-    marginVertical: ms(6),
+    height: 54,
+    borderRadius: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginVertical: 6,
+    width: '100%',
   },
-  containedButton: {
-    backgroundColor: Palette.primary,
+  contained: {
+    backgroundColor: EditorialColors.ink,
+  },
+  outlined: {
+    backgroundColor: 'transparent',
+    borderWidth: EditorialRules.borderWidth,
+    borderColor: EditorialColors.ink,
+  },
+  textMode: {
+    backgroundColor: 'transparent',
+  },
+  disabled: {
+    backgroundColor: EditorialColors.track,
   },
   label: {
-    fontSize: ms(15),
-    fontWeight: '600',
-    paddingVertical: ms(2),
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
 });
