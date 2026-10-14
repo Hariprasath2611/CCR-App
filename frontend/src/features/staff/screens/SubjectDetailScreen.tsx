@@ -40,8 +40,9 @@ export const SubjectDetailScreen = () => {
 
   const toggleTopic = async (topic: SQLiteSyllabusNode) => {
     try {
-      const newStatus = topic.is_completed === 1 ? 0 : 1;
-      await syllabusRepo.updateTopicStatus(topic.topic_id, newStatus);
+      const isDone = topic.is_completed === 1;
+      const newStatus = isDone ? 0 : 1;
+      await syllabusRepo.updateCompletionStatus(topic.topic_id, !isDone);
       setTopics((prev) =>
         prev.map((t) =>
           t.topic_id === topic.topic_id ? { ...t, is_completed: newStatus } : t
@@ -172,10 +173,10 @@ export const SubjectDetailScreen = () => {
                       />
                       <View style={{ flex: 1, marginLeft: ms(6) }}>
                         <Text style={[styles.topicTitle, isDone && styles.topicTitleDone]}>
-                          {topic.topic_name}
+                          {topic.topic_title}
                         </Text>
                         <Text style={styles.topicHours}>
-                          Planned Duration: {topic.planned_hours || 1.5} hrs
+                          Allotted Period Duration: 1.5 hrs
                         </Text>
                       </View>
                     </TouchableOpacity>

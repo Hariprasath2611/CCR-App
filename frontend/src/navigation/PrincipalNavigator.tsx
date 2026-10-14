@@ -45,6 +45,16 @@ const PrincipalStackNavigator = () => {
         options={{ title: 'Weekly Reports' }}
       />
       <Stack.Screen
+        name="InstitutionAnalytics"
+        component={InstitutionAnalyticsScreen}
+        options={{ title: 'Institution Analytics' }}
+      />
+      <Stack.Screen
+        name="FacultyAnalytics"
+        component={FacultyAnalyticsScreen}
+        options={{ title: 'Faculty Performance' }}
+      />
+      <Stack.Screen
         name="ReportExport"
         component={ReportExportScreen}
         options={{ title: 'Export Reports' }}
