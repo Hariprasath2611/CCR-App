@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity, RefreshControl, TextInput as RNTextInput } from 'react-native';
-import { Text, Card, Avatar, ProgressBar, Chip, Badge, Button } from 'react-native-paper';
+import { StyleSheet, View, ScrollView, TouchableOpacity, TextInput, Text, StatusBar } from 'react-native';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
-import { Palette } from '@theme/colors';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
-import { ms } from '@theme/responsive';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { Label } from '@components/editorial/Label';
+import { Rule } from '@components/editorial/Rule';
+import { SegBar } from '@components/editorial/SegBar';
+import { EditorialChip } from '@components/editorial/EditorialChip';
+import { Feather } from '@expo/vector-icons';
 
 interface SubjectSectionAudit {
   section: string;
@@ -139,546 +142,447 @@ const SAMPLE_SUBJECT_REPORTS: SubjectReportItem[] = [
         coveragePercent: 80,
         lastLoggedWeek: 12,
         status: 'ON_TRACK',
-        latestTopic: 'Electrochemical Cells and Galvanic Corrosion Mechanisms',
-      },
-      {
-        section: '1st Year SEC-B',
-        facultyName: 'Mrs. G.Revathi',
-        plannedPeriods: 45,
-        actualPeriods: 41,
-        coveragePercent: 82,
-        lastLoggedWeek: 12,
-        status: 'ON_TRACK',
-        latestTopic: 'Polymer Synthesis, Composites & Biodegradable Polymers',
-      },
-      {
-        section: '1st Year SEC-C',
-        facultyName: 'Mrs. Gopikha',
-        plannedPeriods: 45,
-        actualPeriods: 35,
-        coveragePercent: 71,
-        lastLoggedWeek: 11,
-        status: 'LAGGING',
-        latestTopic: 'Spectroscopy Instrumentation & UV-Visible Beer-Lambert Law',
-      },
-      {
-        section: '1st Year SEC-D',
-        facultyName: 'Dr. Bhuvaneshwari',
-        plannedPeriods: 45,
-        actualPeriods: 39,
-        coveragePercent: 78,
-        lastLoggedWeek: 12,
-        status: 'ON_TRACK',
-        latestTopic: 'Phase Rule Applied to One and Two Component Systems',
-      },
-    ],
-  },
-  {
-    id: 'subj_5',
-    code: 'GE3151',
-    title: 'Problem Solving & Python',
-    year: '1st Year',
-    overallCoverage: 83,
-    totalPlannedPeriods: 45,
-    totalActualPeriods: 42,
-    sections: [
-      {
-        section: '1st Year SEC-E',
-        facultyName: 'Dr. Josphin',
-        plannedPeriods: 45,
-        actualPeriods: 41,
-        coveragePercent: 81,
-        lastLoggedWeek: 12,
-        status: 'ON_TRACK',
-        latestTopic: 'File Operations, Exception Handling and Module Imports',
-      },
-      {
-        section: '1st Year SEC-F',
-        facultyName: 'Mrs. Jasline',
-        plannedPeriods: 45,
-        actualPeriods: 44,
-        coveragePercent: 87,
-        lastLoggedWeek: 12,
-        status: 'AHEAD',
-        latestTopic: 'Data Visualization using Matplotlib & NumPy Arrays',
-      },
-      {
-        section: '1st Year SEC-G',
-        facultyName: 'Mrs. R.Sumathi',
-        plannedPeriods: 45,
-        actualPeriods: 38,
-        coveragePercent: 75,
-        lastLoggedWeek: 11,
-        status: 'LAGGING',
-        latestTopic: 'Recursive Functions and String Formatting Methods',
+        latestTopic: 'Water Technology & Boiler Feed Treatments',
       },
     ],
   },
 ];
 
+const YEARS = ['ALL', '1st Year', '2nd Year', '3rd Year', '4th Year'];
+
 export const SubjectReportsScreen = () => {
+  const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
-  const [selectedYear, setSelectedYear] = useState<string>('ALL');
+  const [selectedYear, setSelectedYear] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedSubjectId, setExpandedSubjectId] = useState<string | null>('subj_1');
-  const [refreshing, setRefreshing] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>('subj_1');
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 600);
-  };
-
-  const filteredReports = SAMPLE_SUBJECT_REPORTS.filter((item) => {
-    const matchesYear = selectedYear === 'ALL' || item.year === selectedYear;
+  const filtered = SAMPLE_SUBJECT_REPORTS.filter((subj) => {
+    const matchesYear = selectedYear === 'ALL' || subj.year === selectedYear;
     const matchesQuery =
-      item.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.title.toLowerCase().includes(searchQuery.toLowerCase());
+      subj.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      subj.code.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesYear && matchesQuery;
   });
 
-  const getPaceStatusBadge = (status: SubjectSectionAudit['status']) => {
-    switch (status) {
-      case 'AHEAD':
-        return { bg: '#DCFCE7', text: '#15803D', label: 'Ahead of Pace' };
-      case 'ON_TRACK':
-        return { bg: '#DBEAFE', text: '#1D4ED8', label: 'On Track' };
-      case 'LAGGING':
-        return { bg: '#FEE2E2', text: '#B91C1C', label: 'Lagging Behind' };
-    }
-  };
+  const avgCoverage = Math.round(
+    SAMPLE_SUBJECT_REPORTS.reduce((acc, curr) => acc + curr.overallCoverage, 0) /
+      SAMPLE_SUBJECT_REPORTS.length
+  );
 
   return (
-    <View style={styles.container}>
-      {/* ── HEADER SEARCH & CONTROLS ── */}
-      <View style={styles.headerBlock}>
-        <View style={styles.searchBar}>
-          <Feather name="search" size={18} color="#64748B" />
-          <RNTextInput
-            style={styles.searchInput}
-            placeholder="Search subject code or name..."
-            placeholderTextColor="#94A3B8"
+    <View style={styles.screenWrapper}>
+      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingBottom: insets.bottom + 80,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Label text="SYLLABUS COVERAGE AUDIT" />
+          <Text style={styles.headerTitle}>
+            SUBJECT AUDIT<Text style={styles.accentDot}>.</Text>
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            Cross-section curriculum progress, period delivery and syllabus compliance.
+          </Text>
+        </View>
+
+        {/* 4px Heavy Section Rule */}
+        <Rule thickness="heavy" style={styles.heavySpacer} />
+
+        {/* 3-Column Stat Row */}
+        <View style={styles.statRow}>
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>{SAMPLE_SUBJECT_REPORTS.length}</Text>
+            <Label text="SUBJECTS" />
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>{avgCoverage}%</Text>
+            <Label text="AVG COVERAGE" />
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statCol}>
+            <Text style={[styles.statNum, styles.accentStatNum]}>2</Text>
+            <Label text="LAGGING" />
+          </View>
+        </View>
+
+        {/* 1px Hairline Rule */}
+        <Rule thickness="hairline" style={styles.hairlineSpacer} />
+
+        {/* Search Underline Input */}
+        <View style={styles.searchBlock}>
+          <Text style={styles.searchLabel}>FILTER BY COURSE OR CODE</Text>
+          <TextInput
+            style={styles.underlineInput}
             value={searchQuery}
             onChangeText={setSearchQuery}
+            placeholder="e.g. CS3591 or Networks"
+            placeholderTextColor={EditorialColors.muted}
+            autoCapitalize="none"
           />
-          {searchQuery ? (
-            <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Feather name="x" size={16} color="#64748B" />
-            </TouchableOpacity>
-          ) : null}
         </View>
 
-        {/* Year Selector Chips */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.yearScroll}>
-          {['ALL', '1st Year', '2nd Year', '3rd Year', '4th Year'].map((year) => (
-            <Chip
-              key={year}
-              selected={selectedYear === year}
-              onPress={() => setSelectedYear(year)}
-              style={[styles.yearChip, selectedYear === year && styles.yearChipActive]}
-              textStyle={[styles.yearChipText, selectedYear === year && styles.yearChipTextActive]}
-            >
-              {year === 'ALL' ? 'All Years' : year}
-            </Chip>
+        {/* Year Filter Chips */}
+        <View style={styles.chipRow}>
+          {YEARS.map((yr) => (
+            <EditorialChip
+              key={yr}
+              label={yr.toUpperCase()}
+              selected={selectedYear === yr}
+              onPress={() => setSelectedYear(yr)}
+            />
           ))}
-        </ScrollView>
-      </View>
-
-      {/* ── SUBJECT AUDIT LIST ── */}
-      <ScrollView
-        style={styles.scrollList}
-        contentContainerStyle={styles.scrollContent}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Palette.primary]} />}
-      >
-        <View style={styles.summaryStatsRow}>
-          <View style={styles.statBox}>
-            <Text style={styles.statVal}>{filteredReports.length}</Text>
-            <Text style={styles.statLbl}>Monitored Subjects</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statBox}>
-            <Text style={[styles.statVal, { color: Palette.primary }]}>
-              {Math.round(
-                filteredReports.reduce((acc, s) => acc + s.overallCoverage, 0) / (filteredReports.length || 1)
-              )}
-              %
-            </Text>
-            <Text style={styles.statLbl}>Avg Syllabus Pace</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statBox}>
-            <Text style={[styles.statVal, { color: '#DC2626' }]}>
-              {filteredReports.reduce(
-                (acc, s) => acc + s.sections.filter((sec) => sec.status === 'LAGGING').length,
-                0
-              )}
-            </Text>
-            <Text style={styles.statLbl}>Lagging Sections</Text>
-          </View>
         </View>
 
-        {filteredReports.map((subject) => {
-          const isExpanded = expandedSubjectId === subject.id;
-          return (
-            <Card key={subject.id} style={styles.subjectCard}>
-              <TouchableOpacity
-                onPress={() => setExpandedSubjectId(isExpanded ? null : subject.id)}
-                activeOpacity={0.7}
-              >
-                <Card.Content style={styles.cardHeaderContent}>
-                  <View style={styles.topInfoRow}>
-                    <View style={styles.codePill}>
-                      <Text style={styles.codeText}>{subject.code}</Text>
+        {/* Section Header */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeaderTitle}>CURRICULUM COURSES</Text>
+          <Label text={`${filtered.length} SUBJECTS`} />
+        </View>
+
+        {/* Subject Items */}
+        <View style={styles.subjectList}>
+          {filtered.map((item) => {
+            const isExpanded = expandedId === item.id;
+            const isLagging = item.overallCoverage < 80;
+            return (
+              <View key={item.id} style={styles.subjectCard}>
+                <TouchableOpacity
+                  style={styles.cardHeader}
+                  onPress={() => setExpandedId(isExpanded ? null : item.id)}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.infoCol}>
+                    <View style={styles.codeRow}>
+                      <Text style={styles.subjectCode}>{item.code}</Text>
+                      <Text style={styles.yearTag}>{item.year}</Text>
                     </View>
-                    <View style={styles.yearPill}>
-                      <Text style={styles.yearText}>{subject.year}</Text>
-                    </View>
-                    <View style={{ flex: 1 }} />
-                    <Feather
-                      name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                      size={20}
-                      color="#64748B"
+                    <Text style={styles.subjectTitle}>{item.title}</Text>
+                    <Label
+                      text={`${item.sections.length} SECTIONS • ${item.totalActualPeriods}/${item.totalPlannedPeriods} PERIODS`}
+                      style={styles.metaLabel}
                     />
                   </View>
 
-                  <Text style={styles.subjectTitle}>{subject.title}</Text>
-
-                  <View style={styles.progressRow}>
-                    <Text style={styles.progressLabel}>Average Multi-Section Coverage</Text>
-                    <Text style={styles.progressPercent}>{subject.overallCoverage}%</Text>
-                  </View>
-                  <ProgressBar
-                    progress={subject.overallCoverage / 100}
-                    color={subject.overallCoverage >= 85 ? Palette.primary : '#F59E0B'}
-                    style={styles.progressBar}
-                  />
-
-                  <View style={styles.sectionsMetaRow}>
-                    <Text style={styles.sectionsMetaText}>
-                      {subject.sections.length} Sections Active • Total Periods: {subject.totalActualPeriods}/
-                      {subject.totalPlannedPeriods}
+                  <View style={styles.rightValueBox}>
+                    <Text
+                      style={[
+                        styles.percentText,
+                        isLagging ? styles.accentPercentText : null,
+                      ]}
+                    >
+                      {item.overallCoverage}%
                     </Text>
+                    <Feather
+                      name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                      size={18}
+                      color={EditorialColors.ink}
+                      style={{ marginTop: 4 }}
+                    />
                   </View>
-                </Card.Content>
-              </TouchableOpacity>
+                </TouchableOpacity>
 
-              {/* ── EXPANDED CROSS-SECTION DETAILS ── */}
-              {isExpanded && (
-                <View style={styles.expandedSectionBlock}>
-                  <View style={styles.divider} />
-                  <Text style={styles.sectionHeaderTitle}>Cross-Section Sectional Breakdown</Text>
-
-                  {subject.sections.map((sec, idx) => {
-                    const statusConfig = getPaceStatusBadge(sec.status);
-                    return (
-                      <View key={idx} style={styles.sectionDetailCard}>
-                        <View style={styles.secTopRow}>
-                          <View>
-                            <Text style={styles.secClassTitle}>{sec.section}</Text>
-                            <Text style={styles.secFacultyName}>Faculty: {sec.facultyName}</Text>
-                          </View>
-                          <View style={[styles.paceBadge, { backgroundColor: statusConfig.bg }]}>
-                            <Text style={[styles.paceBadgeText, { color: statusConfig.text }]}>
-                              {statusConfig.label}
-                            </Text>
-                          </View>
-                        </View>
-
-                        <View style={styles.secStatsRow}>
-                          <Text style={styles.secPeriodInfo}>
-                            Periods: <Text style={styles.boldPeriod}>{sec.actualPeriods}</Text>/{sec.plannedPeriods}
-                          </Text>
-                          <Text style={styles.secCoverageVal}>{sec.coveragePercent}% Completed</Text>
-                        </View>
-
-                        <ProgressBar
-                          progress={sec.coveragePercent / 100}
-                          color={sec.status === 'LAGGING' ? '#EF4444' : Palette.primary}
-                          style={styles.secProgress}
-                        />
-
-                        <View style={styles.topicBox}>
-                          <Text style={styles.topicLabel}>Latest Logged Topic (Week {sec.lastLoggedWeek}):</Text>
-                          <Text style={styles.topicText}>{sec.latestTopic}</Text>
-                        </View>
-                      </View>
-                    );
-                  })}
+                {/* 25-Segment Bar */}
+                <View style={styles.segBarWrapper}>
+                  <SegBar
+                    totalSegments={25}
+                    filledSegments={Math.round((item.overallCoverage / 100) * 25)}
+                    isLagging={isLagging}
+                  />
                 </View>
-              )}
-            </Card>
-          );
-        })}
+
+                {/* Expanded Sections Breakdown */}
+                {isExpanded && (
+                  <View style={styles.sectionsBlock}>
+                    <Rule thickness="hairline" style={{ marginBottom: 12 }} />
+                    <Label text="SECTION-WISE AUDIT" style={{ marginBottom: 8 }} />
+
+                    {item.sections.map((sec) => {
+                      const isSecLagging = sec.status === 'LAGGING';
+                      return (
+                        <View key={sec.section} style={styles.sectionRow}>
+                          <View style={styles.secRowTop}>
+                            <View style={styles.secLeft}>
+                              <Text style={styles.secName}>{sec.section}</Text>
+                              <Label text={`FACULTY: ${sec.facultyName.toUpperCase()}`} />
+                            </View>
+
+                            <View style={styles.secRight}>
+                              <Text
+                                style={[
+                                  styles.secPercent,
+                                  isSecLagging ? styles.accentSecPercent : null,
+                                ]}
+                              >
+                                {sec.coveragePercent}%
+                              </Text>
+                              <View
+                                style={[
+                                  styles.statusBadge,
+                                  isSecLagging ? styles.accentStatusBadge : null,
+                                ]}
+                              >
+                                <Text
+                                  style={[
+                                    styles.statusBadgeText,
+                                    isSecLagging ? styles.accentStatusBadgeText : null,
+                                  ]}
+                                >
+                                  {sec.status}
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+
+                          <Text style={styles.topicText} numberOfLines={2}>
+                            {sec.latestTopic}
+                          </Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+                )}
+              </View>
+            );
+          })}
+        </View>
       </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screenWrapper: {
+    flex: 1,
+    backgroundColor: EditorialColors.bg,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: EditorialColors.bg,
   },
-  headerBlock: {
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: ms(16),
-    paddingTop: ms(14),
-    paddingBottom: ms(10),
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+  content: {
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
   },
-  searchBar: {
+  header: {
+    marginBottom: 4,
+  },
+  headerTitle: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 36,
+    lineHeight: 40,
+    color: EditorialColors.ink,
+    letterSpacing: -0.5,
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  accentDot: {
+    color: EditorialColors.accent,
+  },
+  headerSubtitle: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 12,
+    color: EditorialColors.muted,
+    lineHeight: 18,
+  },
+  heavySpacer: {
+    marginVertical: 18,
+  },
+  hairlineSpacer: {
+    marginVertical: 16,
+  },
+  statRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
-    borderRadius: ms(12),
-    paddingHorizontal: ms(12),
-    height: ms(42),
-    marginBottom: ms(10),
+    justifyContent: 'space-between',
+    paddingVertical: 6,
   },
-  searchInput: {
+  statCol: {
     flex: 1,
-    marginLeft: ms(8),
-    fontSize: ms(14),
-    color: Palette.textDark,
-  },
-  yearScroll: {
-    flexDirection: 'row',
-  },
-  yearChip: {
-    marginRight: ms(8),
-    backgroundColor: '#F8FAFC',
-    borderRadius: ms(8),
-  },
-  yearChipActive: {
-    backgroundColor: Palette.primary,
-  },
-  yearChipText: {
-    fontSize: ms(12),
-    fontWeight: '600',
-    color: '#64748B',
-  },
-  yearChipTextActive: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-  },
-  scrollList: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: ms(16),
-    paddingBottom: ms(40),
-  },
-  summaryStatsRow: {
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    paddingVertical: ms(12),
-    paddingHorizontal: ms(16),
-    marginBottom: ms(14),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
     alignItems: 'center',
-    justifyContent: 'space-around',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.02,
-    shadowRadius: 6,
-    elevation: 1,
   },
-  statBox: {
-    alignItems: 'center',
-    flex: 1,
+  statNum: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 30,
+    lineHeight: 34,
+    color: EditorialColors.ink,
+    marginBottom: 2,
   },
-  statVal: {
-    fontSize: ms(18),
-    fontWeight: '900',
-    color: Palette.textDark,
-  },
-  statLbl: {
-    fontSize: ms(11),
-    fontWeight: '600',
-    color: Palette.textLight,
-    marginTop: ms(2),
+  accentStatNum: {
+    color: EditorialColors.accent,
   },
   statDivider: {
     width: 1,
-    height: ms(24),
-    backgroundColor: '#E2E8F0',
+    height: 38,
+    backgroundColor: EditorialColors.ink,
   },
-  subjectCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    marginBottom: ms(14),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-    elevation: 2,
-    overflow: 'hidden',
+  searchBlock: {
+    marginBottom: 16,
   },
-  cardHeaderContent: {
-    padding: ms(16),
+  searchLabel: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
+    marginBottom: 6,
   },
-  topInfoRow: {
+  underlineInput: {
+    height: 44,
+    borderBottomWidth: 2,
+    borderBottomColor: EditorialColors.ink,
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 15,
+    color: EditorialColors.ink,
+    paddingVertical: 6,
+  },
+  chipRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: ms(6),
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 20,
   },
-  codePill: {
-    backgroundColor: '#EFF6FF',
-    borderRadius: ms(6),
-    paddingHorizontal: ms(8),
-    paddingVertical: ms(3),
-    marginRight: ms(8),
-  },
-  codeText: {
-    fontSize: ms(12),
-    fontWeight: '800',
-    color: '#1D4ED8',
-  },
-  yearPill: {
-    backgroundColor: '#F1F5F9',
-    borderRadius: ms(6),
-    paddingHorizontal: ms(8),
-    paddingVertical: ms(3),
-  },
-  yearText: {
-    fontSize: ms(11),
-    fontWeight: '700',
-    color: '#64748B',
-  },
-  subjectTitle: {
-    fontSize: ms(16),
-    fontWeight: '800',
-    color: Palette.textDark,
-    marginBottom: ms(10),
-  },
-  progressRow: {
+  sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: ms(4),
-  },
-  progressLabel: {
-    fontSize: ms(11),
-    fontWeight: '600',
-    color: '#64748B',
-  },
-  progressPercent: {
-    fontSize: ms(13),
-    fontWeight: '800',
-    color: Palette.textDark,
-  },
-  progressBar: {
-    height: ms(6),
-    borderRadius: ms(3),
-    backgroundColor: '#E2E8F0',
-    marginBottom: ms(8),
-  },
-  sectionsMetaRow: {
-    marginTop: ms(4),
-  },
-  sectionsMetaText: {
-    fontSize: ms(12),
-    color: Palette.textLight,
-    fontWeight: '500',
-  },
-  expandedSectionBlock: {
-    backgroundColor: '#F8FAFC',
-    padding: ms(16),
-    borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#E2E8F0',
-    marginBottom: ms(12),
+    alignItems: 'center',
+    marginBottom: 14,
   },
   sectionHeaderTitle: {
-    fontSize: ms(13),
-    fontWeight: '800',
-    color: '#475569',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: ms(10),
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
   },
-  sectionDetailCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(12),
-    padding: ms(12),
-    marginBottom: ms(10),
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+  subjectList: {
+    borderTopWidth: EditorialRules.hairline,
+    borderTopColor: EditorialColors.ink,
   },
-  secTopRow: {
+  subjectCard: {
+    borderBottomWidth: EditorialRules.hairline,
+    borderBottomColor: EditorialColors.ink,
+    paddingVertical: 14,
+  },
+  cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: ms(8),
+    marginBottom: 10,
   },
-  secClassTitle: {
-    fontSize: ms(14),
-    fontWeight: '800',
-    color: Palette.textDark,
+  infoCol: {
+    flex: 1,
+    marginRight: 12,
   },
-  secFacultyName: {
-    fontSize: ms(12),
-    color: '#64748B',
-    fontWeight: '600',
-    marginTop: ms(1),
+  codeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
   },
-  paceBadge: {
-    paddingHorizontal: ms(8),
-    paddingVertical: ms(3),
-    borderRadius: ms(6),
+  subjectCode: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 12,
+    letterSpacing: 1,
+    color: EditorialColors.muted,
   },
-  paceBadgeText: {
-    fontSize: ms(10),
-    fontWeight: '700',
+  yearTag: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 12,
+    color: EditorialColors.muted,
   },
-  secStatsRow: {
+  subjectTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 17,
+    lineHeight: 22,
+    color: EditorialColors.ink,
+    marginBottom: 4,
+  },
+  metaLabel: {
+    letterSpacing: 1.5,
+  },
+  rightValueBox: {
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
+  percentText: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 28,
+    lineHeight: 32,
+    color: EditorialColors.ink,
+  },
+  accentPercentText: {
+    color: EditorialColors.accent,
+  },
+  segBarWrapper: {
+    marginTop: 2,
+  },
+  sectionsBlock: {
+    marginTop: 14,
+    paddingTop: 4,
+  },
+  sectionRow: {
+    borderTopWidth: 1,
+    borderTopColor: EditorialColors.track,
+    paddingVertical: 10,
+  },
+  secRowTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: ms(4),
+    alignItems: 'flex-start',
+    marginBottom: 4,
   },
-  secPeriodInfo: {
-    fontSize: ms(12),
-    color: '#64748B',
+  secLeft: {
+    flex: 1,
+    marginRight: 8,
   },
-  boldPeriod: {
-    fontWeight: '800',
-    color: Palette.textDark,
+  secName: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 14,
+    color: EditorialColors.ink,
+    marginBottom: 2,
   },
-  secCoverageVal: {
-    fontSize: ms(12),
-    fontWeight: '800',
-    color: Palette.primary,
+  secRight: {
+    alignItems: 'flex-end',
   },
-  secProgress: {
-    height: ms(5),
-    borderRadius: ms(2),
-    backgroundColor: '#F1F5F9',
-    marginBottom: ms(8),
+  secPercent: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 18,
+    color: EditorialColors.ink,
+    marginBottom: 2,
   },
-  topicBox: {
-    backgroundColor: '#F8FAFC',
-    borderRadius: ms(8),
-    padding: ms(8),
+  accentSecPercent: {
+    color: EditorialColors.accent,
   },
-  topicLabel: {
-    fontSize: ms(10),
-    fontWeight: '700',
-    color: '#64748B',
-    marginBottom: ms(2),
+  statusBadge: {
+    borderWidth: 1,
+    borderColor: EditorialColors.ink,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+  },
+  accentStatusBadge: {
+    borderColor: EditorialColors.accent,
+  },
+  statusBadgeText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 9,
+    letterSpacing: 1,
+    color: EditorialColors.ink,
+  },
+  accentStatusBadgeText: {
+    color: EditorialColors.accent,
   },
   topicText: {
-    fontSize: ms(12),
-    color: Palette.textDark,
-    lineHeight: ms(16),
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 12,
+    lineHeight: 16,
+    color: EditorialColors.muted,
   },
 });
-
-export default SubjectReportsScreen;
