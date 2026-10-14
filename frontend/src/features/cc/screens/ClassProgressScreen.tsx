@@ -155,7 +155,7 @@ export const ClassProgressScreen = () => {
                     </View>
                     <Text style={styles.subjectName}>{sub.name}</Text>
                     <Label
-                      text={`FACULTY: ${sub.teacher.toUpperCase()} • ${sub.periodsCompleted}/${sub.periodsPlanned} PERIODS`}
+                      text={`FACULTY: ${(sub.faculty || 'STAFF').toUpperCase()} • ${sub.periodsHandled || 0}/${sub.periodsPlanned || 4} PERIODS`}
                       style={styles.facultyMeta}
                     />
                   </View>

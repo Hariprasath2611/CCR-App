@@ -164,11 +164,11 @@ const styles = StyleSheet.create({
   hodInfoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
   },
   hodAvatar: {
     backgroundColor: EditorialColors.white,
     borderRadius: 0,
+    marginRight: 12,
   },
   hodAvatarText: {
     color: EditorialColors.ink,
@@ -193,13 +193,13 @@ const styles = StyleSheet.create({
   emailRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
     marginTop: 4,
   },
   emailText: {
     fontFamily: EditorialFonts.semibold,
     fontSize: 12,
     color: EditorialColors.muted,
+    marginLeft: 6,
   },
   ccBoardHeaderRow: {
     marginBottom: 10,
@@ -211,7 +211,6 @@ const styles = StyleSheet.create({
     color: EditorialColors.muted,
   },
   ccGridContainer: {
-    gap: 10,
   },
   ccItemCard: {
     backgroundColor: EditorialColors.bg,
@@ -219,6 +218,7 @@ const styles = StyleSheet.create({
     padding: 14,
     borderWidth: EditorialRules.hairline,
     borderColor: EditorialColors.ink,
+    marginBottom: 10,
   },
   ccCardHeader: {
     flexDirection: 'row',
@@ -270,12 +270,12 @@ const styles = StyleSheet.create({
   ccEmailBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
     flex: 1,
   },
   ccEmailText: {
     fontFamily: EditorialFonts.semibold,
     fontSize: 12,
     color: EditorialColors.muted,
+    marginLeft: 6,
   },
 });
