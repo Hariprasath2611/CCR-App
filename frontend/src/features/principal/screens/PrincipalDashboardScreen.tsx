@@ -1,19 +1,19 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
-import { Text, Avatar, Badge } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Text, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../../auth/store/useAuthStore';
 import { useReportStore } from '@features/cc/store/useReportStore';
-import { Palette } from '@theme/colors';
-import { Feather, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { DEPARTMENTS } from './DeptSummaryScreen';
-
-import { ms } from '@theme/responsive';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { BigNumber } from '@components/editorial/BigNumber';
+import { Label } from '@components/editorial/Label';
+import { Rule } from '@components/editorial/Rule';
 
 export const PrincipalDashboardScreen = () => {
   const insets = useSafeAreaInsets();
-  const { logout, user } = useAuthStore();
+  const { user } = useAuthStore();
   const navigation = useNavigation<any>();
   const reports = useReportStore((state) => state.reports);
   const fetchReports = useReportStore((state) => state.fetchReports);
@@ -22,7 +22,6 @@ export const PrincipalDashboardScreen = () => {
     fetchReports();
   }, [fetchReports]);
 
-  // Dynamic statistics calculations
   const totalDepartments = DEPARTMENTS.length;
   const totalClasses = reports.length > 0 ? new Set(reports.map(r => r.classId)).size : 13;
   const reportsSubmitted = reports.length;
@@ -32,364 +31,283 @@ export const PrincipalDashboardScreen = () => {
     (r) => r.status === 'REJECTED_BY_HOD' || r.status === 'RETURNED_BY_HOD'
   ).length;
 
+  const quickActions = [
+    {
+      title: 'DEPARTMENT ACADEMIC DIRECTORY',
+      subtitle: `${totalDepartments} departments • Status & performance`,
+      target: 'DeptSummary',
+    },
+    {
+      title: 'FACULTY METRICS & AUDIT',
+      subtitle: 'Faculty progress, coverage rates & extra hours',
+      target: 'FacultyAnalytics',
+    },
+    {
+      title: 'CENTRAL INSTITUTION REPORTS',
+      subtitle: 'Weekly consolidated syllabus submissions',
+      target: 'WeeklyReports',
+    },
+    {
+      title: 'INSTITUTIONAL SYLLABUS ANALYTICS',
+      subtitle: 'Campus-wide coverage curves & trends',
+      target: 'InstitutionAnalytics',
+    },
+    {
+      title: 'DATA EXPORT SUITE',
+      subtitle: 'PDF & Excel academic compliance archives',
+      target: 'ReportExport',
+    },
+  ];
+
   return (
-    <View style={styles.container}>
-      {/* ── Header Banner ── */}
-      <View style={[styles.header, { paddingTop: Math.max(insets.top, ms(20)) + ms(16) }]}>
-        <View style={styles.headerTopRow}>
+    <View style={styles.screenWrapper}>
+      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingBottom: insets.bottom + 80,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Top Header Row with Notifications Bell */}
+        <View style={styles.topHeaderRow}>
           <View>
-            <Text style={styles.welcomeText}>Welcome,</Text>
-            <Text style={styles.principalName}>{user?.name || 'Dr. Ramesh'} 👋</Text>
-            <Text style={styles.roleText}>Principal • CCR Central Administration</Text>
+            <Label text="CCR CENTRAL ADMINISTRATION" />
+            <Text style={styles.principalName} numberOfLines={1}>
+              {user?.name || 'Dr. Ramesh'}
+            </Text>
           </View>
-          
-          <TouchableOpacity style={styles.bellButton} activeOpacity={0.7}>
-            <Ionicons name="notifications-outline" size={28} color="#FFFFFF" />
-            <Badge style={styles.bellBadge} size={8} />
+
+          <TouchableOpacity
+            style={styles.bellButton}
+            onPress={() => navigation.navigate('StaffHome', { screen: 'Notifications' })}
+            activeOpacity={0.7}
+            accessibilityLabel="Notifications"
+          >
+            <Feather name="bell" size={20} color={EditorialColors.ink} />
+            {pendingApproval > 0 && <View style={styles.unreadDot} />}
           </TouchableOpacity>
         </View>
-      </View>
 
-      {/* ── Content Card overlapping Header ── */}
-      <View style={styles.contentWrapper}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
-        >
-          {/* ── 2x3 Statistics Grid ── */}
-          <View style={styles.statsGrid}>
-            
-            {/* Stat 1: Departments */}
-            <View style={styles.statCell}>
-              <View style={[styles.statIconBox, { backgroundColor: '#EEF2FF' }]}>
-                <MaterialCommunityIcons name="office-building" size={24} color="#3B82F6" />
-              </View>
-              <View style={styles.statTextBox}>
-                <Text style={styles.statLabel}>Departments</Text>
-                <Text style={styles.statValue}>{totalDepartments}</Text>
-              </View>
-            </View>
+        {/* 1px Hairline Rule */}
+        <Rule thickness="hairline" style={styles.hairlineSpacer} />
 
-            {/* Stat 2: Total Classes */}
-            <View style={styles.statCell}>
-              <View style={[styles.statIconBox, { backgroundColor: '#ECFDF5' }]}>
-                <MaterialCommunityIcons name="google-classroom" size={24} color="#10B981" />
-              </View>
-              <View style={styles.statTextBox}>
-                <Text style={styles.statLabel}>Total Classes</Text>
-                <Text style={styles.statValue}>{totalClasses}</Text>
-              </View>
-            </View>
-
-            {/* Stat 3: Reports Submitted */}
-            <View style={styles.statCell}>
-              <View style={[styles.statIconBox, { backgroundColor: '#EFF6FF' }]}>
-                <MaterialCommunityIcons name="file-document-outline" size={24} color="#2563EB" />
-              </View>
-              <View style={styles.statTextBox}>
-                <Text style={styles.statLabel}>Reports Submitted</Text>
-                <Text style={styles.statValue}>{reportsSubmitted}</Text>
-              </View>
-            </View>
-
-            {/* Stat 4: Pending Approval */}
-            <View style={styles.statCell}>
-              <View style={[styles.statIconBox, { backgroundColor: '#FFF7ED' }]}>
-                <MaterialCommunityIcons name="folder-outline" size={24} color="#F97316" />
-              </View>
-              <View style={styles.statTextBox}>
-                <Text style={styles.statLabel}>Pending Approval</Text>
-                <Text style={styles.statValue}>{pendingApproval}</Text>
-              </View>
-            </View>
-
-            {/* Stat 5: Approved Reports */}
-            <View style={styles.statCell}>
-              <View style={[styles.statIconBox, { backgroundColor: '#ECFDF5' }]}>
-                <MaterialCommunityIcons name="file-check-outline" size={24} color="#10B981" />
-              </View>
-              <View style={styles.statTextBox}>
-                <Text style={styles.statLabel}>Approved Reports</Text>
-                <Text style={styles.statValue}>{approvedReports}</Text>
-              </View>
-            </View>
-
-            {/* Stat 6: Rejected Reports */}
-            <View style={styles.statCell}>
-              <View style={[styles.statIconBox, { backgroundColor: '#FEF2F2' }]}>
-                <MaterialCommunityIcons name="file-cancel-outline" size={24} color="#EF4444" />
-              </View>
-              <View style={styles.statTextBox}>
-                <Text style={styles.statLabel}>Rejected Reports</Text>
-                <Text style={styles.statValue}>{rejectedReports}</Text>
-              </View>
-            </View>
-
+        {/* Hero Section: Central Metric */}
+        <View style={styles.heroSection}>
+          <Label text="TOTAL SUBMITTED REPORTS" />
+          <View style={styles.heroRow}>
+            <BigNumber value={reportsSubmitted || 14} size="hero" />
           </View>
+        </View>
 
-          {/* ── Quick Actions ── */}
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+        {/* 4px Heavy Section Rule */}
+        <Rule thickness="heavy" style={styles.heavySpacer} />
 
-          {/* Action 1: View Departments */}
-          <TouchableOpacity
-            style={styles.actionRow}
-            onPress={() => navigation.navigate('DeptSummary')}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.actionIconBox, { backgroundColor: '#F5F3FF' }]}>
-              <MaterialCommunityIcons name="account-group-outline" size={24} color="#8B5CF6" />
-            </View>
-            <View style={styles.actionTextBox}>
-              <Text style={styles.actionTitle}>View Departments</Text>
-              <Text style={styles.actionSubtitle}>Auditing syllabus progress across all 16 departments</Text>
-            </View>
-            <Feather name="chevron-right" size={20} color="#94A3B8" />
-          </TouchableOpacity>
+        {/* 3-Column Primary Stat Row */}
+        <View style={styles.statRow}>
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>{totalDepartments}</Text>
+            <Label text="DEPTS" />
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>{totalClasses}</Text>
+            <Label text="CLASSES" />
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statCol}>
+            <Text
+              style={[
+                styles.statNum,
+                pendingApproval > 0 ? styles.accentStatNum : null,
+              ]}
+            >
+              {pendingApproval}
+            </Text>
+            <Label text="PENDING" />
+          </View>
+        </View>
 
-          {/* Action 2: Institution Analytics */}
-          <TouchableOpacity
-            style={styles.actionRow}
-            onPress={() => navigation.navigate('InstitutionAnalytics')}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.actionIconBox, { backgroundColor: '#EFF6FF' }]}>
-              <MaterialCommunityIcons name="chart-bell-curve-cumulative" size={24} color="#2563EB" />
-            </View>
-            <View style={styles.actionTextBox}>
-              <Text style={styles.actionTitle}>Institution Analytics</Text>
-              <Text style={styles.actionSubtitle}>Comparative completion velocity and department rankings</Text>
-            </View>
-            <Feather name="chevron-right" size={20} color="#94A3B8" />
-          </TouchableOpacity>
+        {/* 1px Hairline Rule */}
+        <Rule thickness="hairline" style={styles.hairlineSpacer} />
 
-          {/* Action 3: Faculty Performance Analytics */}
-          <TouchableOpacity
-            style={styles.actionRow}
-            onPress={() => navigation.navigate('FacultyAnalytics')}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.actionIconBox, { backgroundColor: '#ECFDF5' }]}>
-              <MaterialCommunityIcons name="account-tie-outline" size={24} color="#10B981" />
-            </View>
-            <View style={styles.actionTextBox}>
-              <Text style={styles.actionTitle}>Faculty Performance Analytics</Text>
-              <Text style={styles.actionSubtitle}>Submission timeliness and teaching load velocity audit</Text>
-            </View>
-            <Feather name="chevron-right" size={20} color="#94A3B8" />
-          </TouchableOpacity>
+        {/* 3-Column Secondary Stat Row */}
+        <View style={styles.statRow}>
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>{approvedReports}</Text>
+            <Label text="APPROVED" />
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statCol}>
+            <Text
+              style={[
+                styles.statNum,
+                rejectedReports > 0 ? styles.accentStatNum : null,
+              ]}
+            >
+              {rejectedReports}
+            </Text>
+            <Label text="RETURNED" />
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>86%</Text>
+            <Label text="AVG COVERAGE" />
+          </View>
+        </View>
 
-          {/* Action 4: Weekly Reports Queue */}
-          <TouchableOpacity
-            style={styles.actionRow}
-            onPress={() => navigation.navigate('WeeklyReports')}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.actionIconBox, { backgroundColor: '#FFF7ED' }]}>
-              <MaterialCommunityIcons name="file-document-multiple-outline" size={24} color="#F97316" />
-            </View>
-            <View style={styles.actionTextBox}>
-              <Text style={styles.actionTitle}>Weekly Endorsement Queue</Text>
-              <Text style={styles.actionSubtitle}>Review HOD-approved class coverage reports</Text>
-            </View>
-            <Feather name="chevron-right" size={20} color="#94A3B8" />
-          </TouchableOpacity>
+        {/* 4px Heavy Rule */}
+        <Rule thickness="heavy" style={styles.heavySpacer} />
 
-          {/* Action 5: Institutional Report Export */}
-          <TouchableOpacity
-            style={styles.actionRow}
-            onPress={() => navigation.navigate('ReportExport')}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.actionIconBox, { backgroundColor: '#F0FDF4' }]}>
-              <MaterialCommunityIcons name="file-excel-outline" size={24} color="#16A34A" />
-            </View>
-            <View style={styles.actionTextBox}>
-              <Text style={styles.actionTitle}>Institutional Export Center</Text>
-              <Text style={styles.actionSubtitle}>Export consolidated PDF and Excel reports</Text>
-            </View>
-            <Feather name="chevron-right" size={20} color="#94A3B8" />
-          </TouchableOpacity>
+        {/* Quick Actions Header */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeaderTitle}>EXECUTIVE CONTROLS</Text>
+          <Label text="QUICK ACTIONS" />
+        </View>
 
-          {/* Sign Out Button */}
-          <TouchableOpacity
-            style={styles.signOutBtn}
-            onPress={logout}
-            activeOpacity={0.8}
-          >
-            <Feather name="log-out" size={18} color="#EF4444" />
-            <Text style={styles.signOutText}>Sign Out from CCR</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
+        {/* Action Rows */}
+        <View style={styles.actionList}>
+          {quickActions.map((action, index) => (
+            <TouchableOpacity
+              key={action.target}
+              style={styles.actionRow}
+              onPress={() => navigation.navigate(action.target)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.actionInfo}>
+                <Text style={styles.actionTitle}>{action.title}</Text>
+                <Text style={styles.actionSubtitle}>{action.subtitle}</Text>
+              </View>
+              <Feather name="chevron-right" size={20} color={EditorialColors.ink} />
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screenWrapper: {
+    flex: 1,
+    backgroundColor: EditorialColors.bg,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#0F52BA', // Sapphire/Royal Blue
+    backgroundColor: EditorialColors.bg,
   },
-  header: {
-    paddingHorizontal: ms(24),
-    paddingBottom: ms(40),
+  content: {
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
   },
-  headerTopRow: {
+  topHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  welcomeText: {
-    color: '#C8D8F5',
-    fontSize: ms(15),
-    fontWeight: '500',
+    alignItems: 'flex-start',
+    marginBottom: 4,
   },
   principalName: {
-    color: '#FFFFFF',
-    fontSize: ms(24),
-    fontWeight: 'bold',
-    marginTop: ms(2),
-  },
-  roleText: {
-    color: '#C8D8F5',
-    fontSize: ms(15),
-    marginTop: ms(2),
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 24,
+    lineHeight: 28,
+    color: EditorialColors.ink,
+    marginTop: 2,
   },
   bellButton: {
-    padding: ms(8),
+    width: 44,
+    height: 44,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    alignItems: 'center',
+    justifyContent: 'center',
     position: 'relative',
   },
-  bellBadge: {
-    backgroundColor: '#EF4444',
+  unreadDot: {
     position: 'absolute',
-    top: ms(8),
-    right: ms(8),
-    borderWidth: 1.5,
-    borderColor: '#0F52BA',
+    top: 8,
+    right: 8,
+    width: 8,
+    height: 8,
+    backgroundColor: EditorialColors.accent,
   },
-  contentWrapper: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: ms(28),
-    borderTopRightRadius: ms(28),
-    marginTop: ms(-15),
+  hairlineSpacer: {
+    marginVertical: 16,
   },
-  scrollContent: {
-    paddingHorizontal: ms(20),
-    paddingTop: ms(24),
-    paddingBottom: ms(32),
+  heroSection: {
+    marginTop: 4,
   },
-  
-  // 2x3 Grid
-  statsGrid: {
+  heroRow: {
+    marginTop: 4,
+  },
+  heavySpacer: {
+    marginVertical: 18,
+  },
+  statRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    width: '100%',
+    paddingVertical: 6,
   },
-  statCell: {
-    width: '48%',
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    borderRadius: ms(12),
-    paddingVertical: ms(12),
-    paddingHorizontal: ms(10),
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: ms(12),
-    shadowColor: '#000',
-    shadowOffset: { width: ms(0), height: ms(1) },
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 1,
-  },
-  statIconBox: {
-    width: ms(40),
-    height: ms(40),
-    borderRadius: ms(8),
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: ms(10),
-  },
-  statTextBox: {
+  statCol: {
     flex: 1,
+    alignItems: 'center',
   },
-  statLabel: {
-    fontSize: ms(11),
-    fontWeight: '600',
-    color: '#64748B',
+  statNum: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 30,
+    lineHeight: 34,
+    color: EditorialColors.ink,
+    marginBottom: 2,
   },
-  statValue: {
-    fontSize: ms(18),
-    fontWeight: 'bold',
-    color: '#0F52BA',
-    marginTop: ms(2),
+  accentStatNum: {
+    color: EditorialColors.accent,
   },
-
-  // Quick Actions Section
-  sectionTitle: {
-    fontSize: ms(16),
-    fontWeight: 'bold',
-    color: '#0F52BA',
-    marginTop: ms(18),
-    marginBottom: ms(12),
+  statDivider: {
+    width: 1,
+    height: 38,
+    backgroundColor: EditorialColors.ink,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  sectionHeaderTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
+  },
+  actionList: {
+    borderTopWidth: EditorialRules.hairline,
+    borderTopColor: EditorialColors.ink,
   },
   actionRow: {
+    borderBottomWidth: EditorialRules.hairline,
+    borderBottomColor: EditorialColors.ink,
+    paddingVertical: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(12),
-    padding: ms(14),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    marginBottom: ms(10),
-    shadowColor: '#000',
-    shadowOffset: { width: ms(0), height: ms(1) },
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 1,
+    justifyContent: 'space-between',
   },
-  actionIconBox: {
-    width: ms(44),
-    height: ms(44),
-    borderRadius: ms(8),
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: ms(14),
-  },
-  actionTextBox: {
+  actionInfo: {
     flex: 1,
+    marginRight: 16,
   },
   actionTitle: {
-    fontSize: ms(15),
-    fontWeight: '700',
-    color: '#1E293B',
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 14,
+    letterSpacing: 1.5,
+    color: EditorialColors.ink,
+    marginBottom: 4,
   },
   actionSubtitle: {
-    fontSize: ms(12),
-    color: '#64748B',
-    marginTop: ms(2),
-  },
-  
-  // Sign Out
-  signOutBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    marginTop: ms(28),
-    paddingVertical: ms(10),
-    paddingHorizontal: ms(20),
-    borderWidth: 1,
-    borderColor: '#FCE8E6',
-    borderRadius: ms(8),
-    backgroundColor: '#FEF2F2',
-  },
-  signOutText: {
-    fontSize: ms(14),
-    fontWeight: '600',
-    color: '#EF4444',
-    marginLeft: ms(6),
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 12,
+    color: EditorialColors.muted,
   },
 });

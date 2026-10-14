@@ -1,17 +1,18 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, Avatar, Button } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, StatusBar } from 'react-native';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { useReportStore, ConsolidatedReport } from '../store/useReportStore';
 import { CCStackParamList } from '@navigation/types';
-import { Palette } from '@theme/colors';
 import { WeeklyCourseCoverageReportCard } from '../components/WeeklyCourseCoverageReportCard';
 import { getCCForSection, getHODForYear, FIRST_YEAR_CC_BOARD, CSE_3RD_YEAR_CC_BOARD } from '@config/facultyBoard';
-
-import { ms } from '@theme/responsive';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { BigNumber } from '@components/editorial/BigNumber';
+import { Label } from '@components/editorial/Label';
+import { Rule } from '@components/editorial/Rule';
+import { Feather } from '@expo/vector-icons';
 
 type CCNav = NativeStackNavigationProp<CCStackParamList>;
 
@@ -20,17 +21,16 @@ export const CCDashboardScreen = () => {
   const { user } = useAuthStore();
   const navigation = useNavigation<any>();
   const isFocused = useIsFocused();
-  
+
   const reports = useReportStore((state) => state.reports);
   const subjectProgressList = useReportStore((state) => state.subjectProgressList);
   const fetchWeeklyProgress = useReportStore((state) => state.fetchWeeklyProgress);
 
-  // Look up CC profile by logged-in user email or assignedClassId
   const userCC = FIRST_YEAR_CC_BOARD.find(cc => cc.email.toLowerCase() === user?.email?.toLowerCase())
     || CSE_3RD_YEAR_CC_BOARD.find(cc => cc.email.toLowerCase() === user?.email?.toLowerCase());
 
   const classId = user?.assignedClassId || userCC?.classId || '1st Year SEC-A';
-  const selectedWeek = '12'; // Default consolidated view week
+  const selectedWeek = '12';
   const ccInfo = getCCForSection(classId) || userCC;
   const hodInfo = getHODForYear(classId);
 
@@ -42,11 +42,10 @@ export const CCDashboardScreen = () => {
 
   const currentProgress = subjectProgressList[`${classId}_${selectedWeek}`] || [];
 
-  const averageCoverage = currentProgress.length > 0 
-    ? Math.round(currentProgress.reduce((sum, s) => sum + s.coverage, 0) / currentProgress.length) 
+  const averageCoverage = currentProgress.length > 0
+    ? Math.round(currentProgress.reduce((sum, s) => sum + s.coverage, 0) / currentProgress.length)
     : 80;
 
-  // Build the draft report representation for the class counselor dashboard content
   const draftReport: ConsolidatedReport = {
     id: `${classId}_W${selectedWeek}`,
     classId,
@@ -60,229 +59,253 @@ export const CCDashboardScreen = () => {
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={[
-        styles.content,
-        { paddingTop: Math.max(insets.top, ms(16)) }
-      ]}
-    >
-      {/* ── HEADER BANNER ── */}
-      <View style={styles.headerCard}>
-        <View style={styles.headerTop}>
-          <View style={styles.headerInfo}>
-            <Text style={styles.welcomeGreeting}>Class Counselor Dashboard</Text>
-            <Text style={styles.classLabel}>Class: {classId}</Text>
-            <Text style={styles.ccName}>CC Counselor: {user?.name || ccInfo?.facultyName || 'Faculty Member'}</Text>
-            <Text style={{ fontSize: ms(12), color: '#64748B', fontWeight: '600', marginTop: ms(2) }}>
-              HOD: {hodInfo.hodName} ({hodInfo.department})
-            </Text>
+    <View style={styles.screenWrapper}>
+      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingBottom: insets.bottom + 80,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Top Meta Bar */}
+        <View style={styles.topMetaRow}>
+          <View>
+            <Label text="CLASS COUNSELOR DASHBOARD" />
+            <Text style={styles.screenHeadline}>{classId}</Text>
           </View>
-          <Avatar.Text
-            size={48}
-            label={user?.name ? user.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : 'CC'}
-            style={styles.avatar}
-            labelStyle={styles.avatarLabel}
-          />
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>WEEK {selectedWeek}</Text>
+          </View>
         </View>
 
-        {/* Dynamic Class Summary Box */}
-        <View style={styles.statsSummaryBox}>
-          <View style={styles.statItem}>
-            <Text style={styles.statItemNum}>{currentProgress.length || 6}</Text>
-            <Text style={styles.statItemLabel}>Class Subjects</Text>
+        <Text style={styles.metaSubtext}>
+          COUNSELOR: {user?.name || ccInfo?.facultyName || 'FACULTY MEMBER'} • HOD: {hodInfo.hodName.toUpperCase()}
+        </Text>
+
+        {/* 1px Hairline Rule */}
+        <Rule thickness="hairline" style={styles.hairlineSpacer} />
+
+        {/* Hero Section: Average Class Coverage */}
+        <View style={styles.heroSection}>
+          <Label text="AVERAGE CLASS COVERAGE" />
+          <View style={styles.heroRow}>
+            <BigNumber value={averageCoverage} size="hero" showPercent />
+          </View>
+        </View>
+
+        {/* 4px Heavy Ink Rule */}
+        <Rule thickness="heavy" style={styles.heavySpacer} />
+
+        {/* 3-Column Stat Row */}
+        <View style={styles.statRow}>
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>{currentProgress.length || 6}</Text>
+            <Label text="COURSES" />
           </View>
           <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={[styles.statItemNum, { color: Palette.primary }]}>{averageCoverage}%</Text>
-            <Text style={styles.statItemLabel}>Average Coverage</Text>
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>W-{selectedWeek}</Text>
+            <Label text="PERIOD" />
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>100%</Text>
+            <Label text="TARGET" />
           </View>
         </View>
 
-        {/* ── ALLOCATE FACULTY QUICK ACTION ── */}
-        <Button
-          mode="contained-tonal"
-          icon="account-multiple-plus"
-          style={{ marginTop: 12, borderRadius: 10, backgroundColor: '#E0F2FE' }}
-          textColor={Palette.primary}
+        {/* 1px Hairline Rule */}
+        <Rule thickness="hairline" style={styles.hairlineSpacer} />
+
+        {/* Quick Action: Allocate Faculty */}
+        <TouchableOpacity
+          style={styles.outlineBtn}
           onPress={() => navigation.navigate('FacultyAllocation')}
+          activeOpacity={0.7}
         >
-          Manage & Allocate Subject Teachers
-        </Button>
-      </View>
+          <Text style={styles.outlineBtnText}>MANAGE & ALLOCATE FACULTY</Text>
+          <Feather name="users" size={16} color={EditorialColors.ink} />
+        </TouchableOpacity>
 
+        {/* Section Title */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeaderTitle}>WEEK {selectedWeek} CONSOLIDATED SPREADSHEET</Text>
+          <Label text="ACADEMIC LOG" />
+        </View>
 
-      {/* ── CONSOLIDATED REPORT CONTENT ── */}
-      <Text style={styles.sectionTitle}>Week {selectedWeek} Consolidated Spreadsheet</Text>
-      <WeeklyCourseCoverageReportCard report={draftReport} showDownloadButton={false} />
+        {/* Consolidated Report Card */}
+        <View style={styles.reportCardWrapper}>
+          <WeeklyCourseCoverageReportCard report={draftReport} showDownloadButton={false} />
+        </View>
 
-      {/* ── ACTIONS BUTTON ROW ── */}
-      <View style={styles.buttonRow}>
-        <Button
-          mode="contained"
-          icon="send"
-          style={[styles.actionBtn, styles.submitBtn]}
-          onPress={() => navigation.navigate('StaffHome', {
-            screen: 'SubmitToHOD',
-            params: { reportId: `${classId}_W${selectedWeek}` }
-          })}
-          labelStyle={styles.btnLabel}
-        >
-          Submit to HOD
-        </Button>
-        
-        <Button
-          mode="outlined"
-          icon="file-pdf-box"
-          style={[styles.actionBtn, styles.exportBtn]}
-          onPress={() => navigation.navigate('StaffHome', {
-            screen: 'ReportExport',
-            params: { reportId: `${classId}_W${selectedWeek}` }
-          })}
-          textColor={Palette.primary}
-          labelStyle={styles.btnLabelOutlined}
-        >
-          Export Report
-        </Button>
-      </View>
-    </ScrollView>
+        {/* Action Buttons */}
+        <View style={styles.actionBlock}>
+          <TouchableOpacity
+            style={styles.primaryBtn}
+            onPress={() =>
+              navigation.navigate('StaffHome', {
+                screen: 'SubmitToHOD',
+                params: { reportId: `${classId}_W${selectedWeek}` },
+              })
+            }
+            activeOpacity={0.85}
+          >
+            <Text style={styles.primaryBtnText}>SUBMIT TO HOD</Text>
+            <Feather name="send" size={16} color={EditorialColors.white} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.outlineBtn}
+            onPress={() =>
+              navigation.navigate('StaffHome', {
+                screen: 'ReportExport',
+                params: { reportId: `${classId}_W${selectedWeek}` },
+              })
+            }
+            activeOpacity={0.7}
+          >
+            <Text style={styles.outlineBtnText}>EXPORT REPORT PDF</Text>
+            <Feather name="download" size={16} color={EditorialColors.ink} />
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screenWrapper: {
+    flex: 1,
+    backgroundColor: EditorialColors.bg,
+  },
   container: {
     flex: 1,
-    backgroundColor: Palette.background,
+    backgroundColor: EditorialColors.bg,
   },
   content: {
-    padding: ms(16),
-    paddingBottom: ms(40),
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
   },
-
-  // Header Banner
-  headerCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(24),
-    padding: ms(20),
-    marginBottom: ms(20),
-    shadowColor: '#0F172A',
-    shadowOffset: { width: ms(0), height: ms(8) },
-    shadowOpacity: 0.04,
-    shadowRadius: 16,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
+  topMetaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 4,
   },
-  headerTop: {
+  screenHeadline: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 24,
+    lineHeight: 28,
+    color: EditorialColors.ink,
+    marginTop: 2,
+  },
+  metaSubtext: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 10,
+    letterSpacing: 1.5,
+    color: EditorialColors.muted,
+    marginTop: 4,
+  },
+  badge: {
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  badgeText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    color: EditorialColors.ink,
+  },
+  hairlineSpacer: {
+    marginVertical: 16,
+  },
+  heroSection: {
+    marginTop: 4,
+  },
+  heroRow: {
+    marginTop: 4,
+  },
+  heavySpacer: {
+    marginVertical: 18,
+  },
+  statRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingVertical: 6,
   },
-  headerInfo: {
+  statCol: {
     flex: 1,
-  },
-  welcomeGreeting: {
-    fontSize: ms(12),
-    fontWeight: '700',
-    color: Palette.textLight,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
-  classLabel: {
-    fontSize: ms(22),
-    fontWeight: '900',
-    color: Palette.textDark,
-    marginTop: ms(2),
-    letterSpacing: -0.4,
-  },
-  ccName: {
-    fontSize: ms(13),
-    color: Palette.primary,
-    fontWeight: '700',
-    marginTop: ms(2),
-  },
-  avatar: {
-    backgroundColor: Palette.primary,
-    elevation: 2,
-  },
-  avatarLabel: {
-    color: '#FFFFFF',
-    fontWeight: '800',
-  },
-
-  // Dynamic Summary Stats Box
-  statsSummaryBox: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around',
-    backgroundColor: '#F8FAFC',
-    borderRadius: ms(16),
-    paddingVertical: ms(12),
-    paddingHorizontal: ms(16),
-    marginTop: ms(16),
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
   },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  statItemNum: {
-    fontSize: ms(20),
-    fontWeight: '900',
-    color: Palette.textDark,
-  },
-  statItemLabel: {
-    fontSize: ms(11),
-    fontWeight: '600',
-    color: Palette.textLight,
-    marginTop: ms(2),
+  statNum: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 30,
+    lineHeight: 34,
+    color: EditorialColors.ink,
+    marginBottom: 2,
   },
   statDivider: {
     width: 1,
-    height: ms(24),
-    backgroundColor: '#CBD5E1',
+    height: 38,
+    backgroundColor: EditorialColors.ink,
   },
-
-  // Section title
-  sectionTitle: {
-    fontSize: ms(12),
-    fontWeight: '800',
-    color: Palette.textLight,
-    letterSpacing: 1.0,
-    textTransform: 'uppercase',
-    marginBottom: ms(12),
-    paddingLeft: ms(4),
-  },
-
-  // Action Buttons Row
-  buttonRow: {
+  sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: ms(20),
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 14,
+  },
+  sectionHeaderTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 12,
+    letterSpacing: 1.5,
+    color: EditorialColors.ink,
+  },
+  reportCardWrapper: {
+    marginBottom: 24,
+  },
+  actionBlock: {
+    gap: 12,
+    marginTop: 4,
+  },
+  primaryBtn: {
+    height: 54,
     width: '100%',
+    backgroundColor: EditorialColors.ink,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
   },
-  actionBtn: {
-    flex: 0.48,
-    borderRadius: ms(12),
-    paddingVertical: ms(4),
+  primaryBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.white,
   },
-  submitBtn: {
-    backgroundColor: Palette.primary,
-  },
-  exportBtn: {
-    borderColor: Palette.primary,
+  outlineBtn: {
+    height: 54,
+    width: '100%',
     borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
   },
-  btnLabel: {
-    fontSize: ms(13),
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
-  btnLabelOutlined: {
-    fontSize: ms(13),
-    fontWeight: '800',
+  outlineBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
   },
 });
-
-export default CCDashboardScreen;
