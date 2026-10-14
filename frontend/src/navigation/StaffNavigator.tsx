@@ -2,7 +2,8 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { EditorialColors, EditorialFonts } from '@theme/editorial';
+import { EditorialTabBar } from '@components/editorial/EditorialTabBar';
 
 // Screens
 import { StaffDashboardScreen } from '@features/staff/screens/StaffDashboardScreen';
@@ -40,12 +41,8 @@ import { ConsolidatedReportScreen } from '@features/cc/screens/ConsolidatedRepor
 import { SubmitToHODScreen } from '@features/cc/screens/SubmitToHODScreen';
 import { ReportExportScreen } from '@features/cc/screens/ReportExportScreen';
 
-// Navigators
-import { CCNavigator } from './CCNavigator';
-
 // Types
 import { StaffStackParamList } from './types';
-import { Palette } from '@theme/colors';
 
 const Stack = createNativeStackNavigator<StaffStackParamList>();
 const Tab = createBottomTabNavigator();
@@ -55,9 +52,14 @@ const StaffStackNavigator = () => {
     <Stack.Navigator
       id="staff-stack"
       screenOptions={{
-        headerStyle: { backgroundColor: Palette.primary },
-        headerTintColor: Palette.surface,
-        headerTitleStyle: { fontWeight: 'bold' },
+        headerStyle: { backgroundColor: EditorialColors.bg },
+        headerTintColor: EditorialColors.ink,
+        headerTitleStyle: {
+          fontFamily: EditorialFonts.heavy,
+          fontSize: 13,
+          letterSpacing: 1.5,
+        },
+        headerShadowVisible: false,
       }}
     >
       <Stack.Screen
@@ -68,146 +70,146 @@ const StaffStackNavigator = () => {
       <Stack.Screen
         name="WeeklyTimetable"
         component={WeeklyTimetableScreen}
-        options={{ title: 'Timetable' }}
+        options={{ title: 'TIMETABLE' }}
       />
       <Stack.Screen
         name="AssignedSubjects"
         component={AssignedSubjectsScreen}
-        options={{ title: 'Subjects' }}
+        options={{ title: 'SUBJECTS' }}
       />
       <Stack.Screen
         name="SubjectDetail"
         component={SubjectDetailScreen}
-        options={{ title: 'Syllabus Details' }}
+        options={{ title: 'SYLLABUS DETAILS' }}
       />
       <Stack.Screen
         name="WeeklyPlanForm"
         component={WeeklyPlanFormScreen}
-        options={{ title: 'Weekly Teaching Plan' }}
+        options={{ title: 'TEACHING PLAN' }}
       />
       <Stack.Screen
         name="WeeklyProgress"
         component={WeeklyProgressScreen}
-        options={{ title: 'Log Progress' }}
+        options={{ title: 'LOG PROGRESS' }}
       />
       <Stack.Screen
         name="ExtraHoursRequest"
         component={ExtraHoursRequestScreen}
-        options={{ title: 'Request Extra Hours' }}
+        options={{ title: 'REQUEST EXTRA HOURS' }}
       />
       <Stack.Screen
         name="ReportHistory"
         component={ReportHistoryScreen}
-        options={{ title: 'Report History' }}
+        options={{ title: 'REPORT HISTORY' }}
       />
       <Stack.Screen
         name="ApprovalStatus"
         component={ApprovalStatusScreen}
-        options={{ title: 'Approvals Tracker' }}
+        options={{ title: 'APPROVALS TRACKER' }}
       />
       <Stack.Screen
         name="StaffProfile"
         component={StaffProfileScreen}
-        options={{ title: 'Profile' }}
+        options={{ title: 'PROFILE' }}
       />
       
       {/* HOD Screens integrated in the same stack */}
       <Stack.Screen
         name="HodDashboard"
         component={HodDashboardScreen}
-        options={{ title: 'HOD Dashboard' }}
+        options={{ title: 'HOD DASHBOARD' }}
       />
       <Stack.Screen
         name="DepartmentClasses"
         component={DepartmentClassesScreen}
-        options={{ title: 'Classes' }}
+        options={{ title: 'CLASSES' }}
       />
       <Stack.Screen
         name="ManageCoordinators"
         component={ManageCoordinatorsScreen}
-        options={{ title: 'Class Coordinators' }}
+        options={{ title: 'CLASS COORDINATORS' }}
       />
       <Stack.Screen
         name="FacultyProgress"
         component={FacultyProgressScreen}
-        options={{ title: 'Faculty Progress' }}
+        options={{ title: 'FACULTY PROGRESS' }}
       />
       <Stack.Screen
         name="SubjectReports"
         component={SubjectReportsScreen}
-        options={{ title: 'Subject Reports' }}
+        options={{ title: 'SUBJECT REPORTS' }}
       />
       <Stack.Screen
         name="CCReports"
         component={CCReportsScreen}
-        options={{ title: 'CC Class Reports' }}
+        options={{ title: 'CC CLASS REPORTS' }}
       />
       <Stack.Screen
         name="RequestDetails"
         component={RequestDetailsScreen}
-        options={{ title: 'Request Details' }}
+        options={{ title: 'REQUEST DETAILS' }}
       />
       <Stack.Screen
         name="ApprovalScreen"
         component={ApprovalScreen}
-        options={{ title: 'Approval Queue' }}
+        options={{ title: 'APPROVAL QUEUE' }}
       />
       <Stack.Screen
         name="ExtraHourRequests"
         component={ExtraHourRequestsScreen}
-        options={{ title: 'Extra Hour Requests' }}
+        options={{ title: 'EXTRA HOUR REQUESTS' }}
       />
       <Stack.Screen
         name="DeptAnalytics"
         component={DeptAnalyticsScreen}
-        options={{ title: 'Analytics' }}
+        options={{ title: 'ANALYTICS' }}
       />
       <Stack.Screen
         name="HodProfile"
         component={HodProfileScreen}
-        options={{ title: 'HOD Profile' }}
+        options={{ title: 'HOD PROFILE' }}
       />
 
       {/* CC Screens integrated in the same stack */}
       <Stack.Screen 
         name="CCDashboard" 
         component={CCDashboardScreen} 
-        options={{ title: 'Class Counselor Dashboard' }} 
+        options={{ title: 'CLASS COORDINATOR' }} 
       />
       <Stack.Screen 
         name="FacultyAllocation" 
         component={FacultyAllocationScreen} 
-        options={{ title: 'Subject Allocation' }} 
+        options={{ title: 'SUBJECT ALLOCATION' }} 
       />
       <Stack.Screen 
         name="ClassProgress" 
         component={ClassProgressScreen} 
-        options={{ title: 'Class Progress' }} 
+        options={{ title: 'CLASS PROGRESS' }} 
       />
       <Stack.Screen 
         name="SubjectProgressDetail" 
         component={SubjectProgressDetailScreen} 
-        options={{ title: 'Subject Progress' }} 
+        options={{ title: 'SUBJECT PROGRESS' }} 
       />
       <Stack.Screen 
         name="PendingSubmissions" 
         component={PendingSubmissionsScreen} 
-        options={{ title: 'Pending Submissions' }} 
+        options={{ title: 'PENDING SUBMISSIONS' }} 
       />
       <Stack.Screen 
         name="ConsolidatedReport" 
         component={ConsolidatedReportScreen} 
-        options={{ title: 'Consolidated Report' }} 
+        options={{ title: 'CONSOLIDATED REPORT' }} 
       />
       <Stack.Screen 
         name="SubmitToHOD" 
         component={SubmitToHODScreen} 
-        options={{ title: 'Submit to HOD' }} 
+        options={{ title: 'SUBMIT TO HOD' }} 
       />
       <Stack.Screen 
         name="ReportExport" 
         component={ReportExportScreen} 
-        options={{ title: 'Export Report' }} 
+        options={{ title: 'EXPORT REPORT' }} 
       />
     </Stack.Navigator>
   );
@@ -220,51 +222,34 @@ export const StaffTabNavigator = () => {
   return (
     <Tab.Navigator
       id="staff-tab"
-      screenOptions={({ route }) => ({
-        headerStyle: { backgroundColor: Palette.primary },
-        headerTintColor: Palette.surface,
-        headerTitleStyle: { fontWeight: 'bold' },
-        tabBarActiveTintColor: Palette.primary,
-        tabBarInactiveTintColor: Palette.textLight,
-        tabBarStyle: { backgroundColor: Palette.surface },
-        tabBarIcon: ({ color, size }) => {
-          let iconName = 'help-circle';
-          if (route.name === 'StaffHome') {
-            iconName = 'home';
-          } else if (route.name === 'CounselorTab') {
-            iconName = 'shield-star';
-          } else if (route.name === 'HodTab') {
-            iconName = 'shield-account';
-          } else if (route.name === 'Profile') {
-            iconName = 'account';
-          }
-          return <MaterialCommunityIcons name={iconName as any} size={size} color={color} />;
-        },
-      })}
+      tabBar={(props) => <EditorialTabBar {...props} />}
+      screenOptions={{
+        headerShown: false,
+      }}
     >
       <Tab.Screen
         name="StaffHome"
         component={StaffStackNavigator}
-        options={{ title: 'Home', headerShown: false }}
+        options={{ title: 'FACULTY' }}
       />
       {(user?.isClassCoordinator || user?.role === 'HOD' || user?.role === 'ADMIN') && (
         <Tab.Screen
           name="CounselorTab"
           component={CCDashboardScreen}
-          options={{ title: 'CC Board', headerTitle: 'Class Coordinator (CC) Board' }}
+          options={{ title: 'CC BOARD' }}
         />
       )}
       {user?.role === 'HOD' && (
         <Tab.Screen
           name="HodTab"
           component={HodDashboardScreen}
-          options={{ title: 'HOD Board', headerTitle: 'HOD Dashboard' }}
+          options={{ title: 'HOD BOARD' }}
         />
       )}
       <Tab.Screen
         name="Profile"
         component={ProfileScreenComponent}
-        options={{ title: 'Profile' }}
+        options={{ title: 'PROFILE' }}
       />
     </Tab.Navigator>
   );
