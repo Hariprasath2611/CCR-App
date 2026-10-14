@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { Text, Card, Divider, Chip } from 'react-native-paper';
 import { Palette } from '@theme/colors';
+import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
 import { Feather, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { ConsolidatedReport, SubjectProgress } from '../store/useReportStore';
 
@@ -249,15 +250,12 @@ const InfoItem = ({ icon, label, value }: { icon: string; label: string; value: 
 
 const styles = StyleSheet.create({
   outerCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: ms(0), height: ms(4) },
-    shadowOpacity: 0.04,
-    shadowRadius: 10,
-    elevation: 3,
+    backgroundColor: EditorialColors.bg,
+    borderRadius: 0,
+    borderWidth: EditorialRules.borderWidth,
+    borderColor: EditorialColors.ink,
+    elevation: 0,
+    shadowOpacity: 0,
     width: '100%',
   },
   cardContent: {
@@ -272,17 +270,20 @@ const styles = StyleSheet.create({
   headerIconBox: {
     width: ms(38),
     height: ms(38),
-    borderRadius: ms(8),
-    backgroundColor: '#EFF6FF',
+    borderRadius: 0,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: ms(12),
   },
   docTitle: {
-    fontSize: ms(15),
-    fontWeight: '800',
-    color: '#0F52BA',
-    letterSpacing: 0.5,
+    fontFamily: EditorialFonts.heavy,
+    fontSize: ms(14),
+    color: EditorialColors.ink,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
   },
 
   // 2 Col Grid
