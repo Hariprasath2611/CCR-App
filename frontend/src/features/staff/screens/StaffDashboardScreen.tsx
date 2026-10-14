@@ -32,6 +32,7 @@ interface SubjectInfo {
 }
 
 export const StaffDashboardScreen = () => {
+  const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
   const navigation = useNavigation<NativeStackNavigationProp<StaffStackParamList>>();
   
@@ -213,7 +214,7 @@ export const StaffDashboardScreen = () => {
       }
     >
       {/* ── HEADER BLOCK ── */}
-      <View style={styles.headerBackground}>
+      <View style={[styles.headerBackground, { paddingTop: Math.max(insets.top, ms(16)) + ms(16) }]}>
         <View style={styles.headerTop}>
           <Avatar.Text 
             size={56} 

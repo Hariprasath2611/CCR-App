@@ -9,6 +9,7 @@ import { Feather, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { DEPARTMENTS } from './DeptSummaryScreen';
 
 import { ms } from '@theme/responsive';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const PrincipalDashboardScreen = () => {
   const { logout, user } = useAuthStore();
