@@ -1,7 +1,8 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { EditorialColors, EditorialFonts } from '@theme/editorial';
+import { EditorialTabBar } from '@components/editorial/EditorialTabBar';
 
 // Screens
 import { PrincipalDashboardScreen } from '@features/principal/screens/PrincipalDashboardScreen';
@@ -14,7 +15,6 @@ import { PrincipalProfileScreen } from '@features/principal/screens/PrincipalPro
 
 // Types
 import { AdminStackParamList } from './types';
-import { Palette } from '@theme/colors';
 
 const Stack = createNativeStackNavigator<AdminStackParamList>();
 const Tab = createBottomTabNavigator();
@@ -24,9 +24,14 @@ const PrincipalStackNavigator = () => {
     <Stack.Navigator
       id="admin-stack"
       screenOptions={{
-        headerStyle: { backgroundColor: Palette.primary },
-        headerTintColor: Palette.surface,
-        headerTitleStyle: { fontWeight: 'bold' },
+        headerStyle: { backgroundColor: EditorialColors.bg },
+        headerTintColor: EditorialColors.ink,
+        headerTitleStyle: {
+          fontFamily: EditorialFonts.heavy,
+          fontSize: 13,
+          letterSpacing: 1.5,
+        },
+        headerShadowVisible: false,
       }}
     >
       <Stack.Screen
@@ -37,32 +42,32 @@ const PrincipalStackNavigator = () => {
       <Stack.Screen
         name="DeptSummary"
         component={DeptSummaryScreen}
-        options={{ title: 'Department Summary' }}
+        options={{ title: 'DEPARTMENT SUMMARY' }}
       />
       <Stack.Screen
         name="WeeklyReports"
         component={WeeklyReportsScreen}
-        options={{ title: 'Weekly Reports' }}
+        options={{ title: 'WEEKLY REPORTS' }}
       />
       <Stack.Screen
         name="InstitutionAnalytics"
         component={InstitutionAnalyticsScreen}
-        options={{ title: 'Institution Analytics' }}
+        options={{ title: 'INSTITUTION ANALYTICS' }}
       />
       <Stack.Screen
         name="FacultyAnalytics"
         component={FacultyAnalyticsScreen}
-        options={{ title: 'Faculty Performance' }}
+        options={{ title: 'FACULTY PERFORMANCE' }}
       />
       <Stack.Screen
         name="ReportExport"
         component={ReportExportScreen}
-        options={{ title: 'Export Reports' }}
+        options={{ title: 'EXPORT REPORTS' }}
       />
       <Stack.Screen
         name="AdminProfile"
         component={PrincipalProfileScreen}
-        options={{ title: 'Profile' }}
+        options={{ title: 'PROFILE' }}
       />
     </Stack.Navigator>
   );
@@ -72,33 +77,20 @@ export const PrincipalTabNavigator = () => {
   return (
     <Tab.Navigator
       id="admin-tab"
-      screenOptions={({ route }) => ({
-        headerStyle: { backgroundColor: Palette.primary },
-        headerTintColor: Palette.surface,
-        headerTitleStyle: { fontWeight: 'bold' },
-        tabBarActiveTintColor: Palette.primary,
-        tabBarInactiveTintColor: Palette.textLight,
-        tabBarStyle: { backgroundColor: Palette.surface },
-        tabBarIcon: ({ color, size }) => {
-          let iconName = 'help-circle';
-          if (route.name === 'AdminHome') {
-            iconName = 'home';
-          } else if (route.name === 'Profile') {
-            iconName = 'account-outline';
-          }
-          return <MaterialCommunityIcons name={iconName as any} size={size} color={color} />;
-        },
-      })}
+      tabBar={(props) => <EditorialTabBar {...props} />}
+      screenOptions={{
+        headerShown: false,
+      }}
     >
       <Tab.Screen
         name="AdminHome"
         component={PrincipalStackNavigator}
-        options={{ title: 'Dashboard', headerShown: false }}
+        options={{ title: 'EXECUTIVE' }}
       />
       <Tab.Screen
         name="Profile"
         component={PrincipalProfileScreen}
-        options={{ title: 'Profile' }}
+        options={{ title: 'PROFILE' }}
       />
     </Tab.Navigator>
   );

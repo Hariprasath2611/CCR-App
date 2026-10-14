@@ -1,14 +1,14 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { EditorialColors, EditorialFonts } from '@theme/editorial';
+import { EditorialTabBar } from '@components/editorial/EditorialTabBar';
 
 // Screens
 import { HodDashboardScreen } from '@features/hod/screens/HodDashboardScreen';
 import { DepartmentClassesScreen } from '@features/hod/screens/DepartmentClassesScreen';
 import { ManageCoordinatorsScreen } from '@features/hod/screens/ManageCoordinatorsScreen';
 import { FacultyProgressScreen } from '@features/hod/screens/FacultyProgressScreen';
-
 import { SubjectReportsScreen } from '@features/hod/screens/SubjectReportsScreen';
 import { CCReportsScreen } from '@features/hod/screens/CCReportsScreen';
 import { RequestDetailsScreen } from '@features/hod/screens/RequestDetailsScreen';
@@ -20,7 +20,6 @@ import { NotificationsScreen } from '@features/notifications/screens/Notificatio
 
 // Types
 import { HodStackParamList } from './types';
-import { Palette } from '@theme/colors';
 
 const Stack = createNativeStackNavigator<HodStackParamList>();
 const Tab = createBottomTabNavigator();
@@ -30,9 +29,14 @@ const HodStackNavigator = () => {
     <Stack.Navigator
       id="hod-stack"
       screenOptions={{
-        headerStyle: { backgroundColor: Palette.primary },
-        headerTintColor: Palette.surface,
-        headerTitleStyle: { fontWeight: 'bold' },
+        headerStyle: { backgroundColor: EditorialColors.bg },
+        headerTintColor: EditorialColors.ink,
+        headerTitleStyle: {
+          fontFamily: EditorialFonts.heavy,
+          fontSize: 13,
+          letterSpacing: 1.5,
+        },
+        headerShadowVisible: false,
       }}
     >
       <Stack.Screen
@@ -43,53 +47,52 @@ const HodStackNavigator = () => {
       <Stack.Screen
         name="DepartmentClasses"
         component={DepartmentClassesScreen}
-        options={{ title: 'Classes' }}
+        options={{ title: 'CLASSES' }}
       />
       <Stack.Screen
         name="ManageCoordinators"
         component={ManageCoordinatorsScreen}
-        options={{ title: 'Class Coordinators' }}
+        options={{ title: 'CLASS COORDINATORS' }}
       />
-
       <Stack.Screen
         name="FacultyProgress"
         component={FacultyProgressScreen}
-        options={{ title: 'Faculty Progress' }}
+        options={{ title: 'FACULTY PROGRESS' }}
       />
       <Stack.Screen
         name="SubjectReports"
         component={SubjectReportsScreen}
-        options={{ title: 'Subject Reports' }}
+        options={{ title: 'SUBJECT REPORTS' }}
       />
       <Stack.Screen
         name="CCReports"
         component={CCReportsScreen}
-        options={{ title: 'CC Class Reports' }}
+        options={{ title: 'CC CLASS REPORTS' }}
       />
       <Stack.Screen
         name="RequestDetails"
         component={RequestDetailsScreen}
-        options={{ title: 'Request Details' }}
+        options={{ title: 'REQUEST DETAILS' }}
       />
       <Stack.Screen
         name="ApprovalScreen"
         component={ApprovalScreen}
-        options={{ title: 'Approval Queue' }}
+        options={{ title: 'APPROVAL QUEUE' }}
       />
       <Stack.Screen
         name="ExtraHourRequests"
         component={ExtraHourRequestsScreen}
-        options={{ title: 'Extra Hour Requests' }}
+        options={{ title: 'EXTRA HOUR REQUESTS' }}
       />
       <Stack.Screen
         name="DeptAnalytics"
         component={DeptAnalyticsScreen}
-        options={{ title: 'Analytics' }}
+        options={{ title: 'ANALYTICS' }}
       />
       <Stack.Screen
         name="HodProfile"
         component={HodProfileScreen}
-        options={{ title: 'Profile' }}
+        options={{ title: 'PROFILE' }}
       />
     </Stack.Navigator>
   );
@@ -99,47 +102,30 @@ export const HodTabNavigator = () => {
   return (
     <Tab.Navigator
       id="hod-tab"
-      screenOptions={({ route }) => ({
-        headerStyle: { backgroundColor: Palette.primary },
-        headerTintColor: Palette.surface,
-        headerTitleStyle: { fontWeight: 'bold' },
-        tabBarActiveTintColor: Palette.primary,
-        tabBarInactiveTintColor: Palette.textLight,
-        tabBarStyle: { backgroundColor: Palette.surface },
-        tabBarIcon: ({ color, size }) => {
-          let iconName = 'help-circle';
-          if (route.name === 'HodHome') {
-            iconName = 'bulletin-board';
-          } else if (route.name === 'Analytics') {
-            iconName = 'chart-bar';
-          } else if (route.name === 'Notifications') {
-            iconName = 'bell';
-          } else if (route.name === 'Profile') {
-            iconName = 'account';
-          }
-          return <MaterialCommunityIcons name={iconName as any} size={size} color={color} />;
-        },
-      })}
+      tabBar={(props) => <EditorialTabBar {...props} />}
+      screenOptions={{
+        headerShown: false,
+      }}
     >
       <Tab.Screen
         name="HodHome"
         component={HodStackNavigator}
-        options={{ title: 'HOD Portal', headerShown: false }}
+        options={{ title: 'HOD PORTAL' }}
       />
       <Tab.Screen
         name="Analytics"
         component={DeptAnalyticsScreen}
-        options={{ title: 'Dept Analytics' }}
+        options={{ title: 'ANALYTICS' }}
       />
       <Tab.Screen
         name="Notifications"
         component={NotificationsScreen}
-        options={{ title: 'Notifications' }}
+        options={{ title: 'ALERTS' }}
       />
       <Tab.Screen
         name="Profile"
         component={HodProfileScreen}
-        options={{ title: 'Profile' }}
+        options={{ title: 'PROFILE' }}
       />
     </Tab.Navigator>
   );
