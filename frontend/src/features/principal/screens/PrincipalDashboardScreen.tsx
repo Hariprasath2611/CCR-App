@@ -219,6 +219,7 @@ export const PrincipalDashboardScreen = () => {
             <Feather name="log-out" size={18} color="#EF4444" />
             <Text style={styles.signOutText}>Sign Out from CCR</Text>
           </TouchableOpacity>
+        </ScrollView>
       </View>
     </View>
   );
@@ -230,7 +231,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#0F52BA', // Sapphire/Royal Blue
   },
   header: {
-    paddingTop: ms(50),
     paddingHorizontal: ms(24),
     paddingBottom: ms(40),
   },
