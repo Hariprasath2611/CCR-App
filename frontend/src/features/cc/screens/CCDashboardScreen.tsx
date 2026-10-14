@@ -11,6 +11,7 @@ import { WeeklyCourseCoverageReportCard } from '../components/WeeklyCourseCovera
 import { getCCForSection, getHODForYear, FIRST_YEAR_CC_BOARD, CSE_3RD_YEAR_CC_BOARD } from '@config/facultyBoard';
 
 import { ms } from '@theme/responsive';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type CCNav = NativeStackNavigationProp<CCStackParamList>;
 
