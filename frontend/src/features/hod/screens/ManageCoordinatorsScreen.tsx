@@ -6,30 +6,24 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  Dimensions,
-} from 'react-native';
-import {
-  Text,
-  Card,
-  Button,
-  Portal,
-  Modal,
   TextInput,
-  Badge,
-  Divider,
-  Avatar,
-} from 'react-native-paper';
+  Text,
+  StatusBar,
+  Modal,
+} from 'react-native';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { delegationApi, CoordinatorItem } from '@services/api/delegationApi';
-import { Palette } from '@theme/colors';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
-import { ms } from '@theme/responsive';
-
-const { width } = Dimensions.get('window');
+import { Feather } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { Label } from '@components/editorial/Label';
+import { Rule } from '@components/editorial/Rule';
+import { EditorialChip } from '@components/editorial/EditorialChip';
 
 const YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
 
 export const ManageCoordinatorsScreen = () => {
+  const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [coordinators, setCoordinators] = useState<CoordinatorItem[]>([]);
@@ -53,7 +47,6 @@ export const ManageCoordinatorsScreen = () => {
       const data = await delegationApi.fetchCoordinators();
       setCoordinators(data);
     } catch (err: any) {
-      // Fallback local list if offline/demo
       console.log('Error fetching coordinators:', err?.message);
     } finally {
       setLoading(false);
@@ -130,407 +123,584 @@ export const ManageCoordinatorsScreen = () => {
   const filteredCoordinators = coordinators.filter((c) => c.year === selectedYear);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* ── HEADER CARD ── */}
-      <Card style={styles.headerCard}>
-        <View style={styles.headerRow}>
-          <View style={styles.iconCircle}>
-            <MaterialCommunityIcons name="account-tie" size={28} color={Palette.primary} />
+    <View style={styles.screenWrapper}>
+      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingBottom: insets.bottom + 80,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Label text="FACULTY GOVERNANCE & ACCESS" />
+          <Text style={styles.headerTitle}>
+            COORDINATOR ACCESS<Text style={styles.accentDot}>.</Text>
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            Assign Class Coordinators per section and generate verified login credentials.
+          </Text>
+        </View>
+
+        {/* 4px Heavy Section Rule */}
+        <Rule thickness="heavy" style={styles.heavySpacer} />
+
+        {/* Year Filter Chips */}
+        <View style={styles.chipRow}>
+          {YEARS.map((yr) => (
+            <EditorialChip
+              key={yr}
+              label={yr.toUpperCase()}
+              selected={selectedYear === yr}
+              onPress={() => setSelectedYear(yr)}
+            />
+          ))}
+        </View>
+
+        {/* Section Header */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeaderTitle}>
+            {selectedYear.toUpperCase()} SECTIONS
+          </Text>
+          <Label text={`${filteredCoordinators.length} CLASSES`} />
+        </View>
+
+        {/* Coordinators List */}
+        {loading ? (
+          <View style={styles.skeletonContainer}>
+            <View style={styles.skeletonBlock} />
+            <View style={styles.skeletonBlock} />
           </View>
-          <View style={{ flex: 1, marginLeft: 12 }}>
-            <Text style={styles.headerTitle}>Class Coordinators</Text>
-            <Text style={styles.headerSubtitle}>
-              {user?.department || 'Department'} • Delegation & Credentials
+        ) : filteredCoordinators.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyTitle}>NO CLASSES CONFIGURED</Text>
+            <Text style={styles.emptySub}>
+              No section entries registered for {selectedYear}.
             </Text>
           </View>
-        </View>
-      </Card>
+        ) : (
+          <View style={styles.coordList}>
+            {filteredCoordinators.map((item) => {
+              const isAssigned = !!item.coordinator;
+              return (
+                <View key={item.classId} style={styles.coordRow}>
+                  <View style={styles.rowTop}>
+                    <View style={styles.infoCol}>
+                      <View style={styles.codeRow}>
+                        <Text style={styles.classCode}>{item.classId}</Text>
+                        <View
+                          style={[
+                            styles.statusBadge,
+                            !isAssigned ? styles.accentStatusBadge : null,
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.statusText,
+                              !isAssigned ? styles.accentStatusText : null,
+                            ]}
+                          >
+                            {isAssigned ? 'ASSIGNED' : 'UNASSIGNED'}
+                          </Text>
+                        </View>
+                      </View>
 
-      {/* ── YEAR SELECTOR TABS ── */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabsContainer}>
-        {YEARS.map((year) => {
-          const isSelected = selectedYear === year;
-          return (
-            <TouchableOpacity
-              key={year}
-              style={[styles.yearTab, isSelected && styles.yearTabActive]}
-              onPress={() => setSelectedYear(year)}
-            >
-              <Text style={[styles.yearTabText, isSelected && styles.yearTabTextActive]}>
-                {year}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+                      {isAssigned ? (
+                        <>
+                          <Text style={styles.coordName}>{item.coordinator?.name}</Text>
+                          <Label text={`EMAIL: ${item.coordinator?.email}`} style={styles.emailMeta} />
+                        </>
+                      ) : (
+                        <Text style={styles.unassignedText}>
+                          No coordinator currently assigned to compile reports.
+                        </Text>
+                      )}
+                    </View>
+                  </View>
 
-      {/* ── CLASS SECTIONS LIST ── */}
-      {loading ? (
-        <ActivityIndicator size="large" color={Palette.primary} style={{ marginTop: 40 }} />
-      ) : filteredCoordinators.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Feather name="info" size={32} color={Palette.textLight} />
-          <Text style={styles.emptyText}>No sections found for {selectedYear}.</Text>
-        </View>
-      ) : (
-        filteredCoordinators.map((item) => {
-          const isAssigned = !!item.coordinator;
-          return (
-            <Card key={item.classId} style={styles.classCard}>
-              <View style={styles.cardHeader}>
-                <View>
-                  <Text style={styles.className}>{item.name}</Text>
-                  <Text style={styles.classCode}>{item.classId}</Text>
-                </View>
-                <Badge
-                  style={[
-                    styles.statusBadge,
-                    {
-                      backgroundColor: isAssigned ? '#E8F5E9' : '#FFF3E0',
-                      color: isAssigned ? '#2E7D32' : '#E65100',
-                    },
-                  ]}
-                >
-                  {isAssigned ? 'Assigned' : 'Unassigned'}
-                </Badge>
-              </View>
+                  {/* Actions */}
+                  <View style={styles.rowActions}>
+                    {isAssigned && (
+                      <TouchableOpacity
+                        style={styles.dangerOutlineBtn}
+                        onPress={() => handleRemove(item.classId)}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.dangerOutlineBtnText}>REMOVE</Text>
+                      </TouchableOpacity>
+                    )}
 
-              <Divider style={styles.divider} />
-
-              {isAssigned ? (
-                <View style={styles.coordinatorInfo}>
-                  <Avatar.Text
-                    size={42}
-                    label={item.coordinator?.name ? item.coordinator.name.substring(0, 2).toUpperCase() : 'CC'}
-                    style={{ backgroundColor: Palette.accent }}
-                  />
-                  <View style={{ marginLeft: 12, flex: 1 }}>
-                    <Text style={styles.coordinatorName}>{item.coordinator?.name}</Text>
-                    <Text style={styles.coordinatorEmail}>{item.coordinator?.email}</Text>
-                    <Text style={styles.coordinatorDept}>{item.coordinator?.department}</Text>
+                    <TouchableOpacity
+                      style={styles.primaryActionBtn}
+                      onPress={() => handleOpenAssign(item.classId, item.coordinator)}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={styles.primaryActionBtnText}>
+                        {isAssigned ? 'RE-ASSIGN CC' : 'ASSIGN CC'}
+                      </Text>
+                      <Feather name="arrow-right" size={14} color={EditorialColors.white} />
+                    </TouchableOpacity>
                   </View>
                 </View>
-              ) : (
-                <View style={styles.unassignedBox}>
-                  <Feather name="alert-circle" size={18} color="#E65100" />
-                  <Text style={styles.unassignedText}>
-                    No Class Coordinator assigned. Assign a faculty to coordinate this section.
-                  </Text>
-                </View>
-              )}
+              );
+            })}
+          </View>
+        )}
 
-              <View style={styles.cardActions}>
-                <Button
-                  mode="contained"
-                  icon="account-edit"
-                  style={styles.actionBtn}
-                  buttonColor={Palette.primary}
-                  onPress={() => handleOpenAssign(item.classId, item.coordinator)}
+        {/* Modal: Assign Coordinator */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={assignModalVisible}
+          onRequestClose={() => setAssignModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>
+                  ASSIGN COORDINATOR<Text style={styles.accentDot}>.</Text>
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setAssignModalVisible(false)}
+                  style={styles.modalCloseButton}
+                  accessibilityLabel="Close modal"
                 >
-                  {isAssigned ? 'Change CC' : 'Assign CC'}
-                </Button>
-                {isAssigned && (
-                  <Button
-                    mode="outlined"
-                    textColor="#D32F2F"
-                    style={styles.removeBtn}
-                    onPress={() => handleRemove(item.classId)}
-                  >
-                    Remove
-                  </Button>
+                  <Feather name="x" size={20} color={EditorialColors.ink} />
+                </TouchableOpacity>
+              </View>
+
+              <Rule thickness="hairline" style={{ marginBottom: 16 }} />
+
+              <Label text={`TARGET SECTION: ${selectedClassId}`} style={{ marginBottom: 14 }} />
+
+              <View style={styles.inputBlock}>
+                <Text style={styles.inputLabel}>FACULTY FULL NAME</Text>
+                <TextInput
+                  style={styles.underlineInput}
+                  value={name}
+                  onChangeText={setName}
+                  placeholder="e.g. Dr. Karuppaiya"
+                  placeholderTextColor={EditorialColors.muted}
+                />
+              </View>
+
+              <View style={styles.inputBlock}>
+                <Text style={styles.inputLabel}>INSTITUTIONAL EMAIL</Text>
+                <TextInput
+                  style={styles.underlineInput}
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="e.g. faculty@jec.ac.in"
+                  placeholderTextColor={EditorialColors.muted}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
+
+              <View style={styles.inputBlock}>
+                <Text style={styles.inputLabel}>CUSTOM PASSWORD (OPTIONAL)</Text>
+                <TextInput
+                  style={styles.underlineInput}
+                  value={customPassword}
+                  onChangeText={setCustomPassword}
+                  placeholder="Leave blank for auto-generated password"
+                  placeholderTextColor={EditorialColors.muted}
+                  secureTextEntry
+                />
+              </View>
+
+              <View style={styles.modalActions}>
+                <TouchableOpacity
+                  style={styles.outlineActionBtn}
+                  onPress={() => setAssignModalVisible(false)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.outlineActionBtnText}>CANCEL</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.modalSubmitBtn}
+                  onPress={handleSaveCoordinator}
+                  disabled={submitting}
+                  activeOpacity={0.85}
+                >
+                  {submitting ? (
+                    <ActivityIndicator size="small" color={EditorialColors.white} />
+                  ) : (
+                    <Text style={styles.modalSubmitBtnText}>SAVE & DISPATCH</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Modal: Credentials Dispatched */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={credentialsModalVisible}
+          onRequestClose={() => setCredentialsModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>
+                  CREDENTIALS READY<Text style={styles.accentDot}>.</Text>
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setCredentialsModalVisible(false)}
+                  style={styles.modalCloseButton}
+                  accessibilityLabel="Close modal"
+                >
+                  <Feather name="x" size={20} color={EditorialColors.ink} />
+                </TouchableOpacity>
+              </View>
+
+              <Rule thickness="hairline" style={{ marginBottom: 16 }} />
+
+              <Text style={styles.successMessage}>
+                Class Coordinator successfully registered with executive reporting privileges.
+              </Text>
+
+              <View style={styles.credentialDetailsBox}>
+                <View style={styles.credRow}>
+                  <Text style={styles.credKey}>EMAIL</Text>
+                  <Text style={styles.credVal}>{createdCredentials?.email}</Text>
+                </View>
+                {createdCredentials?.password && (
+                  <View style={styles.credRow}>
+                    <Text style={styles.credKey}>TEMPORARY PASSWORD</Text>
+                    <Text style={styles.credVal}>{createdCredentials?.password}</Text>
+                  </View>
                 )}
               </View>
-            </Card>
-          );
-        })
-      )}
 
-      {/* ── ASSIGN / EDIT MODAL ── */}
-      <Portal>
-        <Modal
-          visible={assignModalVisible}
-          onDismiss={() => setAssignModalVisible(false)}
-          contentContainerStyle={styles.modalContent}
-        >
-          <Text style={styles.modalTitle}>Assign Class Coordinator</Text>
-          <Text style={styles.modalSubtitle}>Section: {selectedClassId}</Text>
-
-          <TextInput
-            label="Faculty Name *"
-            value={name}
-            onChangeText={setName}
-            mode="outlined"
-            placeholder="e.g. Dr. Ramesh Kumar"
-            style={styles.input}
-          />
-
-          <TextInput
-            label="Institutional Email *"
-            value={email}
-            onChangeText={setEmail}
-            mode="outlined"
-            autoCapitalize="none"
-            keyboardType="email-address"
-            placeholder="e.g. ramesh.cse@jec.com"
-            style={styles.input}
-          />
-
-          <TextInput
-            label="Custom Password (Optional)"
-            value={customPassword}
-            onChangeText={setCustomPassword}
-            mode="outlined"
-            secureTextEntry
-            placeholder="Default: JEC@CC2026"
-            style={styles.input}
-          />
-
-          <View style={styles.modalButtons}>
-            <Button
-              mode="text"
-              onPress={() => setAssignModalVisible(false)}
-              style={{ marginRight: 8 }}
-            >
-              Cancel
-            </Button>
-            <Button
-              mode="contained"
-              onPress={handleSaveCoordinator}
-              loading={submitting}
-              disabled={submitting}
-              buttonColor={Palette.primary}
-            >
-              Generate & Assign
-            </Button>
+              <TouchableOpacity
+                style={styles.primaryActionButton}
+                onPress={() => setCredentialsModalVisible(false)}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.primaryActionText}>DONE</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </Modal>
-      </Portal>
-
-      {/* ── CREDENTIALS SUCCESS MODAL ── */}
-      <Portal>
-        <Modal
-          visible={credentialsModalVisible}
-          onDismiss={() => setCredentialsModalVisible(false)}
-          contentContainerStyle={styles.modalContent}
-        >
-          <View style={{ alignItems: 'center', marginBottom: 12 }}>
-            <MaterialCommunityIcons name="check-decagram" size={48} color="#2E7D32" />
-            <Text style={styles.modalTitle}>Coordinator Assigned!</Text>
-          </View>
-
-          <Card style={styles.credCard}>
-            <Text style={styles.credLabel}>Login Email:</Text>
-            <Text style={styles.credValue}>{createdCredentials?.email}</Text>
-
-            {createdCredentials?.password ? (
-              <>
-                <Text style={[styles.credLabel, { marginTop: 10 }]}>Temporary Password:</Text>
-                <Text style={styles.credValue}>{createdCredentials.password}</Text>
-              </>
-            ) : (
-              <Text style={{ marginTop: 8, color: Palette.textLight, fontStyle: 'italic' }}>
-                {createdCredentials?.note || 'Account linked to existing password.'}
-              </Text>
-            )}
-          </Card>
-
-          <Button
-            mode="contained"
-            buttonColor={Palette.primary}
-            style={{ marginTop: 16 }}
-            onPress={() => setCredentialsModalVisible(false)}
-          >
-            Done
-          </Button>
-        </Modal>
-      </Portal>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screenWrapper: {
+    flex: 1,
+    backgroundColor: EditorialColors.bg,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: EditorialColors.bg,
   },
   content: {
-    padding: 16,
-    paddingBottom: 40,
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
   },
-  headerCard: {
-    padding: 16,
-    borderRadius: 16,
-    backgroundColor: '#FFFFFF',
-    marginBottom: 16,
-    elevation: 2,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#E0F2FE',
-    justifyContent: 'center',
-    alignItems: 'center',
+  header: {
+    marginBottom: 4,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#0F172A',
+    fontFamily: EditorialFonts.display,
+    fontSize: 34,
+    lineHeight: 38,
+    color: EditorialColors.ink,
+    letterSpacing: -0.5,
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  accentDot: {
+    color: EditorialColors.accent,
   },
   headerSubtitle: {
-    fontSize: 13,
-    color: '#64748B',
-    marginTop: 2,
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 12,
+    color: EditorialColors.muted,
+    lineHeight: 18,
   },
-  tabsContainer: {
+  heavySpacer: {
+    marginVertical: 18,
+  },
+  chipRow: {
     flexDirection: 'row',
-    marginBottom: 16,
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 20,
   },
-  yearTab: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: '#E2E8F0',
-    marginRight: 8,
-  },
-  yearTabActive: {
-    backgroundColor: Palette.primary,
-  },
-  yearTabText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#475569',
-  },
-  yearTabTextActive: {
-    color: '#FFFFFF',
-  },
-  classCard: {
-    padding: 16,
-    borderRadius: 16,
-    backgroundColor: '#FFFFFF',
-    marginBottom: 14,
-    elevation: 2,
-  },
-  cardHeader: {
+  sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 14,
   },
-  className: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    color: '#0F172A',
+  sectionHeaderTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
+  },
+  coordList: {
+    borderTopWidth: EditorialRules.hairline,
+    borderTopColor: EditorialColors.ink,
+  },
+  coordRow: {
+    borderBottomWidth: EditorialRules.hairline,
+    borderBottomColor: EditorialColors.ink,
+    paddingVertical: 16,
+  },
+  rowTop: {
+    marginBottom: 10,
+  },
+  infoCol: {
+    width: '100%',
+  },
+  codeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
   },
   classCode: {
-    fontSize: 12,
-    color: '#64748B',
-    marginTop: 2,
+    fontFamily: EditorialFonts.bold,
+    fontSize: 13,
+    letterSpacing: 1,
+    color: EditorialColors.ink,
   },
   statusBadge: {
-    paddingHorizontal: 8,
-    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: EditorialColors.ink,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
   },
-  divider: {
-    marginVertical: 12,
+  accentStatusBadge: {
+    borderColor: EditorialColors.accent,
   },
-  coordinatorInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
+  statusText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 9,
+    letterSpacing: 1,
+    color: EditorialColors.ink,
   },
-  coordinatorName: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#1E293B',
+  accentStatusText: {
+    color: EditorialColors.accent,
   },
-  coordinatorEmail: {
-    fontSize: 13,
-    color: '#64748B',
-    marginTop: 1,
+  coordName: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 17,
+    lineHeight: 22,
+    color: EditorialColors.ink,
+    marginBottom: 4,
   },
-  coordinatorDept: {
-    fontSize: 12,
-    color: Palette.primary,
-    marginTop: 2,
-  },
-  unassignedBox: {
-    flexDirection: 'row',
-    backgroundColor: '#FFF7ED',
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 14,
-    alignItems: 'center',
+  emailMeta: {
+    letterSpacing: 1.5,
   },
   unassignedText: {
-    fontSize: 12,
-    color: '#9A3412',
-    marginLeft: 8,
-    flex: 1,
-  },
-  cardActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 8,
-  },
-  actionBtn: {
-    borderRadius: 10,
-  },
-  removeBtn: {
-    borderRadius: 10,
-    borderColor: '#FFCDD2',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    padding: 20,
-    margin: 20,
-    borderRadius: 16,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#0F172A',
-  },
-  modalSubtitle: {
+    fontFamily: EditorialFonts.semibold,
     fontSize: 13,
-    color: Palette.primary,
-    marginBottom: 16,
-  },
-  input: {
-    marginBottom: 12,
-    backgroundColor: 'white',
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 12,
-  },
-  credCard: {
-    backgroundColor: '#F1F5F9',
-    padding: 14,
-    borderRadius: 12,
-  },
-  credLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#475569',
-  },
-  credValue: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#0F172A',
+    color: EditorialColors.muted,
+    lineHeight: 18,
     marginTop: 2,
   },
-  emptyContainer: {
-    alignItems: 'center',
-    paddingVertical: 40,
+  rowActions: {
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'flex-end',
+    marginTop: 8,
   },
-  emptyText: {
-    marginTop: 10,
-    color: '#64748B',
+  dangerOutlineBtn: {
+    height: 40,
+    paddingHorizontal: 14,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dangerOutlineBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    color: EditorialColors.accent,
+  },
+  primaryActionBtn: {
+    height: 40,
+    paddingHorizontal: 16,
+    backgroundColor: EditorialColors.ink,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  primaryActionBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    color: EditorialColors.white,
+  },
+  skeletonContainer: {
+    gap: 12,
+    paddingVertical: 16,
+  },
+  skeletonBlock: {
+    height: 90,
+    backgroundColor: EditorialColors.track,
+  },
+  emptyContainer: {
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    padding: 24,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  emptyTitle: {
+    fontFamily: EditorialFonts.heavy,
     fontSize: 14,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
+    marginBottom: 6,
+  },
+  emptySub: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 12,
+    color: EditorialColors.muted,
+    textAlign: 'center',
+    lineHeight: 18,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(17, 17, 17, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    width: '100%',
+    backgroundColor: EditorialColors.bg,
+    borderWidth: 2,
+    borderColor: EditorialColors.ink,
+    padding: 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  modalTitle: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 18,
+    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+  },
+  modalCloseButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+  },
+  inputBlock: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
+    marginBottom: 6,
+  },
+  underlineInput: {
+    height: 44,
+    borderBottomWidth: 2,
+    borderBottomColor: EditorialColors.ink,
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 15,
+    color: EditorialColors.ink,
+    paddingVertical: 6,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 14,
+  },
+  outlineActionBtn: {
+    flex: 1,
+    height: 48,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  outlineActionBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 12,
+    letterSpacing: 1.5,
+    color: EditorialColors.ink,
+  },
+  modalSubmitBtn: {
+    flex: 1,
+    height: 48,
+    backgroundColor: EditorialColors.ink,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalSubmitBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 12,
+    letterSpacing: 1.5,
+    color: EditorialColors.white,
+  },
+  successMessage: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 13,
+    color: EditorialColors.ink,
+    lineHeight: 18,
+    marginBottom: 16,
+  },
+  credentialDetailsBox: {
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    padding: 14,
+    marginBottom: 20,
+    backgroundColor: EditorialColors.bg,
+  },
+  credRow: {
+    marginBottom: 10,
+  },
+  credKey: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 10,
+    letterSpacing: 1.5,
+    color: EditorialColors.muted,
+    marginBottom: 2,
+  },
+  credVal: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 14,
+    color: EditorialColors.ink,
+  },
+  primaryActionButton: {
+    height: 54,
+    width: '100%',
+    backgroundColor: EditorialColors.ink,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryActionText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.white,
   },
 });
