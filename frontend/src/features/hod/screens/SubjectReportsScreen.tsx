@@ -578,6 +578,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#E2E8F0',
     marginBottom: ms(8),
   },
+  sectionsMetaRow: {
+    marginTop: ms(4),
+  },
   sectionsMetaText: {
     fontSize: ms(12),
     color: Palette.textLight,
