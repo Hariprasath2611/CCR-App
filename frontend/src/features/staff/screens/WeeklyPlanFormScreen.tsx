@@ -198,8 +198,11 @@ export const WeeklyPlanFormScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: ms(16),
     backgroundColor: Palette.background,
+  },
+  contentContainer: {
+    padding: ms(16),
+    paddingBottom: ms(40),
   },
   formCard: {
     backgroundColor: Palette.surface,
