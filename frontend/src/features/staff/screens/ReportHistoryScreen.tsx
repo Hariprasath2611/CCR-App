@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
-import { Text, Card, Chip, ProgressBar, Button } from 'react-native-paper';
-import { Palette } from '@theme/colors';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { useAuthStore } from '@features/auth/store/useAuthStore';
-import { useReportStore } from '@features/cc/store/useReportStore';
-import { ms } from '@theme/responsive';
+import { StyleSheet, View, ScrollView, Text, StatusBar } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { Label } from '@components/editorial/Label';
+import { Rule } from '@components/editorial/Rule';
+import { SegBar } from '@components/editorial/SegBar';
 
 interface HistoryLogItem {
   id: string;
@@ -83,245 +81,285 @@ const SAMPLE_HISTORY: HistoryLogItem[] = [
 ];
 
 export const ReportHistoryScreen = () => {
-  const navigation = useNavigation<any>();
-  const { user } = useAuthStore();
-  const [historyLogs, setHistoryLogs] = useState<HistoryLogItem[]>(SAMPLE_HISTORY);
+  const insets = useSafeAreaInsets();
+  const [historyLogs] = useState<HistoryLogItem[]>(SAMPLE_HISTORY);
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* Header Banner */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Syllabus Log History</Text>
-        <Text style={styles.headerSub}>
-          Chronological audit of all your submitted weekly course coverage logs and verified periods.
-        </Text>
-      </View>
+    <View style={styles.screenWrapper}>
+      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingBottom: insets.bottom + 80,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Label text="AUDIT & LOG ARCHIVE" />
+          <Text style={styles.headerTitle}>
+            REPORT HISTORY<Text style={styles.accentDot}>.</Text>
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            Chronological audit of verified weekly syllabus coverage and classroom periods.
+          </Text>
+        </View>
 
-      {/* History Items */}
-      {historyLogs.map((log) => {
-        const isFull = log.periodsHandled >= log.periodsPlanned;
-        return (
-          <Card key={log.id} style={styles.card}>
-            <Card.Content>
-              <View style={styles.cardHeader}>
-                <View style={styles.weekBadge}>
-                  <Text style={styles.weekBadgeText}>Week {log.weekNumber}</Text>
-                </View>
-                <View style={styles.dateBox}>
-                  <Feather name="calendar" size={13} color="#64748B" />
-                  <Text style={styles.dateText}>{log.dateRange}</Text>
-                </View>
-              </View>
+        {/* 4px Heavy Section Rule */}
+        <Rule thickness="heavy" style={styles.heavySpacer} />
 
-              <Text style={styles.subjectTitle}>
-                {log.subjectCode} · {log.subjectName}
-              </Text>
-              <Text style={styles.classSub}>{log.classSection} · {log.unit}</Text>
+        {/* 3-Column Stat Row */}
+        <View style={styles.statRow}>
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>{historyLogs.length}</Text>
+            <Label text="WEEKS" />
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>
+              {historyLogs.reduce((acc, h) => acc + h.periodsHandled, 0)}
+            </Text>
+            <Label text="PERIODS" />
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statCol}>
+            <Text style={styles.statNum}>80%</Text>
+            <Label text="LATEST" />
+          </View>
+        </View>
 
-              <View style={styles.topicsBox}>
-                <Text style={styles.topicsLabel}>Covered Topics:</Text>
-                <Text style={styles.topicsText}>{log.topicsCovered}</Text>
-              </View>
+        {/* 1px Hairline Rule */}
+        <Rule thickness="hairline" style={styles.hairlineSpacer} />
 
-              <View style={styles.statsRow}>
-                <View style={styles.statCol}>
-                  <Text style={styles.statVal}>
-                    {log.periodsHandled}/{log.periodsPlanned}
-                  </Text>
-                  <Text style={styles.statLabel}>Periods Handled</Text>
-                </View>
+        {/* Section Title */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeaderTitle}>CHRONOLOGICAL LOGS</Text>
+          <Label text={`${historyLogs.length} SUBMISSIONS`} />
+        </View>
 
-                <View style={styles.statCol}>
-                  <Text style={[styles.statVal, { color: Palette.primary }]}>
-                    {log.percent}%
-                  </Text>
-                  <Text style={styles.statLabel}>Cumulative Progress</Text>
-                </View>
+        {/* History Rows */}
+        <View style={styles.logList}>
+          {historyLogs.map((log) => {
+            const isLagging = log.percent < 40;
+            return (
+              <View key={log.id} style={styles.logRow}>
+                <View style={styles.rowTop}>
+                  {/* Left Week Date Column */}
+                  <View style={styles.weekDateCol}>
+                    <Text style={styles.weekNum}>{log.weekNumber}</Text>
+                    <Label text="WEEK" />
+                  </View>
 
-                <View style={styles.statCol}>
-                  <View
-                    style={[
-                      styles.statusPill,
-                      { backgroundColor: isFull ? '#ECFDF5' : '#FFFBEB' },
-                    ]}
-                  >
+                  {/* Vertical Divider */}
+                  <View style={styles.vertDivider} />
+
+                  {/* Log Content Info */}
+                  <View style={styles.infoCol}>
+                    <View style={styles.codeRow}>
+                      <Text style={styles.subjectCode}>{log.subjectCode}</Text>
+                      <Text style={styles.sectionMeta}>{log.classSection} • {log.unit}</Text>
+                    </View>
+                    <Text style={styles.subjectName}>{log.subjectName}</Text>
+                    <Text style={styles.topicsText} numberOfLines={2}>
+                      {log.topicsCovered}
+                    </Text>
+                    <Label
+                      text={`${log.dateRange} • ${log.periodsHandled}/${log.periodsPlanned} PERIODS`}
+                      style={styles.metaLabel}
+                    />
+                  </View>
+
+                  {/* Right Percentage */}
+                  <View style={styles.rightValueBox}>
                     <Text
                       style={[
-                        styles.statusPillText,
-                        { color: isFull ? Palette.success : Palette.warning },
+                        styles.percentText,
+                        isLagging ? styles.accentPercentText : null,
                       ]}
                     >
-                      {isFull ? 'ON PLAN' : 'LAGGING'}
+                      {log.percent}%
                     </Text>
                   </View>
                 </View>
-              </View>
 
-              <View style={styles.cardFooter}>
-                <ProgressBar
-                  progress={log.percent / 100}
-                  color={Palette.primary}
-                  style={styles.progressBar}
-                />
-                <Button
-                  mode="text"
-                  compact
-                  icon="open-in-new"
-                  onPress={() =>
-                    navigation.navigate('WeeklyProgress', {
-                      subjectCode: log.subjectCode,
-                      weekNumber: log.weekNumber,
-                      classSection: log.classSection,
-                    })
-                  }
-                  textColor={Palette.primary}
-                >
-                  View / Edit
-                </Button>
+                {/* 25-Segment Bar */}
+                <View style={styles.segBarWrapper}>
+                  <SegBar
+                    totalSegments={25}
+                    filledSegments={Math.round((log.percent / 100) * 25)}
+                    isLagging={isLagging}
+                  />
+                </View>
               </View>
-            </Card.Content>
-          </Card>
-        );
-      })}
-    </ScrollView>
+            );
+          })}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screenWrapper: {
+    flex: 1,
+    backgroundColor: EditorialColors.bg,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: EditorialColors.bg,
   },
   content: {
-    padding: ms(16),
-    paddingBottom: ms(40),
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
   },
   header: {
-    marginBottom: ms(16),
+    marginBottom: 4,
   },
   headerTitle: {
-    fontSize: ms(20),
-    fontWeight: '900',
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.display,
+    fontSize: 36,
+    lineHeight: 40,
+    color: EditorialColors.ink,
+    letterSpacing: -0.5,
+    marginTop: 4,
+    marginBottom: 4,
   },
-  headerSub: {
-    fontSize: ms(12.5),
-    color: Palette.textLight,
-    marginTop: ms(2),
-    lineHeight: ms(18),
+  accentDot: {
+    color: EditorialColors.accent,
   },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    marginBottom: ms(14),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    elevation: 1,
+  headerSubtitle: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 13,
+    color: EditorialColors.muted,
+    lineHeight: 18,
   },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: ms(8),
+  heavySpacer: {
+    marginVertical: 18,
   },
-  weekBadge: {
-    backgroundColor: '#EFF6FF',
-    paddingHorizontal: ms(10),
-    paddingVertical: ms(3),
-    borderRadius: ms(8),
-    borderWidth: 1,
-    borderColor: '#BFDBFE',
+  hairlineSpacer: {
+    marginVertical: 16,
   },
-  weekBadgeText: {
-    fontSize: ms(12),
-    fontWeight: '800',
-    color: Palette.primary,
-  },
-  dateBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  dateText: {
-    fontSize: ms(12),
-    color: '#64748B',
-    marginLeft: ms(4),
-    fontWeight: '500',
-  },
-  subjectTitle: {
-    fontSize: ms(15),
-    fontWeight: '800',
-    color: Palette.textDark,
-  },
-  classSub: {
-    fontSize: ms(12.5),
-    color: Palette.primary,
-    fontWeight: '700',
-    marginTop: ms(2),
-  },
-  topicsBox: {
-    backgroundColor: '#F8FAFC',
-    padding: ms(10),
-    borderRadius: ms(10),
-    marginTop: ms(10),
-  },
-  topicsLabel: {
-    fontSize: ms(11),
-    fontWeight: '800',
-    color: Palette.textLight,
-    textTransform: 'uppercase',
-  },
-  topicsText: {
-    fontSize: ms(12.5),
-    color: '#334155',
-    marginTop: ms(2),
-    lineHeight: ms(17),
-  },
-  statsRow: {
+  statRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: ms(12),
-    paddingTop: ms(8),
+    paddingVertical: 6,
   },
   statCol: {
+    flex: 1,
     alignItems: 'center',
   },
-  statVal: {
-    fontSize: ms(15),
-    fontWeight: '900',
-    color: Palette.textDark,
+  statNum: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 30,
+    lineHeight: 34,
+    color: EditorialColors.ink,
+    marginBottom: 2,
   },
-  statLabel: {
-    fontSize: ms(11),
-    color: Palette.textLight,
-    marginTop: ms(2),
+  statDivider: {
+    width: 1,
+    height: 38,
+    backgroundColor: EditorialColors.ink,
   },
-  statusPill: {
-    paddingHorizontal: ms(10),
-    paddingVertical: ms(4),
-    borderRadius: ms(8),
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
   },
-  statusPillText: {
-    fontSize: ms(11),
-    fontWeight: '800',
+  sectionHeaderTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
   },
-  cardFooter: {
-    marginTop: ms(12),
+  logList: {
+    borderTopWidth: EditorialRules.hairline,
+    borderTopColor: EditorialColors.ink,
+  },
+  logRow: {
+    borderBottomWidth: EditorialRules.hairline,
+    borderBottomColor: EditorialColors.ink,
+    paddingVertical: 14,
+  },
+  rowTop: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 10,
+  },
+  weekDateCol: {
+    width: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  weekNum: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 28,
+    lineHeight: 32,
+    color: EditorialColors.ink,
+    marginBottom: 2,
+  },
+  vertDivider: {
+    width: 1,
+    height: 52,
+    backgroundColor: EditorialColors.ink,
+    marginHorizontal: 12,
+  },
+  infoCol: {
+    flex: 1,
+    marginRight: 10,
+  },
+  codeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 8,
+    marginBottom: 2,
   },
-  progressBar: {
-    flex: 1,
-    height: ms(6),
-    borderRadius: ms(3),
-    backgroundColor: '#E2E8F0',
-    marginRight: ms(12),
+  subjectCode: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 12,
+    letterSpacing: 1,
+    color: EditorialColors.muted,
+  },
+  sectionMeta: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 12,
+    color: EditorialColors.muted,
+  },
+  subjectName: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 16,
+    lineHeight: 20,
+    color: EditorialColors.ink,
+    marginBottom: 4,
+  },
+  topicsText: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 12,
+    lineHeight: 16,
+    color: EditorialColors.muted,
+    marginBottom: 4,
+  },
+  metaLabel: {
+    letterSpacing: 1.5,
+  },
+  rightValueBox: {
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
+  percentText: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 28,
+    lineHeight: 32,
+    color: EditorialColors.ink,
+  },
+  accentPercentText: {
+    color: EditorialColors.accent,
+  },
+  segBarWrapper: {
+    marginTop: 2,
   },
 });
-
-export default ReportHistoryScreen;

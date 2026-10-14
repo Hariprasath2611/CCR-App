@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
-import { Text, Card, ActivityIndicator } from 'react-native-paper';
+import { StyleSheet, View, ScrollView, TouchableOpacity, Text, StatusBar } from 'react-native';
 import { TimetableRepository } from '@database/repositories/TimetableRepository';
 import { SQLiteTimetableItem } from '@database/types';
-import { Palette } from '@theme/colors';
 import { useAuthStore } from '../../auth/store/useAuthStore';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StaffStackParamList } from '@navigation/types';
-import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
-
-import { ms } from '@theme/responsive';
+import { Feather } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { matchFacultyName } from '../../../utils/facultyMatcher';
+import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { Label } from '@components/editorial/Label';
+import { Rule } from '@components/editorial/Rule';
+import { EditorialChip } from '@components/editorial/EditorialChip';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-import { matchFacultyName } from '../../../utils/facultyMatcher';
-
 export const WeeklyTimetableScreen = () => {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<StaffStackParamList>>();
   const { user } = useAuthStore();
   const [selectedDay, setSelectedDay] = useState('Monday');
@@ -52,254 +53,255 @@ export const WeeklyTimetableScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Horizontal Day Selector tabs */}
-      <View style={styles.tabContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabScrollContent}>
-          {DAYS.map((day) => {
-            const isSelected = selectedDay === day;
-            return (
-              <TouchableOpacity
-                key={day}
-                onPress={() => setSelectedDay(day)}
-                style={[styles.tabButton, isSelected && styles.tabButtonActive]}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.tabText, isSelected && styles.tabTextActive]}>
-                  {day}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </View>
+    <View style={styles.screenWrapper}>
+      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingBottom: insets.bottom + 80,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Label text="TIMETABLE & LECTURES" />
+          <Text style={styles.headerTitle}>
+            WEEKLY SCHEDULE<Text style={styles.accentDot}>.</Text>
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            Allocated class periods, rooms, and subject teaching slots.
+          </Text>
+        </View>
 
-      {/* Main schedule logs */}
-      {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color={Palette.primary} />
-          <Text style={styles.loadingText}>Loading Timetable...</Text>
+        {/* 4px Heavy Rule */}
+        <Rule thickness="heavy" style={styles.heavySpacer} />
+
+        {/* Day Filter Chips */}
+        <View style={styles.chipRow}>
+          {DAYS.map((day) => (
+            <EditorialChip
+              key={day}
+              label={day.toUpperCase()}
+              selected={selectedDay === day}
+              onPress={() => setSelectedDay(day)}
+            />
+          ))}
         </View>
-      ) : filteredSlots.length === 0 ? (
-        <View style={styles.center}>
-          <MaterialCommunityIcons name="calendar-blank-outline" size={64} color={Palette.textLight} />
-          <Text style={styles.emptyTitle}>No Classes Scheduled</Text>
-          <Text style={styles.emptySubtitle}>You have no lectures scheduled for {selectedDay}.</Text>
+
+        {/* Section Header */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeaderTitle}>
+            {selectedDay.toUpperCase()} SESSIONS
+          </Text>
+          <Label text={`${filteredSlots.length} PERIODS`} />
         </View>
-      ) : (
-        <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
-          <Text style={styles.scheduleHeader}>Academic Schedule: {selectedDay}</Text>
-          {filteredSlots.map((item) => (
-            <Card key={item.id} style={styles.card}>
-              <Card.Content style={styles.cardContent}>
-                {/* Period circle badge */}
+
+        {/* Schedule List */}
+        {loading ? (
+          <View style={styles.skeletonContainer}>
+            <View style={styles.skeletonBlock} />
+            <View style={styles.skeletonBlock} />
+            <View style={styles.skeletonBlock} />
+          </View>
+        ) : filteredSlots.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Label text={`NO LECTURES SCHEDULED FOR ${selectedDay.toUpperCase()}`} />
+          </View>
+        ) : (
+          <View style={styles.slotList}>
+            {filteredSlots.map((item) => (
+              <View key={item.id} style={styles.slotRow}>
+                {/* Period Column */}
                 <View style={styles.periodCol}>
                   <Text style={styles.periodNum}>{item.period}</Text>
-                  <Text style={styles.periodLabel}>Period</Text>
+                  <Label text="PERIOD" />
                 </View>
 
-                {/* Divider */}
-                <View style={styles.divider} />
+                {/* Vertical Divider */}
+                <View style={styles.vertDivider} />
 
-                {/* Class details */}
+                {/* Class Details */}
                 <View style={styles.infoCol}>
-                  <View style={styles.subjectRow}>
+                  <View style={styles.metaRow}>
                     <Text style={styles.subjectCode}>{item.subject_code}</Text>
-                    <View style={styles.classBadge}>
-                      <Text style={styles.classBadgeText}>{item.class_section}</Text>
+                    <View style={styles.sectionBadge}>
+                      <Text style={styles.sectionBadgeText}>{item.class_section}</Text>
                     </View>
                   </View>
                   <Text style={styles.subjectName} numberOfLines={1}>
                     {item.subject_name}
                   </Text>
-                  <View style={styles.roomRow}>
-                    <Feather name="map-pin" size={12} color={Palette.textLight} />
-                    <Text style={styles.roomText}>Lecture Hall: {item.room_no}</Text>
-                  </View>
+                  <Label text={`HALL: ${item.room_no || 'TBA'}`} style={styles.roomMeta} />
                 </View>
 
-                {/* Action button */}
+                {/* Action Button */}
                 <TouchableOpacity
-                  style={styles.actionButton}
+                  style={styles.logButton}
                   onPress={() => handleLogProgress(item.subject_code)}
                   activeOpacity={0.7}
                 >
-                  <Feather name="plus-circle" size={24} color={Palette.primary} />
-                  <Text style={styles.actionBtnLabel}>Log</Text>
+                  <Text style={styles.logButtonText}>LOG</Text>
+                  <Feather name="chevron-right" size={14} color={EditorialColors.ink} />
                 </TouchableOpacity>
-              </Card.Content>
-            </Card>
-          ))}
-        </ScrollView>
-      )}
+              </View>
+            ))}
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screenWrapper: {
+    flex: 1,
+    backgroundColor: EditorialColors.bg,
+  },
   container: {
     flex: 1,
-    backgroundColor: Palette.background,
+    backgroundColor: EditorialColors.bg,
   },
-  tabContainer: {
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: Palette.border,
-    paddingVertical: ms(12),
+  content: {
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
   },
-  tabScrollContent: {
-    paddingHorizontal: ms(12),
+  header: {
+    marginBottom: 4,
   },
-  tabButton: {
-    paddingVertical: ms(8),
-    paddingHorizontal: ms(16),
-    borderRadius: ms(20),
-    backgroundColor: '#F1F5F9',
-    marginHorizontal: ms(4),
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+  headerTitle: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 36,
+    lineHeight: 40,
+    color: EditorialColors.ink,
+    letterSpacing: -0.5,
+    marginTop: 4,
+    marginBottom: 4,
   },
-  tabButtonActive: {
-    backgroundColor: Palette.primary,
-    borderColor: Palette.primary,
+  accentDot: {
+    color: EditorialColors.accent,
   },
-  tabText: {
-    fontSize: ms(13),
-    color: Palette.textLight,
-    fontWeight: '700',
+  headerSubtitle: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 13,
+    color: EditorialColors.muted,
+    lineHeight: 18,
   },
-  tabTextActive: {
-    color: '#FFFFFF',
+  heavySpacer: {
+    marginVertical: 18,
   },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 20,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: ms(32),
+    marginBottom: 14,
   },
-  loadingText: {
-    marginTop: ms(12),
-    fontSize: ms(14),
-    color: Palette.textLight,
+  sectionHeaderTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
   },
-  emptyTitle: {
-    fontSize: ms(18),
-    fontWeight: '800',
-    color: Palette.textDark,
-    marginTop: ms(16),
+  slotList: {
+    borderTopWidth: EditorialRules.hairline,
+    borderTopColor: EditorialColors.ink,
   },
-  emptySubtitle: {
-    fontSize: ms(13),
-    color: Palette.textLight,
-    textAlign: 'center',
-    marginTop: ms(6),
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: ms(16),
-    paddingBottom: ms(32),
-  },
-  scheduleHeader: {
-    fontSize: ms(14),
-    fontWeight: '800',
-    color: Palette.textLight,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: ms(14),
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    marginBottom: ms(12),
-    shadowColor: '#0F172A',
-    shadowOffset: { width: ms(0), height: ms(4) },
-    shadowOpacity: 0.02,
-    shadowRadius: 8,
-    elevation: 1,
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-  },
-  cardContent: {
+  slotRow: {
+    borderBottomWidth: EditorialRules.hairline,
+    borderBottomColor: EditorialColors.ink,
+    paddingVertical: 14,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: ms(12),
-    paddingHorizontal: ms(16),
   },
   periodCol: {
+    width: 60,
     alignItems: 'center',
-    width: ms(48),
+    justifyContent: 'center',
   },
   periodNum: {
-    fontSize: ms(22),
-    fontWeight: '900',
-    color: Palette.primary,
+    fontFamily: EditorialFonts.display,
+    fontSize: 28,
+    lineHeight: 32,
+    color: EditorialColors.ink,
+    marginBottom: 2,
   },
-  periodLabel: {
-    fontSize: ms(10),
-    color: Palette.textLight,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-  },
-  divider: {
-    height: ms(40),
-    width: ms(1),
-    backgroundColor: '#E2E8F0',
-    marginHorizontal: ms(16),
+  vertDivider: {
+    width: 1,
+    height: 48,
+    backgroundColor: EditorialColors.ink,
+    marginHorizontal: 12,
   },
   infoCol: {
     flex: 1,
+    marginRight: 10,
   },
-  subjectRow: {
+  metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: ms(2),
+    gap: 8,
+    marginBottom: 4,
   },
   subjectCode: {
-    fontSize: ms(11),
-    fontWeight: '800',
-    color: Palette.primary,
-    marginRight: ms(6),
+    fontFamily: EditorialFonts.bold,
+    fontSize: 12,
+    letterSpacing: 1,
+    color: EditorialColors.muted,
   },
-  classBadge: {
-    backgroundColor: 'rgba(15, 82, 186, 0.08)',
-    borderRadius: ms(4),
-    paddingHorizontal: ms(4),
-    paddingVertical: ms(1),
+  sectionBadge: {
+    borderWidth: 1,
+    borderColor: EditorialColors.ink,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
   },
-  classBadgeText: {
-    fontSize: ms(9),
-    fontWeight: '800',
-    color: Palette.primary,
+  sectionBadgeText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 10,
+    color: EditorialColors.ink,
   },
   subjectName: {
-    fontSize: ms(15),
-    fontWeight: '700',
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 15,
+    lineHeight: 20,
+    color: EditorialColors.ink,
+    marginBottom: 4,
   },
-  roomRow: {
+  roomMeta: {
+    letterSpacing: 1.5,
+  },
+  logButton: {
+    height: 38,
+    paddingHorizontal: 12,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: ms(4),
-  },
-  roomText: {
-    fontSize: ms(11),
-    color: Palette.textLight,
-    marginLeft: ms(4),
-    fontWeight: '500',
-  },
-  actionButton: {
-    alignItems: 'center',
     justifyContent: 'center',
-    paddingLeft: ms(12),
+    gap: 4,
   },
-  actionBtnLabel: {
-    fontSize: ms(10),
-    fontWeight: '800',
-    color: Palette.primary,
-    marginTop: ms(2),
+  logButtonText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    color: EditorialColors.ink,
+  },
+  skeletonContainer: {
+    gap: 12,
+    paddingVertical: 16,
+  },
+  skeletonBlock: {
+    height: 72,
+    backgroundColor: EditorialColors.track,
+  },
+  emptyContainer: {
+    paddingVertical: 36,
+    alignItems: 'center',
   },
 });
-
-export default WeeklyTimetableScreen;
