@@ -201,10 +201,10 @@ export const SubjectDetailScreen = () => {
                               isDone ? styles.topicNameDone : null,
                             ]}
                           >
-                            {topic.topic_name}
+                            {topic.topic_title}
                           </Text>
-                          {topic.hours_allotted ? (
-                            <Label text={`${topic.hours_allotted} HOURS ALLOTTED`} />
+                          {topic.completed_date ? (
+                            <Label text={`COMPLETED: ${topic.completed_date}`} />
                           ) : null}
                         </View>
                       </TouchableOpacity>

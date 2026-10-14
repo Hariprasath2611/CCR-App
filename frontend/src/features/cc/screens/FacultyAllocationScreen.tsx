@@ -6,25 +6,21 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  FlatList,
-} from 'react-native';
-import {
-  Text,
-  Card,
-  Button,
-  Portal,
-  Modal,
   TextInput,
-  Badge,
-  Divider,
-  Avatar,
-} from 'react-native-paper';
+  Text,
+  StatusBar,
+  Modal,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { delegationApi, SubjectAllocationItem } from '@services/api/delegationApi';
-import { Palette } from '@theme/colors';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { Label } from '@components/editorial/Label';
+import { Rule } from '@components/editorial/Rule';
+import { EditorialChip } from '@components/editorial/EditorialChip';
 
-// Default subjects catalog for common classes if not seeded in timetable
 const DEFAULT_CLASS_SUBJECTS: Record<string, { code: string; name: string }[]> = {
   default: [
     { code: 'CS3591', name: 'Computer Networks' },
@@ -36,6 +32,8 @@ const DEFAULT_CLASS_SUBJECTS: Record<string, { code: string; name: string }[]> =
 };
 
 export const FacultyAllocationScreen = () => {
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation<any>();
   const { user } = useAuthStore();
   const classId = user?.assignedClassId || '3rd Year CSE-A';
 
@@ -144,7 +142,7 @@ export const FacultyAllocationScreen = () => {
   const handleCreateAndAllocate = async () => {
     if (!selectedSubject) return;
     if (!newFacultyName.trim() || !newFacultyEmail.trim()) {
-      Alert.alert('Validation', 'Please enter Faculty Name and Email.');
+      Alert.alert('Required Fields', 'Please enter both Faculty Name and Institutional Email.');
       return;
     }
 
@@ -156,7 +154,7 @@ export const FacultyAllocationScreen = () => {
         subjectName: selectedSubject.name,
         facultyEmail: newFacultyEmail.trim(),
         facultyName: newFacultyName.trim(),
-        department: newFacultyDept.trim(),
+        department: newFacultyDept,
       });
 
       setModalVisible(false);
@@ -164,27 +162,28 @@ export const FacultyAllocationScreen = () => {
       setCredModalVisible(true);
       loadData();
     } catch (err: any) {
-      Alert.alert('Creation Error', err.response?.data?.error || err.message);
+      Alert.alert('Allocation Error', err.response?.data?.error || err.message);
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleRemoveAllocation = (assignmentId: string, subjectCode: string) => {
+  const handleDeallocate = (assignment: SubjectAllocationItem) => {
     Alert.alert(
-      'Remove Faculty Allocation',
-      `Unassign faculty from subject ${subjectCode}?`,
+      'Deallocate Subject Teacher',
+      `Remove ${assignment.faculty?.name || 'Faculty'} from teaching ${assignment.subjectCode}?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Unassign',
+          text: 'Deallocate',
           style: 'destructive',
           onPress: async () => {
             try {
-              await delegationApi.removeAllocation(assignmentId);
+              await delegationApi.removeAllocation(assignment.id);
+              Alert.alert('Success', 'Teacher assignment removed.');
               loadData();
             } catch (err: any) {
-              Alert.alert('Error', err.message);
+              Alert.alert('Error', err.message || 'Failed to remove assignment.');
             }
           },
         },
@@ -192,458 +191,604 @@ export const FacultyAllocationScreen = () => {
     );
   };
 
+  const allocationMap: Record<string, SubjectAllocationItem> = {};
+  allocations.forEach((a) => {
+    allocationMap[a.subjectCode] = a;
+  });
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* ── CLASS HEADER ── */}
-      <Card style={styles.headerCard}>
-        <View style={styles.headerRow}>
-          <View style={styles.iconCircle}>
-            <MaterialCommunityIcons name="google-classroom" size={28} color={Palette.primary} />
-          </View>
-          <View style={{ flex: 1, marginLeft: 12 }}>
-            <Text style={styles.headerTitle}>Subject Allocation</Text>
-            <Text style={styles.headerSubtitle}>
-              Class Section: <Text style={{ fontWeight: 'bold' }}>{classId}</Text>
-            </Text>
-          </View>
+    <View style={styles.screenWrapper}>
+      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingBottom: insets.bottom + 80,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Top Header */}
+        <View style={styles.topHeader}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+            activeOpacity={0.7}
+            accessibilityLabel="Go back"
+          >
+            <Feather name="arrow-left" size={20} color={EditorialColors.ink} />
+          </TouchableOpacity>
+          <Label text={`SECTION ROSTER • ${classId.toUpperCase()}`} />
         </View>
-      </Card>
 
-      {/* ── SUBJECT ALLOCATIONS LIST ── */}
-      <Text style={styles.sectionTitle}>Curriculum Subjects & Faculty Mappings</Text>
+        {/* Title heavy 24 */}
+        <Text style={styles.screenTitle}>FACULTY ALLOCATION</Text>
+        <Text style={styles.screenSubtitle}>
+          Assign designated subject professors to curriculum courses for {classId}.
+        </Text>
 
-      {loading ? (
-        <ActivityIndicator size="large" color={Palette.primary} style={{ marginTop: 40 }} />
-      ) : (
-        subjectsList.map((subject) => {
-          const currentAssignment = allocations.find((a) => a.subjectCode === subject.code);
-          const hasFaculty = !!currentAssignment;
+        {/* 4px Heavy Section Rule */}
+        <Rule thickness="heavy" style={styles.heavySpacer} />
 
-          return (
-            <Card key={subject.code} style={styles.subjectCard}>
-              <View style={styles.cardHeader}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.subjectCode}>{subject.code}</Text>
-                  <Text style={styles.subjectName}>{subject.name}</Text>
-                </View>
-                <Badge
-                  style={[
-                    styles.badge,
-                    {
-                      backgroundColor: hasFaculty ? '#E8F5E9' : '#FFF3E0',
-                      color: hasFaculty ? '#2E7D32' : '#E65100',
-                    },
-                  ]}
-                >
-                  {hasFaculty ? 'Allocated' : 'Not Allocated'}
-                </Badge>
-              </View>
+        {/* Section Header */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeaderTitle}>CURRICULUM SUBJECTS</Text>
+          <Label text={`${subjectsList.length} COURSES`} />
+        </View>
 
-              <Divider style={styles.divider} />
+        {/* Subjects Allocation List */}
+        {loading ? (
+          <View style={styles.skeletonContainer}>
+            <View style={styles.skeletonBlock} />
+            <View style={styles.skeletonBlock} />
+          </View>
+        ) : (
+          <View style={styles.subjectList}>
+            {subjectsList.map((subject) => {
+              const currentAssignment = allocationMap[subject.code];
+              const isAssigned = !!currentAssignment;
 
-              {hasFaculty ? (
-                <View style={styles.facultyRow}>
-                  <Avatar.Text
-                    size={38}
-                    label={currentAssignment.faculty.name.substring(0, 2).toUpperCase()}
-                    style={{ backgroundColor: Palette.accent }}
-                  />
-                  <View style={{ marginLeft: 10, flex: 1 }}>
-                    <Text style={styles.facultyName}>{currentAssignment.faculty.name}</Text>
-                    <Text style={styles.facultyEmail}>{currentAssignment.faculty.email}</Text>
-                    <Text style={styles.facultyDept}>{currentAssignment.faculty.department}</Text>
+              return (
+                <View key={subject.code} style={styles.subjectRow}>
+                  <View style={styles.rowTop}>
+                    <View style={styles.infoCol}>
+                      <View style={styles.codeRow}>
+                        <Text style={styles.subjectCode}>{subject.code}</Text>
+                        <View
+                          style={[
+                            styles.statusBadge,
+                            !isAssigned ? styles.accentStatusBadge : null,
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.statusText,
+                              !isAssigned ? styles.accentStatusText : null,
+                            ]}
+                          >
+                            {isAssigned ? 'ASSIGNED' : 'UNASSIGNED'}
+                          </Text>
+                        </View>
+                      </View>
+
+                      <Text style={styles.subjectName}>{subject.name}</Text>
+
+                      {isAssigned ? (
+                        <>
+                          <Text style={styles.facultyName}>{currentAssignment.faculty?.name}</Text>
+                          <Label
+                            text={`EMAIL: ${currentAssignment.faculty?.email}`}
+                            style={styles.emailMeta}
+                          />
+                        </>
+                      ) : (
+                        <Text style={styles.unassignedText}>
+                          No faculty teacher currently assigned to this subject.
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+
+                  {/* Actions */}
+                  <View style={styles.rowActions}>
+                    {isAssigned && (
+                      <TouchableOpacity
+                        style={styles.dangerOutlineBtn}
+                        onPress={() => handleDeallocate(currentAssignment)}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.dangerOutlineBtnText}>DEALLOCATE</Text>
+                      </TouchableOpacity>
+                    )}
+
+                    <TouchableOpacity
+                      style={styles.primaryActionBtn}
+                      onPress={() => handleOpenAssignModal(subject)}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={styles.primaryActionBtnText}>
+                        {isAssigned ? 'RE-ALLOCATE' : 'ALLOCATE TEACHER'}
+                      </Text>
+                      <Feather name="arrow-right" size={14} color={EditorialColors.white} />
+                    </TouchableOpacity>
                   </View>
                 </View>
+              );
+            })}
+          </View>
+        )}
+
+        {/* Modal: Allocate Faculty */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>
+                  ALLOCATE TEACHER<Text style={styles.accentDot}>.</Text>
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setModalVisible(false)}
+                  style={styles.modalCloseButton}
+                  accessibilityLabel="Close modal"
+                >
+                  <Feather name="x" size={20} color={EditorialColors.ink} />
+                </TouchableOpacity>
+              </View>
+
+              <Rule thickness="hairline" style={{ marginBottom: 14 }} />
+
+              <Label
+                text={`${selectedSubject?.code} • ${selectedSubject?.name?.toUpperCase()}`}
+                style={{ marginBottom: 14 }}
+              />
+
+              {/* Tab Selector */}
+              <View style={styles.tabToggleRow}>
+                <EditorialChip
+                  label="SEARCH DIRECTORY"
+                  selected={tab === 'existing'}
+                  onPress={() => setTab('existing')}
+                />
+                <EditorialChip
+                  label="ADD NEW FACULTY"
+                  selected={tab === 'new'}
+                  onPress={() => setTab('new')}
+                />
+              </View>
+
+              {tab === 'existing' ? (
+                <View style={styles.tabContentBlock}>
+                  <Text style={styles.inputLabel}>SEARCH BY NAME OR EMAIL</Text>
+                  <TextInput
+                    style={styles.underlineInput}
+                    value={searchQuery}
+                    onChangeText={handleSearch}
+                    placeholder="e.g. Ramesh or cs.teacher@jec.ac.in"
+                    placeholderTextColor={EditorialColors.muted}
+                    autoCapitalize="none"
+                  />
+
+                  {searching && (
+                    <ActivityIndicator size="small" color={EditorialColors.ink} style={{ marginTop: 10 }} />
+                  )}
+
+                  <ScrollView style={{ maxHeight: 180, marginTop: 10 }} showsVerticalScrollIndicator={false}>
+                    {searchResults.map((faculty) => (
+                      <TouchableOpacity
+                        key={faculty.email}
+                        style={styles.facultySearchResult}
+                        onPress={() => handleAllocateExisting(faculty)}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.searchResultName}>{faculty.name}</Text>
+                        <Label text={`${faculty.department || 'CSE'} • ${faculty.email}`} />
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
               ) : (
-                <View style={styles.noFacultyBox}>
-                  <Feather name="alert-circle" size={16} color="#E65100" />
-                  <Text style={styles.noFacultyText}>No faculty assigned to teach this subject yet.</Text>
+                <View style={styles.tabContentBlock}>
+                  <View style={styles.inputBlock}>
+                    <Text style={styles.inputLabel}>FULL NAME</Text>
+                    <TextInput
+                      style={styles.underlineInput}
+                      value={newFacultyName}
+                      onChangeText={setNewFacultyName}
+                      placeholder="e.g. Dr. John Doe"
+                      placeholderTextColor={EditorialColors.muted}
+                    />
+                  </View>
+
+                  <View style={styles.inputBlock}>
+                    <Text style={styles.inputLabel}>INSTITUTIONAL EMAIL</Text>
+                    <TextInput
+                      style={styles.underlineInput}
+                      value={newFacultyEmail}
+                      onChangeText={setNewFacultyEmail}
+                      placeholder="e.g. johndoe@jec.ac.in"
+                      placeholderTextColor={EditorialColors.muted}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                    />
+                  </View>
+
+                  <TouchableOpacity
+                    style={styles.modalSubmitBtn}
+                    onPress={handleCreateAndAllocate}
+                    disabled={submitting}
+                    activeOpacity={0.85}
+                  >
+                    {submitting ? (
+                      <ActivityIndicator size="small" color={EditorialColors.white} />
+                    ) : (
+                      <Text style={styles.modalSubmitBtnText}>REGISTER & ALLOCATE</Text>
+                    )}
+                  </TouchableOpacity>
                 </View>
               )}
+            </View>
+          </View>
+        </Modal>
 
-              <View style={styles.cardActions}>
-                <Button
-                  mode="contained"
-                  buttonColor={Palette.primary}
-                  style={styles.actionBtn}
-                  onPress={() => handleOpenAssignModal(subject)}
+        {/* Modal: Credentials Ready */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={credModalVisible}
+          onRequestClose={() => setCredModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>
+                  CREDENTIALS READY<Text style={styles.accentDot}>.</Text>
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setCredModalVisible(false)}
+                  style={styles.modalCloseButton}
+                  accessibilityLabel="Close modal"
                 >
-                  {hasFaculty ? 'Reassign Teacher' : 'Assign Teacher'}
-                </Button>
-                {hasFaculty && (
-                  <Button
-                    mode="outlined"
-                    textColor="#D32F2F"
-                    style={styles.removeBtn}
-                    onPress={() => handleRemoveAllocation(currentAssignment.id, subject.code)}
-                  >
-                    Unassign
-                  </Button>
+                  <Feather name="x" size={20} color={EditorialColors.ink} />
+                </TouchableOpacity>
+              </View>
+
+              <Rule thickness="hairline" style={{ marginBottom: 16 }} />
+
+              <Text style={styles.credSuccessNote}>
+                Faculty member assigned. Login credentials dispatched to institutional inbox.
+              </Text>
+
+              <View style={styles.credDetailsBox}>
+                <View style={styles.credRow}>
+                  <Text style={styles.credKey}>EMAIL</Text>
+                  <Text style={styles.credVal}>{credInfo?.email}</Text>
+                </View>
+                {credInfo?.password && (
+                  <View style={styles.credRow}>
+                    <Text style={styles.credKey}>TEMPORARY ACCESS KEY</Text>
+                    <Text style={styles.credVal}>{credInfo?.password}</Text>
+                  </View>
                 )}
               </View>
-            </Card>
-          );
-        })
-      )}
 
-      {/* ── ASSIGN FACULTY MODAL ── */}
-      <Portal>
-        <Modal
-          visible={modalVisible}
-          onDismiss={() => setModalVisible(false)}
-          contentContainerStyle={styles.modalContainer}
-        >
-          <Text style={styles.modalTitle}>Assign Faculty</Text>
-          <Text style={styles.modalSubtitle}>
-            {selectedSubject?.code} - {selectedSubject?.name}
-          </Text>
-
-          {/* TAB SWITCHER */}
-          <View style={styles.modalTabs}>
-            <TouchableOpacity
-              style={[styles.modalTab, tab === 'existing' && styles.modalTabActive]}
-              onPress={() => setTab('existing')}
-            >
-              <Text style={[styles.modalTabText, tab === 'existing' && styles.modalTabTextActive]}>
-                Existing Faculty
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modalTab, tab === 'new' && styles.modalTabActive]}
-              onPress={() => setTab('new')}
-            >
-              <Text style={[styles.modalTabText, tab === 'new' && styles.modalTabTextActive]}>
-                New Faculty
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {tab === 'existing' ? (
-            <View>
-              <TextInput
-                label="Search faculty by Name or Email"
-                value={searchQuery}
-                onChangeText={handleSearch}
-                mode="outlined"
-                placeholder="Type to search..."
-                style={{ backgroundColor: 'white', marginBottom: 10 }}
-                right={<TextInput.Icon icon="magnify" />}
-              />
-
-              {searching && <ActivityIndicator size="small" color={Palette.primary} style={{ marginVertical: 10 }} />}
-
-              <ScrollView style={{ maxHeight: 200 }}>
-                {searchResults.map((faculty) => (
-                  <TouchableOpacity
-                    key={faculty.id}
-                    style={styles.searchResultItem}
-                    onPress={() => handleAllocateExisting(faculty)}
-                  >
-                    <Avatar.Text
-                      size={34}
-                      label={faculty.name.substring(0, 2).toUpperCase()}
-                      style={{ backgroundColor: Palette.accent }}
-                    />
-                    <View style={{ marginLeft: 10, flex: 1 }}>
-                      <Text style={styles.searchName}>{faculty.name}</Text>
-                      <Text style={styles.searchEmail}>{faculty.email}</Text>
-                      <Text style={styles.searchDept}>{faculty.department}</Text>
-                    </View>
-                    <Feather name="chevron-right" size={20} color={Palette.primary} />
-                  </TouchableOpacity>
-                ))}
-                {searchQuery.length > 0 && searchResults.length === 0 && !searching && (
-                  <Text style={{ textAlign: 'center', color: '#64748B', marginVertical: 10 }}>
-                    No faculty found. Switch to "New Faculty" tab to register.
-                  </Text>
-                )}
-              </ScrollView>
-            </View>
-          ) : (
-            <View>
-              <TextInput
-                label="Faculty Name *"
-                value={newFacultyName}
-                onChangeText={setNewFacultyName}
-                mode="outlined"
-                placeholder="e.g. Mrs. Anitha"
-                style={styles.modalInput}
-              />
-              <TextInput
-                label="Institutional Email *"
-                value={newFacultyEmail}
-                onChangeText={setNewFacultyEmail}
-                mode="outlined"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                placeholder="e.g. anitha.cse@jec.com"
-                style={styles.modalInput}
-              />
-              <TextInput
-                label="Department"
-                value={newFacultyDept}
-                onChangeText={setNewFacultyDept}
-                mode="outlined"
-                placeholder="e.g. Computer Science"
-                style={styles.modalInput}
-              />
-
-              <Button
-                mode="contained"
-                onPress={handleCreateAndAllocate}
-                loading={submitting}
-                disabled={submitting}
-                buttonColor={Palette.primary}
-                style={{ marginTop: 10 }}
+              <TouchableOpacity
+                style={styles.primaryActionButton}
+                onPress={() => setCredModalVisible(false)}
+                activeOpacity={0.85}
               >
-                Create Account & Allocate
-              </Button>
+                <Text style={styles.primaryActionText}>DONE</Text>
+              </TouchableOpacity>
             </View>
-          )}
-
-          <Button mode="text" onPress={() => setModalVisible(false)} style={{ marginTop: 10 }}>
-            Cancel
-          </Button>
-        </Modal>
-      </Portal>
-
-      {/* ── CREDENTIALS MODAL ── */}
-      <Portal>
-        <Modal
-          visible={credModalVisible}
-          onDismiss={() => setCredModalVisible(false)}
-          contentContainerStyle={styles.modalContainer}
-        >
-          <View style={{ alignItems: 'center', marginBottom: 12 }}>
-            <MaterialCommunityIcons name="check-circle" size={48} color="#2E7D32" />
-            <Text style={styles.modalTitle}>Faculty Allocated!</Text>
           </View>
-
-          <Card style={styles.credCard}>
-            <Text style={styles.credLabel}>Teacher Account Email:</Text>
-            <Text style={styles.credValue}>{credInfo?.email}</Text>
-
-            {credInfo?.password ? (
-              <>
-                <Text style={[styles.credLabel, { marginTop: 10 }]}>Generated Password:</Text>
-                <Text style={styles.credValue}>{credInfo.password}</Text>
-              </>
-            ) : (
-              <Text style={{ marginTop: 8, color: Palette.textLight, fontStyle: 'italic' }}>
-                {credInfo?.note || 'Linked to existing faculty account.'}
-              </Text>
-            )}
-          </Card>
-
-          <Button
-            mode="contained"
-            buttonColor={Palette.primary}
-            style={{ marginTop: 16 }}
-            onPress={() => setCredModalVisible(false)}
-          >
-            Done
-          </Button>
         </Modal>
-      </Portal>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screenWrapper: {
+    flex: 1,
+    backgroundColor: EditorialColors.bg,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: EditorialColors.bg,
   },
   content: {
-    padding: 16,
-    paddingBottom: 40,
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
   },
-  headerCard: {
-    padding: 16,
-    borderRadius: 16,
-    backgroundColor: '#FFFFFF',
-    marginBottom: 16,
-    elevation: 2,
-  },
-  headerRow: {
+  topHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
   },
-  iconCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#E0F2FE',
-    justifyContent: 'center',
+  backButton: {
+    width: 44,
+    height: 44,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    backgroundColor: EditorialColors.bg,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#0F172A',
+  screenTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 24,
+    lineHeight: 28,
+    color: EditorialColors.ink,
+    marginBottom: 4,
   },
-  headerSubtitle: {
+  accentDot: {
+    color: EditorialColors.accent,
+  },
+  screenSubtitle: {
+    fontFamily: EditorialFonts.semibold,
     fontSize: 13,
-    color: '#64748B',
-    marginTop: 2,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1E293B',
+    color: EditorialColors.muted,
+    lineHeight: 18,
     marginBottom: 12,
   },
-  subjectCard: {
-    padding: 16,
-    borderRadius: 16,
-    backgroundColor: '#FFFFFF',
-    marginBottom: 14,
-    elevation: 2,
+  heavySpacer: {
+    marginVertical: 18,
   },
-  cardHeader: {
+  sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  sectionHeaderTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
+  },
+  subjectList: {
+    borderTopWidth: EditorialRules.hairline,
+    borderTopColor: EditorialColors.ink,
+  },
+  subjectRow: {
+    borderBottomWidth: EditorialRules.hairline,
+    borderBottomColor: EditorialColors.ink,
+    paddingVertical: 16,
+  },
+  rowTop: {
+    marginBottom: 10,
+  },
+  infoCol: {
+    width: '100%',
+  },
+  codeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
   },
   subjectCode: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Palette.primary,
+    fontFamily: EditorialFonts.bold,
+    fontSize: 13,
+    letterSpacing: 1,
+    color: EditorialColors.muted,
+  },
+  statusBadge: {
+    borderWidth: 1,
+    borderColor: EditorialColors.ink,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+  },
+  accentStatusBadge: {
+    borderColor: EditorialColors.accent,
+  },
+  statusText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 9,
+    letterSpacing: 1,
+    color: EditorialColors.ink,
+  },
+  accentStatusText: {
+    color: EditorialColors.accent,
   },
   subjectName: {
-    fontSize: 14,
-    color: '#1E293B',
-    marginTop: 2,
-  },
-  badge: {
-    paddingHorizontal: 8,
-    borderRadius: 12,
-  },
-  divider: {
-    marginVertical: 12,
-  },
-  facultyRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 17,
+    lineHeight: 22,
+    color: EditorialColors.ink,
+    marginBottom: 4,
   },
   facultyName: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#1E293B',
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 14,
+    color: EditorialColors.ink,
+    marginBottom: 2,
   },
-  facultyEmail: {
-    fontSize: 12,
-    color: '#64748B',
+  emailMeta: {
+    letterSpacing: 1.5,
   },
-  facultyDept: {
-    fontSize: 11,
-    color: Palette.primary,
+  unassignedText: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 13,
+    color: EditorialColors.muted,
+    lineHeight: 18,
+    marginTop: 2,
   },
-  noFacultyBox: {
+  rowActions: {
     flexDirection: 'row',
-    backgroundColor: '#FFF7ED',
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 14,
-    alignItems: 'center',
-  },
-  noFacultyText: {
-    fontSize: 12,
-    color: '#9A3412',
-    marginLeft: 8,
-    flex: 1,
-  },
-  cardActions: {
-    flexDirection: 'row',
+    gap: 10,
     justifyContent: 'flex-end',
+    marginTop: 8,
+  },
+  dangerOutlineBtn: {
+    height: 40,
+    paddingHorizontal: 14,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dangerOutlineBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    color: EditorialColors.accent,
+  },
+  primaryActionBtn: {
+    height: 40,
+    paddingHorizontal: 16,
+    backgroundColor: EditorialColors.ink,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: 8,
   },
-  actionBtn: {
-    borderRadius: 10,
+  primaryActionBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    color: EditorialColors.white,
   },
-  removeBtn: {
-    borderRadius: 10,
-    borderColor: '#FFCDD2',
+  skeletonContainer: {
+    gap: 12,
+    paddingVertical: 16,
   },
-  modalContainer: {
-    backgroundColor: 'white',
+  skeletonBlock: {
+    height: 90,
+    backgroundColor: EditorialColors.track,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(17, 17, 17, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
-    margin: 20,
-    borderRadius: 16,
+  },
+  modalContent: {
+    width: '100%',
+    backgroundColor: EditorialColors.bg,
+    borderWidth: 2,
+    borderColor: EditorialColors.ink,
+    padding: 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
   },
   modalTitle: {
+    fontFamily: EditorialFonts.display,
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#0F172A',
+    color: EditorialColors.ink,
+    letterSpacing: 0.5,
   },
-  modalSubtitle: {
-    fontSize: 13,
-    color: Palette.primary,
-    marginBottom: 16,
+  modalCloseButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
   },
-  modalTabs: {
+  tabToggleRow: {
     flexDirection: 'row',
-    backgroundColor: '#E2E8F0',
-    borderRadius: 10,
-    padding: 3,
+    gap: 8,
     marginBottom: 14,
   },
-  modalTab: {
-    flex: 1,
-    paddingVertical: 8,
-    alignItems: 'center',
-    borderRadius: 8,
+  tabContentBlock: {
+    marginTop: 4,
   },
-  modalTabActive: {
-    backgroundColor: '#FFFFFF',
+  inputBlock: {
+    marginBottom: 14,
   },
-  modalTabText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#64748B',
-  },
-  modalTabTextActive: {
-    color: Palette.primary,
-  },
-  modalInput: {
-    marginBottom: 10,
-    backgroundColor: 'white',
-  },
-  searchResultItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-  },
-  searchName: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#1E293B',
-  },
-  searchEmail: {
-    fontSize: 12,
-    color: '#64748B',
-  },
-  searchDept: {
+  inputLabel: {
+    fontFamily: EditorialFonts.heavy,
     fontSize: 11,
-    color: Palette.primary,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
+    marginBottom: 6,
   },
-  credCard: {
-    backgroundColor: '#F1F5F9',
-    padding: 14,
-    borderRadius: 12,
-  },
-  credLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#475569',
-  },
-  credValue: {
+  underlineInput: {
+    height: 44,
+    borderBottomWidth: 2,
+    borderBottomColor: EditorialColors.ink,
+    fontFamily: EditorialFonts.semibold,
     fontSize: 15,
-    fontWeight: 'bold',
-    color: '#0F172A',
-    marginTop: 2,
+    color: EditorialColors.ink,
+    paddingVertical: 6,
+  },
+  facultySearchResult: {
+    borderBottomWidth: EditorialRules.hairline,
+    borderBottomColor: EditorialColors.track,
+    paddingVertical: 10,
+  },
+  searchResultName: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 14,
+    color: EditorialColors.ink,
+    marginBottom: 2,
+  },
+  modalSubmitBtn: {
+    height: 48,
+    width: '100%',
+    backgroundColor: EditorialColors.ink,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  modalSubmitBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 12,
+    letterSpacing: 1.5,
+    color: EditorialColors.white,
+  },
+  credSuccessNote: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 13,
+    color: EditorialColors.ink,
+    lineHeight: 18,
+    marginBottom: 16,
+  },
+  credDetailsBox: {
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    padding: 14,
+    marginBottom: 20,
+    backgroundColor: EditorialColors.bg,
+  },
+  credRow: {
+    marginBottom: 10,
+  },
+  credKey: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 10,
+    letterSpacing: 1.5,
+    color: EditorialColors.muted,
+    marginBottom: 2,
+  },
+  credVal: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 14,
+    color: EditorialColors.ink,
+  },
+  primaryActionButton: {
+    height: 54,
+    width: '100%',
+    backgroundColor: EditorialColors.ink,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryActionText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.white,
   },
 });

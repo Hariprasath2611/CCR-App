@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, View, ScrollView } from 'react-native';
-import { Text, Card, Button, Chip, Divider, TextInput } from 'react-native-paper';
+import { Alert, StyleSheet, View, ScrollView, TouchableOpacity, Text, StatusBar, TextInput } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { AppTextInput } from '@components/common/AppTextInput';
-import { AppButton } from '@components/common/AppButton';
-import { Palette } from '@theme/colors';
 import { HodStackParamList } from '@navigation/types';
+import { useReportStore, SubjectProgress } from '@features/cc/store/useReportStore';
+import { WeeklyCourseCoverageReportCard } from '../../cc/components/WeeklyCourseCoverageReportCard';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { Label } from '@components/editorial/Label';
+import { Rule } from '@components/editorial/Rule';
+import { SegBar } from '@components/editorial/SegBar';
+import { Feather } from '@expo/vector-icons';
 
 type RouteParams = RouteProp<HodStackParamList, 'RequestDetails'>;
 
@@ -17,20 +21,6 @@ const decisionSchema = z.object({
 });
 
 type DecisionFormData = z.infer<typeof decisionSchema>;
-
-// ─── Helper: Coverage chip color ─────────────────────────────────────────────
-const coverageColor = (pct: string) => {
-  const val = parseInt(pct);
-  if (val >= 75) return Palette.success;
-  if (val >= 50) return Palette.warning;
-  return Palette.error;
-};
-
-import { useReportStore, SubjectProgress } from '@features/cc/store/useReportStore';
-
-import { WeeklyCourseCoverageReportCard } from '../../cc/components/WeeklyCourseCoverageReportCard';
-
-import { ms } from '@theme/responsive';
 
 const MOCK_EXTRA_HOUR = {
   faculty: 'Ms. E Uva Shakthi',
@@ -42,12 +32,8 @@ const MOCK_EXTRA_HOUR = {
   type: 'Extra Hours Request',
 };
 
-const MOCK_PLAN_REPORT = {
-  section: '',
-  week: '',
-};
-
 export const RequestDetailsScreen = () => {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const route = useRoute<RouteParams>();
   const { requestId, requestType } = route.params;
@@ -56,13 +42,11 @@ export const RequestDetailsScreen = () => {
   const submitHODDecision = useReportStore((state) => state.submitHODDecision);
 
   const isExtraHour = requestType === 'EXTRA_HOURS';
-
-  // Fetch report dynamically from the store
   const reportData = isExtraHour ? null : getReportById(requestId);
 
-  const data = isExtraHour 
-    ? MOCK_EXTRA_HOUR 
-    : (reportData 
+  const data = isExtraHour
+    ? MOCK_EXTRA_HOUR
+    : (reportData
         ? {
             id: reportData.id,
             type: 'CC Consolidated Report',
@@ -83,8 +67,6 @@ export const RequestDetailsScreen = () => {
         : null
       );
 
-  const planData = isExtraHour ? null : (data as any);
-
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { control, handleSubmit, reset, formState: { errors } } = useForm<DecisionFormData>({
@@ -98,13 +80,12 @@ export const RequestDetailsScreen = () => {
       if (!isExtraHour) {
         await submitHODDecision(requestId, decision, remarks);
       }
-      
-      console.log('HOD Decision Submitted:', { requestId, decision, remarks });
-      await new Promise<void>((resolve) => setTimeout(resolve, 800)); // mock network delay
+
+      await new Promise<void>((resolve) => setTimeout(resolve, 800));
 
       Alert.alert(
         'Decision Submitted',
-        `You have ${decision === 'APPROVED' ? 'approved and sent this report to the Principal' : decision === 'REJECTED' ? 'rejected' : 'returned'} this ${isExtraHour ? 'request' : 'report'}.`,
+        `You have ${decision === 'APPROVED' ? 'approved and forwarded this report to the Principal' : decision === 'REJECTED' ? 'rejected' : 'returned'} this ${isExtraHour ? 'request' : 'report'}.`,
         [{ text: 'OK', onPress: () => navigation.goBack() }]
       );
       reset();
@@ -121,7 +102,7 @@ export const RequestDetailsScreen = () => {
   const confirmReject = (d: DecisionFormData) => {
     Alert.alert(
       'Confirm Rejection',
-      'Are you sure you want to reject this? This action notifies the submitter.',
+      'Are you sure you want to reject this submission? This action notifies the submitter.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -136,305 +117,510 @@ export const RequestDetailsScreen = () => {
   if (!data) {
     return (
       <View style={styles.centerContainer}>
-        <Text style={{ fontSize: ms(18), fontWeight: 'bold', color: Palette.textDark, textAlign: 'center' }}>No Request Details Found</Text>
-        <Text style={{ marginTop: ms(8), color: Palette.textLight, textAlign: 'center' }}>
-          This request could not be found or has already been processed.
+        <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+        <Text style={styles.notFoundTitle}>NO REQUEST DETAILS FOUND</Text>
+        <Text style={styles.notFoundSub}>
+          The specified report ID may have been archived or returned.
         </Text>
+        <TouchableOpacity
+          style={styles.primaryActionButton}
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.primaryActionText}>RETURN TO DASHBOARD</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
+  const extra = isExtraHour ? (data as typeof MOCK_EXTRA_HOUR) : null;
+  const report = !isExtraHour ? (data as any) : null;
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* ── Header Banner ── */}
-      <View style={styles.banner}>
-        <Text style={styles.bannerTitle}>{data.type}</Text>
-        <Text style={styles.bannerSub}>
-          {isExtraHour
-            ? `${(data as typeof MOCK_EXTRA_HOUR).faculty} · ${(data as typeof MOCK_EXTRA_HOUR).subject}`
-            : `${(data as typeof MOCK_PLAN_REPORT).section} · ${(data as typeof MOCK_PLAN_REPORT).week}`}
+    <View style={styles.screenWrapper}>
+      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingBottom: insets.bottom + 80,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Top Header */}
+        <View style={styles.topHeader}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+            activeOpacity={0.7}
+            accessibilityLabel="Go back"
+          >
+            <Feather name="arrow-left" size={20} color={EditorialColors.ink} />
+          </TouchableOpacity>
+          <Label text={isExtraHour ? 'EXTRA HOURS REQUEST' : 'CONSOLIDATED REPORT'} />
+        </View>
+
+        {/* Title heavy 24 */}
+        <Text style={styles.screenTitle}>
+          {isExtraHour ? extra?.subject : `${report?.section} ${report?.week}`}
         </Text>
-        <Chip style={styles.statusChip} textStyle={styles.statusChipText}>
-          Pending Review
-        </Chip>
-      </View>
+        <Text style={styles.screenSubtitle}>
+          {isExtraHour
+            ? `FACULTY: ${extra?.faculty.toUpperCase()} • ${extra?.section}`
+            : `SUBMITTED BY: ${report?.submittedBy?.toUpperCase()} • ${report?.submittedAt}`}
+        </Text>
 
-      {/* ── Plan Report Details (Spreadsheet document card) ── */}
-      {!isExtraHour && (reportData ? (
-        <WeeklyCourseCoverageReportCard report={reportData} showDownloadButton={true} />
-      ) : (
-        <Card style={styles.card}>
-          <Card.Content>
-            <Text style={styles.sectionLabel}>Submission Info</Text>
-            <Row label="Submitted By" value={planData.submittedBy} />
-            <Row label="Submitted On" value={planData.submittedAt} />
-            <Row label="Overall Coverage" value={planData.overallCoverage} valueColor={coverageColor(planData.overallCoverage)} />
+        {/* 4px Heavy Section Rule */}
+        <Rule thickness="heavy" style={styles.heavySpacer} />
 
-            <Divider style={styles.divider} />
-            <Text style={styles.sectionLabel}>Subject-wise Coverage</Text>
-
-            {planData.subjects.map((s: any) => (
-              <View key={s.code} style={styles.subjectRow}>
-                <View style={styles.subjectInfo}>
-                  <Text style={styles.subjectCode}>{s.code}</Text>
-                  <Text style={styles.subjectName}>{s.name}</Text>
-                  <Text style={{ fontSize: ms(12.5), color: Palette.textLight, marginTop: ms(2) }}>Faculty: {s.faculty || 'Unknown'}</Text>
-                </View>
-                <View style={styles.subjectRight}>
-                  <Text style={[styles.coveragePct, { color: coverageColor(s.coverage) }]}>
-                    {s.coverage}
-                  </Text>
-                  <Chip
-                    compact
-                    style={[
-                      styles.subjectChip,
-                      { backgroundColor: s.status === 'Submitted' ? '#E6F4EA' : '#FFF3E0' },
-                    ]}
-                    textStyle={{
-                      fontSize: ms(10),
-                      color: s.status === 'Submitted' ? Palette.success : Palette.warning,
-                    }}
-                  >
-                    {s.status}
-                  </Chip>
-                </View>
+        {isExtraHour && extra ? (
+          <View style={styles.detailsBlock}>
+            <View style={styles.metaRow}>
+              <Text style={styles.metaLabel}>ALLOTTED PERIOD</Text>
+              <Text style={styles.metaValue}>{extra.period}</Text>
+            </View>
+            <View style={styles.metaRow}>
+              <Text style={styles.metaLabel}>REQUESTED DATE</Text>
+              <Text style={styles.metaValue}>{extra.requestedDate}</Text>
+            </View>
+            <View style={styles.metaRow}>
+              <Text style={styles.metaLabel}>REMARKS & JUSTIFICATION</Text>
+              <Text style={styles.remarksValue}>{extra.reason}</Text>
+            </View>
+          </View>
+        ) : (
+          <>
+            {/* Stat Row */}
+            <View style={styles.statRow}>
+              <View style={styles.statCol}>
+                <Text style={styles.statNum}>{report?.subjects.length}</Text>
+                <Label text="COURSES" />
               </View>
-            ))}
+              <View style={styles.statDivider} />
+              <View style={styles.statCol}>
+                <Text style={styles.statNum}>{report?.overallCoverage}</Text>
+                <Label text="COVERAGE" />
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statCol}>
+                <Text style={styles.statNum}>100%</Text>
+                <Label text="TARGET" />
+              </View>
+            </View>
 
-            <Divider style={styles.divider} />
-            <Text style={styles.sectionLabel}>CC Remarks</Text>
-            <Text style={styles.remarksText}>{planData.ccRemarks}</Text>
-          </Card.Content>
-        </Card>
-      ))}
+            <Rule thickness="hairline" style={styles.hairlineSpacer} />
 
-      {/* ── Extra Hour Request Details ── */}
-      {isExtraHour && (
-        <Card style={styles.card}>
-          <Card.Content>
-            <Text style={styles.sectionLabel}>Request Details</Text>
-            <Row label="Faculty" value={(data as typeof MOCK_EXTRA_HOUR).faculty} />
-            <Row label="Subject" value={(data as typeof MOCK_EXTRA_HOUR).subject} />
-            <Row label="Section" value={(data as typeof MOCK_EXTRA_HOUR).section} />
-            <Row label="Requested Date" value={(data as typeof MOCK_EXTRA_HOUR).requestedDate} />
-            <Row label="Period Slot" value={(data as typeof MOCK_EXTRA_HOUR).period} />
-            <Divider style={styles.divider} />
-            <Text style={styles.sectionLabel}>Reason Given</Text>
-            <Text style={styles.remarksText}>{(data as typeof MOCK_EXTRA_HOUR).reason}</Text>
-          </Card.Content>
-        </Card>
-      )}
+            {/* CC Remarks */}
+            <View style={styles.remarksBlock}>
+              <Label text="COORDINATOR REMARKS" style={{ marginBottom: 4 }} />
+              <Text style={styles.remarksText}>
+                "{report?.ccRemarks || 'All weekly syllabus logs consolidated for HOD approval.'}"
+              </Text>
+            </View>
 
-      {/* ── HOD Decision Form ── */}
-      <Card style={styles.card}>
-        <Card.Content>
-          <Text style={styles.sectionLabel}>Your Remarks / Decision Notes</Text>
+            {/* ListRows for subjects */}
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionHeaderTitle}>SUBJECT COVERAGE ROSTER</Text>
+              <Label text={`${report?.subjects.length} COURSES`} />
+            </View>
+
+            <View style={styles.subjectList}>
+              {report?.subjects.map((sub: any) => {
+                const covVal = parseInt(sub.coverage);
+                const isLagging = covVal < 70;
+                return (
+                  <View key={sub.code} style={styles.subjectRow}>
+                    <View style={styles.rowTop}>
+                      <View style={styles.subInfo}>
+                        <Text style={styles.subCode}>{sub.code}</Text>
+                        <Text style={styles.subName}>{sub.name}</Text>
+                        <Label text={`FACULTY: ${sub.faculty.toUpperCase()}`} />
+                      </View>
+                      <Text
+                        style={[
+                          styles.subPercent,
+                          isLagging ? styles.accentSubPercent : null,
+                        ]}
+                      >
+                        {sub.coverage}
+                      </Text>
+                    </View>
+
+                    <View style={styles.segBarWrapper}>
+                      <SegBar
+                        totalSegments={25}
+                        filledSegments={Math.round((covVal / 100) * 25)}
+                        isLagging={isLagging}
+                      />
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          </>
+        )}
+
+        {/* Decision Section */}
+        <View style={styles.decisionSection}>
+          <Rule thickness="heavy" style={styles.heavySpacer} />
+
+          <Text style={styles.decisionHeaderTitle}>EXECUTIVE DECISION & AUDIT</Text>
+          <Text style={styles.decisionSub}>
+            Enter official HOD feedback or approval notes before submitting your verdict.
+          </Text>
+
           <Controller
             control={control}
             name="remarks"
-            render={({ field: { onChange, value } }) => (
-              <AppTextInput
-                label="Enter your HOD remarks..."
-                value={value}
-                onChangeText={onChange}
-                error={errors.remarks?.message}
-                multiline
-                numberOfLines={3}
-              />
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View style={styles.inputBlock}>
+                <Text style={styles.inputLabel}>HOD REMARKS & AUDIT NOTES</Text>
+                <TextInput
+                  style={[
+                    styles.underlineInput,
+                    errors.remarks ? styles.errorBorder : null,
+                  ]}
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="Enter approval signature or modification notes..."
+                  placeholderTextColor={EditorialColors.muted}
+                  multiline
+                />
+                {errors.remarks && (
+                  <Text style={styles.errorText}>
+                    {errors.remarks.message?.toUpperCase()}
+                  </Text>
+                )}
+              </View>
             )}
           />
 
-          <View style={styles.actionRow}>
-            <AppButton
-              title="Approve"
-              mode="contained"
+          <View style={styles.actionButtonGroup}>
+            <TouchableOpacity
+              style={styles.primaryActionButton}
               onPress={handleSubmit(onApprove)}
-              loading={isSubmitting}
-              style={[styles.actionBtn, { backgroundColor: Palette.success }]}
-            />
-            <AppButton
-              title="Return"
-              mode="outlined"
+              disabled={isSubmitting}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.primaryActionText}>
+                {isSubmitting ? 'SUBMITTING...' : 'APPROVE & FORWARD'}
+              </Text>
+              <Feather name="check" size={16} color={EditorialColors.white} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.outlineActionButton}
               onPress={handleSubmit(onReturn)}
               disabled={isSubmitting}
-              style={styles.actionBtn}
-            />
-            <AppButton
-              title="Reject"
-              mode="outlined"
+              activeOpacity={0.7}
+            >
+              <Text style={styles.outlineActionText}>RETURN FOR REVISION</Text>
+              <Feather name="corner-up-left" size={16} color={EditorialColors.ink} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.dangerActionButton}
               onPress={handleSubmit(confirmReject)}
               disabled={isSubmitting}
-              style={styles.actionBtn}
-              textColor={Palette.error}
-            />
+              activeOpacity={0.7}
+            >
+              <Text style={styles.dangerActionText}>REJECT SUBMISSION</Text>
+              <Feather name="x" size={16} color={EditorialColors.accent} />
+            </TouchableOpacity>
           </View>
-        </Card.Content>
-      </Card>
-    </ScrollView>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
-// ─── Small reusable labeled row ───────────────────────────────────────────────
-const Row = ({
-  label,
-  value,
-  valueColor,
-}: {
-  label: string;
-  value: string;
-  valueColor?: string;
-}) => (
-  <View style={styles.row}>
-    <Text style={styles.rowLabel}>{label}</Text>
-    <Text style={[styles.rowValue, valueColor ? { color: valueColor, fontWeight: 'bold' } : {}]}>
-      {value}
-    </Text>
-  </View>
-);
-
 const styles = StyleSheet.create({
+  screenWrapper: {
+    flex: 1,
+    backgroundColor: EditorialColors.bg,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#FAF9F6', // Off-white premium workspace canvas
+    backgroundColor: EditorialColors.bg,
   },
   content: {
-    padding: ms(16),
-    paddingBottom: ms(40),
-  },
-  banner: {
-    backgroundColor: '#0F52BA', // Royal/Sapphire Blue
-    borderRadius: ms(16),
-    padding: ms(18),
-    marginBottom: ms(16),
-    shadowColor: '#0F52BA',
-    shadowOffset: { width: ms(0), height: ms(4) },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  bannerTitle: {
-    fontSize: ms(18),
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: ms(4),
-  },
-  bannerSub: {
-    fontSize: ms(13),
-    color: '#C8D8F5',
-    marginBottom: ms(12),
-  },
-  statusChip: {
-    backgroundColor: '#F59E0B',
-    alignSelf: 'flex-start',
-    borderRadius: ms(8),
-  },
-  statusChipText: {
-    fontSize: ms(11),
-    color: '#FFFFFF',
-    fontWeight: '700',
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(16),
-    marginBottom: ms(16),
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: ms(0), height: ms(2) },
-    shadowOpacity: 0.02,
-    shadowRadius: 6,
-    elevation: 1.5,
-  },
-  sectionLabel: {
-    fontSize: ms(11),
-    fontWeight: '800',
-    color: '#64748B',
-    textTransform: 'uppercase',
-    letterSpacing: 1.2,
-    marginBottom: ms(12),
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: ms(10),
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-  },
-  rowLabel: {
-    fontSize: ms(13),
-    color: '#64748B',
-    flex: 1,
-  },
-  rowValue: {
-    fontSize: ms(13),
-    color: '#1E293B',
-    fontWeight: '500',
-    flex: 1.2,
-    textAlign: 'right',
-  },
-  divider: {
-    backgroundColor: '#F1F5F9',
-    marginVertical: ms(14),
-  },
-  subjectRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: ms(10),
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-  },
-  subjectInfo: {
-    flex: 1,
-  },
-  subjectCode: {
-    fontSize: ms(11),
-    fontWeight: '800',
-    color: '#0F52BA',
-  },
-  subjectName: {
-    fontSize: ms(14),
-    fontWeight: '700',
-    color: '#1E293B',
-    marginTop: ms(2),
-  },
-  subjectRight: {
-    alignItems: 'flex-end',
-    gap: ms(4),
-  },
-  coveragePct: {
-    fontSize: ms(16),
-    fontWeight: 'bold',
-  },
-  subjectChip: {
-    height: ms(22),
-    borderRadius: ms(8),
-  },
-  remarksText: {
-    fontSize: ms(14),
-    color: '#1E293B',
-    lineHeight: 22,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: ms(10),
-    padding: ms(12),
-  },
-  actionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: ms(16),
-    gap: ms(12),
-  },
-  actionBtn: {
-    flex: 1,
-    borderRadius: ms(10),
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
   },
   centerContainer: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: EditorialColors.bg,
     alignItems: 'center',
-    backgroundColor: Palette.background,
-    padding: ms(24),
+    justifyContent: 'center',
+    padding: 24,
+  },
+  notFoundTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 16,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
+    marginBottom: 6,
+  },
+  notFoundSub: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 13,
+    color: EditorialColors.muted,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  topHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    backgroundColor: EditorialColors.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  screenTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 24,
+    lineHeight: 28,
+    color: EditorialColors.ink,
+    marginBottom: 4,
+  },
+  screenSubtitle: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 13,
+    color: EditorialColors.muted,
+    lineHeight: 18,
+    marginBottom: 12,
+  },
+  heavySpacer: {
+    marginVertical: 18,
+  },
+  hairlineSpacer: {
+    marginVertical: 16,
+  },
+  statRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 6,
+  },
+  statCol: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statNum: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 30,
+    lineHeight: 34,
+    color: EditorialColors.ink,
+    marginBottom: 2,
+  },
+  statDivider: {
+    width: 1,
+    height: 38,
+    backgroundColor: EditorialColors.ink,
+  },
+  remarksBlock: {
+    borderLeftWidth: 2,
+    borderLeftColor: EditorialColors.ink,
+    paddingLeft: 12,
+    marginVertical: 14,
+  },
+  remarksText: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 13,
+    lineHeight: 18,
+    color: EditorialColors.muted,
+    fontStyle: 'italic',
+  },
+  detailsBlock: {
+    marginBottom: 16,
+  },
+  metaRow: {
+    paddingVertical: 10,
+    borderBottomWidth: EditorialRules.hairline,
+    borderBottomColor: EditorialColors.ink,
+  },
+  metaLabel: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
+    marginBottom: 4,
+  },
+  metaValue: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 14,
+    color: EditorialColors.ink,
+  },
+  remarksValue: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 13,
+    lineHeight: 18,
+    color: EditorialColors.ink,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 16,
+    marginBottom: 12,
+  },
+  sectionHeaderTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
+  },
+  subjectList: {
+    borderTopWidth: EditorialRules.hairline,
+    borderTopColor: EditorialColors.ink,
+  },
+  subjectRow: {
+    borderBottomWidth: EditorialRules.hairline,
+    borderBottomColor: EditorialColors.ink,
+    paddingVertical: 12,
+  },
+  rowTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 6,
+  },
+  subInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  subCode: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 12,
+    letterSpacing: 1,
+    color: EditorialColors.muted,
+    marginBottom: 2,
+  },
+  subName: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 15,
+    lineHeight: 20,
+    color: EditorialColors.ink,
+    marginBottom: 4,
+  },
+  subPercent: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 24,
+    color: EditorialColors.ink,
+  },
+  accentSubPercent: {
+    color: EditorialColors.accent,
+  },
+  segBarWrapper: {
+    marginTop: 2,
+  },
+  decisionSection: {
+    marginTop: 8,
+  },
+  decisionHeaderTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
+    marginBottom: 4,
+  },
+  decisionSub: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 12,
+    color: EditorialColors.muted,
+    lineHeight: 16,
+    marginBottom: 16,
+  },
+  inputBlock: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
+    marginBottom: 6,
+  },
+  underlineInput: {
+    minHeight: 52,
+    borderBottomWidth: 2,
+    borderBottomColor: EditorialColors.ink,
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 15,
+    color: EditorialColors.ink,
+    paddingVertical: 8,
+  },
+  errorBorder: {
+    borderBottomColor: EditorialColors.accent,
+  },
+  errorText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    color: EditorialColors.accent,
+    marginTop: 6,
+  },
+  actionButtonGroup: {
+    gap: 12,
+    marginTop: 8,
+  },
+  primaryActionButton: {
+    height: 54,
+    width: '100%',
+    backgroundColor: EditorialColors.ink,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  primaryActionText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.white,
+  },
+  outlineActionButton: {
+    height: 54,
+    width: '100%',
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  outlineActionText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
+  },
+  dangerActionButton: {
+    height: 54,
+    width: '100%',
+    borderWidth: 1.5,
+    borderColor: EditorialColors.accent,
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  dangerActionText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.accent,
   },
 });
