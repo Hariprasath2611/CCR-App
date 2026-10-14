@@ -8,6 +8,7 @@ import { matchFacultyName } from '../../../utils/facultyMatcher';
 import { Palette } from '@theme/colors';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { StaffStackParamList } from '@navigation/types';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
