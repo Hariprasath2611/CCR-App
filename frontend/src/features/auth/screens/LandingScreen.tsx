@@ -1,42 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Dimensions, Modal, TextInput, Alert } from 'react-native';
-import { Text } from 'react-native-paper';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+  Modal,
+  TextInput,
+  Alert,
+  StatusBar,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@navigation/types';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ENV } from '@config/env';
+import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing, EditorialType } from '@theme/editorial';
 
-import { ms } from '@theme/responsive';
-
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 type NavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Landing'>;
-
-// Custom Dot Grid Component for UI decoration
-const DotGrid = () => (
-  <View style={styles.dotGrid}>
-    {Array.from({ length: 6 }).map((_, r) => (
-      <View key={r} style={styles.dotRow}>
-        {Array.from({ length: 6 }).map((_, c) => (
-          <View key={c} style={styles.dot} />
-        ))}
-      </View>
-    ))}
-  </View>
-);
 
 export const LandingScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const [modalVisible, setModalVisible] = useState(false);
   const [serverUrl, setServerUrl] = useState('');
 
-  // Size of the central logo
-  const emblemSize = width * 0.72;
-  const logoWidth = emblemSize * 0.95;
-  const logoHeight = logoWidth * (213 / 244); // Aspect ratio of logo-removebg-preview.png (244x213)
+  const logoWidth = Math.min(width * 0.55, 220);
+  const logoHeight = logoWidth * (213 / 244);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -83,89 +77,73 @@ export const LandingScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Settings cog icon button in the top right corner */}
-      <TouchableOpacity
-        style={styles.settingsButton}
-        onPress={() => setModalVisible(true)}
-        activeOpacity={0.7}
-      >
-        <MaterialCommunityIcons name="cog" size={24} color="#0B41CD" />
-      </TouchableOpacity>
+      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
 
-      {/* Decorative Dot Grids (Top Right and Top Left subtle overlays) */}
-      <DotGrid />
-      <View style={[styles.dotGridLeft, { top: height * 0.12 }]}>
-        {Array.from({ length: 4 }).map((_, r) => (
-          <View key={r} style={styles.dotRow}>
-            {Array.from({ length: 3 }).map((_, c) => (
-              <View key={c} style={styles.dot} />
-            ))}
-          </View>
-        ))}
-      </View>
-
-      {/* Decorative Bottom Waves */}
-      <View style={styles.waveContainer}>
-        <View style={styles.wave1} />
-        <View style={styles.wave2} />
-      </View>
-
-      {/* Top Header Section */}
-      <View style={styles.headerContainer}>
-        <View style={styles.welcomeRow}>
-          <View style={styles.welcomeLine} />
-          <Text style={styles.welcomeText}>Welcome to</Text>
-          <View style={styles.welcomeLine} />
-        </View>
-
-        <Text style={styles.collegeNameJaya}>JAYA</Text>
-        <Text style={styles.collegeNameSub}>ENGINEERING COLLEGE</Text>
-
-        <View style={styles.iconRow}>
-          <View style={styles.iconLine} />
-          <MaterialCommunityIcons name="school" size={18} color="#0B41CD" />
-          <View style={styles.iconLine} />
-        </View>
-
-        <Text style={styles.tagline}>Excellence in Education. Legacy in Service.</Text>
-      </View>
-
-      {/* Center Image Section (logo-removebg-preview.png) */}
-      <View style={styles.emblemContainer}>
-        <Image
-          source={require('../../../assets/logo-removebg-preview.png')}
-          style={{ width: logoWidth, height: logoHeight }}
-          resizeMode="contain"
-        />
-      </View>
-
-      {/* Bottom Title & Action Section */}
-      <View style={styles.bottomContainer}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.appTitle}>
-            <Text style={styles.ccrText}>CCR</Text> GENERATOR
-          </Text>
-          <Text style={styles.appSubtitle}>
-            COURSE COVERAGE REPORT MANAGEMENT SYSTEM
-          </Text>
-          <View style={styles.titleUnderline} />
+      {/* Top Bar with Settings */}
+      <View style={styles.topBar}>
+        <View style={styles.institutionTag}>
+          <Text style={styles.institutionCode}>JEC-ACADEMICS</Text>
         </View>
 
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('Login')}
-          activeOpacity={0.85}
+          style={styles.settingsButton}
+          onPress={() => setModalVisible(true)}
+          activeOpacity={0.7}
+          accessibilityLabel="Server settings"
         >
-          <Text style={styles.buttonText}>GET STARTED</Text>
-          <View style={styles.arrowCircle}>
-            <MaterialCommunityIcons name="arrow-right" size={20} color="#0B41CD" />
-          </View>
+          <Feather name="settings" size={20} color={EditorialColors.ink} />
         </TouchableOpacity>
       </View>
 
-      {/* Premium Server Config Modal */}
+      <View style={styles.heroSection}>
+        {/* Emblem Slot */}
+        <View style={styles.logoFrame}>
+          <Image
+            source={require('../../../assets/logo-removebg-preview.png')}
+            style={{ width: logoWidth, height: logoHeight }}
+            resizeMode="contain"
+          />
+        </View>
+
+        {/* Institution Title */}
+        <View style={styles.institutionInfo}>
+          <Text style={styles.collegeName}>JAYA ENGINEERING COLLEGE</Text>
+          <Text style={styles.collegeTagline}>EXCELLENCE IN EDUCATION • LEGACY IN SERVICE</Text>
+        </View>
+
+        {/* 4px Heavy Ink Rule */}
+        <View style={styles.heavyRule} />
+
+        {/* App Title with vermilion full stop */}
+        <View style={styles.titleBlock}>
+          <Text style={styles.titleHeadline}>
+            CCR GENERATOR<Text style={styles.accentDot}>.</Text>
+          </Text>
+          <Text style={styles.titleSubtitle}>
+            COURSE COVERAGE REPORT MANAGEMENT SYSTEM
+          </Text>
+        </View>
+      </View>
+
+      {/* Bottom CTA Block */}
+      <View style={styles.bottomBlock}>
+        <TouchableOpacity
+          style={styles.getStartedButton}
+          onPress={() => navigation.navigate('Login')}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.getStartedText}>GET STARTED</Text>
+          <Feather name="arrow-right" size={18} color={EditorialColors.white} />
+        </TouchableOpacity>
+
+        <Text style={styles.legalMeta}>
+          OFFICIAL INSTITUTIONAL PLATFORM • ANNA UNIVERSITY AFFILIATED
+        </Text>
+      </View>
+
+      {/* Server Settings Modal */}
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
@@ -173,22 +151,32 @@ export const LandingScreen = () => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <MaterialCommunityIcons name="server" size={28} color="#0B41CD" />
-              <Text style={styles.modalTitle}>Server Settings</Text>
+              <Text style={styles.modalTitle}>
+                SERVER SETTINGS<Text style={styles.accentDot}>.</Text>
+              </Text>
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                style={styles.modalCloseButton}
+                accessibilityLabel="Close modal"
+              >
+                <Feather name="x" size={20} color={EditorialColors.ink} />
+              </TouchableOpacity>
             </View>
-            
+
+            <View style={styles.hairlineRule} />
+
             <Text style={styles.modalDescription}>
               Configure the API Endpoint for the Course Completion Monitoring System backend database.
             </Text>
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>API BASE URL</Text>
+            <View style={styles.fieldBlock}>
+              <Text style={styles.fieldLabel}>API BASE URL</Text>
               <TextInput
-                style={styles.textInput}
+                style={styles.underlineInput}
                 value={serverUrl}
                 onChangeText={setServerUrl}
                 placeholder="https://your-server-url.com/v1"
-                placeholderTextColor="#A0AEC0"
+                placeholderTextColor={EditorialColors.muted}
                 autoCapitalize="none"
                 autoCorrect={false}
               />
@@ -196,27 +184,25 @@ export const LandingScreen = () => {
 
             <View style={styles.modalActions}>
               <TouchableOpacity
-                style={[styles.modalButton, styles.resetButton]}
+                style={styles.outlineActionBtn}
                 onPress={handleReset}
               >
-                <Text style={styles.resetButtonText}>RESET</Text>
+                <Text style={styles.outlineBtnText}>RESET</Text>
               </TouchableOpacity>
-              
-              <View style={styles.rightActions}>
-                <TouchableOpacity
-                  style={[styles.modalButton, styles.cancelButton]}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Text style={styles.cancelButtonText}>CANCEL</Text>
-                </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={[styles.modalButton, styles.saveButton]}
-                  onPress={handleSave}
-                >
-                  <Text style={styles.saveButtonText}>SAVE</Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                style={styles.outlineActionBtn}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.outlineBtnText}>CANCEL</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.primaryActionBtn}
+                onPress={handleSave}
+              >
+                <Text style={styles.primaryBtnText}>SAVE</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -228,313 +214,214 @@ export const LandingScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F6FAFD', // Light, premium blue-white background
+    backgroundColor: EditorialColors.bg,
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: height * 0.03,
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingTop: EditorialSpacing.topSafeArea,
+    paddingBottom: 28,
   },
-  // Dot decoration styles
-  dotGrid: {
-    position: 'absolute',
-    top: ms(40),
-    right: ms(20),
-    opacity: 0.15,
-  },
-  dotGridLeft: {
-    position: 'absolute',
-    left: ms(20),
-    opacity: 0.12,
-  },
-  dotRow: {
+  topBar: {
     flexDirection: 'row',
-    marginBottom: ms(5),
-  },
-  dot: {
-    width: ms(3),
-    height: ms(3),
-    borderRadius: ms(1.5),
-    backgroundColor: '#0B41CD',
-    marginHorizontal: ms(4),
-  },
-  // Overlapping wave footer styles
-  waveContainer: {
-    position: 'absolute',
-    bottom: ms(0),
-    left: ms(0),
-    right: ms(0),
-    height: height * 0.18,
-    overflow: 'hidden',
-    zIndex: -1,
-  },
-  wave1: {
-    position: 'absolute',
-    bottom: -height * 0.05,
-    left: -width * 0.1,
-    width: width * 1.2,
-    height: height * 0.18,
-    backgroundColor: '#E2EEFC',
-    borderTopLeftRadius: width * 0.6,
-    borderTopRightRadius: width * 0.5,
-    opacity: 0.55,
-  },
-  wave2: {
-    position: 'absolute',
-    bottom: -height * 0.07,
-    left: -width * 0.2,
-    width: width * 1.4,
-    height: height * 0.18,
-    backgroundColor: '#EDF5FD',
-    borderTopLeftRadius: width * 0.5,
-    borderTopRightRadius: width * 0.7,
-    opacity: 0.8,
-  },
-  // Header styles
-  headerContainer: {
     alignItems: 'center',
+    justifyContent: 'space-between',
     width: '100%',
-    marginTop: height * 0.01,
   },
-  welcomeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: ms(8),
+  institutionTag: {
+    paddingVertical: 4,
   },
-  welcomeLine: {
-    width: ms(30),
-    height: ms(1.2),
-    backgroundColor: '#B9D5FA',
-    marginHorizontal: ms(10),
-  },
-  welcomeText: {
-    fontSize: ms(12),
-    fontWeight: '700',
-    color: '#64748B',
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
-  },
-  collegeNameJaya: {
-    fontSize: ms(50),
-    fontWeight: '900',
-    color: '#0B41CD',
-    letterSpacing: 4,
-    lineHeight: 52,
-  },
-  collegeNameSub: {
-    fontSize: ms(16),
-    fontWeight: '800',
-    color: '#102A43',
+  institutionCode: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
     letterSpacing: 2,
-    marginTop: ms(2),
-    marginBottom: ms(10),
-  },
-  iconRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: ms(8),
-  },
-  iconLine: {
-    width: ms(35),
-    height: ms(1.2),
-    backgroundColor: '#B9D5FA',
-    marginHorizontal: ms(12),
-  },
-  tagline: {
-    fontSize: ms(11),
-    fontStyle: 'italic',
-    fontWeight: '600',
-    color: '#64748B',
-  },
-  // Central emblem styles
-  emblemContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: height * 0.02,
-    position: 'relative',
-  },
-  // Bottom content styles
-  bottomContainer: {
-    width: '100%',
-    alignItems: 'center',
-    paddingHorizontal: ms(24),
-    marginBottom: height * 0.02,
-  },
-  titleContainer: {
-    alignItems: 'center',
-    marginBottom: height * 0.04,
-  },
-  appTitle: {
-    fontSize: ms(26),
-    fontWeight: '900',
-    color: '#102A43',
-    letterSpacing: 0.5,
-    textAlign: 'center',
-  },
-  ccrText: {
-    color: '#0B41CD',
-  },
-  appSubtitle: {
-    fontSize: ms(9),
-    fontWeight: '700',
-    color: '#64748B',
-    textAlign: 'center',
-    marginTop: ms(6),
-    letterSpacing: 0.8,
-    lineHeight: 14,
-    paddingHorizontal: ms(10),
-  },
-  titleUnderline: {
-    width: ms(45),
-    height: ms(3),
-    backgroundColor: '#0B41CD',
-    borderRadius: ms(1.5),
-    marginTop: ms(12),
-  },
-  // Button styles
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#0B41CD', // Vibrant royal blue to match screenshot button
-    height: ms(56),
-    borderRadius: ms(28), // Fully rounded pill shape
-    width: '90%',
-    alignSelf: 'center',
-    shadowColor: '#0B41CD',
-    shadowOffset: { width: ms(0), height: ms(4) },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
-    position: 'relative',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: ms(16),
-    fontWeight: '800',
-    letterSpacing: 1.2,
-  },
-  arrowCircle: {
-    position: 'absolute',
-    right: ms(10),
-    width: ms(36),
-    height: ms(36),
-    borderRadius: ms(18), // Circular
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
+    color: EditorialColors.muted,
   },
   settingsButton: {
-    position: 'absolute',
-    top: ms(50),
-    right: ms(25),
-    zIndex: 10,
-    backgroundColor: '#FFFFFF',
-    padding: ms(10),
-    borderRadius: ms(20),
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: ms(0), height: ms(2) },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
+    width: 44,
+    height: 44,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    backgroundColor: EditorialColors.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  heroSection: {
+    alignItems: 'flex-start',
+    width: '100%',
+  },
+  logoFrame: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    alignSelf: 'center',
+  },
+  institutionInfo: {
+    marginBottom: 16,
+    width: '100%',
+  },
+  collegeName: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 15,
+    letterSpacing: 1.5,
+    color: EditorialColors.ink,
+    marginBottom: 4,
+  },
+  collegeTagline: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 10,
+    letterSpacing: 1.5,
+    color: EditorialColors.muted,
+  },
+  heavyRule: {
+    width: '100%',
+    height: EditorialRules.section,
+    backgroundColor: EditorialColors.ink,
+    marginBottom: 20,
+  },
+  hairlineRule: {
+    width: '100%',
+    height: EditorialRules.divider,
+    backgroundColor: EditorialColors.ink,
+    marginBottom: 16,
+  },
+  titleBlock: {
+    width: '100%',
+  },
+  titleHeadline: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 38,
+    lineHeight: 42,
+    color: EditorialColors.ink,
+    letterSpacing: -0.5,
+    marginBottom: 8,
+  },
+  accentDot: {
+    color: EditorialColors.accent,
+  },
+  titleSubtitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
+    lineHeight: 16,
+  },
+  bottomBlock: {
+    width: '100%',
+    gap: 14,
+  },
+  getStartedButton: {
+    height: 54,
+    width: '100%',
+    backgroundColor: EditorialColors.ink,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  getStartedText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.white,
+  },
+  legalMeta: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 10,
+    letterSpacing: 1.5,
+    color: EditorialColors.muted,
+    textAlign: 'center',
+  },
+
+  // Modal styles
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+    backgroundColor: 'rgba(17, 17, 17, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: ms(20),
+    padding: 20,
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(24),
     width: '100%',
-    maxWidth: ms(400),
-    padding: ms(24),
-    shadowColor: '#000',
-    shadowOffset: { width: ms(0), height: ms(10) },
-    shadowOpacity: 0.25,
-    shadowRadius: 15,
-    elevation: 10,
+    backgroundColor: EditorialColors.bg,
+    borderWidth: 2,
+    borderColor: EditorialColors.ink,
+    padding: 24,
   },
   modalHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: ms(12),
+    marginBottom: 12,
   },
   modalTitle: {
-    fontSize: ms(20),
-    fontWeight: '800',
-    color: '#102A43',
-    marginLeft: ms(10),
+    fontFamily: EditorialFonts.display,
+    fontSize: 22,
+    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+  },
+  modalCloseButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
   },
   modalDescription: {
-    fontSize: ms(13),
-    color: '#64748B',
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 13,
+    color: EditorialColors.muted,
     lineHeight: 18,
-    marginBottom: ms(20),
+    marginBottom: 20,
   },
-  inputContainer: {
-    marginBottom: ms(24),
+  fieldBlock: {
+    marginBottom: 24,
   },
-  inputLabel: {
-    fontSize: ms(11),
-    fontWeight: '700',
-    color: '#486581',
-    marginBottom: ms(8),
-    letterSpacing: 1,
+  fieldLabel: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
+    marginBottom: 6,
   },
-  textInput: {
-    backgroundColor: '#F0F4F8',
-    borderRadius: ms(12),
-    paddingHorizontal: ms(16),
-    paddingVertical: ms(12),
-    fontSize: ms(14),
-    color: '#102A43',
-    borderWidth: 1,
-    borderColor: '#D9E2EC',
+  underlineInput: {
+    height: 44,
+    borderBottomWidth: 2,
+    borderBottomColor: EditorialColors.ink,
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 15,
+    color: EditorialColors.ink,
+    paddingVertical: 8,
   },
   modalActions: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    gap: 10,
+    justifyContent: 'flex-end',
   },
-  rightActions: {
-    flexDirection: 'row',
+  outlineActionBtn: {
+    height: 44,
+    paddingHorizontal: 16,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
     alignItems: 'center',
-  },
-  modalButton: {
-    paddingVertical: ms(10),
-    paddingHorizontal: ms(16),
-    borderRadius: ms(8),
     justifyContent: 'center',
+  },
+  outlineBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 12,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
+  },
+  primaryActionBtn: {
+    height: 44,
+    paddingHorizontal: 20,
+    backgroundColor: EditorialColors.ink,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  resetButton: {
-    backgroundColor: 'transparent',
-    paddingHorizontal: ms(8),
-  },
-  resetButtonText: {
-    fontSize: ms(11),
-    fontWeight: '700',
-    color: '#EF4444',
-    letterSpacing: 0.5,
-  },
-  cancelButton: {
-    backgroundColor: 'transparent',
-    marginRight: ms(8),
-  },
-  cancelButtonText: {
-    fontSize: ms(13),
-    fontWeight: '700',
-    color: '#627D98',
-  },
-  saveButton: {
-    backgroundColor: '#0B41CD',
-  },
-  saveButtonText: {
-    fontSize: ms(13),
-    fontWeight: '800',
-    color: '#FFFFFF',
+  primaryBtnText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 12,
+    letterSpacing: 2,
+    color: EditorialColors.white,
   },
 });

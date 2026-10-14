@@ -6,19 +6,17 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
+  StatusBar,
+  Text,
+  TextInput,
   ActivityIndicator,
 } from 'react-native';
-import { Text } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@navigation/types';
-import { Palette } from '@theme/colors';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AppTextInput } from '@components/common/AppTextInput';
-import { AppButton } from '@components/common/AppButton';
-import { ms } from '@theme/responsive';
+import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
 
 type NavigationProp = NativeStackNavigationProp<AuthStackParamList, 'ForgotPassword'>;
 
@@ -44,7 +42,6 @@ export const ForgotPasswordScreen = () => {
     setError('');
     setIsLoading(true);
 
-    // Simulate password reset notification / request
     setTimeout(() => {
       setIsLoading(false);
       setIsSubmitted(true);
@@ -56,86 +53,110 @@ export const ForgotPasswordScreen = () => {
       style={styles.keyboardContainer}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
+      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
       <ScrollView
         contentContainerStyle={[
           styles.scrollContainer,
-          { paddingTop: Math.max(insets.top + ms(20), ms(40)), paddingBottom: Math.max(insets.bottom + ms(20), ms(40)) },
+          {
+            paddingTop: Math.max(insets.top + 16, EditorialSpacing.topSafeArea),
+            paddingBottom: Math.max(insets.bottom + 24, 32),
+          },
         ]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-          activeOpacity={0.7}
-        >
-          <Feather name="arrow-left" size={20} color={Palette.primary} />
-          <Text style={styles.backButtonText}>Back to Sign In</Text>
-        </TouchableOpacity>
+        {/* Top Back Navigation Button */}
+        <View style={styles.headerRow}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+            activeOpacity={0.7}
+            accessibilityLabel="Back to sign in"
+          >
+            <Feather name="arrow-left" size={20} color={EditorialColors.ink} />
+          </TouchableOpacity>
+          <Text style={styles.headerTag}>RECOVERY</Text>
+        </View>
 
-        <View style={styles.card}>
-          <View style={styles.iconCircle}>
-            <MaterialCommunityIcons
-              name={isSubmitted ? 'email-check-outline' : 'lock-reset'}
-              size={36}
-              color={Palette.primary}
-            />
-          </View>
-
-          <Text style={styles.title}>
-            {isSubmitted ? 'Reset Request Sent' : 'Reset Password'}
+        {/* Headline */}
+        <View style={styles.titleSection}>
+          <Text style={styles.headline}>
+            {isSubmitted ? 'REQUEST SENT' : 'RESET PASSWORD'}
+            <Text style={styles.accentDot}>.</Text>
           </Text>
-
-          <Text style={styles.subtitle}>
+          <Text style={styles.subtext}>
             {isSubmitted
               ? `If ${email} is registered with Jaya Engineering College CCR, password reset instructions have been forwarded to your institutional mailbox.`
               : 'Enter your registered faculty or administrator email address to request password credentials recovery.'}
           </Text>
+        </View>
 
-          {!isSubmitted ? (
-            <View style={styles.formSection}>
-              <AppTextInput
-                label="Institutional Email"
+        {/* 4px Heavy Ink Rule */}
+        <View style={styles.heavyRule} />
+
+        {!isSubmitted ? (
+          <View style={styles.formSection}>
+            <View style={styles.inputBlock}>
+              <Text style={styles.fieldLabel}>INSTITUTIONAL EMAIL</Text>
+              <TextInput
+                style={[
+                  styles.underlineInput,
+                  error ? styles.inputErrorBorder : null,
+                ]}
                 value={email}
                 onChangeText={(val) => {
                   setEmail(val);
                   if (error) setError('');
                 }}
-                error={error}
                 keyboardType="email-address"
                 autoCapitalize="none"
+                autoCorrect={false}
                 placeholder="e.g. drkaruppaiya@ccr.edu"
+                placeholderTextColor={EditorialColors.muted}
               />
-
-              <AppButton
-                title={isLoading ? 'Sending Request...' : 'Send Recovery Link'}
-                onPress={handleResetRequest}
-                loading={isLoading}
-                style={styles.actionBtn}
-              />
-            </View>
-          ) : (
-            <View style={styles.successSection}>
-              <View style={styles.noticeBox}>
-                <Feather name="info" size={16} color="#0F52BA" />
-                <Text style={styles.noticeText}>
-                  For immediate assistance or locked accounts, please contact the Central IT Administration at{' '}
-                  <Text style={{ fontWeight: '700' }}>it-support@jec.ac.in</Text>.
+              {!!error && (
+                <Text style={styles.errorText}>
+                  {error.toUpperCase()}
                 </Text>
-              </View>
-
-              <AppButton
-                title="Return to Sign In"
-                onPress={() => navigation.navigate('Login')}
-                style={styles.actionBtn}
-              />
+              )}
             </View>
-          )}
 
-          <View style={styles.helpBox}>
-            <MaterialCommunityIcons name="shield-check" size={16} color={Palette.textLight} />
-            <Text style={styles.helpText}>Jaya Engineering College • CCR System Security</Text>
+            <TouchableOpacity
+              style={[styles.primaryButton, isLoading && styles.buttonDisabled]}
+              onPress={handleResetRequest}
+              disabled={isLoading}
+              activeOpacity={0.85}
+            >
+              {isLoading ? (
+                <ActivityIndicator color={EditorialColors.white} size="small" />
+              ) : (
+                <Text style={styles.primaryButtonText}>SEND RECOVERY LINK</Text>
+              )}
+            </TouchableOpacity>
           </View>
+        ) : (
+          <View style={styles.successSection}>
+            <View style={styles.noticeBlock}>
+              <Text style={styles.noticeTag}>SECURITY NOTICE</Text>
+              <Text style={styles.noticeBody}>
+                For immediate assistance or locked accounts, please contact the Central IT Administration at it-support@jec.ac.in.
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={() => navigation.navigate('Login')}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.primaryButtonText}>RETURN TO SIGN IN</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <View style={styles.footerNote}>
+          <Text style={styles.footerText}>
+            JAYA ENGINEERING COLLEGE • CCR SECURITY VERIFIED
+          </Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -145,103 +166,142 @@ export const ForgotPasswordScreen = () => {
 const styles = StyleSheet.create({
   keyboardContainer: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: EditorialColors.bg,
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingHorizontal: ms(24),
-    justifyContent: 'center',
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
   },
-  backButton: {
+  headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: ms(20),
-    alignSelf: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 24,
   },
-  backButtonText: {
-    fontSize: ms(14),
-    fontWeight: '700',
-    color: Palette.primary,
-    marginLeft: ms(8),
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: ms(24),
-    padding: ms(24),
+  backButton: {
+    width: 44,
+    height: 44,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    backgroundColor: EditorialColors.bg,
     alignItems: 'center',
-    shadowColor: '#0F52BA',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.06,
-    shadowRadius: 20,
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  iconCircle: {
-    width: ms(72),
-    height: ms(72),
-    borderRadius: ms(36),
-    backgroundColor: '#EFF6FF',
     justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: ms(16),
-    borderWidth: 1,
-    borderColor: '#BFDBFE',
   },
-  title: {
-    fontSize: ms(22),
-    fontWeight: '900',
-    color: Palette.textDark,
-    textAlign: 'center',
-    marginBottom: ms(8),
+  headerTag: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
   },
-  subtitle: {
-    fontSize: ms(13.5),
-    color: Palette.textLight,
-    textAlign: 'center',
-    lineHeight: ms(20),
-    marginBottom: ms(20),
-    paddingHorizontal: ms(8),
+  titleSection: {
+    marginBottom: 20,
+  },
+  headline: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 40,
+    lineHeight: 44,
+    color: EditorialColors.ink,
+    letterSpacing: -0.5,
+    marginBottom: 8,
+  },
+  accentDot: {
+    color: EditorialColors.accent,
+  },
+  subtext: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 14,
+    lineHeight: 20,
+    color: EditorialColors.muted,
+  },
+  heavyRule: {
+    width: '100%',
+    height: EditorialRules.section,
+    backgroundColor: EditorialColors.ink,
+    marginBottom: 28,
   },
   formSection: {
     width: '100%',
+    marginBottom: 32,
+  },
+  inputBlock: {
+    marginBottom: 28,
+  },
+  fieldLabel: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
+    marginBottom: 6,
+  },
+  underlineInput: {
+    height: 48,
+    borderBottomWidth: 2,
+    borderBottomColor: EditorialColors.ink,
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 16,
+    color: EditorialColors.ink,
+    paddingVertical: 8,
+  },
+  inputErrorBorder: {
+    borderBottomColor: EditorialColors.accent,
+  },
+  errorText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    color: EditorialColors.accent,
+    marginTop: 6,
+  },
+  primaryButton: {
+    height: 54,
+    width: '100%',
+    backgroundColor: EditorialColors.ink,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  primaryButtonText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.white,
   },
   successSection: {
     width: '100%',
+    marginBottom: 32,
   },
-  noticeBox: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: '#EFF6FF',
-    padding: ms(12),
-    borderRadius: ms(12),
-    borderWidth: 1,
-    borderColor: '#BFDBFE',
-    marginBottom: ms(20),
+  noticeBlock: {
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    padding: 16,
+    marginBottom: 24,
+    backgroundColor: EditorialColors.bg,
   },
-  noticeText: {
-    fontSize: ms(12),
-    color: '#1E3A8A',
-    marginLeft: ms(8),
-    flex: 1,
-    lineHeight: ms(18),
+  noticeTag: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
+    marginBottom: 6,
   },
-  actionBtn: {
-    marginTop: ms(8),
-    borderRadius: ms(12),
-    paddingVertical: ms(4),
+  noticeBody: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 13,
+    lineHeight: 18,
+    color: EditorialColors.ink,
   },
-  helpBox: {
-    flexDirection: 'row',
+  footerNote: {
+    marginTop: 'auto',
+    paddingVertical: 16,
     alignItems: 'center',
-    marginTop: ms(24),
   },
-  helpText: {
-    fontSize: ms(11),
-    color: Palette.textLight,
-    fontWeight: '600',
-    marginLeft: ms(6),
+  footerText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 10,
+    letterSpacing: 1.5,
+    color: EditorialColors.muted,
+    textAlign: 'center',
   },
 });
-
-export default ForgotPasswordScreen;
