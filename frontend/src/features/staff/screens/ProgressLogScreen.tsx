@@ -129,7 +129,7 @@ export const ProgressLogScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Card style={styles.formCard}>
         <Card.Title title="Weekly Progress Log" subtitle="Log units & topics coverage progress" />
         <Card.Content>
@@ -238,8 +238,11 @@ export const ProgressLogScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: ms(16),
     backgroundColor: Palette.background,
+  },
+  contentContainer: {
+    padding: ms(16),
+    paddingBottom: ms(40),
   },
   formCard: {
     backgroundColor: Palette.surface,

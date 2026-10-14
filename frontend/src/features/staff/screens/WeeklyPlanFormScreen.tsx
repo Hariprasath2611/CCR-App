@@ -131,7 +131,7 @@ export const WeeklyPlanFormScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Card style={styles.formCard}>
         <Card.Title title="Weekly Plan Planner" subtitle="Design weekly syllabus completion targets" />
         <Card.Content>
