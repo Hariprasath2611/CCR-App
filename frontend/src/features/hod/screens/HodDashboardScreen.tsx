@@ -8,6 +8,7 @@ import { Palette } from '@theme/colors';
 import { StaffStackParamList } from '@navigation/types';
 import { useReportStore } from '@features/cc/store/useReportStore';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ms } from '@theme/responsive';
 
