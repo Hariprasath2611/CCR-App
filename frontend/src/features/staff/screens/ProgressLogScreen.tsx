@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, StyleSheet, View, ScrollView } from 'react-native';
-import { Text, Card, Checkbox } from 'react-native-paper';
+import { Alert, StyleSheet, View, ScrollView, TouchableOpacity, Text, StatusBar, TextInput } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { AppTextInput } from '@components/common/AppTextInput';
-import { AppButton } from '@components/common/AppButton';
 import { AppDropdown } from '@components/common/AppDropdown';
 import { SyllabusRepository } from '@database/repositories/SyllabusRepository';
 import { SyncQueueRepository } from '@database/repositories/SyncQueueRepository';
 import { SQLiteSyllabusNode } from '@database/types';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
-import { Palette } from '@theme/colors';
 import { syncEngine } from '@features/sync/syncEngine';
-
-import { ms } from '@theme/responsive';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { Label } from '@components/editorial/Label';
+import { Rule } from '@components/editorial/Rule';
+import { EditorialToggle } from '@components/editorial/EditorialToggle';
+import { Feather } from '@expo/vector-icons';
 
 const progressSchema = z.object({
   subjectCode: z.string().min(1, 'Subject code is required'),
@@ -26,6 +26,7 @@ const progressSchema = z.object({
 type ProgressFormData = z.infer<typeof progressSchema>;
 
 export const ProgressLogScreen = () => {
+  const insets = useSafeAreaInsets();
   const user = useAuthStore((state) => state.user);
   const [syllabusNodes, setSyllabusNodes] = useState<SQLiteSyllabusNode[]>([]);
   const [completedTopics, setCompletedTopics] = useState<string[]>([]);
@@ -38,7 +39,7 @@ export const ProgressLogScreen = () => {
     resolver: zodResolver(progressSchema),
     defaultValues: {
       subjectCode: '',
-      academicWeekNumber: '',
+      academicWeekNumber: '12',
       reasonsForPending: '',
       extraHoursRequested: false,
     },
@@ -51,8 +52,6 @@ export const ProgressLogScreen = () => {
       if (subjectCodeVal) {
         const nodes = await syllabusRepo.getSyllabusBySubject(subjectCodeVal);
         setSyllabusNodes(nodes);
-        
-        // Initial setup for completed topics list
         const completed = nodes.filter((n) => n.is_completed === 1).map((n) => n.topic_id);
         setCompletedTopics(completed);
       } else {
@@ -96,15 +95,12 @@ export const ProgressLogScreen = () => {
         submittedAt: new Date().toISOString(),
       };
 
-      // Add to sync queue for background syncing
       await syncQueueRepo.enqueue('SUBMIT_PROGRESS', progressPayload);
 
-      // Trigger background sync immediately to send the log to MongoDB
       syncEngine.triggerSync().catch((err) => {
         console.error('Trigger sync after submission failed:', err);
       });
 
-      // Locally update SQLite syllabus table checkbox status
       for (const node of syllabusNodes) {
         const isNowCompleted = completedTopics.includes(node.topic_id);
         await syllabusRepo.updateCompletionStatus(
@@ -116,7 +112,6 @@ export const ProgressLogScreen = () => {
 
       Alert.alert('Success', 'Syllabus Weekly Progress Logged (Offline Sync Enqueued)!');
       setValue('subjectCode', '');
-      setValue('academicWeekNumber', '');
       setValue('reasonsForPending', '');
       setValue('extraHoursRequested', false);
       setCompletedTopics([]);
@@ -129,25 +124,52 @@ export const ProgressLogScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <Card style={styles.formCard}>
-        <Card.Title title="Weekly Progress Log" subtitle="Log units & topics coverage progress" />
-        <Card.Content>
+    <View style={styles.screenWrapper}>
+      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingBottom: insets.bottom + 80,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Label text="SYLLABUS PROGRESS TRACKER" />
+          <Text style={styles.headerTitle}>
+            LOG PROGRESS<Text style={styles.accentDot}>.</Text>
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            Record completed curriculum topics, delivery notes and extra hour requests.
+          </Text>
+        </View>
+
+        {/* 4px Heavy Section Rule */}
+        <Rule thickness="heavy" style={styles.heavySpacer} />
+
+        {/* Form Inputs */}
+        <View style={styles.formSection}>
           <Controller
             control={control}
             name="subjectCode"
             render={({ field: { onChange, value } }) => (
-              <AppDropdown
-                label="Course Subject"
-                value={value}
-                options={[
-                  { label: 'CS8501 - Theory of Computation', value: 'CS8501' },
-                  { label: 'CS8502 - Database Systems', value: 'CS8502' },
-                  { label: 'CS8503 - Computer Networks', value: 'CS8503' },
-                ]}
-                onSelect={onChange}
-                error={errors.subjectCode?.message}
-              />
+              <View style={styles.dropdownBlock}>
+                <AppDropdown
+                  label="Course Subject"
+                  value={value}
+                  options={[
+                    { label: 'CS8501 - Theory of Computation', value: 'CS8501' },
+                    { label: 'CS8502 - Database Systems', value: 'CS8502' },
+                    { label: 'CS8503 - Computer Networks', value: 'CS8503' },
+                  ]}
+                  onSelect={onChange}
+                  error={errors.subjectCode?.message}
+                />
+              </View>
             )}
           />
 
@@ -155,133 +177,288 @@ export const ProgressLogScreen = () => {
             control={control}
             name="academicWeekNumber"
             render={({ field: { onChange, value } }) => (
-              <AppDropdown
-                label="Current Week Number"
-                value={value}
-                options={[
-                  { label: 'Week 11', value: '11' },
-                  { label: 'Week 12', value: '12' },
-                  { label: 'Week 13', value: '13' },
-                  { label: 'Week 14', value: '14' },
-                ]}
-                onSelect={onChange}
-                error={errors.academicWeekNumber?.message}
-              />
+              <View style={styles.dropdownBlock}>
+                <AppDropdown
+                  label="Academic Week Number"
+                  value={value}
+                  options={[
+                    { label: 'Week 11', value: '11' },
+                    { label: 'Week 12', value: '12' },
+                    { label: 'Week 13', value: '13' },
+                    { label: 'Week 14', value: '14' },
+                  ]}
+                  onSelect={onChange}
+                  error={errors.academicWeekNumber?.message}
+                />
+              </View>
             )}
           />
 
           {syllabusNodes.length > 0 && (
             <View style={styles.syllabusBlock}>
-              <Text style={styles.syllabusLabel}>Mark Completed Topics this Week:</Text>
-              {syllabusNodes.map((node) => {
-                const checked = completedTopics.includes(node.topic_id);
-                return (
-                  <View key={node.topic_id} style={styles.checkboxRow}>
-                    <Checkbox.Android
-                      status={checked ? 'checked' : 'unchecked'}
+              <View style={styles.sectionHeaderRow}>
+                <Text style={styles.sectionHeaderTitle}>COMPLETED TOPICS THIS WEEK</Text>
+                <Label text={`${completedTopics.length}/${syllabusNodes.length} DONE`} />
+              </View>
+
+              <View style={styles.topicList}>
+                {syllabusNodes.map((node) => {
+                  const checked = completedTopics.includes(node.topic_id);
+                  return (
+                    <TouchableOpacity
+                      key={node.topic_id}
+                      style={styles.topicRow}
                       onPress={() => handleTopicToggle(node.topic_id)}
-                      color={Palette.primary}
-                    />
-                    <Text style={styles.topicText} onPress={() => handleTopicToggle(node.topic_id)}>
-                      {node.topic_title}
-                    </Text>
-                  </View>
-                );
-              })}
+                      activeOpacity={0.7}
+                    >
+                      <View
+                        style={[
+                          styles.checkboxSquare,
+                          checked ? styles.checkboxSquareChecked : null,
+                        ]}
+                      >
+                        {checked && (
+                          <Feather name="check" size={14} color={EditorialColors.white} />
+                        )}
+                      </View>
+
+                      <View style={styles.topicInfo}>
+                        <Text style={styles.topicText}>{node.topic_title}</Text>
+                        <Label text={node.unit} />
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
             </View>
           )}
 
+          {/* Reasons for Pending */}
           <Controller
             control={control}
             name="reasonsForPending"
             render={({ field: { onChange, value } }) => (
-              <AppTextInput
-                label="Reasons for Pending Topics (Required if any)"
-                value={value || ''}
-                onChangeText={onChange}
-                error={errors.reasonsForPending?.message}
-                multiline
-                numberOfLines={3}
-                style={styles.textInput}
-              />
+              <View style={styles.inputBlock}>
+                <Text style={styles.inputLabel}>REASONS FOR PENDING TOPICS (IF ANY)</Text>
+                <TextInput
+                  style={[
+                    styles.underlineInput,
+                    errors.reasonsForPending ? styles.errorBorder : null,
+                  ]}
+                  value={value || ''}
+                  onChangeText={onChange}
+                  placeholder="Explain pedagogical adjustments, holidays or leave..."
+                  placeholderTextColor={EditorialColors.muted}
+                  multiline
+                />
+                {errors.reasonsForPending && (
+                  <Text style={styles.errorText}>
+                    {errors.reasonsForPending.message?.toUpperCase()}
+                  </Text>
+                )}
+              </View>
             )}
           />
 
-          <View style={styles.checkboxRow}>
-            <Controller
-              control={control}
-              name="extraHoursRequested"
-              render={({ field: { onChange, value } }) => (
-                <Checkbox.Android
-                  status={value ? 'checked' : 'unchecked'}
-                  onPress={() => onChange(!value)}
-                  color={Palette.primary}
+          {/* Toggle for Extra Hours */}
+          <Controller
+            control={control}
+            name="extraHoursRequested"
+            render={({ field: { onChange, value } }) => (
+              <View style={styles.toggleRow}>
+                <View style={styles.toggleTextCol}>
+                  <Text style={styles.toggleLabel}>REQUEST EXTRA TEACHING HOURS</Text>
+                  <Text style={styles.toggleSub}>
+                    Notify Coordinator & HOD to allocate a revision slot.
+                  </Text>
+                </View>
+                <EditorialToggle
+                  value={value}
+                  onValueChange={onChange}
                 />
-              )}
-            />
-            <Text style={styles.extraHoursLabel}>Request Extra Teaching Hours for Section</Text>
-          </View>
-
-          <AppButton
-            mode="contained"
-            title="Log Weekly Progress"
-            onPress={handleSubmit(onSubmit)}
-            loading={isSubmitting}
-            style={styles.submitBtn}
+              </View>
+            )}
           />
-        </Card.Content>
-      </Card>
-    </ScrollView>
+
+          {/* Submit Button */}
+          <TouchableOpacity
+            style={styles.primaryActionButton}
+            onPress={handleSubmit(onSubmit)}
+            disabled={isSubmitting}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.primaryActionText}>
+              {isSubmitting ? 'LOGGING...' : 'LOG WEEKLY PROGRESS'}
+            </Text>
+            <Feather name="arrow-right" size={16} color={EditorialColors.white} />
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screenWrapper: {
+    flex: 1,
+    backgroundColor: EditorialColors.bg,
+  },
   container: {
     flex: 1,
-    backgroundColor: Palette.background,
+    backgroundColor: EditorialColors.bg,
   },
-  contentContainer: {
-    padding: ms(16),
-    paddingBottom: ms(40),
+  content: {
+    paddingHorizontal: EditorialSpacing.screenHorizontal,
   },
-  formCard: {
-    backgroundColor: Palette.surface,
-    borderRadius: ms(12),
-    marginBottom: ms(32),
+  header: {
+    marginBottom: 4,
+  },
+  headerTitle: {
+    fontFamily: EditorialFonts.display,
+    fontSize: 36,
+    lineHeight: 40,
+    color: EditorialColors.ink,
+    letterSpacing: -0.5,
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  accentDot: {
+    color: EditorialColors.accent,
+  },
+  headerSubtitle: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 13,
+    color: EditorialColors.muted,
+    lineHeight: 18,
+  },
+  heavySpacer: {
+    marginVertical: 18,
+  },
+  formSection: {
+    marginBottom: 20,
+  },
+  dropdownBlock: {
+    marginBottom: 16,
+  },
+  inputBlock: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 2,
+    color: EditorialColors.muted,
+    marginBottom: 6,
+  },
+  underlineInput: {
+    minHeight: 48,
+    borderBottomWidth: 2,
+    borderBottomColor: EditorialColors.ink,
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 15,
+    color: EditorialColors.ink,
+    paddingVertical: 8,
+  },
+  errorBorder: {
+    borderBottomColor: EditorialColors.accent,
+  },
+  errorText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    color: EditorialColors.accent,
+    marginTop: 6,
   },
   syllabusBlock: {
-    marginTop: ms(16),
-    borderTopWidth: 1,
-    borderTopColor: Palette.border,
-    paddingTop: ms(16),
-    marginBottom: ms(16),
+    marginTop: 10,
+    marginBottom: 20,
   },
-  syllabusLabel: {
-    fontSize: ms(16),
-    fontWeight: 'bold',
-    color: Palette.textDark,
-    marginBottom: ms(10),
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
   },
-  checkboxRow: {
+  sectionHeaderTitle: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.ink,
+  },
+  topicList: {
+    borderTopWidth: EditorialRules.hairline,
+    borderTopColor: EditorialColors.ink,
+  },
+  topicRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: ms(4),
+    paddingVertical: 12,
+    borderBottomWidth: EditorialRules.hairline,
+    borderBottomColor: EditorialColors.track,
+    gap: 12,
+  },
+  checkboxSquare: {
+    width: 22,
+    height: 22,
+    borderWidth: 1.5,
+    borderColor: EditorialColors.ink,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxSquareChecked: {
+    backgroundColor: EditorialColors.ink,
+  },
+  topicInfo: {
+    flex: 1,
   },
   topicText: {
-    fontSize: ms(15),
-    color: Palette.textDark,
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 14,
+    lineHeight: 20,
+    color: EditorialColors.ink,
+    marginBottom: 2,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    borderTopWidth: EditorialRules.hairline,
+    borderTopColor: EditorialColors.ink,
+    borderBottomWidth: EditorialRules.hairline,
+    borderBottomColor: EditorialColors.ink,
+    marginBottom: 24,
+  },
+  toggleTextCol: {
     flex: 1,
-    marginLeft: ms(8),
+    marginRight: 16,
   },
-  textInput: {
-    marginTop: ms(12),
+  toggleLabel: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 12,
+    letterSpacing: 1.5,
+    color: EditorialColors.ink,
+    marginBottom: 2,
   },
-  extraHoursLabel: {
-    fontSize: ms(15),
-    color: Palette.textDark,
-    marginLeft: ms(8),
+  toggleSub: {
+    fontFamily: EditorialFonts.semibold,
+    fontSize: 12,
+    color: EditorialColors.muted,
   },
-  submitBtn: {
-    marginTop: ms(24),
+  primaryActionButton: {
+    height: 54,
+    width: '100%',
+    backgroundColor: EditorialColors.ink,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  primaryActionText: {
+    fontFamily: EditorialFonts.heavy,
+    fontSize: 13,
+    letterSpacing: 2,
+    color: EditorialColors.white,
   },
 });
