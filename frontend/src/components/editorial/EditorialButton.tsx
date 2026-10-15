@@ -6,20 +6,23 @@ import {
   ActivityIndicator,
   ViewStyle,
   TextStyle,
+  View,
 } from 'react-native';
 import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
 
 export type ButtonVariant = 'primary' | 'outline' | 'danger';
 
-interface EditorialButtonProps {
+export interface EditorialButtonProps {
   title: string;
   variant?: ButtonVariant;
   onPress: () => void;
   disabled?: boolean;
   loading?: boolean;
+  fullWidth?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
   icon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }
 
 export const EditorialButton: React.FC<EditorialButtonProps> = ({
@@ -28,9 +31,11 @@ export const EditorialButton: React.FC<EditorialButtonProps> = ({
   onPress,
   disabled = false,
   loading = false,
+  fullWidth = false,
   style,
   textStyle,
   icon,
+  rightIcon,
 }) => {
   const getContainerStyle = () => {
     if (disabled) {
@@ -62,73 +67,98 @@ export const EditorialButton: React.FC<EditorialButtonProps> = ({
     }
   };
 
+  const getSpinnerColor = () => {
+    if (variant === 'outline') {
+      return EditorialColors.ink;
+    }
+    return EditorialColors.white;
+  };
+
   return (
     <TouchableOpacity
-      style={[styles.baseButton, getContainerStyle(), style]}
-      onPress={onPress}
-      disabled={disabled || loading}
-      activeOpacity={0.75}
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      activeOpacity={0.8}
+      disabled={disabled || loading}
+      onPress={onPress}
+      style={[
+        styles.baseContainer,
+        getContainerStyle(),
+        fullWidth && styles.fullWidth,
+        style,
+      ]}
     >
       {loading ? (
-        <ActivityIndicator
-          size="small"
-          color={variant === 'primary' ? EditorialColors.white : EditorialColors.ink}
-        />
+        <ActivityIndicator color={getSpinnerColor()} size="small" />
       ) : (
-        <>
-          {icon ? <>{icon}</> : null}
+        <View style={styles.contentRow}>
+          {icon ? <View style={styles.leftIconWrapper}>{icon}</View> : null}
           <Text style={[styles.baseText, getTextStyle(), textStyle]}>
             {title.toUpperCase()}
           </Text>
-        </>
+          {rightIcon ? <View style={styles.rightIconWrapper}>{rightIcon}</View> : null}
+        </View>
       )}
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  baseButton: {
-    height: 54,
+  baseContainer: {
+    height: 54, // strict 54px height per prompt
+    borderRadius: 0, // strict square
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    borderWidth: 0,
+  },
+  fullWidth: {
     width: '100%',
-    borderRadius: 0,
+  },
+  contentRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
+  },
+  leftIconWrapper: {
+    marginRight: 8,
+  },
+  rightIconWrapper: {
+    marginLeft: 8,
+  },
+  primaryContainer: {
+    backgroundColor: EditorialColors.ink,
+  },
+  outlineContainer: {
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: EditorialColors.ink,
+  },
+  dangerContainer: {
+    backgroundColor: EditorialColors.accent,
+  },
+  disabledContainer: {
+    backgroundColor: EditorialColors.track,
   },
   baseText: {
     fontFamily: EditorialFonts.heavy,
     fontSize: 13,
     letterSpacing: 2,
+    textAlign: 'center',
     textTransform: 'uppercase',
-  },
-  primaryContainer: {
-    backgroundColor: EditorialColors.ink,
   },
   primaryText: {
     color: EditorialColors.white,
   },
-  outlineContainer: {
-    backgroundColor: 'transparent',
-    borderWidth: EditorialRules.borderWidth,
-    borderColor: EditorialColors.ink,
-  },
   outlineText: {
     color: EditorialColors.ink,
   },
-  dangerContainer: {
-    backgroundColor: 'transparent',
-    borderWidth: EditorialRules.borderWidth,
-    borderColor: EditorialColors.accent,
-  },
   dangerText: {
-    color: EditorialColors.accent,
-  },
-  disabledContainer: {
-    backgroundColor: EditorialColors.track,
+    color: EditorialColors.white,
   },
   disabledText: {
     color: EditorialColors.muted,
   },
 });
+
+export default EditorialButton;

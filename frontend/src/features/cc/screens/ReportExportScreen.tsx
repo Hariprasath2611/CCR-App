@@ -147,7 +147,7 @@ export const ReportExportScreen = () => {
 
         <View style={styles.buttonSpacing}>
           <AppButton
-            mode="outline"
+            mode="outlined"
             title={isExportingWord ? 'GENERATING WORD...' : 'EXPORT WORD REPORT (.DOCX)'}
             onPress={handleExportWord}
             loading={isExportingWord}

@@ -12,6 +12,7 @@ export const EditorialFonts = {
   semibold: 'Archivo_600SemiBold',
   bold: 'Archivo_700Bold',
   heavy: 'Archivo_800ExtraBold',
+  regular: 'Archivo_600SemiBold', // Fallback for standard weight
 } as const;
 
 export const EditorialType = {
@@ -86,6 +87,7 @@ export const EditorialSpacing = {
   lg: 16,
   xl: 20,
   xxl: 24,
+  xxxl: 32,
   hero: 28,
   screenPaddingHorizontal: 20,
   screenPaddingTop: 28,
@@ -103,4 +105,3 @@ export const EditorialRules = {
   borderWidth: 1.5,
   borderRadius: 0, // strict 0 everywhere
 } as const;
-

@@ -2,9 +2,10 @@ import React from 'react';
 import { Text, TextStyle, StyleSheet } from 'react-native';
 import { EditorialColors, EditorialFonts } from '@theme/editorial';
 
-interface LabelProps {
+export interface LabelProps {
   children?: React.ReactNode;
   text?: string;
+  variant?: 'dark' | 'muted' | 'accent' | string;
   color?: string;
   style?: TextStyle;
   numberOfLines?: number;
@@ -13,17 +14,26 @@ interface LabelProps {
 export const Label: React.FC<LabelProps> = ({
   children,
   text,
-  color = EditorialColors.muted,
+  variant,
+  color,
   style,
   numberOfLines,
 }) => {
   const content = text !== undefined ? text : children;
+
+  let resolvedColor = color || EditorialColors.muted;
+  if (!color && variant) {
+    if (variant === 'dark') resolvedColor = EditorialColors.ink;
+    else if (variant === 'accent') resolvedColor = EditorialColors.accent;
+    else if (variant === 'muted') resolvedColor = EditorialColors.muted;
+  }
+
   return (
     <Text
       numberOfLines={numberOfLines}
       style={[
         styles.label,
-        { color },
+        { color: resolvedColor },
         style,
       ]}
     >
@@ -40,3 +50,5 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 });
+
+export default Label;

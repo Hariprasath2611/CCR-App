@@ -9,16 +9,19 @@ export interface StatItem {
   valueSuffix?: string;
 }
 
-interface StatRowProps {
-  stats: StatItem[];
+export interface StatRowProps {
+  stats?: StatItem[];
+  columns?: StatItem[];
   style?: ViewStyle;
 }
 
-export const StatRow: React.FC<StatRowProps> = ({ stats, style }) => {
+export const StatRow: React.FC<StatRowProps> = ({ stats, columns, style }) => {
+  const items = stats || columns || [];
+
   return (
     <View style={[styles.container, style]}>
-      {stats.map((item, index) => {
-        const isLast = index === stats.length - 1;
+      {items.map((item, index) => {
+        const isLast = index === items.length - 1;
         return (
           <React.Fragment key={index}>
             <View style={styles.column}>
@@ -45,7 +48,7 @@ export const StatRow: React.FC<StatRowProps> = ({ stats, style }) => {
                 {item.label.toUpperCase()}
               </Text>
             </View>
-            {!isLast && <View style={styles.verticalDivider} />}
+            {!isLast && <View style={styles.divider} />}
           </React.Fragment>
         );
       })}
@@ -56,32 +59,24 @@ export const StatRow: React.FC<StatRowProps> = ({ stats, style }) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    borderTopWidth: EditorialRules.heavy, // 4px ink top border
-    borderTopColor: EditorialColors.ink,
-    borderBottomWidth: EditorialRules.hairline, // 1px ink bottom border for container clarity
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 14,
-    width: '100%',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingVertical: 14,
+    borderTopWidth: EditorialRules.hairline,
+    borderBottomWidth: EditorialRules.hairline,
+    borderColor: EditorialColors.ink,
+    marginVertical: 12,
   },
   column: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 4,
-  },
-  verticalDivider: {
-    width: EditorialRules.hairline, // 1px ink vertical
-    height: 38,
-    backgroundColor: EditorialColors.ink,
   },
   valueText: {
     fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 32,
+    fontSize: 24,
     color: EditorialColors.ink,
-    letterSpacing: -0.5,
+    marginBottom: 4,
   },
   suffixText: {
     fontFamily: EditorialFonts.display,
@@ -90,10 +85,15 @@ const styles = StyleSheet.create({
   },
   labelText: {
     fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 2,
+    fontSize: 10,
+    letterSpacing: 1.5,
     color: EditorialColors.muted,
-    marginTop: 4,
-    textAlign: 'center',
+  },
+  divider: {
+    width: EditorialRules.hairline,
+    height: 32,
+    backgroundColor: EditorialColors.track,
   },
 });
+
+export default StatRow;

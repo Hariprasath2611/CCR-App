@@ -2,9 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { EditorialColors, EditorialFonts } from '@theme/editorial';
 
-interface BigNumberProps {
+export interface BigNumberProps {
   value: string | number;
   suffix?: string;
+  unit?: string;
+  label?: string;
   showPercent?: boolean;
   size?: 'hero' | 'big' | 'section';
   color?: string;
@@ -16,6 +18,8 @@ interface BigNumberProps {
 export const BigNumber: React.FC<BigNumberProps> = ({
   value,
   suffix,
+  unit,
+  label,
   showPercent = false,
   size = 'big',
   color = EditorialColors.ink,
@@ -23,7 +27,8 @@ export const BigNumber: React.FC<BigNumberProps> = ({
   style,
   textStyle,
 }) => {
-  const finalSuffix = suffix !== undefined ? suffix : (showPercent ? '%' : undefined);
+  const finalSuffix = suffix !== undefined ? suffix : (unit !== undefined ? unit : (showPercent ? '%' : undefined));
+  
   const getFontSize = () => {
     switch (size) {
       case 'hero':
@@ -48,29 +53,29 @@ export const BigNumber: React.FC<BigNumberProps> = ({
     }
   };
 
-  const fontSize = getFontSize();
-  const lineHeight = getLineHeight();
-
   return (
     <View style={[styles.container, style]}>
-      <Text
-        style={[
-          styles.number,
-          {
-            fontSize,
-            lineHeight,
-            color,
-          },
-          textStyle,
-        ]}
-      >
-        {value}
+      <View style={styles.numberRow}>
+        <Text
+          style={[
+            styles.value,
+            {
+              fontSize: getFontSize(),
+              lineHeight: getLineHeight(),
+              color,
+            },
+            textStyle,
+          ]}
+        >
+          {value}
+        </Text>
         {finalSuffix ? (
           <Text
             style={[
               styles.suffix,
               {
-                fontSize: Math.round(fontSize * 0.6),
+                fontSize: getFontSize() * 0.45,
+                lineHeight: getLineHeight() * 0.5,
                 color: suffixColor,
               },
             ]}
@@ -78,21 +83,39 @@ export const BigNumber: React.FC<BigNumberProps> = ({
             {finalSuffix}
           </Text>
         ) : null}
-      </Text>
+      </View>
+      {label ? (
+        <Text style={styles.labelText}>{label.toUpperCase()}</Text>
+      ) : null}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
   },
-  number: {
+  numberRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  value: {
     fontFamily: EditorialFonts.display,
     letterSpacing: -1,
   },
   suffix: {
     fontFamily: EditorialFonts.display,
+    marginLeft: 2,
+    marginTop: 4,
+  },
+  labelText: {
+    fontFamily: EditorialFonts.bold,
+    fontSize: 10,
+    letterSpacing: 1.2,
+    color: EditorialColors.muted,
+    marginTop: 4,
   },
 });
+
+export default BigNumber;

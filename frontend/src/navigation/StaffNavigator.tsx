@@ -57,7 +57,6 @@ const StaffStackNavigator = () => {
         headerTitleStyle: {
           fontFamily: EditorialFonts.heavy,
           fontSize: 13,
-          letterSpacing: 1.5,
         },
         headerShadowVisible: false,
       }}
