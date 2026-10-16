@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, ScrollView, Text } from 'react-native';
 import { Portal, Dialog } from 'react-native-paper';
 import { Feather } from '@expo/vector-icons';
-import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes } from '@theme/dayRibbon';
 
 interface DropdownOption {
   label: string;
@@ -41,7 +41,7 @@ export const AppDropdown: React.FC<AppDropdownProps> = ({
       <TouchableOpacity
         onPress={() => setVisible(true)}
         activeOpacity={0.7}
-        style={[styles.inputRow, hasError ? styles.inputRowError : styles.inputRowNormal]}
+        style={[styles.inputRow, hasError && styles.inputRowError]}
       >
         <Text
           style={[
@@ -52,14 +52,14 @@ export const AppDropdown: React.FC<AppDropdownProps> = ({
         >
           {selectedLabel}
         </Text>
-        <Feather name="chevron-down" size={18} color={EditorialColors.ink} />
+        <Feather name="chevron-down" size={18} color={DayRibbonColors.muted} />
       </TouchableOpacity>
 
-      {hasError ? <Text style={styles.errorText}>{error.toUpperCase()}</Text> : null}
+      {hasError ? <Text style={styles.errorText}>{error}</Text> : null}
 
       <Portal>
         <Dialog visible={visible} onDismiss={() => setVisible(false)} style={styles.dialog}>
-          <Dialog.Title style={styles.dialogTitle}>{label.toUpperCase()}</Dialog.Title>
+          <Dialog.Title style={styles.dialogTitle}>{label}</Dialog.Title>
           <Dialog.Content style={styles.dialogContent}>
             <ScrollView showsVerticalScrollIndicator={false}>
               {options.map((option) => {
@@ -74,8 +74,8 @@ export const AppDropdown: React.FC<AppDropdownProps> = ({
                     style={[styles.optionRow, isSelected && styles.optionRowSelected]}
                     activeOpacity={0.7}
                   >
-                    <View style={[styles.squareRadio, isSelected && styles.squareRadioSelected]}>
-                      {isSelected ? <View style={styles.squareRadioInner} /> : null}
+                    <View style={[styles.circleRadio, isSelected && styles.circleRadioSelected]}>
+                      {isSelected ? <View style={styles.circleRadioInner} /> : null}
                     </View>
                     <Text
                       style={[
@@ -104,62 +104,60 @@ export const AppDropdown: React.FC<AppDropdownProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginBottom: 18,
+    marginBottom: 16,
   },
   label: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
-    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     marginBottom: 6,
   },
   labelError: {
-    color: EditorialColors.accent,
+    color: DayRibbonColors.warn,
   },
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderBottomWidth: 2,
-    paddingBottom: 8,
-    paddingTop: 4,
-  },
-  inputRowNormal: {
-    borderBottomColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    paddingHorizontal: 14,
+    minHeight: 50,
   },
   inputRowError: {
-    borderBottomColor: EditorialColors.accent,
+    borderColor: DayRibbonColors.warn,
   },
   valueText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 16,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 15,
+    color: DayRibbonColors.ink,
     flex: 1,
   },
   placeholderText: {
-    color: EditorialColors.muted,
+    color: DayRibbonColors.mutedSoft,
   },
   errorText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1,
-    color: EditorialColors.accent,
-    textTransform: 'uppercase',
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 12,
+    color: DayRibbonColors.warn,
     marginTop: 4,
+    marginLeft: 2,
   },
   dialog: {
-    backgroundColor: EditorialColors.bg,
-    borderRadius: 0,
-    borderWidth: EditorialRules.borderWidth,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     maxHeight: '80%',
+    ...DayRibbonShapes.shadow,
   },
   dialogTitle: {
-    fontFamily: EditorialFonts.display,
+    fontFamily: DayRibbonFonts.display,
     fontSize: 18,
-    color: EditorialColors.ink,
-    letterSpacing: -0.3,
+    color: DayRibbonColors.ink,
   },
   dialogContent: {
     paddingHorizontal: 16,
@@ -168,47 +166,52 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 12,
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.track,
+    borderBottomWidth: 1,
+    borderBottomColor: DayRibbonColors.line,
   },
   optionRowSelected: {
-    backgroundColor: EditorialColors.white,
+    backgroundColor: DayRibbonColors.bg,
   },
-  squareRadio: {
-    width: 18,
-    height: 18,
-    borderWidth: EditorialRules.borderWidth,
-    borderColor: EditorialColors.ink,
-    borderRadius: 0,
+  circleRadio: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
-  squareRadioSelected: {
-    backgroundColor: EditorialColors.ink,
+  circleRadioSelected: {
+    borderColor: DayRibbonColors.cobalt,
+    backgroundColor: DayRibbonColors.surface,
   },
-  squareRadioInner: {
-    width: 6,
-    height: 6,
-    backgroundColor: EditorialColors.white,
+  circleRadioInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: DayRibbonColors.cobalt,
   },
   optionLabel: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 15,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
     flex: 1,
   },
   optionLabelSelected: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
+    color: DayRibbonColors.cobalt,
   },
   cancelBtn: {
     paddingVertical: 8,
     paddingHorizontal: 16,
   },
   cancelBtnText: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 12,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
   },
 });
+
+export default AppDropdown;
