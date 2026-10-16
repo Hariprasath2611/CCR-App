@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity, Alert, RefreshControl } from 'react-native';
 import { Text, Portal, Dialog } from 'react-native-paper';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
-import { EditorialColors, EditorialFonts, EditorialSpacing } from '@theme/editorial';
-import { Rule } from '@components/editorial/Rule';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { Label } from '@components/editorial/Label';
-import { StatRow } from '@components/editorial/StatRow';
+import { StatTile } from '@components/editorial/StatTile';
+import { EditorialChip } from '@components/editorial/EditorialChip';
 import { EmptyState } from '@components/editorial/EmptyState';
 import { AppTextInput } from '@components/common/AppTextInput';
 import { ms } from '@theme/responsive';
@@ -153,47 +153,48 @@ export const ExtraHourRequestsScreen = () => {
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.content}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[EditorialColors.ink]} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[DayRibbonColors.cobalt]} />}
       showsVerticalScrollIndicator={false}
     >
       {/* ── HEADER ── */}
       <View style={styles.headerBox}>
         <Label text="FACULTY REQUISITIONS" />
-        <Text style={styles.headingText}>EXTRA TEACHING SLOTS.</Text>
+        <Text style={styles.headingText}>Extra Teaching Slots</Text>
         <Text style={styles.subHeadingText}>
-          HOD ENDORSEMENT QUEUE · {user?.department?.toUpperCase() || 'COMPUTER SCIENCE ENGINEERING'}
+          HOD Endorsement Queue • {user?.department || 'Computer Science Engineering'}
         </Text>
       </View>
-      <Rule thick style={styles.heroRule} />
 
       {/* ── STATS ROW ── */}
-      <View style={styles.statBox}>
-        <StatRow
-          columns={[
-            { label: 'PENDING', value: `${pendingCount}` },
-            { label: 'ENDORSED', value: `${approvedCount}` },
-            { label: 'RETURNED', value: `${returnedCount}` },
-          ]}
+      <View style={styles.statGrid}>
+        <StatTile
+          label="Pending"
+          value={pendingCount}
+          isLagging={pendingCount > 0}
+          style={styles.statTileItem}
+        />
+        <StatTile
+          label="Endorsed"
+          value={approvedCount}
+          style={styles.statTileItem}
+        />
+        <StatTile
+          label="Returned"
+          value={returnedCount}
+          style={styles.statTileItem}
         />
       </View>
 
       {/* ── FILTER CHIPS ── */}
       <View style={styles.filterRow}>
-        {(['ALL', 'PENDING', 'APPROVED', 'RETURNED'] as const).map((f) => {
-          const isSelected = filter === f;
-          return (
-            <TouchableOpacity
-              key={f}
-              onPress={() => setFilter(f)}
-              style={[styles.squareChip, isSelected && styles.squareChipActive]}
-              activeOpacity={0.8}
-            >
-              <Text style={[styles.chipText, isSelected && styles.chipTextActive]}>
-                {f}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+        {(['ALL', 'PENDING', 'APPROVED', 'RETURNED'] as const).map((f) => (
+          <EditorialChip
+            key={f}
+            label={f}
+            selected={filter === f}
+            onPress={() => setFilter(f)}
+          />
+        ))}
       </View>
 
       {/* ── REQUESTS LIST ── */}
@@ -212,9 +213,9 @@ export const ExtraHourRequestsScreen = () => {
             <View key={req.id} style={styles.card}>
               <View style={styles.topRow}>
                 <View style={{ flex: 1 }}>
-                  <Label text={req.classSection.toUpperCase()} />
-                  <Text style={styles.facultyName}>{req.facultyName.toUpperCase()}</Text>
-                  <Text style={styles.submittedAt}>SUBMITTED: {req.submittedAt}</Text>
+                  <Text style={styles.classSectionText}>{req.classSection}</Text>
+                  <Text style={styles.facultyName}>{req.facultyName}</Text>
+                  <Text style={styles.submittedAt}>Submitted: {req.submittedAt}</Text>
                 </View>
 
                 <View
@@ -222,6 +223,7 @@ export const ExtraHourRequestsScreen = () => {
                     styles.statusTag,
                     isApproved && styles.statusTagApproved,
                     isReturned && styles.statusTagReturned,
+                    isPending && styles.statusTagPending,
                   ]}
                 >
                   <Text
@@ -229,26 +231,27 @@ export const ExtraHourRequestsScreen = () => {
                       styles.statusTagText,
                       isApproved && styles.statusTagTextApproved,
                       isReturned && styles.statusTagTextReturned,
+                      isPending && styles.statusTagTextPending,
                     ]}
                   >
                     {isApproved
-                      ? 'ENDORSED'
+                      ? 'Endorsed'
                       : isReturned
-                      ? 'RETURNED'
-                      : 'PENDING'}
+                      ? 'Returned'
+                      : 'Pending'}
                   </Text>
                 </View>
               </View>
 
               {/* Subject */}
               <Text style={styles.subjectTitle}>
-                {req.subjectCode} · {req.subjectTitle.toUpperCase()}
+                {req.subjectCode} · {req.subjectTitle}
               </Text>
 
               {/* Slot Details */}
               <View style={styles.slotBlock}>
                 <Text style={styles.slotText}>
-                  DATE: {req.requestedDate} · {req.periodSlot.toUpperCase()}
+                  Date: {req.requestedDate} • {req.periodSlot}
                 </Text>
               </View>
 
@@ -263,7 +266,7 @@ export const ExtraHourRequestsScreen = () => {
                 <View style={[styles.remarksBox, isReturned && styles.remarksBoxReturned]}>
                   <Label
                     text="HOD NOTE:"
-                    color={isReturned ? EditorialColors.accent : EditorialColors.ink}
+                    color={isReturned ? DayRibbonColors.warn : DayRibbonColors.ink}
                   />
                   <Text style={styles.remarksText}>"{req.hodRemarks}"</Text>
                 </View>
@@ -273,19 +276,17 @@ export const ExtraHourRequestsScreen = () => {
               {isPending && (
                 <View style={styles.actionBtnRow}>
                   <TouchableOpacity
-                    style={[styles.outlineActionBtn, { borderColor: EditorialColors.accent }]}
+                    style={styles.outlineActionBtn}
                     onPress={() => handleOpenReturnDialog(req.id)}
                   >
-                    <Text style={[styles.outlineActionText, { color: EditorialColors.accent }]}>
-                      RETURN
-                    </Text>
+                    <Text style={styles.outlineActionText}>Return</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     style={styles.fillActionBtn}
                     onPress={() => handleApprove(req.id)}
                   >
-                    <Text style={styles.fillActionText}>ENDORSE SLOT</Text>
+                    <Text style={styles.fillActionText}>Endorse Slot</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -301,7 +302,7 @@ export const ExtraHourRequestsScreen = () => {
           onDismiss={() => setReturnDialogVisible(false)}
           style={styles.dialog}
         >
-          <Dialog.Title style={styles.dialogTitle}>RETURN SLOT REQUEST</Dialog.Title>
+          <Dialog.Title style={styles.dialogTitle}>Return Slot Request</Dialog.Title>
           <Dialog.Content>
             <Text style={styles.dialogPrompt}>
               Specify reasons or alternative slot recommendations for the faculty member:
@@ -322,13 +323,13 @@ export const ExtraHourRequestsScreen = () => {
               style={styles.dialogCancelBtn}
               onPress={() => setReturnDialogVisible(false)}
             >
-              <Text style={styles.dialogCancelText}>CANCEL</Text>
+              <Text style={styles.dialogCancelText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.dialogConfirmBtn}
               onPress={handleConfirmReturn}
             >
-              <Text style={styles.dialogConfirmText}>RETURN REQUEST</Text>
+              <Text style={styles.dialogConfirmText}>Return Request</Text>
             </TouchableOpacity>
           </Dialog.Actions>
         </Dialog>
@@ -340,65 +341,49 @@ export const ExtraHourRequestsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
-    paddingTop: EditorialSpacing.topSafeArea,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
+    paddingTop: DayRibbonSpacing.topSafeArea,
     paddingBottom: ms(48),
   },
   headerBox: {
-    marginBottom: ms(8),
+    marginBottom: ms(16),
   },
   headingText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: ms(24),
-    lineHeight: ms(28),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(28),
+    lineHeight: ms(34),
+    color: DayRibbonColors.ink,
     marginTop: ms(4),
   },
   subHeadingText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: ms(11),
-    color: EditorialColors.muted,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.muted,
+    lineHeight: 18,
     marginTop: ms(4),
   },
-  heroRule: {
-    marginBottom: ms(20),
-  },
-  statBox: {
+  statGrid: {
+    flexDirection: 'row',
+    gap: 10,
     marginBottom: ms(16),
+  },
+  statTileItem: {
+    flex: 1,
   },
   filterRow: {
     flexDirection: 'row',
+    gap: 8,
     marginBottom: ms(16),
   },
-  squareChip: {
-    paddingVertical: ms(6),
-    paddingHorizontal: ms(12),
-    backgroundColor: EditorialColors.white,
-    borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    marginRight: ms(8),
-  },
-  squareChipActive: {
-    backgroundColor: EditorialColors.ink,
-  },
-  chipText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: ms(11),
-    letterSpacing: 0.5,
-    color: EditorialColors.ink,
-  },
-  chipTextActive: {
-    color: EditorialColors.white,
-  },
   card: {
-    backgroundColor: EditorialColors.white,
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    padding: ms(14),
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: ms(16),
     marginBottom: ms(14),
   },
   topRow: {
@@ -407,166 +392,180 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: ms(6),
   },
+  classSectionText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(12),
+    color: DayRibbonColors.muted,
+  },
   facultyName: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(13),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(15),
+    color: DayRibbonColors.ink,
     marginTop: ms(2),
   },
   submittedAt: {
-    fontFamily: EditorialFonts.regular,
-    fontSize: ms(10),
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
     marginTop: ms(2),
   },
   statusTag: {
-    borderWidth: 1,
-    borderColor: EditorialColors.muted,
+    borderRadius: DayRibbonShapes.chipRadius,
     paddingHorizontal: ms(8),
     paddingVertical: ms(3),
-    backgroundColor: EditorialColors.bg,
+  },
+  statusTagPending: {
+    backgroundColor: DayRibbonColors.lemon,
   },
   statusTagApproved: {
-    backgroundColor: EditorialColors.ink,
-    borderColor: EditorialColors.ink,
+    backgroundColor: 'rgba(43, 63, 224, 0.08)',
   },
   statusTagReturned: {
-    borderColor: EditorialColors.accent,
-    borderWidth: 1.5,
-    backgroundColor: EditorialColors.white,
+    backgroundColor: DayRibbonColors.warnBg,
   },
   statusTagText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(9.5),
-    color: EditorialColors.muted,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(10),
+  },
+  statusTagTextPending: {
+    color: DayRibbonColors.ink,
   },
   statusTagTextApproved: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.cobalt,
   },
   statusTagTextReturned: {
-    color: EditorialColors.accent,
+    color: DayRibbonColors.warn,
   },
   subjectTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(13),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(14),
+    color: DayRibbonColors.ink,
     marginTop: ms(6),
   },
   slotBlock: {
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    padding: ms(8),
+    borderColor: DayRibbonColors.line,
+    padding: ms(10),
     marginTop: ms(8),
   },
   slotText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: ms(11),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(12),
+    color: DayRibbonColors.ink,
   },
   reasonBox: {
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
+    borderRadius: 12,
     padding: ms(10),
     marginTop: ms(10),
     borderLeftWidth: 3,
-    borderLeftColor: EditorialColors.ink,
+    borderLeftColor: DayRibbonColors.cobalt,
   },
   reasonText: {
-    fontFamily: EditorialFonts.regular,
-    fontSize: ms(12),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.ink,
     marginTop: ms(2),
-    lineHeight: ms(17),
+    lineHeight: ms(18),
   },
   remarksBox: {
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
+    borderRadius: 12,
     padding: ms(10),
     marginTop: ms(10),
     borderLeftWidth: 3,
-    borderLeftColor: EditorialColors.ink,
+    borderLeftColor: DayRibbonColors.cobalt,
   },
   remarksBoxReturned: {
-    borderLeftColor: EditorialColors.accent,
+    borderLeftColor: DayRibbonColors.warn,
   },
   remarksText: {
-    fontFamily: EditorialFonts.regular,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: ms(12),
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
     marginTop: ms(2),
   },
   actionBtnRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    gap: 10,
     marginTop: ms(14),
   },
   outlineActionBtn: {
+    height: 40,
+    paddingHorizontal: ms(16),
+    borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: ms(12),
-    paddingVertical: ms(8),
-    marginRight: ms(8),
+    borderColor: DayRibbonColors.warn,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   outlineActionText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(11),
-    letterSpacing: 0.5,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(12),
+    color: DayRibbonColors.warn,
   },
   fillActionBtn: {
-    backgroundColor: EditorialColors.ink,
-    paddingHorizontal: ms(14),
-    paddingVertical: ms(8),
+    height: 40,
+    paddingHorizontal: ms(16),
+    borderRadius: 14,
+    backgroundColor: DayRibbonColors.cobalt,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   fillActionText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(11),
-    letterSpacing: 0.5,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(12),
+    color: DayRibbonColors.surface,
   },
   dialog: {
-    backgroundColor: EditorialColors.white,
-    borderRadius: 0,
-    borderWidth: 2,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
   },
   dialogTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(15),
-    letterSpacing: 0.5,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(18),
+    color: DayRibbonColors.ink,
   },
   dialogPrompt: {
-    fontFamily: EditorialFonts.regular,
-    fontSize: ms(12),
-    lineHeight: ms(16),
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    lineHeight: ms(18),
+    color: DayRibbonColors.muted,
   },
   dialogActions: {
     paddingHorizontal: ms(16),
     paddingBottom: ms(16),
+    gap: 8,
   },
   dialogCancelBtn: {
-    paddingHorizontal: ms(12),
-    paddingVertical: ms(8),
-    marginRight: ms(8),
+    height: 40,
+    paddingHorizontal: ms(16),
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   dialogCancelText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(11),
-    letterSpacing: 0.5,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(12),
+    color: DayRibbonColors.muted,
   },
   dialogConfirmBtn: {
-    backgroundColor: EditorialColors.accent,
-    paddingHorizontal: ms(14),
-    paddingVertical: ms(8),
+    height: 40,
+    paddingHorizontal: ms(16),
+    borderRadius: 14,
+    backgroundColor: DayRibbonColors.warn,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   dialogConfirmText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(11),
-    letterSpacing: 0.5,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(12),
+    color: DayRibbonColors.surface,
   },
 });
 

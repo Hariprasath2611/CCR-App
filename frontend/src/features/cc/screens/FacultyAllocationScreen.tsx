@@ -16,9 +16,8 @@ import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { delegationApi, SubjectAllocationItem } from '@services/api/delegationApi';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
 import { EditorialChip } from '@components/editorial/EditorialChip';
 
 const DEFAULT_CLASS_SUBJECTS: Record<string, { code: string; name: string }[]> = {
@@ -198,13 +197,13 @@ export const FacultyAllocationScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.topSafeArea),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -218,24 +217,25 @@ export const FacultyAllocationScreen = () => {
             activeOpacity={0.7}
             accessibilityLabel="Go back"
           >
-            <Feather name="arrow-left" size={20} color={EditorialColors.ink} />
+            <Feather name="arrow-left" size={20} color={DayRibbonColors.ink} />
           </TouchableOpacity>
-          <Label text={`SECTION ROSTER • ${classId.toUpperCase()}`} />
+          <View style={styles.headerTagChip}>
+            <Text style={styles.headerTagText}>{classId}</Text>
+          </View>
         </View>
 
-        {/* Title heavy 24 */}
-        <Text style={styles.screenTitle}>FACULTY ALLOCATION</Text>
+        {/* Title */}
+        <Text style={styles.screenTitle}>Faculty Allocation</Text>
         <Text style={styles.screenSubtitle}>
           Assign designated subject professors to curriculum courses for {classId}.
         </Text>
 
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
         {/* Section Header */}
         <View style={styles.sectionHeaderRow}>
           <Text style={styles.sectionHeaderTitle}>CURRICULUM SUBJECTS</Text>
-          <Label text={`${subjectsList.length} COURSES`} />
+          <View style={styles.countBadge}>
+            <Text style={styles.countBadgeText}>{subjectsList.length} COURSES</Text>
+          </View>
         </View>
 
         {/* Subjects Allocation List */}
@@ -251,7 +251,7 @@ export const FacultyAllocationScreen = () => {
               const isAssigned = !!currentAssignment;
 
               return (
-                <View key={subject.code} style={styles.subjectRow}>
+                <View key={subject.code} style={styles.subjectCard}>
                   <View style={styles.rowTop}>
                     <View style={styles.infoCol}>
                       <View style={styles.codeRow}>
@@ -259,16 +259,16 @@ export const FacultyAllocationScreen = () => {
                         <View
                           style={[
                             styles.statusBadge,
-                            !isAssigned ? styles.accentStatusBadge : null,
+                            isAssigned ? styles.assignedBadge : styles.unassignedBadge,
                           ]}
                         >
                           <Text
                             style={[
                               styles.statusText,
-                              !isAssigned ? styles.accentStatusText : null,
+                              isAssigned ? styles.assignedText : styles.unassignedBadgeText,
                             ]}
                           >
-                            {isAssigned ? 'ASSIGNED' : 'UNASSIGNED'}
+                            {isAssigned ? 'Assigned' : 'Unassigned'}
                           </Text>
                         </View>
                       </View>
@@ -278,10 +278,7 @@ export const FacultyAllocationScreen = () => {
                       {isAssigned ? (
                         <>
                           <Text style={styles.facultyName}>{currentAssignment.faculty?.name}</Text>
-                          <Label
-                            text={`EMAIL: ${currentAssignment.faculty?.email}`}
-                            style={styles.emailMeta}
-                          />
+                          <Text style={styles.emailMeta}>{currentAssignment.faculty?.email}</Text>
                         </>
                       ) : (
                         <Text style={styles.unassignedText}>
@@ -299,7 +296,7 @@ export const FacultyAllocationScreen = () => {
                         onPress={() => handleDeallocate(currentAssignment)}
                         activeOpacity={0.7}
                       >
-                        <Text style={styles.dangerOutlineBtnText}>DEALLOCATE</Text>
+                        <Text style={styles.dangerOutlineBtnText}>Deallocate</Text>
                       </TouchableOpacity>
                     )}
 
@@ -309,9 +306,9 @@ export const FacultyAllocationScreen = () => {
                       activeOpacity={0.85}
                     >
                       <Text style={styles.primaryActionBtnText}>
-                        {isAssigned ? 'RE-ALLOCATE' : 'ALLOCATE TEACHER'}
+                        {isAssigned ? 'Re-allocate' : 'Allocate Teacher'}
                       </Text>
-                      <Feather name="arrow-right" size={14} color={EditorialColors.white} />
+                      <Feather name="arrow-right" size={14} color={DayRibbonColors.surface} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -330,24 +327,19 @@ export const FacultyAllocationScreen = () => {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>
-                  ALLOCATE TEACHER<Text style={styles.accentDot}>.</Text>
-                </Text>
+                <Text style={styles.modalTitle}>Allocate Teacher</Text>
                 <TouchableOpacity
                   onPress={() => setModalVisible(false)}
                   style={styles.modalCloseButton}
                   accessibilityLabel="Close modal"
                 >
-                  <Feather name="x" size={20} color={EditorialColors.ink} />
+                  <Feather name="x" size={20} color={DayRibbonColors.ink} />
                 </TouchableOpacity>
               </View>
 
-              <Rule thickness="hairline" style={{ marginBottom: 14 }} />
-
-              <Label
-                text={`${selectedSubject?.code} • ${selectedSubject?.name?.toUpperCase()}`}
-                style={{ marginBottom: 14 }}
-              />
+              <Text style={styles.modalSubtitle}>
+                {selectedSubject?.code} • {selectedSubject?.name}
+              </Text>
 
               {/* Tab Selector */}
               <View style={styles.tabToggleRow}>
@@ -367,16 +359,16 @@ export const FacultyAllocationScreen = () => {
                 <View style={styles.tabContentBlock}>
                   <Text style={styles.inputLabel}>SEARCH BY NAME OR EMAIL</Text>
                   <TextInput
-                    style={styles.underlineInput}
+                    style={styles.textInput}
                     value={searchQuery}
                     onChangeText={handleSearch}
                     placeholder="e.g. Ramesh or cs.teacher@jec.ac.in"
-                    placeholderTextColor={EditorialColors.muted}
+                    placeholderTextColor={DayRibbonColors.mutedSoft}
                     autoCapitalize="none"
                   />
 
                   {searching && (
-                    <ActivityIndicator size="small" color={EditorialColors.ink} style={{ marginTop: 10 }} />
+                    <ActivityIndicator size="small" color={DayRibbonColors.cobalt} style={{ marginTop: 10 }} />
                   )}
 
                   <ScrollView style={{ maxHeight: 180, marginTop: 10 }} showsVerticalScrollIndicator={false}>
@@ -388,7 +380,9 @@ export const FacultyAllocationScreen = () => {
                         activeOpacity={0.7}
                       >
                         <Text style={styles.searchResultName}>{faculty.name}</Text>
-                        <Label text={`${faculty.department || 'CSE'} • ${faculty.email}`} />
+                        <Text style={styles.searchResultMeta}>
+                          {faculty.department || 'CSE'} • {faculty.email}
+                        </Text>
                       </TouchableOpacity>
                     ))}
                   </ScrollView>
@@ -398,22 +392,22 @@ export const FacultyAllocationScreen = () => {
                   <View style={styles.inputBlock}>
                     <Text style={styles.inputLabel}>FULL NAME</Text>
                     <TextInput
-                      style={styles.underlineInput}
+                      style={styles.textInput}
                       value={newFacultyName}
                       onChangeText={setNewFacultyName}
                       placeholder="e.g. Dr. John Doe"
-                      placeholderTextColor={EditorialColors.muted}
+                      placeholderTextColor={DayRibbonColors.mutedSoft}
                     />
                   </View>
 
                   <View style={styles.inputBlock}>
                     <Text style={styles.inputLabel}>INSTITUTIONAL EMAIL</Text>
                     <TextInput
-                      style={styles.underlineInput}
+                      style={styles.textInput}
                       value={newFacultyEmail}
                       onChangeText={setNewFacultyEmail}
                       placeholder="e.g. johndoe@jec.ac.in"
-                      placeholderTextColor={EditorialColors.muted}
+                      placeholderTextColor={DayRibbonColors.mutedSoft}
                       keyboardType="email-address"
                       autoCapitalize="none"
                     />
@@ -426,9 +420,9 @@ export const FacultyAllocationScreen = () => {
                     activeOpacity={0.85}
                   >
                     {submitting ? (
-                      <ActivityIndicator size="small" color={EditorialColors.white} />
+                      <ActivityIndicator size="small" color={DayRibbonColors.surface} />
                     ) : (
-                      <Text style={styles.modalSubmitBtnText}>REGISTER & ALLOCATE</Text>
+                      <Text style={styles.modalSubmitBtnText}>Register & Allocate</Text>
                     )}
                   </TouchableOpacity>
                 </View>
@@ -447,19 +441,15 @@ export const FacultyAllocationScreen = () => {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>
-                  CREDENTIALS READY<Text style={styles.accentDot}>.</Text>
-                </Text>
+                <Text style={styles.modalTitle}>Credentials Ready</Text>
                 <TouchableOpacity
                   onPress={() => setCredModalVisible(false)}
                   style={styles.modalCloseButton}
                   accessibilityLabel="Close modal"
                 >
-                  <Feather name="x" size={20} color={EditorialColors.ink} />
+                  <Feather name="x" size={20} color={DayRibbonColors.ink} />
                 </TouchableOpacity>
               </View>
-
-              <Rule thickness="hairline" style={{ marginBottom: 16 }} />
 
               <Text style={styles.credSuccessNote}>
                 Faculty member assigned. Login credentials dispatched to institutional inbox.
@@ -479,11 +469,11 @@ export const FacultyAllocationScreen = () => {
               </View>
 
               <TouchableOpacity
-                style={styles.primaryActionButton}
+                style={styles.modalDoneBtn}
                 onPress={() => setCredModalVisible(false)}
                 activeOpacity={0.85}
               >
-                <Text style={styles.primaryActionText}>DONE</Text>
+                <Text style={styles.modalDoneBtnText}>Done</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -496,14 +486,14 @@ export const FacultyAllocationScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   topHeader: {
     flexDirection: 'row',
@@ -514,52 +504,74 @@ const styles = StyleSheet.create({
   backButton: {
     width: 44,
     height: 44,
+    borderRadius: 22,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.bg,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  headerTagChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: DayRibbonShapes.chipRadius,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+  },
+  headerTagText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
+  },
   screenTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 24,
-    lineHeight: 28,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 28,
+    lineHeight: 34,
+    color: DayRibbonColors.ink,
     marginBottom: 4,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
   screenSubtitle: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
-    marginBottom: 12,
-  },
-  heavySpacer: {
-    marginVertical: 18,
+    marginBottom: 16,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 1.2,
+    color: DayRibbonColors.ink,
+  },
+  countBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: DayRibbonShapes.chipRadius,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+  },
+  countBadgeText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   subjectList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+    gap: 12,
   },
-  subjectRow: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 16,
+  subjectCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
   },
   rowTop: {
     marginBottom: 10,
@@ -574,49 +586,53 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   subjectCode: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 1,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.cobalt,
   },
   statusBadge: {
-    borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
+    borderRadius: DayRibbonShapes.chipRadius,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
   },
-  accentStatusBadge: {
-    borderColor: EditorialColors.accent,
+  assignedBadge: {
+    backgroundColor: 'rgba(43, 63, 224, 0.08)',
+  },
+  unassignedBadge: {
+    backgroundColor: DayRibbonColors.warnBg,
   },
   statusText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 9,
-    letterSpacing: 1,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 10,
   },
-  accentStatusText: {
-    color: EditorialColors.accent,
+  assignedText: {
+    color: DayRibbonColors.cobalt,
+  },
+  unassignedBadgeText: {
+    color: DayRibbonColors.warn,
   },
   subjectName: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 17,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 16,
     lineHeight: 22,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
     marginBottom: 4,
   },
   facultyName: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 14,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
     marginBottom: 2,
   },
   emailMeta: {
-    letterSpacing: 1.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
   },
   unassignedText: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
     marginTop: 2,
   },
@@ -624,36 +640,36 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     justifyContent: 'flex-end',
-    marginTop: 8,
+    marginTop: 10,
   },
   dangerOutlineBtn: {
     height: 40,
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
+    borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: EditorialColors.accent,
+    borderColor: DayRibbonColors.warn,
     alignItems: 'center',
     justifyContent: 'center',
   },
   dangerOutlineBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.accent,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 12,
+    color: DayRibbonColors.warn,
   },
   primaryActionBtn: {
     height: 40,
     paddingHorizontal: 16,
-    backgroundColor: EditorialColors.ink,
+    borderRadius: 14,
+    backgroundColor: DayRibbonColors.cobalt,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
   },
   primaryActionBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 12,
+    color: DayRibbonColors.surface,
   },
   skeletonContainer: {
     gap: 12,
@@ -661,46 +677,54 @@ const styles = StyleSheet.create({
   },
   skeletonBlock: {
     height: 90,
-    backgroundColor: EditorialColors.track,
+    backgroundColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.cardRadius,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(17, 17, 17, 0.7)',
+    backgroundColor: 'rgba(14, 19, 48, 0.4)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
   modalContent: {
     width: '100%',
-    backgroundColor: EditorialColors.bg,
-    borderWidth: 2,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     padding: 20,
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   modalTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 18,
-    color: EditorialColors.ink,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 20,
+    color: DayRibbonColors.ink,
+  },
+  modalSubtitle: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 13,
+    color: DayRibbonColors.muted,
+    marginBottom: 16,
   },
   modalCloseButton: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
   },
   tabToggleRow: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 14,
+    marginBottom: 16,
   },
   tabContentBlock: {
     marginTop: 4,
@@ -709,86 +733,97 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   inputLabel: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 1,
+    color: DayRibbonColors.muted,
     marginBottom: 6,
   },
-  underlineInput: {
-    height: 44,
-    borderBottomWidth: 2,
-    borderBottomColor: EditorialColors.ink,
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 15,
-    color: EditorialColors.ink,
-    paddingVertical: 6,
+  textInput: {
+    height: 48,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 14,
+    color: DayRibbonColors.ink,
+    paddingHorizontal: 14,
   },
   facultySearchResult: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.track,
-    paddingVertical: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 12,
+    marginBottom: 8,
+    backgroundColor: DayRibbonColors.bg,
   },
   searchResultName: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 14,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
     marginBottom: 2,
   },
+  searchResultMeta: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
+  },
   modalSubmitBtn: {
-    height: 48,
+    height: 52,
     width: '100%',
-    backgroundColor: EditorialColors.ink,
+    borderRadius: DayRibbonShapes.buttonRadius,
+    backgroundColor: DayRibbonColors.cobalt,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 10,
   },
   modalSubmitBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 1.5,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    color: DayRibbonColors.surface,
   },
   credSuccessNote: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
     marginBottom: 16,
   },
   credDetailsBox: {
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     padding: 14,
     marginBottom: 20,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   credRow: {
-    marginBottom: 10,
+    marginBottom: 8,
   },
   credKey: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 10,
-    letterSpacing: 1.5,
-    color: EditorialColors.muted,
+    letterSpacing: 1,
+    color: DayRibbonColors.muted,
     marginBottom: 2,
   },
   credVal: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 14,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
-  primaryActionButton: {
-    height: 54,
+  modalDoneBtn: {
+    height: 52,
     width: '100%',
-    backgroundColor: EditorialColors.ink,
+    borderRadius: DayRibbonShapes.buttonRadius,
+    backgroundColor: DayRibbonColors.cobalt,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  primaryActionText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.white,
+  modalDoneBtnText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    color: DayRibbonColors.surface,
   },
 });
