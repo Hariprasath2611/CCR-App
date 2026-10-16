@@ -305,5 +305,14 @@ export const getDBConnection = async (): Promise<SQLite.SQLiteDatabase> => {
     console.error('Error seeding timetable:', err);
   }
 
-  return db;
+      dbInstance = db;
+      return db;
+    } catch (err) {
+      console.error('Database connection init error:', err);
+      dbInitPromise = null;
+      throw err;
+    }
+  })();
+
+  return dbInitPromise;
 };
