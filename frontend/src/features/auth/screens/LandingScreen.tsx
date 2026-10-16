@@ -16,7 +16,7 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@navigation/types';
 import { Feather } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ENV } from '@config/env';
 import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes } from '@theme/dayRibbon';
@@ -26,7 +26,10 @@ const { width } = Dimensions.get('window');
 type NavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Landing'>;
 
 export const LandingScreen = () => {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation<NavigationProp>();
+  const isFocused = useIsFocused();
+
   const [modalVisible, setModalVisible] = useState(false);
   const [serverUrl, setServerUrl] = useState('');
 
@@ -81,7 +84,6 @@ export const LandingScreen = () => {
   };
 
   const [todayString, setTodayString] = useState(() => formatToday(new Date()));
-  const isFocused = useIsFocused();
 
   // Keep date updated dynamically every day (never idle/stale)
   useEffect(() => {
@@ -115,7 +117,7 @@ export const LandingScreen = () => {
   }, [isFocused]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { paddingTop: Math.max(insets.top, 20), paddingBottom: Math.max(insets.bottom, 16) }]}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       <ScrollView
@@ -192,24 +194,18 @@ export const LandingScreen = () => {
           <View style={styles.stackedTitleBox}>
             <Text
               numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.8}
               style={styles.titleWordDark}
             >
               Course
             </Text>
             <Text
               numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.8}
               style={styles.titleWordCobalt}
             >
               Coverage
             </Text>
             <Text
               numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.8}
               style={styles.titleWordDark}
             >
               Report
@@ -312,7 +308,7 @@ export const LandingScreen = () => {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -320,11 +316,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
+    overflow: 'hidden',
   },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'space-between',
-    paddingBottom: 16,
+    paddingBottom: 8,
     backgroundColor: '#FFFFFF',
   },
 
@@ -334,8 +331,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 24,
-    paddingTop: 12,
-    paddingBottom: 6,
+    paddingTop: 4,
+    paddingBottom: 4,
   },
   headerTag: {
     fontFamily: DayRibbonFonts.body700,
@@ -358,54 +355,53 @@ const styles = StyleSheet.create({
   // Today Pill
   todayPillWrapper: {
     paddingHorizontal: 24,
-    marginTop: 4,
-    marginBottom: 14,
+    marginTop: 8,
+    marginBottom: 8,
   },
   todayPill: {
     alignSelf: 'flex-start',
     borderWidth: 1.5,
     borderColor: DayRibbonColors.ink,
-    borderRadius: 20,
-    paddingHorizontal: 15,
-    paddingVertical: 6,
+    borderRadius: 22,
+    paddingHorizontal: 16,
+    paddingVertical: 7,
     backgroundColor: '#FFFFFF',
   },
   todayPillText: {
     fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
     color: DayRibbonColors.ink,
-    letterSpacing: 0.8,
+    letterSpacing: 0.6,
     textTransform: 'uppercase',
   },
 
-  // Slanted Ribbon Banner
+  // Slanted Ribbon Banner (Continuous diagonal, no horizontal clip)
   ribbonWrapper: {
     width: '100%',
-    marginVertical: 18,
+    marginVertical: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
   },
   ribbonStack: {
-    width: width * 1.35,
-    transform: [{ rotate: '-6.5deg' }],
+    width: width + 120,
+    transform: [{ rotate: '-7deg' }],
     alignItems: 'center',
   },
   ribbonBand: {
     width: '100%',
-    height: 42,
+    height: 48,
     justifyContent: 'center',
     alignItems: 'center',
   },
   bandTextRow: {
-    width: width,
+    width: width - 44,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 22,
+    paddingHorizontal: 10,
   },
   bandCobalt: {
-    backgroundColor: '#2B3FE0',
+    backgroundColor: '#263FE3',
   },
   bandAmber: {
     backgroundColor: '#FBA919',
@@ -414,33 +410,35 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF4757',
   },
   bandMint: {
-    backgroundColor: '#20D489',
+    backgroundColor: '#1ED79A',
   },
   bandTextWhite: {
-    fontFamily: DayRibbonFonts.display,
-    fontSize: 14,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 16,
     color: '#FFFFFF',
     letterSpacing: 1.2,
+    fontWeight: 'bold',
     textTransform: 'uppercase',
   },
   bandTextDark: {
-    fontFamily: DayRibbonFonts.display,
-    fontSize: 14,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 16,
     color: DayRibbonColors.ink,
     letterSpacing: 1.2,
+    fontWeight: 'bold',
     textTransform: 'uppercase',
   },
 
   // Hero Text
   heroTextSection: {
     paddingHorizontal: 24,
-    marginTop: 6,
-    marginBottom: 24,
+    marginTop: 4,
+    marginBottom: 20,
   },
   collegeEyebrow: {
     fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
-    color: DayRibbonColors.muted,
+    color: '#6B73B0',
     letterSpacing: 1.2,
     textTransform: 'uppercase',
     marginBottom: 8,
@@ -449,30 +447,30 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   titleWordDark: {
-    fontFamily: DayRibbonFonts.display,
-    fontSize: 40,
-    lineHeight: 44,
-    color: DayRibbonColors.ink,
-    letterSpacing: -0.5,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 46,
+    lineHeight: 50,
+    color: '#0E1330',
+    letterSpacing: -1,
   },
   titleWordCobalt: {
-    fontFamily: DayRibbonFonts.display,
-    fontSize: 40,
-    lineHeight: 44,
-    color: DayRibbonColors.cobalt,
-    letterSpacing: -0.5,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 46,
+    lineHeight: 50,
+    color: '#263FE3',
+    letterSpacing: -1,
   },
   subtitleText: {
     fontFamily: DayRibbonFonts.body500,
     fontSize: 14,
     lineHeight: 22,
-    color: DayRibbonColors.muted,
+    color: '#6B73B0',
   },
 
   // Bottom CTA
   bottomBlock: {
     paddingHorizontal: 24,
-    paddingBottom: 12,
+    paddingBottom: 8,
   },
   ribbonButton: {
     height: 54,
@@ -523,9 +521,9 @@ const styles = StyleSheet.create({
   legalMeta: {
     fontFamily: DayRibbonFonts.body500,
     fontSize: 11,
-    color: DayRibbonColors.muted,
+    color: '#6B73B0',
     textAlign: 'center',
-    marginTop: 12,
+    marginTop: 10,
   },
 
   // Modal styles
