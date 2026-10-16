@@ -6,21 +6,25 @@ import {
   TouchableOpacity,
   Text,
   StatusBar,
+  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
-import { StaffStackParamList } from '@navigation/types';
 import { useReportStore } from '@features/cc/store/useReportStore';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getHODForYear } from '@config/facultyBoard';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import {
+  DayRibbonColors,
+  DayRibbonFonts,
+  DayRibbonShapes,
+  DayRibbonSpacing,
+} from '@theme/dayRibbon';
 import { BigNumber } from '@components/editorial/BigNumber';
-import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
-import { SegBar } from '@components/editorial/SegBar';
+import { ProgressBar } from '@components/editorial/ProgressBar';
+import { StatTile } from '@components/editorial/StatTile';
 import { EditorialChip } from '@components/editorial/EditorialChip';
+import { ListRow } from '@components/editorial/ListRow';
 
 interface ClassData {
   classId: string;
@@ -77,83 +81,101 @@ export const HodDashboardScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.screenTop),
             paddingBottom: insets.bottom + 80,
           },
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Top Meta Bar */}
-        <View style={styles.topMetaRow}>
-          <View>
-            <Label text="HEAD OF DEPARTMENT DASHBOARD" />
+        {/* Header with Logo slot, role info, and bell button */}
+        <View style={styles.header}>
+          <View style={styles.logoSlot}>
+            <Image
+              source={require('../../../assets/logo-removebg-preview.png')}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
+          </View>
+
+          <View style={styles.headerMiddle}>
+            <Text style={styles.roleLabel}>HEAD OF DEPARTMENT</Text>
             <Text style={styles.facultyName} numberOfLines={1}>
               {user?.name || hodBoardInfo.hodName}
             </Text>
           </View>
-          <View style={styles.deptBadge}>
-            <Text style={styles.deptText}>
-              {user?.department ? user.department.toUpperCase() : 'CSE'}
-            </Text>
-          </View>
+
+          <TouchableOpacity
+            style={styles.bellButton}
+            onPress={() => navigation.navigate('Notifications')}
+            activeOpacity={0.7}
+            accessibilityLabel="Notifications"
+          >
+            <Feather name="bell" size={18} color={DayRibbonColors.ink} />
+          </TouchableOpacity>
         </View>
 
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
-
-        {/* Hero Section: Big Number 104 with Vermilion % */}
-        <View style={styles.heroSection}>
-          <Label text={`${selectedYear.toUpperCase()} AVERAGE COVERAGE`} />
+        {/* Hero Section: Average Coverage Card */}
+        <View style={styles.coverageHeroCard}>
+          <Text style={styles.cardHeaderLabel}>
+            {selectedYear.toUpperCase()} AVERAGE COVERAGE
+          </Text>
           <View style={styles.heroRow}>
-            <BigNumber value={avgDeptCoverage} size="hero" showPercent />
+            <BigNumber value={avgDeptCoverage} size="hero" showPercent color={DayRibbonColors.cobalt} />
           </View>
+          <ProgressBar progress={avgDeptCoverage} height={10} style={{ marginTop: 12 }} />
         </View>
 
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
-        {/* 3-Column Stat Row */}
-        <View style={styles.statRow}>
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{CLASSES_DATA.length}</Text>
-            <Label text="CLASSES" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>81%</Text>
-            <Label text="ALL DEPT" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text
-              style={[
-                styles.statNum,
-                PENDING_REPORTS > 0 ? styles.accentStatNum : null,
-              ]}
-            >
-              {PENDING_REPORTS}
-            </Text>
-            <Label text="PENDING" />
-          </View>
+        {/* 3-Column Stat Grid */}
+        <View style={styles.statGrid}>
+          <StatTile
+            value={CLASSES_DATA.length}
+            label="Classes"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value="81%"
+            label="All Dept"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value={PENDING_REPORTS}
+            label="Pending"
+            isBehindPlan={PENDING_REPORTS > 0}
+            style={styles.statGridItem}
+          />
         </View>
 
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
+        {/* Pending Approval Banner if pending */}
+        {PENDING_REPORTS > 0 && (
+          <TouchableOpacity
+            style={styles.pendingBanner}
+            onPress={() => navigation.navigate('Approval', { reportId: pendingReportsList[0]?.id })}
+            activeOpacity={0.85}
+          >
+            <View style={{ flex: 1 }}>
+              <Text style={styles.pendingBannerTitle}>
+                {PENDING_REPORTS} Report{PENDING_REPORTS > 1 ? 's' : ''} Awaiting Approval
+              </Text>
+              <Text style={styles.pendingBannerSub}>Tap to review & sign off</Text>
+            </View>
+            <Feather name="arrow-right" size={18} color={DayRibbonColors.ink} />
+          </TouchableOpacity>
+        )}
 
-        {/* Quick Action: Manage Coordinators & Credentials */}
+        {/* Primary Action Button: Manage Coordinators & Credentials */}
         <TouchableOpacity
           style={styles.primaryActionButton}
           onPress={() => navigation.navigate('ManageCoordinators')}
           activeOpacity={0.85}
         >
-          <Text style={styles.primaryActionText}>MANAGE COORDINATORS & CREDENTIALS</Text>
-          <Feather name="arrow-right" size={18} color={EditorialColors.white} />
+          <Text style={styles.primaryActionText}>Manage Coordinators</Text>
+          <Feather name="users" size={18} color={DayRibbonColors.white} />
         </TouchableOpacity>
 
         {/* Year Filter Chips */}
@@ -161,7 +183,7 @@ export const HodDashboardScreen = () => {
           {YEARS.map((yr) => (
             <EditorialChip
               key={yr}
-              label={yr.toUpperCase()}
+              label={yr}
               selected={selectedYear === yr}
               onPress={() => setSelectedYear(yr)}
             />
@@ -173,74 +195,29 @@ export const HodDashboardScreen = () => {
           <Text style={styles.sectionHeaderTitle}>
             {selectedYear.toUpperCase()} SECTIONS
           </Text>
-          <Label text={`${filteredClasses.length} SECTIONS`} />
+          <Text style={styles.sectionHeaderMeta}>{filteredClasses.length} SECTIONS</Text>
         </View>
 
-        {/* Class Rows with SegBars */}
+        {/* Class Rows with ListRow and ProgressBar */}
         <View style={styles.classList}>
           {filteredClasses.map((item) => {
-            const isLagging = item.coverage < 75;
+            const isBehind = item.coverage < 75;
             return (
-              <TouchableOpacity
+              <ListRow
                 key={item.classId}
-                style={styles.classRow}
-                activeOpacity={0.7}
+                indexOrCode={item.classId}
+                name={item.name}
+                caption={`CC: ${item.ccName || 'Unassigned'}${item.pendingCount > 0 ? ' • 1 Pending' : ''}`}
+                value={`${item.coverage}%`}
+                progress={item.coverage}
+                isBehindPlan={isBehind}
                 onPress={() =>
                   navigation.navigate('SubjectReports', { classId: item.classId })
                 }
-              >
-                <View style={styles.rowTop}>
-                  <View style={styles.classInfo}>
-                    <Text style={styles.className}>{item.name}</Text>
-                    <Label
-                      text={`CC: ${item.ccName?.toUpperCase() || 'UNASSIGNED'}${
-                        item.pendingCount > 0 ? ' • 1 PENDING' : ''
-                      }`}
-                      style={styles.ccMetaLabel}
-                    />
-                  </View>
-
-                  <View style={styles.rightValueBox}>
-                    <Text
-                      style={[
-                        styles.percentText,
-                        isLagging ? styles.accentPercentText : null,
-                      ]}
-                    >
-                      {item.coverage}%
-                    </Text>
-                  </View>
-                </View>
-
-                {/* 25-Segment Bar */}
-                <View style={styles.segBarWrapper}>
-                  <SegBar
-                    totalSegments={25}
-                    filledSegments={Math.round((item.coverage / 100) * 25)}
-                    isLagging={isLagging}
-                  />
-                </View>
-              </TouchableOpacity>
+              />
             );
           })}
         </View>
-
-        {/* Pending Approval Shortcut if pending */}
-        {PENDING_REPORTS > 0 && (
-          <TouchableOpacity
-            style={styles.pendingBanner}
-            onPress={() => navigation.navigate('Approval', { reportId: pendingReportsList[0]?.id })}
-            activeOpacity={0.85}
-          >
-            <View>
-              <Text style={styles.pendingBannerTitle}>
-                {PENDING_REPORTS} REPORT{PENDING_REPORTS > 1 ? 'S' : ''} AWAITING HOD APPROVAL
-              </Text>
-              <Label text="ACTION REQUIRED" style={{ color: EditorialColors.white }} />
-            </View>
-            <Feather name="arrow-right" size={20} color={EditorialColors.white} />
-          </TouchableOpacity>
-        )}
       </ScrollView>
     </View>
   );
@@ -249,92 +226,128 @@ export const HodDashboardScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
-  topMetaRow: {
+  header: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 4,
+    marginBottom: 20,
+  },
+  logoSlot: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 4,
+    ...DayRibbonShapes.shadow,
+  },
+  logoImage: {
+    width: 32,
+    height: 32,
+  },
+  headerMiddle: {
+    flex: 1,
+    marginHorizontal: 12,
+  },
+  roleLabel: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 10,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
   },
   facultyName: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 22,
-    lineHeight: 26,
-    color: EditorialColors.ink,
-    marginTop: 2,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 18,
+    lineHeight: 22,
+    color: DayRibbonColors.ink,
   },
-  deptBadge: {
+  bellButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...DayRibbonShapes.shadow,
   },
-  deptText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 10,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
+  coverageHeroCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 20,
+    marginBottom: 14,
+    ...DayRibbonShapes.shadow,
   },
-  hairlineSpacer: {
-    marginVertical: 16,
-  },
-  heroSection: {
-    marginTop: 4,
+  cardHeaderLabel: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
   },
   heroRow: {
     marginTop: 4,
   },
-  heavySpacer: {
-    marginVertical: 18,
+  statGrid: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 16,
   },
-  statRow: {
+  statGridItem: {
+    flex: 1,
+  },
+  pendingBanner: {
+    backgroundColor: DayRibbonColors.lemon,
+    borderRadius: DayRibbonShapes.buttonRadius,
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 6,
+    marginBottom: 14,
+    ...DayRibbonShapes.shadow,
   },
-  statCol: {
-    flex: 1,
-    alignItems: 'center',
+  pendingBannerTitle: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    color: DayRibbonColors.ink,
   },
-  statNum: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 34,
-    color: EditorialColors.ink,
-    marginBottom: 2,
-  },
-  accentStatNum: {
-    color: EditorialColors.accent,
-  },
-  statDivider: {
-    width: 1,
-    height: 38,
-    backgroundColor: EditorialColors.ink,
+  pendingBannerSub: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.ink,
+    marginTop: 2,
   },
   primaryActionButton: {
-    height: 54,
+    height: 52,
     width: '100%',
-    backgroundColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.cobalt,
+    borderRadius: DayRibbonShapes.buttonRadius,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 10,
     marginBottom: 20,
+    ...DayRibbonShapes.shadow,
   },
   primaryActionText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 1.5,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.white,
   },
   filterChipRow: {
     flexDirection: 'row',
@@ -346,72 +359,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
+  },
+  sectionHeaderMeta: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   classList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
-  },
-  classRow: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 14,
-  },
-  rowTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 10,
-  },
-  classInfo: {
-    flex: 1,
-    marginRight: 12,
-  },
-  className: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 17,
-    lineHeight: 22,
-    color: EditorialColors.ink,
-    marginBottom: 4,
-  },
-  ccMetaLabel: {
-    letterSpacing: 1.5,
-  },
-  rightValueBox: {
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-  },
-  percentText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 34,
-    color: EditorialColors.ink,
-  },
-  accentPercentText: {
-    color: EditorialColors.accent,
-  },
-  segBarWrapper: {
-    marginTop: 2,
-  },
-  pendingBanner: {
-    backgroundColor: EditorialColors.accent,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 24,
-  },
-  pendingBannerTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 1.5,
-    color: EditorialColors.white,
-    marginBottom: 4,
+    width: '100%',
   },
 });
+
+export default HodDashboardScreen;
