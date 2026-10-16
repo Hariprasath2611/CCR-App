@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, Avatar } from 'react-native-paper';
 import { Feather } from '@expo/vector-icons';
-import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes } from '@theme/dayRibbon';
 import {
   getHODForYear,
   getCCBoardForYear,
@@ -47,7 +47,7 @@ export const FacultyBoardCard: React.FC<FacultyBoardCardProps> = ({
 
         <View style={styles.hodInfoRow}>
           <Avatar.Text
-            size={52}
+            size={50}
             label={hodInfo.hodName.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase()}
             style={styles.hodAvatar}
             labelStyle={styles.hodAvatarText}
@@ -56,7 +56,7 @@ export const FacultyBoardCard: React.FC<FacultyBoardCardProps> = ({
             <Text style={styles.hodRoleLabel}>HEAD OF DEPARTMENT</Text>
             <Text style={styles.hodName}>{hodInfo.hodName}</Text>
             <View style={styles.emailRow}>
-              <Feather name="mail" size={13} color={EditorialColors.muted} />
+              <Feather name="mail" size={13} color={DayRibbonColors.muted} />
               <Text style={styles.emailText}>{hodInfo.email}</Text>
             </View>
           </View>
@@ -77,7 +77,7 @@ export const FacultyBoardCard: React.FC<FacultyBoardCardProps> = ({
             key={cc.classId}
             style={styles.ccItemCard}
             onPress={() => onSelectCC && onSelectCC(cc)}
-            activeOpacity={0.7}
+            activeOpacity={0.75}
           >
             <View style={styles.ccCardHeader}>
               <View style={styles.sectionIndicator}>
@@ -93,12 +93,12 @@ export const FacultyBoardCard: React.FC<FacultyBoardCardProps> = ({
 
             <View style={styles.ccFooterRow}>
               <View style={styles.ccEmailBox}>
-                <Feather name="mail" size={12} color={EditorialColors.muted} />
+                <Feather name="mail" size={12} color={DayRibbonColors.muted} />
                 <Text style={styles.ccEmailText} numberOfLines={1}>
                   {cc.email}
                 </Text>
               </View>
-              <Feather name="arrow-right" size={14} color={EditorialColors.ink} />
+              <Feather name="arrow-right" size={16} color={DayRibbonColors.cobalt} />
             </View>
           </TouchableOpacity>
         ))}
@@ -116,18 +116,19 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   boardHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
   },
   hodBoardCard: {
-    backgroundColor: EditorialColors.ink,
-    borderRadius: 0,
-    borderWidth: EditorialRules.borderWidth,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     padding: 16,
     marginBottom: 16,
+    ...DayRibbonShapes.shadow,
   },
   hodHeaderRow: {
     flexDirection: 'row',
@@ -136,58 +137,57 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   hodBadgeBox: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: EditorialColors.white,
+    backgroundColor: DayRibbonColors.cobaltTint,
     paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 0,
+    paddingVertical: 3,
+    borderRadius: 8,
   },
   hodBadgeText: {
-    color: EditorialColors.white,
-    fontFamily: EditorialFonts.heavy,
+    color: DayRibbonColors.cobalt,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 10,
-    letterSpacing: 1.5,
+    letterSpacing: 0.5,
   },
   deptBadge: {
-    backgroundColor: EditorialColors.white,
+    backgroundColor: DayRibbonColors.bg,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 0,
+    paddingVertical: 3,
+    borderRadius: 8,
   },
   deptBadgeText: {
-    color: EditorialColors.ink,
-    fontFamily: EditorialFonts.heavy,
+    color: DayRibbonColors.ink,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 10,
-    letterSpacing: 1,
   },
   hodInfoRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   hodAvatar: {
-    backgroundColor: EditorialColors.white,
-    borderRadius: 0,
-    marginRight: 12,
+    backgroundColor: DayRibbonColors.cobalt,
+    borderRadius: 25,
+    marginRight: 14,
   },
   hodAvatarText: {
-    color: EditorialColors.ink,
-    fontFamily: EditorialFonts.display,
+    color: DayRibbonColors.white,
+    fontFamily: DayRibbonFonts.display,
   },
   hodDetailsBox: {
     flex: 1,
   },
   hodRoleLabel: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 10,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
   },
   hodName: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 18,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 17,
     lineHeight: 22,
-    color: EditorialColors.white,
+    color: DayRibbonColors.ink,
     marginTop: 2,
   },
   emailRow: {
@@ -196,29 +196,29 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   emailText: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 12,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     marginLeft: 6,
   },
   ccBoardHeaderRow: {
     marginBottom: 10,
   },
   ccBoardTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
   },
-  ccGridContainer: {
-  },
+  ccGridContainer: {},
   ccItemCard: {
-    backgroundColor: EditorialColors.bg,
-    borderRadius: 0,
-    padding: 14,
-    borderWidth: EditorialRules.hairline,
-    borderColor: EditorialColors.ink,
-    marginBottom: 10,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    marginBottom: 12,
+    ...DayRibbonShapes.shadow,
   },
   ccCardHeader: {
     flexDirection: 'row',
@@ -228,38 +228,37 @@ const styles = StyleSheet.create({
   },
   sectionIndicator: {
     borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 0,
-    backgroundColor: EditorialColors.white,
+    borderColor: DayRibbonColors.line,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    backgroundColor: DayRibbonColors.cobaltTint,
   },
   sectionText: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
-    letterSpacing: 1,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.cobalt,
   },
   ccDeptBadge: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 10,
-    letterSpacing: 1,
-    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
   },
   ccFacultyName: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 16,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   ccDesignationText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 11,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
     marginTop: 2,
   },
   ccDivider: {
     height: 1,
-    backgroundColor: EditorialColors.track,
+    backgroundColor: DayRibbonColors.line,
     marginVertical: 10,
   },
   ccFooterRow: {
@@ -273,9 +272,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   ccEmailText: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 12,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     marginLeft: 6,
   },
 });
+
+export default FacultyBoardCard;
