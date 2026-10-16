@@ -17,6 +17,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore, UserSession } from '../store/useAuthStore';
 import { Palette } from '@theme/colors';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing, EditorialType } from '@theme/editorial';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -770,7 +771,7 @@ export const LoginScreen = () => {
       style={styles.keyboardContainer}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
 
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
@@ -778,7 +779,7 @@ export const LoginScreen = () => {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.mainContainer}>
-          {/* Top Logo slot top-left */}
+          {/* Top Logo slot */}
           <View style={styles.topLogoRow}>
             <View style={styles.logoFrame}>
               <Image
@@ -793,53 +794,48 @@ export const LoginScreen = () => {
             </View>
           </View>
 
-          {/* Big display-font headline ending in vermilion full stop */}
+          {/* Display-font headline */}
           <View style={styles.headlineRow}>
-            <Text style={styles.displayHeadline}>
-              SIGN IN
-              <Text style={styles.accentDot}>.</Text>
-            </Text>
+            <Text style={styles.displayHeadline}>Sign In</Text>
+            <Text style={styles.headlineSubtitle}>Enter your institutional credentials to continue</Text>
           </View>
 
-          {/* 4px ink rule divider */}
-          <View style={styles.heavyRule} />
-
-          {/* Labelled underline Email Field */}
+          {/* Labelled Email Field */}
           <View style={styles.fieldGroup}>
             <Text style={styles.fieldLabel}>INSTITUTIONAL EMAIL</Text>
-            <View style={[styles.underlineInputWrapper, isEmailFocused && styles.underlineInputFocused]}>
+            <View style={[styles.inputBox, isEmailFocused && styles.inputFocused]}>
               <TextInput
                 ref={emailRef}
-                style={styles.underlineInput}
+                style={styles.input}
                 placeholder="faculty@jec.ac.in"
-                placeholderTextColor={EditorialColors.muted}
+                placeholderTextColor={DayRibbonColors.mutedSoft}
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
                 keyboardType="email-address"
                 autoCorrect={false}
                 autoComplete="email"
-                selectionColor={EditorialColors.ink}
+                selectionColor={DayRibbonColors.cobalt}
                 onFocus={() => setIsEmailFocused(true)}
                 onBlur={() => setIsEmailFocused(false)}
               />
             </View>
           </View>
 
-          {/* Labelled underline Password Field */}
+          {/* Labelled Password Field */}
           <View style={styles.fieldGroup}>
             <Text style={styles.fieldLabel}>PASSWORD</Text>
-            <View style={[styles.underlineInputWrapper, isPasswordFocused && styles.underlineInputFocused]}>
+            <View style={[styles.inputBox, isPasswordFocused && styles.inputFocused]}>
               <TextInput
                 ref={passwordRef}
-                style={styles.underlineInput}
+                style={styles.input}
                 placeholder="Enter password"
-                placeholderTextColor={EditorialColors.muted}
+                placeholderTextColor={DayRibbonColors.mutedSoft}
                 secureTextEntry={secureText}
                 value={password}
                 onChangeText={setPassword}
                 autoCapitalize="none"
-                selectionColor={EditorialColors.ink}
+                selectionColor={DayRibbonColors.cobalt}
                 onFocus={() => setIsPasswordFocused(true)}
                 onBlur={() => setIsPasswordFocused(false)}
               />
@@ -852,7 +848,7 @@ export const LoginScreen = () => {
                 <Feather
                   name={secureText ? 'eye-off' : 'eye'}
                   size={18}
-                  color={EditorialColors.ink}
+                  color={DayRibbonColors.muted}
                 />
               </TouchableOpacity>
             </View>
@@ -867,21 +863,21 @@ export const LoginScreen = () => {
               accessibilityRole="checkbox"
               accessibilityState={{ checked: rememberMe }}
             >
-              <View style={[styles.squareCheckbox, rememberMe && styles.squareCheckboxChecked]}>
-                {rememberMe ? <View style={styles.squareCheckboxInner} /> : null}
+              <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
+                {rememberMe ? <Feather name="check" size={12} color={DayRibbonColors.white} /> : null}
               </View>
-              <Text style={styles.rememberMeLabel}>REMEMBER ME</Text>
+              <Text style={styles.rememberMeLabel}>Remember me</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => navigation.navigate('ForgotPassword')}
               activeOpacity={0.7}
             >
-              <Text style={styles.forgotPasswordLink}>FORGOT PASSWORD?</Text>
+              <Text style={styles.forgotPasswordLink}>Forgot password?</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Full width primary button: Height 54, square, ink fill + white uppercase text */}
+          {/* Full-width Cobalt Button */}
           <TouchableOpacity
             style={styles.primaryButton}
             onPress={handleLogin}
@@ -890,29 +886,29 @@ export const LoginScreen = () => {
             accessibilityRole="button"
           >
             {isLoading ? (
-              <ActivityIndicator color={EditorialColors.white} size="small" />
+              <ActivityIndicator color={DayRibbonColors.white} size="small" />
             ) : (
-              <Text style={styles.primaryButtonText}>SIGN IN</Text>
+              <Text style={styles.primaryButtonText}>Sign In</Text>
             )}
           </TouchableOpacity>
 
           {/* Small muted help text */}
           <Text style={styles.helpText}>
-            AUTHORIZED FACULTY & CENTRAL ADMINISTRATION AUDIT ACCESS ONLY
+            Authorized faculty & central administration audit access only
           </Text>
 
-          {/* 1px ink rule divider */}
-          <View style={styles.hairlineRule} />
+          {/* Divider */}
+          <View style={styles.divider} />
 
           {/* Quick Preset Selector */}
           <View style={styles.presetsBlock}>
             <Text style={styles.presetsLabel}>TEST CREDENTIAL PRESETS</Text>
             <View style={styles.presetsGrid}>
               {[
-                { label: 'STAFF (REVATHI)', email: 'revathi@gmail.com', pass: 'revathi123' },
-                { label: 'CC (KARUPPAIYA)', email: 'karuppaiya@gmail.com', pass: 'karuppaiya123' },
-                { label: 'HOD (SELVA LAKSHMI)', email: 'selvalakshmi@jec.ac.in', pass: 'selva123' },
-                { label: 'PRINCIPAL', email: 'principal@jec.ac.in', pass: 'admin123' },
+                { label: 'Staff (Revathi)', email: 'revathi@gmail.com', pass: 'revathi123' },
+                { label: 'CC (Karuppaiya)', email: 'karuppaiya@gmail.com', pass: 'karuppaiya123' },
+                { label: 'HOD (Selva Lakshmi)', email: 'selvalakshmi@jec.ac.in', pass: 'selva123' },
+                { label: 'Principal', email: 'principal@jec.ac.in', pass: 'admin123' },
               ].map((p, i) => (
                 <TouchableOpacity
                   key={i}
@@ -937,11 +933,11 @@ export const LoginScreen = () => {
 const styles = StyleSheet.create({
   keyboardContainer: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingHorizontal: EditorialSpacing.screenPaddingHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
     paddingTop: 48,
     paddingBottom: 40,
   },
@@ -951,88 +947,87 @@ const styles = StyleSheet.create({
   topLogoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 28,
   },
   logoFrame: {
-    width: 48,
-    height: 48,
-    borderWidth: EditorialRules.borderWidth,
-    borderColor: EditorialColors.ink,
-    borderRadius: 0,
-    backgroundColor: EditorialColors.white,
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
     padding: 4,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
+    ...DayRibbonShapes.shadow,
   },
   logo: {
-    width: 36,
-    height: 36,
+    width: 32,
+    height: 32,
   },
   collegeHeaderBox: {
     flex: 1,
   },
   collegeLabel: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 12,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
   },
   appSystemLabel: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 10,
-    letterSpacing: 1,
-    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     marginTop: 2,
   },
   headlineRow: {
-    marginBottom: 14,
+    marginBottom: 24,
   },
   displayHeadline: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 44,
-    lineHeight: 46,
-    color: EditorialColors.ink,
-    letterSpacing: -1,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 34,
+    lineHeight: 40,
+    color: DayRibbonColors.ink,
+    letterSpacing: -0.5,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
-  heavyRule: {
-    width: '100%',
-    height: EditorialRules.heavy, // 4px ink rule
-    backgroundColor: EditorialColors.ink,
-    marginBottom: 28,
+  headlineSubtitle: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    color: DayRibbonColors.muted,
+    marginTop: 4,
   },
   fieldGroup: {
-    marginBottom: 24,
+    marginBottom: 18,
     width: '100%',
   },
   fieldLabel: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
-    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     marginBottom: 6,
   },
-  underlineInputWrapper: {
+  inputBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: 2,
-    borderBottomColor: EditorialColors.ink,
-    paddingBottom: 6,
-    paddingTop: 4,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    paddingHorizontal: 14,
+    minHeight: 52,
   },
-  underlineInputFocused: {
-    borderBottomColor: EditorialColors.accent,
+  inputFocused: {
+    borderColor: DayRibbonColors.cobalt,
   },
-  underlineInput: {
+  input: {
     flex: 1,
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 16,
-    color: EditorialColors.ink,
-    paddingVertical: 0,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 15,
+    color: DayRibbonColors.ink,
+    paddingVertical: 10,
   },
   passwordToggle: {
     padding: 6,
@@ -1041,82 +1036,77 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 24,
     marginTop: 4,
   },
   rememberMeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  squareCheckbox: {
-    width: 18,
-    height: 18,
-    borderWidth: EditorialRules.borderWidth,
-    borderColor: EditorialColors.ink,
-    borderRadius: 0,
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    borderRadius: 6,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,
+    backgroundColor: DayRibbonColors.surface,
   },
-  squareCheckboxChecked: {
-    backgroundColor: EditorialColors.ink,
-  },
-  squareCheckboxInner: {
-    width: 6,
-    height: 6,
-    backgroundColor: EditorialColors.white,
+  checkboxChecked: {
+    backgroundColor: DayRibbonColors.cobalt,
+    borderColor: DayRibbonColors.cobalt,
   },
   rememberMeLabel: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    color: DayRibbonColors.ink,
   },
   forgotPasswordLink: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 13,
+    color: DayRibbonColors.cobalt,
   },
   primaryButton: {
-    height: 54, // strict 54 height
+    height: 52,
     width: '100%',
-    backgroundColor: EditorialColors.ink, // ink fill
-    borderRadius: 0, // square
+    backgroundColor: DayRibbonColors.cobalt,
+    borderRadius: DayRibbonShapes.buttonRadius,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 14,
+    ...DayRibbonShapes.shadow,
   },
   primaryButtonText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.white, // white text
-    textTransform: 'uppercase',
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.white,
   },
   helpText: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     textAlign: 'center',
     lineHeight: 16,
     marginBottom: 24,
   },
-  hairlineRule: {
+  divider: {
     width: '100%',
-    height: EditorialRules.hairline,
-    backgroundColor: EditorialColors.ink,
+    height: 1,
+    backgroundColor: DayRibbonColors.line,
     marginBottom: 20,
   },
   presetsBlock: {
     width: '100%',
   },
   presetsLabel: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     marginBottom: 10,
   },
   presetsGrid: {
@@ -1125,18 +1115,18 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   presetChip: {
-    borderWidth: EditorialRules.hairline,
-    borderColor: EditorialColors.ink,
-    borderRadius: 0,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.chipRadius,
     paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: 'transparent',
+    paddingHorizontal: 13,
+    backgroundColor: DayRibbonColors.surface,
   },
   presetChipText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 12,
+    color: DayRibbonColors.ink,
   },
 });
+
 

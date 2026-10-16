@@ -16,7 +16,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@navigation/types';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 
 type NavigationProp = NativeStackNavigationProp<AuthStackParamList, 'ForgotPassword'>;
 
@@ -28,6 +28,7 @@ export const ForgotPasswordScreen = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleResetRequest = async () => {
     const trimmed = email.trim().toLowerCase();
@@ -53,12 +54,12 @@ export const ForgotPasswordScreen = () => {
       style={styles.keyboardContainer}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         contentContainerStyle={[
           styles.scrollContainer,
           {
-            paddingTop: Math.max(insets.top + 16, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top + 16, DayRibbonSpacing.screenTop),
             paddingBottom: Math.max(insets.bottom + 24, 32),
           },
         ]}
@@ -73,7 +74,7 @@ export const ForgotPasswordScreen = () => {
             activeOpacity={0.7}
             accessibilityLabel="Back to sign in"
           >
-            <Feather name="arrow-left" size={20} color={EditorialColors.ink} />
+            <Feather name="arrow-left" size={20} color={DayRibbonColors.ink} />
           </TouchableOpacity>
           <Text style={styles.headerTag}>RECOVERY</Text>
         </View>
@@ -81,8 +82,7 @@ export const ForgotPasswordScreen = () => {
         {/* Headline */}
         <View style={styles.titleSection}>
           <Text style={styles.headline}>
-            {isSubmitted ? 'REQUEST SENT' : 'RESET PASSWORD'}
-            <Text style={styles.accentDot}>.</Text>
+            {isSubmitted ? 'Request Sent' : 'Reset Password'}
           </Text>
           <Text style={styles.subtext}>
             {isSubmitted
@@ -91,34 +91,38 @@ export const ForgotPasswordScreen = () => {
           </Text>
         </View>
 
-        {/* 4px Heavy Ink Rule */}
-        <View style={styles.heavyRule} />
+        {/* 1px Line Divider */}
+        <View style={styles.divider} />
 
         {!isSubmitted ? (
           <View style={styles.formSection}>
             <View style={styles.inputBlock}>
               <Text style={styles.fieldLabel}>INSTITUTIONAL EMAIL</Text>
-              <TextInput
+              <View
                 style={[
-                  styles.underlineInput,
-                  error ? styles.inputErrorBorder : null,
+                  styles.inputBox,
+                  isFocused && styles.inputFocused,
+                  error ? styles.inputError : null,
                 ]}
-                value={email}
-                onChangeText={(val) => {
-                  setEmail(val);
-                  if (error) setError('');
-                }}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                placeholder="e.g. drkaruppaiya@ccr.edu"
-                placeholderTextColor={EditorialColors.muted}
-              />
-              {!!error && (
-                <Text style={styles.errorText}>
-                  {error.toUpperCase()}
-                </Text>
-              )}
+              >
+                <TextInput
+                  style={styles.input}
+                  value={email}
+                  onChangeText={(val) => {
+                    setEmail(val);
+                    if (error) setError('');
+                  }}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  placeholder="e.g. drkaruppaiya@ccr.edu"
+                  placeholderTextColor={DayRibbonColors.mutedSoft}
+                  selectionColor={DayRibbonColors.cobalt}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                />
+              </View>
+              {!!error && <Text style={styles.errorText}>{error}</Text>}
             </View>
 
             <TouchableOpacity
@@ -128,9 +132,9 @@ export const ForgotPasswordScreen = () => {
               activeOpacity={0.85}
             >
               {isLoading ? (
-                <ActivityIndicator color={EditorialColors.white} size="small" />
+                <ActivityIndicator color={DayRibbonColors.white} size="small" />
               ) : (
-                <Text style={styles.primaryButtonText}>SEND RECOVERY LINK</Text>
+                <Text style={styles.primaryButtonText}>Send Recovery Link</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -148,14 +152,14 @@ export const ForgotPasswordScreen = () => {
               onPress={() => navigation.navigate('Login')}
               activeOpacity={0.85}
             >
-              <Text style={styles.primaryButtonText}>RETURN TO SIGN IN</Text>
+              <Text style={styles.primaryButtonText}>Return to Sign In</Text>
             </TouchableOpacity>
           </View>
         )}
 
         <View style={styles.footerNote}>
           <Text style={styles.footerText}>
-            JAYA ENGINEERING COLLEGE • CCR SECURITY VERIFIED
+            Jaya Engineering College • CCR Security Verified
           </Text>
         </View>
       </ScrollView>
@@ -166,11 +170,11 @@ export const ForgotPasswordScreen = () => {
 const styles = StyleSheet.create({
   keyboardContainer: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   headerRow: {
     flexDirection: 'row',
@@ -181,116 +185,128 @@ const styles = StyleSheet.create({
   backButton: {
     width: 44,
     height: 44,
+    borderRadius: 22,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.bg,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
     alignItems: 'center',
     justifyContent: 'center',
+    ...DayRibbonShapes.shadow,
   },
   headerTag: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 1,
+    color: DayRibbonColors.cobalt,
   },
   titleSection: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   headline: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 40,
-    lineHeight: 44,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 32,
+    lineHeight: 38,
+    color: DayRibbonColors.ink,
     letterSpacing: -0.5,
     marginBottom: 8,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
   subtext: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 14,
     lineHeight: 20,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
   },
-  heavyRule: {
+  divider: {
     width: '100%',
-    height: EditorialRules.section,
-    backgroundColor: EditorialColors.ink,
-    marginBottom: 28,
+    height: 1,
+    backgroundColor: DayRibbonColors.line,
+    marginBottom: 24,
   },
   formSection: {
     width: '100%',
     marginBottom: 32,
   },
   inputBlock: {
-    marginBottom: 28,
+    marginBottom: 24,
   },
   fieldLabel: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     marginBottom: 6,
   },
-  underlineInput: {
-    height: 48,
-    borderBottomWidth: 2,
-    borderBottomColor: EditorialColors.ink,
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 16,
-    color: EditorialColors.ink,
-    paddingVertical: 8,
+  inputBox: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    paddingHorizontal: 14,
+    minHeight: 52,
+    justifyContent: 'center',
   },
-  inputErrorBorder: {
-    borderBottomColor: EditorialColors.accent,
+  inputFocused: {
+    borderColor: DayRibbonColors.cobalt,
+  },
+  inputError: {
+    borderColor: DayRibbonColors.warn,
+  },
+  input: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 15,
+    color: DayRibbonColors.ink,
+    paddingVertical: 10,
   },
   errorText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.accent,
-    marginTop: 6,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 12,
+    color: DayRibbonColors.warn,
+    marginTop: 4,
+    marginLeft: 2,
   },
   primaryButton: {
-    height: 54,
+    height: 52,
     width: '100%',
-    backgroundColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.cobalt,
+    borderRadius: DayRibbonShapes.buttonRadius,
     alignItems: 'center',
     justifyContent: 'center',
+    ...DayRibbonShapes.shadow,
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   primaryButtonText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.white,
   },
   successSection: {
     width: '100%',
     marginBottom: 32,
   },
   noticeBlock: {
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.cardRadius,
     padding: 16,
     marginBottom: 24,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.surface,
+    ...DayRibbonShapes.shadow,
   },
   noticeTag: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.cobalt,
     marginBottom: 6,
   },
   noticeBody: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
     lineHeight: 18,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   footerNote: {
     marginTop: 'auto',
@@ -298,10 +314,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 10,
-    letterSpacing: 1.5,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     textAlign: 'center',
   },
 });
+
+export default ForgotPasswordScreen;
