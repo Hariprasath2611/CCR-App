@@ -11,10 +11,13 @@ import { generateReportHTML } from '@services/api/reportPdfTemplate';
 import { generateReportWord } from '@services/api/reportWordTemplate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getCCForSection } from '@config/facultyBoard';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
-import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
-import { SegBar } from '@components/editorial/SegBar';
+import {
+  DayRibbonColors,
+  DayRibbonFonts,
+  DayRibbonShapes,
+  DayRibbonSpacing,
+} from '@theme/dayRibbon';
+import { ProgressBar } from '@components/editorial/ProgressBar';
 import { EditorialChip } from '@components/editorial/EditorialChip';
 
 interface ClassData {
@@ -152,13 +155,13 @@ export const DepartmentClassesScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.screenTop),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -166,27 +169,22 @@ export const DepartmentClassesScreen = () => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Label text={`DEPARTMENT CURRICULUM • ${deptCode}`} />
-          <Text style={styles.headerTitle}>
-            DEPARTMENT CLASSES<Text style={styles.accentDot}>.</Text>
-          </Text>
+          <Text style={styles.captionTag}>DEPARTMENT CURRICULUM • {deptCode}</Text>
+          <Text style={styles.headerTitle}>Department Classes</Text>
           <Text style={styles.headerSubtitle}>
             Course coverage monitoring, class progress and syllabus logs.
           </Text>
         </View>
 
-        {/* 4px Heavy Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
         {/* Tab Toggle: Classes vs Subjects */}
         <View style={styles.tabToggleRow}>
           <EditorialChip
-            label="CLASSES"
+            label="Classes"
             selected={activeTab === 'classes'}
             onPress={() => setActiveTab('classes')}
           />
           <EditorialChip
-            label="SUBJECTS"
+            label="Subjects"
             selected={activeTab === 'subjects'}
             onPress={() => setActiveTab('subjects')}
           />
@@ -197,15 +195,12 @@ export const DepartmentClassesScreen = () => {
           {YEARS.map((yr) => (
             <EditorialChip
               key={yr}
-              label={yr.toUpperCase()}
+              label={yr}
               selected={selectedYear === yr}
               onPress={() => setSelectedYear(yr)}
             />
           ))}
         </View>
-
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
 
         {activeTab === 'classes' ? (
           <>
@@ -213,31 +208,29 @@ export const DepartmentClassesScreen = () => {
               <Text style={styles.sectionHeaderTitle}>
                 {selectedYear.toUpperCase()} SECTIONS
               </Text>
-              <Label text={`${filteredClasses.length} SECTIONS`} />
+              <Text style={styles.sectionHeaderMeta}>{filteredClasses.length} SECTIONS</Text>
             </View>
 
             <View style={styles.classList}>
               {filteredClasses.map((cls) => {
                 const ccInfo = getCCForSection(cls.classId);
-                const isLagging = cls.coverage < 75;
+                const isBehind = cls.coverage < 75;
                 return (
-                  <View key={cls.classId} style={styles.classRow}>
-                    <View style={styles.rowTop}>
+                  <View key={cls.classId} style={styles.classCard}>
+                    <View style={styles.cardTop}>
                       <View style={styles.classInfo}>
                         <Text style={styles.className}>{cls.name}</Text>
-                        <Label
-                          text={`CC: ${ccInfo?.facultyName?.toUpperCase() || 'UNASSIGNED'}${
-                            cls.pendingCount > 0 ? ' • PENDING REVIEW' : ''
-                          }`}
-                          style={styles.ccMetaLabel}
-                        />
+                        <Text style={styles.ccMetaLabel}>
+                          CC: {ccInfo?.facultyName || 'Unassigned'}
+                          {cls.pendingCount > 0 ? ' • Pending Review' : ''}
+                        </Text>
                       </View>
 
                       <View style={styles.rightValueBox}>
                         <Text
                           style={[
                             styles.percentText,
-                            isLagging ? styles.accentPercentText : null,
+                            isBehind ? styles.warnPercentText : styles.cobaltPercentText,
                           ]}
                         >
                           {cls.coverage}%
@@ -245,34 +238,33 @@ export const DepartmentClassesScreen = () => {
                       </View>
                     </View>
 
-                    {/* 25-Segment Bar */}
-                    <View style={styles.segBarWrapper}>
-                      <SegBar
-                        totalSegments={25}
-                        filledSegments={Math.round((cls.coverage / 100) * 25)}
-                        isLagging={isLagging}
-                      />
-                    </View>
+                    {/* Progress Bar */}
+                    <ProgressBar
+                      progress={cls.coverage}
+                      isBehindPlan={isBehind}
+                      height={8}
+                      style={styles.progressBar}
+                    />
 
-                    {/* Row Action Buttons */}
-                    <View style={styles.rowActions}>
+                    {/* Card Actions */}
+                    <View style={styles.cardActions}>
                       <TouchableOpacity
-                        style={styles.actionOutlineBtn}
+                        style={styles.outlineActionBtn}
                         onPress={() => handleOpenSpreadsheet(cls)}
                         activeOpacity={0.7}
                       >
-                        <Text style={styles.actionOutlineBtnText}>SPREADSHEET</Text>
+                        <Text style={styles.outlineActionBtnText}>Spreadsheet</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
-                        style={styles.actionPrimaryBtn}
+                        style={styles.primaryActionBtn}
                         onPress={() =>
                           navigation.navigate('SubjectReports', { classId: cls.classId })
                         }
                         activeOpacity={0.85}
                       >
-                        <Text style={styles.actionPrimaryBtnText}>VIEW REPORTS</Text>
-                        <Feather name="arrow-right" size={14} color={EditorialColors.white} />
+                        <Text style={styles.primaryActionBtnText}>View Reports</Text>
+                        <Feather name="arrow-right" size={14} color={DayRibbonColors.white} />
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -286,19 +278,20 @@ export const DepartmentClassesScreen = () => {
               <Text style={styles.sectionHeaderTitle}>
                 {selectedYear.toUpperCase()} SUBJECTS
               </Text>
-              <Label text={`${departmentSubjects.length} COURSES`} />
+              <Text style={styles.sectionHeaderMeta}>{departmentSubjects.length} COURSES</Text>
             </View>
 
             <View style={styles.classList}>
               {departmentSubjects.map((sub) => (
-                <View key={sub.code} style={styles.classRow}>
-                  <View style={styles.rowTop}>
-                    <View style={styles.classInfo}>
-                      <Text style={styles.subjectCode}>{sub.code}</Text>
-                      <Text style={styles.className}>{sub.name}</Text>
-                      <Label text={`FACULTY: ${sub.faculty.toUpperCase()} • ${sub.topics} TOPICS`} />
-                    </View>
+                <View key={sub.code} style={styles.subjectCard}>
+                  <View style={styles.codeMetaRow}>
+                    <Text style={styles.subjectCode}>{sub.code}</Text>
+                    <Text style={styles.subjectYear}>{sub.year}</Text>
                   </View>
+                  <Text style={styles.className}>{sub.name}</Text>
+                  <Text style={styles.ccMetaLabel}>
+                    Faculty: {sub.faculty} • {sub.topics} Topics
+                  </Text>
                 </View>
               ))}
             </View>
@@ -315,45 +308,44 @@ export const DepartmentClassesScreen = () => {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>
-                  CONSOLIDATED SPREADSHEET<Text style={styles.accentDot}>.</Text>
-                </Text>
+                <Text style={styles.modalTitle}>Consolidated Spreadsheet</Text>
                 <TouchableOpacity
                   onPress={() => setModalVisible(false)}
-                  style={styles.modalCloseButton}
+                  style={styles.modalCloseBtn}
                   accessibilityLabel="Close modal"
                 >
-                  <Feather name="x" size={20} color={EditorialColors.ink} />
+                  <Feather name="x" size={20} color={DayRibbonColors.ink} />
                 </TouchableOpacity>
               </View>
 
-              <Rule thickness="hairline" style={{ marginBottom: 16 }} />
+              <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
+                {selectedReport && (
+                  <WeeklyCourseCoverageReportCard
+                    report={selectedReport}
+                    showDownloadButton={false}
+                  />
+                )}
+              </ScrollView>
 
-              {selectedReport && (
-                <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 420 }}>
-                  <WeeklyCourseCoverageReportCard report={selectedReport} showDownloadButton={false} />
+              <View style={styles.modalActions}>
+                <TouchableOpacity
+                  style={styles.modalSecondaryBtn}
+                  onPress={() => selectedReport && handleExportWord(selectedReport)}
+                  activeOpacity={0.8}
+                >
+                  <Feather name="file-text" size={16} color={DayRibbonColors.ink} />
+                  <Text style={styles.modalSecondaryBtnText}>Word</Text>
+                </TouchableOpacity>
 
-                  <View style={styles.modalActions}>
-                    <TouchableOpacity
-                      style={styles.modalActionBtn}
-                      onPress={() => handleExportPDF(selectedReport)}
-                      activeOpacity={0.85}
-                    >
-                      <Text style={styles.modalActionBtnText}>EXPORT PDF</Text>
-                      <Feather name="download" size={14} color={EditorialColors.white} />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={styles.modalOutlineBtn}
-                      onPress={() => handleExportWord(selectedReport)}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={styles.modalOutlineBtnText}>EXPORT WORD</Text>
-                      <Feather name="file-text" size={14} color={EditorialColors.ink} />
-                    </TouchableOpacity>
-                  </View>
-                </ScrollView>
-              )}
+                <TouchableOpacity
+                  style={styles.modalPrimaryBtn}
+                  onPress={() => selectedReport && handleExportPDF(selectedReport)}
+                  activeOpacity={0.8}
+                >
+                  <Feather name="download" size={16} color={DayRibbonColors.white} />
+                  <Text style={styles.modalPrimaryBtnText}>Export PDF</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </Modal>
@@ -365,41 +357,38 @@ export const DepartmentClassesScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   header: {
+    marginBottom: 16,
+  },
+  captionTag: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     marginBottom: 4,
   },
   headerTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 34,
-    lineHeight: 38,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 28,
+    lineHeight: 34,
+    color: DayRibbonColors.ink,
     letterSpacing: -0.5,
-    marginTop: 4,
     marginBottom: 4,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
   headerSubtitle: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
-  },
-  heavySpacer: {
-    marginVertical: 18,
-  },
-  hairlineSpacer: {
-    marginVertical: 16,
   },
   tabToggleRow: {
     flexDirection: 'row',
@@ -410,175 +399,208 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginBottom: 16,
+    marginBottom: 20,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
+  },
+  sectionHeaderMeta: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   classList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+    width: '100%',
   },
-  classRow: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 14,
+  classCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
+    marginBottom: 14,
+    ...DayRibbonShapes.shadow,
   },
-  rowTop: {
+  subjectCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
+    marginBottom: 12,
+    ...DayRibbonShapes.shadow,
+  },
+  codeMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  subjectCode: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 12,
+    color: DayRibbonColors.cobalt,
+  },
+  subjectYear: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
+  },
+  cardTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 10,
   },
   classInfo: {
     flex: 1,
     marginRight: 12,
   },
-  subjectCode: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 12,
-    letterSpacing: 1,
-    color: EditorialColors.muted,
-    marginBottom: 2,
-  },
   className: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 17,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 16,
     lineHeight: 22,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
     marginBottom: 4,
   },
   ccMetaLabel: {
-    letterSpacing: 1.5,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   rightValueBox: {
     alignItems: 'flex-end',
-    justifyContent: 'center',
   },
   percentText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 28,
-    lineHeight: 32,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 26,
+    lineHeight: 30,
   },
-  accentPercentText: {
-    color: EditorialColors.accent,
+  cobaltPercentText: {
+    color: DayRibbonColors.cobalt,
   },
-  segBarWrapper: {
-    marginTop: 2,
-    marginBottom: 12,
+  warnPercentText: {
+    color: DayRibbonColors.warn,
   },
-  rowActions: {
+  progressBar: {
+    marginTop: 12,
+    marginBottom: 14,
+  },
+  cardActions: {
     flexDirection: 'row',
     gap: 10,
-    justifyContent: 'flex-end',
   },
-  actionOutlineBtn: {
-    height: 38,
-    paddingHorizontal: 12,
+  outlineActionBtn: {
+    flex: 1,
+    height: 40,
+    borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionOutlineBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
+  outlineActionBtnText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 12,
+    color: DayRibbonColors.ink,
   },
-  actionPrimaryBtn: {
-    height: 38,
-    paddingHorizontal: 14,
-    backgroundColor: EditorialColors.ink,
+  primaryActionBtn: {
+    flex: 1,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: DayRibbonColors.cobalt,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
   },
-  actionPrimaryBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.white,
+  primaryActionBtnText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 12,
+    color: DayRibbonColors.white,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(17, 17, 17, 0.7)',
+    backgroundColor: 'rgba(14, 19, 48, 0.4)',
     justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    padding: 16,
   },
   modalContent: {
-    width: '100%',
-    backgroundColor: EditorialColors.bg,
-    borderWidth: 2,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    maxHeight: '90%',
     padding: 20,
+    ...DayRibbonShapes.shadow,
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 14,
   },
   modalTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 18,
-    color: EditorialColors.ink,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 20,
+    color: DayRibbonColors.ink,
   },
-  modalCloseButton: {
+  modalCloseBtn: {
     width: 36,
     height: 36,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+  },
+  modalScroll: {
+    maxHeight: 460,
   },
   modalActions: {
     flexDirection: 'row',
     gap: 10,
     marginTop: 16,
   },
-  modalActionBtn: {
+  modalSecondaryBtn: {
     flex: 1,
-    height: 48,
-    backgroundColor: EditorialColors.ink,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  modalActionBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 1.5,
-    color: EditorialColors.white,
-  },
-  modalOutlineBtn: {
-    flex: 1,
-    height: 48,
+    height: 44,
+    borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: 6,
   },
-  modalOutlineBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
+  modalSecondaryBtnText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 13,
+    color: DayRibbonColors.ink,
+  },
+  modalPrimaryBtn: {
+    flex: 1,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: DayRibbonColors.cobalt,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  modalPrimaryBtnText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 13,
+    color: DayRibbonColors.white,
   },
 });
+
+export default DepartmentClassesScreen;

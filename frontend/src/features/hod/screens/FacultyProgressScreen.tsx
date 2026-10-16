@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity, Text, StatusBar } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, StatusBar } from 'react-native';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useReportStore, ConsolidatedReport } from '@features/cc/store/useReportStore';
+import { useReportStore } from '@features/cc/store/useReportStore';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { StaffStackParamList } from '@navigation/types';
 import { WeeklyCourseCoverageReportCard } from '../../cc/components/WeeklyCourseCoverageReportCard';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
-import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
-import { SegBar } from '@components/editorial/SegBar';
+import {
+  DayRibbonColors,
+  DayRibbonFonts,
+  DayRibbonShapes,
+  DayRibbonSpacing,
+} from '@theme/dayRibbon';
+import { StatTile } from '@components/editorial/StatTile';
 import { EditorialChip } from '@components/editorial/EditorialChip';
+import { ProgressBar } from '@components/editorial/ProgressBar';
 
 type RouteParams = RouteProp<StaffStackParamList, 'FacultyProgress'>;
 type HodNav = NativeStackNavigationProp<StaffStackParamList>;
@@ -50,13 +54,13 @@ export const FacultyProgressScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.screenTop),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -64,56 +68,42 @@ export const FacultyProgressScreen = () => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Label text={`SECTION AUDIT • WEEK ${selectedWeek}`} />
-          <Text style={styles.headerTitle}>
-            {classId.toUpperCase()}
-            <Text style={styles.accentDot}>.</Text>
-          </Text>
+          <Text style={styles.captionTag}>SECTION AUDIT • WEEK {selectedWeek}</Text>
+          <Text style={styles.headerTitle}>{classId}</Text>
           <Text style={styles.headerSubtitle}>
             Department: {user?.department || 'Computer Science Engineering'} • {avgCoverage}% Syllabus Coverage
           </Text>
         </View>
 
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
-        {/* Stat Row */}
-        <View style={styles.statRow}>
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{progressList.length || 6}</Text>
-            <Label text="COURSES" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{avgCoverage}%</Text>
-            <Label text="COVERAGE" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text
-              style={[
-                styles.statNum,
-                PENDING_REPORTS > 0 ? styles.accentStatNum : null,
-              ]}
-            >
-              {PENDING_REPORTS}
-            </Text>
-            <Label text="PENDING" />
-          </View>
+        {/* Stat Grid */}
+        <View style={styles.statGrid}>
+          <StatTile
+            value={progressList.length || 6}
+            label="Courses"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value={`${avgCoverage}%`}
+            label="Coverage"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value={PENDING_REPORTS}
+            label="Pending"
+            isBehindPlan={PENDING_REPORTS > 0}
+            style={styles.statGridItem}
+          />
         </View>
-
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
 
         {/* View Mode Toggle Chips */}
         <View style={styles.tabToggleRow}>
           <EditorialChip
-            label="LIST VIEW"
+            label="List View"
             selected={viewMode === 'list'}
             onPress={() => setViewMode('list')}
           />
           <EditorialChip
-            label="SPREADSHEET"
+            label="Spreadsheet"
             selected={viewMode === 'spreadsheet'}
             onPress={() => setViewMode('spreadsheet')}
           />
@@ -123,29 +113,35 @@ export const FacultyProgressScreen = () => {
           <>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionHeaderTitle}>FACULTY SYLLABUS LOGS</Text>
-              <Label text={`${progressList.length} COURSES`} />
+              <Text style={styles.sectionHeaderMeta}>{progressList.length} COURSES</Text>
             </View>
 
             {progressList.length === 0 ? (
               <View style={styles.emptyContainer}>
-                <Label text="NO FACULTY LOGS RECORDED" />
+                <Text style={styles.emptyText}>No faculty logs recorded</Text>
               </View>
             ) : (
               <View style={styles.subjectList}>
                 {progressList.map((subj) => {
                   const isLogged = subj.status === 'Submitted';
-                  const isLagging = subj.coverage < 70;
+                  const isBehind = subj.coverage < 70;
+
                   return (
-                    <View key={subj.code} style={styles.subjectRow}>
-                      <View style={styles.rowTop}>
+                    <View key={subj.code} style={styles.subjectCard}>
+                      <View style={styles.cardTop}>
                         <View style={styles.subjectInfo}>
                           <View style={styles.codeRow}>
                             <Text style={styles.subjectCode}>{subj.code}</Text>
-                            <View style={styles.statusBadge}>
+                            <View
+                              style={[
+                                styles.statusBadge,
+                                isLogged ? styles.loggedBadge : styles.pendingBadge,
+                              ]}
+                            >
                               <Text
                                 style={[
                                   styles.statusText,
-                                  !isLogged ? styles.accentStatusText : null,
+                                  isLogged ? styles.loggedStatusText : styles.pendingStatusText,
                                 ]}
                               >
                                 {isLogged ? 'LOGGED' : 'PENDING'}
@@ -153,14 +149,14 @@ export const FacultyProgressScreen = () => {
                             </View>
                           </View>
                           <Text style={styles.subjectName}>{subj.name}</Text>
-                          <Label text={`FACULTY: ${subj.faculty?.toUpperCase()}`} style={styles.facultyMeta} />
+                          <Text style={styles.facultyMeta}>Faculty: {subj.faculty}</Text>
                         </View>
 
                         <View style={styles.rightValueBox}>
                           <Text
                             style={[
                               styles.percentText,
-                              isLagging ? styles.accentPercentText : null,
+                              isBehind ? styles.warnPercentText : styles.cobaltPercentText,
                             ]}
                           >
                             {subj.coverage}%
@@ -168,14 +164,13 @@ export const FacultyProgressScreen = () => {
                         </View>
                       </View>
 
-                      {/* 25-Segment Bar */}
-                      <View style={styles.segBarWrapper}>
-                        <SegBar
-                          totalSegments={25}
-                          filledSegments={Math.round((subj.coverage / 100) * 25)}
-                          isLagging={isLagging}
-                        />
-                      </View>
+                      {/* Progress Bar */}
+                      <ProgressBar
+                        progress={subj.coverage}
+                        isBehindPlan={isBehind}
+                        height={8}
+                        style={styles.progressBar}
+                      />
                     </View>
                   );
                 })}
@@ -184,16 +179,11 @@ export const FacultyProgressScreen = () => {
           </>
         ) : (
           <View style={styles.spreadsheetWrapper}>
-            <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionHeaderTitle}>WEEK {selectedWeek} SPREADSHEET</Text>
-              <Label text="CONSOLIDATED" />
-            </View>
-
             {existingReport ? (
               <WeeklyCourseCoverageReportCard report={existingReport} showDownloadButton={true} />
             ) : (
               <View style={styles.emptyContainer}>
-                <Label text="NO CONSOLIDATED REPORT SUBMITTED" />
+                <Text style={styles.emptyText}>No spreadsheet available for Week {selectedWeek}</Text>
               </View>
             )}
           </View>
@@ -206,66 +196,46 @@ export const FacultyProgressScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   header: {
+    marginBottom: 16,
+  },
+  captionTag: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     marginBottom: 4,
   },
   headerTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 36,
-    lineHeight: 40,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 28,
+    lineHeight: 34,
+    color: DayRibbonColors.ink,
     letterSpacing: -0.5,
-    marginTop: 4,
     marginBottom: 4,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
   headerSubtitle: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
   },
-  heavySpacer: {
-    marginVertical: 18,
-  },
-  hairlineSpacer: {
-    marginVertical: 16,
-  },
-  statRow: {
+  statGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 6,
+    gap: 10,
+    marginBottom: 18,
   },
-  statCol: {
+  statGridItem: {
     flex: 1,
-    alignItems: 'center',
-  },
-  statNum: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 34,
-    color: EditorialColors.ink,
-    marginBottom: 2,
-  },
-  accentStatNum: {
-    color: EditorialColors.accent,
-  },
-  statDivider: {
-    width: 1,
-    height: 38,
-    backgroundColor: EditorialColors.ink,
   },
   tabToggleRow: {
     flexDirection: 'row',
@@ -276,28 +246,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
+  },
+  sectionHeaderMeta: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   subjectList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+    width: '100%',
   },
-  subjectRow: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 14,
+  subjectCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
+    marginBottom: 12,
+    ...DayRibbonShapes.shadow,
   },
-  rowTop: {
+  cardTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 10,
   },
   subjectInfo: {
     flex: 1,
@@ -310,57 +287,73 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   subjectCode: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 12,
-    letterSpacing: 1,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.cobalt,
   },
   statusBadge: {
-    borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  loggedBadge: {
+    backgroundColor: DayRibbonColors.cobaltTint,
+  },
+  pendingBadge: {
+    backgroundColor: DayRibbonColors.warnBg,
   },
   statusText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 9,
-    letterSpacing: 1,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 10,
+    letterSpacing: 0.5,
   },
-  accentStatusText: {
-    color: EditorialColors.accent,
+  loggedStatusText: {
+    color: DayRibbonColors.cobalt,
+  },
+  pendingStatusText: {
+    color: DayRibbonColors.warn,
   },
   subjectName: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 16,
-    lineHeight: 20,
-    color: EditorialColors.ink,
+    lineHeight: 22,
+    color: DayRibbonColors.ink,
     marginBottom: 4,
   },
   facultyMeta: {
-    letterSpacing: 1.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
   },
   rightValueBox: {
     alignItems: 'flex-end',
-    justifyContent: 'center',
   },
   percentText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 28,
-    lineHeight: 32,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 26,
+    lineHeight: 30,
   },
-  accentPercentText: {
-    color: EditorialColors.accent,
+  cobaltPercentText: {
+    color: DayRibbonColors.cobalt,
   },
-  segBarWrapper: {
-    marginTop: 2,
+  warnPercentText: {
+    color: DayRibbonColors.warn,
+  },
+  progressBar: {
+    marginTop: 12,
   },
   spreadsheetWrapper: {
-    marginTop: 4,
+    marginBottom: 20,
   },
   emptyContainer: {
-    paddingVertical: 36,
+    paddingVertical: 32,
     alignItems: 'center',
   },
+  emptyText: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 14,
+    color: DayRibbonColors.muted,
+  },
 });
+
+export default FacultyProgressScreen;
