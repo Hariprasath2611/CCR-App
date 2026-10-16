@@ -35,11 +35,11 @@ import {
 type RouteParams = RouteProp<StaffStackParamList, 'WeeklyProgress'>;
 
 const progressSchema = z.object({
-  academicYear: z.string().min(1, 'Please select the academic year'),
-  department: z.string().min(1, 'Please select the department'),
-  classSection: z.string().min(1, 'Please select or enter the class / section'),
-  subjectCode: z.string().min(1, 'Please enter the subject code'),
-  subjectName: z.string().min(1, 'Please enter the subject name'),
+  academicYear: z.string().optional(),
+  department: z.string().optional(),
+  classSection: z.string().optional(),
+  subjectCode: z.string().optional(),
+  subjectName: z.string().optional(),
   weekNumber: z.string().min(1, 'Please select the week number'),
   fromDate: z.string().min(10, 'Use DD/MM/YYYY format').regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Must be in DD/MM/YYYY format'),
   toDate: z.string().min(10, 'Use DD/MM/YYYY format').regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Must be in DD/MM/YYYY format'),
@@ -237,8 +237,12 @@ export const WeeklyProgressScreen = () => {
   const onSubmit = async (data: ProgressFormData) => {
     setIsSubmitting(true);
     try {
-      const classId = data.classSection;
-      const finalWeekNumber = parseInt(data.weekNumber);
+      const classId = data.classSection || initialClassSection || '3rd Year CSE-A';
+      const finalSubjectCode = data.subjectCode || initialSubjectCode || (user?.role === 'STAFF' ? 'CCS370' : 'CS3591');
+      const finalSubjectName = data.subjectName || (finalSubjectCode === 'CCS370' ? 'UI and UX Design' : 'Course Subject');
+      const finalYear = data.academicYear || initialYear || '3rd Year';
+      const finalDept = data.department || initialDept || 'CSE';
+      const finalWeekNumber = parseInt(data.weekNumber) || parseInt(initialWeekNumber) || 12;
       const pPlanned = parseInt(data.periodsPlanned);
       const pHandled = parseInt(data.periodsHandled);
       const pRequired = data.periodsRequired ? parseInt(data.periodsRequired) : periodsDeficit;
@@ -272,7 +276,7 @@ export const WeeklyProgressScreen = () => {
       }
 
       // Re-read DB completion states
-      const updatedNodes = await syllabusRepo.getSyllabusBySubject(data.subjectCode);
+      const updatedNodes = await syllabusRepo.getSyllabusBySubject(finalSubjectCode);
       const totalCount = updatedNodes.length || 5;
       const completedCount = updatedNodes.filter((n) => n.is_completed === 1).length;
 
@@ -280,7 +284,7 @@ export const WeeklyProgressScreen = () => {
       addProgressLog(
         classId,
         finalWeekNumber,
-        data.subjectCode,
+        finalSubjectCode,
         completedCount,
         totalCount,
         data.reasonsForPending || '',
@@ -298,14 +302,14 @@ export const WeeklyProgressScreen = () => {
 
       // 3. Sync Queue logging
       const progressPayload = {
-        id: `progress_${data.subjectCode}_W${finalWeekNumber}_${Date.now()}`,
+        id: `progress_${finalSubjectCode}_W${finalWeekNumber}_${Date.now()}`,
         facultyId: user?.id,
         facultyName: user?.name,
         facultyEmail: user?.email,
-        academicYear: data.academicYear,
-        department: data.department,
-        subjectCode: data.subjectCode,
-        subjectName: data.subjectName || data.subjectCode,
+        academicYear: finalYear,
+        department: finalDept,
+        subjectCode: finalSubjectCode,
+        subjectName: finalSubjectName,
         classId,
         academicWeekNumber: finalWeekNumber,
         unitSelected: data.unit,
@@ -341,7 +345,7 @@ export const WeeklyProgressScreen = () => {
 
       Alert.alert(
         'Submission Successful',
-        `Course coverage for ${data.subjectCode} (${classId}) has been logged and sent to the CC / HOD CCR dashboard!`,
+        `Course coverage for ${finalSubjectCode} (${classId}) has been logged and sent to the CC / HOD CCR dashboard!`,
         [{ text: 'OK', onPress: () => navigation.goBack() }]
       );
     } catch (err) {
@@ -363,151 +367,12 @@ export const WeeklyProgressScreen = () => {
         </Text>
       </View>
 
-      {/* ── SECTION 1: ACADEMIC HIERARCHY SELECTOR ── */}
+      {/* ── SECTION 1: COURSE DURATION & LESSON PLAN COVERAGE ── */}
       <View style={styles.sectionBlock}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionNumber}>01</Text>
-          <Text style={styles.sectionTitle}>ACADEMIC HIERARCHY</Text>
+          <Text style={styles.sectionTitle}>WEEKLY DURATION & COVERAGE</Text>
         </View>
-
-        {/* Academic Year Dropdown */}
-        <Controller
-          control={control}
-          name="academicYear"
-          render={({ field: { onChange, value } }) => (
-            <AppDropdown
-              label="Academic Year"
-              value={value}
-              options={YEAR_OPTIONS}
-              onSelect={(val) => {
-                onChange(val);
-                if (val === '1st Year') {
-                  setValue('department', 'General Engineering');
-                  setValue('classSection', '1st Year SEC-A');
-                } else {
-                  setValue('department', 'CSE');
-                  setValue('classSection', `${val} CSE-A`);
-                }
-              }}
-              error={errors.academicYear?.message}
-            />
-          )}
-        />
-
-        {/* Department Dropdown (for 2nd, 3rd, 4th Year) */}
-        {selectedYear !== '1st Year' && (
-          <Controller
-            control={control}
-            name="department"
-            render={({ field: { onChange, value } }) => (
-              <AppDropdown
-                label="Department"
-                value={value}
-                options={DEPARTMENT_OPTIONS}
-                onSelect={(val) => {
-                  onChange(val);
-                  setValue('classSection', `${selectedYear} ${val}-A`);
-                }}
-                error={errors.department?.message}
-                style={styles.fieldSpacing}
-              />
-            )}
-          />
-        )}
-
-        {/* Class / Section Dropdown */}
-        <Controller
-          control={control}
-          name="classSection"
-          render={({ field: { onChange, value } }) => (
-            <AppDropdown
-              label="Class / Section"
-              value={value}
-              options={availableSectionOptions}
-              onSelect={onChange}
-              error={errors.classSection?.message}
-              style={styles.fieldSpacing}
-            />
-          )}
-        />
-
-        {/* CC Information Banner */}
-        <View style={styles.ccBanner}>
-          <Label text="DESIGNATED CLASS COORDINATOR" />
-          <Text style={styles.ccBannerText}>
-            {getCCForSection(selectedClass)?.facultyName || 'Designated CC'}
-          </Text>
-        </View>
-      </View>
-
-      {/* ── SECTION 2: SUBJECT DETAILS ── */}
-      <View style={styles.sectionBlock}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionNumber}>02</Text>
-          <Text style={styles.sectionTitle}>SUBJECT INFORMATION</Text>
-        </View>
-
-        {/* Quick Template Subject Chips */}
-        {suggestedSubjects.length > 0 && (
-          <View style={styles.chipsSection}>
-            <Label text={`QUICK SELECT FOR ${selectedClass.toUpperCase()}:`} />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll}>
-              {suggestedSubjects.map((sub) => {
-                const isSelected = selectedSubjectCode === sub.subjectCode;
-                return (
-                  <TouchableOpacity
-                    key={sub.subjectCode}
-                    onPress={() => onPickSuggestedSubject(sub)}
-                    style={[
-                      styles.subjectChip,
-                      isSelected && styles.subjectChipActive,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.subjectChipText,
-                        isSelected && styles.subjectChipTextActive,
-                      ]}
-                    >
-                      {sub.subjectCode} · {sub.subjectName}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-          </View>
-        )}
-
-        {/* Subject Code (Editable) */}
-        <Controller
-          control={control}
-          name="subjectCode"
-          render={({ field: { onChange, value } }) => (
-            <AppTextInput
-              label="Subject Code"
-              value={value}
-              onChangeText={onChange}
-              error={errors.subjectCode?.message}
-              placeholder="e.g. CS3591, MA25C01"
-            />
-          )}
-        />
-
-        {/* Subject Name (Editable) */}
-        <Controller
-          control={control}
-          name="subjectName"
-          render={({ field: { onChange, value } }) => (
-            <AppTextInput
-              label="Subject Name"
-              value={value}
-              onChangeText={onChange}
-              error={errors.subjectName?.message}
-              placeholder="e.g. Applied Calculus, Computer Networks"
-              style={styles.fieldSpacing}
-            />
-          )}
-        />
 
         {/* Academic Week Dropdown */}
         <Controller
@@ -520,21 +385,12 @@ export const WeeklyProgressScreen = () => {
               options={WEEK_OPTIONS}
               onSelect={onChange}
               error={errors.weekNumber?.message}
-              style={styles.fieldSpacing}
             />
           )}
         />
-      </View>
-
-      {/* ── SECTION 3: COURSE DURATION & LESSON PLAN COVERAGE ── */}
-      <View style={styles.sectionBlock}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionNumber}>03</Text>
-          <Text style={styles.sectionTitle}>WEEKLY DURATION & COVERAGE</Text>
-        </View>
 
         {/* Date Range Row */}
-        <View style={styles.periodsRow}>
+        <View style={[styles.periodsRow, styles.fieldSpacing]}>
           <View style={styles.periodCol}>
             <Controller
               control={control}
@@ -632,10 +488,10 @@ export const WeeklyProgressScreen = () => {
         </View>
       </View>
 
-      {/* ── SECTION 4: PERIODS & ALGORITHM 1 PACE CALCULATOR ── */}
+      {/* ── SECTION 2: PERIODS & ALGORITHM 1 PACE CALCULATOR ── */}
       <View style={styles.sectionBlock}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionNumber}>04</Text>
+          <Text style={styles.sectionNumber}>02</Text>
           <Text style={styles.sectionTitle}>PERIODS & SYLLABUS PACE</Text>
         </View>
 
