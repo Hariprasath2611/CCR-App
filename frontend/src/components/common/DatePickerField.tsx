@@ -2,8 +2,6 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AppTextInput } from './AppTextInput';
 
-import { ms } from '@theme/responsive';
-
 interface DatePickerFieldProps {
   label: string;
   value: string; // expects DD/MM/YYYY
@@ -19,13 +17,12 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
   error,
   style,
 }) => {
-  // Simple auto-formatting helper for dates (e.g. DD/MM/YYYY)
   const handleTextChange = (text: string) => {
     let clean = text.replace(/[^0-9]/g, '');
     if (clean.length > 8) {
       clean = clean.substring(0, 8);
     }
-    
+
     let formatted = clean;
     if (clean.length > 2) {
       formatted = `${clean.substring(0, 2)}/${clean.substring(2, 4)}`;
@@ -33,7 +30,7 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
     if (clean.length > 4) {
       formatted = `${clean.substring(0, 2)}/${clean.substring(2, 4)}/${clean.substring(4, 8)}`;
     }
-    
+
     onChange(formatted);
   };
 
@@ -45,6 +42,7 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
         onChangeText={handleTextChange}
         error={error}
         keyboardType="numeric"
+        placeholder="DD/MM/YYYY"
         style={styles.input}
       />
     </View>
@@ -56,6 +54,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   input: {
-    marginBottom: ms(0),
+    marginBottom: 0,
   },
 });
+
+export default DatePickerField;
