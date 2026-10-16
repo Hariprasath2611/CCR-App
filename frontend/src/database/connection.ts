@@ -2,22 +2,26 @@ import * as SQLite from 'expo-sqlite';
 import { ENV } from '@config/env';
 
 let dbInstance: SQLite.SQLiteDatabase | null = null;
+let dbInitPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
 export const getDBConnection = async (): Promise<SQLite.SQLiteDatabase> => {
   if (dbInstance) {
     return dbInstance;
   }
-
-  const db = await SQLite.openDatabaseAsync(ENV.DB_NAME);
-  dbInstance = db;
-
-  // Check if faculty_name column exists in timetable table, if not, drop it to recreate it with the correct schema
-  try {
-    await db.runAsync('SELECT faculty_name FROM timetable LIMIT 1;');
-  } catch (e) {
-    console.log('Migrating timetable table to add faculty_name column...');
-    await db.runAsync('DROP TABLE IF EXISTS timetable;');
+  if (dbInitPromise) {
+    return dbInitPromise;
   }
+
+  dbInitPromise = (async () => {
+    try {
+      const db = await SQLite.openDatabaseAsync(ENV.DB_NAME);
+
+      // Safe non-destructive column check
+      try {
+        await db.runAsync('ALTER TABLE timetable ADD COLUMN faculty_name TEXT;');
+      } catch (e) {
+        // column already exists
+      }
 
   // Run initial migrations / schema creation
   await db.execAsync(`
