@@ -14,11 +14,11 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@navigation/types';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ENV } from '@config/env';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing, EditorialType } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 
 const { width } = Dimensions.get('window');
 
@@ -29,7 +29,7 @@ export const LandingScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [serverUrl, setServerUrl] = useState('');
 
-  const logoWidth = Math.min(width * 0.55, 220);
+  const logoWidth = Math.min(width * 0.5, 200);
   const logoHeight = logoWidth * (213 / 244);
 
   useEffect(() => {
@@ -77,12 +77,12 @@ export const LandingScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
 
       {/* Top Bar with Settings */}
       <View style={styles.topBar}>
         <View style={styles.institutionTag}>
-          <Text style={styles.institutionCode}>JEC-ACADEMICS</Text>
+          <Text style={styles.institutionCode}>JEC ACADEMICS</Text>
         </View>
 
         <TouchableOpacity
@@ -91,7 +91,7 @@ export const LandingScreen = () => {
           activeOpacity={0.7}
           accessibilityLabel="Server settings"
         >
-          <Feather name="settings" size={20} color={EditorialColors.ink} />
+          <Feather name="settings" size={20} color={DayRibbonColors.ink} />
         </TouchableOpacity>
       </View>
 
@@ -111,16 +111,14 @@ export const LandingScreen = () => {
           <Text style={styles.collegeTagline}>EXCELLENCE IN EDUCATION • LEGACY IN SERVICE</Text>
         </View>
 
-        {/* 4px Heavy Ink Rule */}
-        <View style={styles.heavyRule} />
+        {/* 1px Line Divider */}
+        <View style={styles.divider} />
 
-        {/* App Title with vermilion full stop */}
+        {/* App Title */}
         <View style={styles.titleBlock}>
-          <Text style={styles.titleHeadline}>
-            CCR GENERATOR<Text style={styles.accentDot}>.</Text>
-          </Text>
+          <Text style={styles.titleHeadline}>Course Coverage Report</Text>
           <Text style={styles.titleSubtitle}>
-            COURSE COVERAGE REPORT MANAGEMENT SYSTEM
+            Continuous syllabus tracking & curriculum monitoring system
           </Text>
         </View>
       </View>
@@ -132,12 +130,12 @@ export const LandingScreen = () => {
           onPress={() => navigation.navigate('Login')}
           activeOpacity={0.85}
         >
-          <Text style={styles.getStartedText}>GET STARTED</Text>
-          <Feather name="arrow-right" size={18} color={EditorialColors.white} />
+          <Text style={styles.getStartedText}>Get Started</Text>
+          <Feather name="arrow-right" size={18} color={DayRibbonColors.white} />
         </TouchableOpacity>
 
         <Text style={styles.legalMeta}>
-          OFFICIAL INSTITUTIONAL PLATFORM • ANNA UNIVERSITY AFFILIATED
+          Official Institutional Platform • Anna University Affiliated
         </Text>
       </View>
 
@@ -151,19 +149,17 @@ export const LandingScreen = () => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
-                SERVER SETTINGS<Text style={styles.accentDot}>.</Text>
-              </Text>
+              <Text style={styles.modalTitle}>Server Settings</Text>
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}
                 style={styles.modalCloseButton}
                 accessibilityLabel="Close modal"
               >
-                <Feather name="x" size={20} color={EditorialColors.ink} />
+                <Feather name="x" size={20} color={DayRibbonColors.ink} />
               </TouchableOpacity>
             </View>
 
-            <View style={styles.hairlineRule} />
+            <View style={styles.modalDivider} />
 
             <Text style={styles.modalDescription}>
               Configure the API Endpoint for the Course Completion Monitoring System backend database.
@@ -172,11 +168,12 @@ export const LandingScreen = () => {
             <View style={styles.fieldBlock}>
               <Text style={styles.fieldLabel}>API BASE URL</Text>
               <TextInput
-                style={styles.underlineInput}
+                style={styles.inputField}
                 value={serverUrl}
                 onChangeText={setServerUrl}
                 placeholder="https://your-server-url.com/v1"
-                placeholderTextColor={EditorialColors.muted}
+                placeholderTextColor={DayRibbonColors.mutedSoft}
+                selectionColor={DayRibbonColors.cobalt}
                 autoCapitalize="none"
                 autoCorrect={false}
               />
@@ -184,24 +181,24 @@ export const LandingScreen = () => {
 
             <View style={styles.modalActions}>
               <TouchableOpacity
-                style={styles.outlineActionBtn}
+                style={styles.secondaryActionBtn}
                 onPress={handleReset}
               >
-                <Text style={styles.outlineBtnText}>RESET</Text>
+                <Text style={styles.secondaryBtnText}>Reset</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.outlineActionBtn}
+                style={styles.secondaryActionBtn}
                 onPress={() => setModalVisible(false)}
               >
-                <Text style={styles.outlineBtnText}>CANCEL</Text>
+                <Text style={styles.secondaryBtnText}>Cancel</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.primaryActionBtn}
                 onPress={handleSave}
               >
-                <Text style={styles.primaryBtnText}>SAVE</Text>
+                <Text style={styles.primaryBtnText}>Save</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -214,10 +211,10 @@ export const LandingScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
     justifyContent: 'space-between',
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
-    paddingTop: EditorialSpacing.topSafeArea,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
+    paddingTop: DayRibbonSpacing.screenTop,
     paddingBottom: 28,
   },
   topBar: {
@@ -230,19 +227,21 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   institutionCode: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 1,
+    color: DayRibbonColors.cobalt,
   },
   settingsButton: {
     width: 44,
     height: 44,
+    borderRadius: 22,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.bg,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
     alignItems: 'center',
     justifyContent: 'center',
+    ...DayRibbonShapes.shadow,
   },
   heroSection: {
     alignItems: 'flex-start',
@@ -253,98 +252,98 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 20,
     alignSelf: 'center',
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
+    ...DayRibbonShapes.shadow,
   },
   institutionInfo: {
     marginBottom: 16,
     width: '100%',
   },
   collegeName: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 15,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
     marginBottom: 4,
   },
   collegeTagline: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 10,
-    letterSpacing: 1.5,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
   },
-  heavyRule: {
+  divider: {
     width: '100%',
-    height: EditorialRules.section,
-    backgroundColor: EditorialColors.ink,
+    height: 1,
+    backgroundColor: DayRibbonColors.line,
     marginBottom: 20,
-  },
-  hairlineRule: {
-    width: '100%',
-    height: EditorialRules.divider,
-    backgroundColor: EditorialColors.ink,
-    marginBottom: 16,
   },
   titleBlock: {
     width: '100%',
   },
   titleHeadline: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 38,
-    lineHeight: 42,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 32,
+    lineHeight: 38,
+    color: DayRibbonColors.ink,
     letterSpacing: -0.5,
     marginBottom: 8,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
   titleSubtitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
-    lineHeight: 16,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 14,
+    lineHeight: 20,
+    color: DayRibbonColors.muted,
   },
   bottomBlock: {
     width: '100%',
     gap: 14,
   },
   getStartedButton: {
-    height: 54,
+    height: 52,
     width: '100%',
-    backgroundColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.cobalt,
+    borderRadius: DayRibbonShapes.buttonRadius,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 10,
+    ...DayRibbonShapes.shadow,
   },
   getStartedText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 15,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.white,
   },
   legalMeta: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 10,
-    letterSpacing: 1.5,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     textAlign: 'center',
   },
 
   // Modal styles
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(17, 17, 17, 0.7)',
+    backgroundColor: 'rgba(14, 19, 48, 0.4)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
   modalContent: {
     width: '100%',
-    backgroundColor: EditorialColors.bg,
-    borderWidth: 2,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     padding: 24,
+    ...DayRibbonShapes.shadow,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -353,23 +352,30 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   modalTitle: {
-    fontFamily: EditorialFonts.display,
+    fontFamily: DayRibbonFonts.display,
     fontSize: 22,
-    color: EditorialColors.ink,
-    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
   },
   modalCloseButton: {
     width: 36,
     height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.bg,
+  },
+  modalDivider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: DayRibbonColors.line,
+    marginBottom: 16,
   },
   modalDescription: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
     marginBottom: 20,
   },
@@ -377,51 +383,55 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   fieldLabel: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     marginBottom: 6,
   },
-  underlineInput: {
-    height: 44,
-    borderBottomWidth: 2,
-    borderBottomColor: EditorialColors.ink,
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 15,
-    color: EditorialColors.ink,
-    paddingVertical: 8,
+  inputField: {
+    height: 48,
+    backgroundColor: DayRibbonColors.bg,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 14,
+    color: DayRibbonColors.ink,
+    paddingHorizontal: 14,
   },
   modalActions: {
     flexDirection: 'row',
     gap: 10,
     justifyContent: 'flex-end',
   },
-  outlineActionBtn: {
+  secondaryActionBtn: {
     height: 44,
     paddingHorizontal: 16,
+    borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  outlineBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+  secondaryBtnText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 13,
+    color: DayRibbonColors.ink,
   },
   primaryActionBtn: {
     height: 44,
     paddingHorizontal: 20,
-    backgroundColor: EditorialColors.ink,
+    borderRadius: 12,
+    backgroundColor: DayRibbonColors.cobalt,
     alignItems: 'center',
     justifyContent: 'center',
   },
   primaryBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 2,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 13,
+    color: DayRibbonColors.white,
   },
 });
+
+export default LandingScreen;
