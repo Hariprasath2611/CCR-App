@@ -23,14 +23,7 @@ import { apiClient } from '@services/api/apiClient';
 import { StaffStackParamList } from '@navigation/types';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { ms } from '@theme/responsive';
-import { getCCForSection } from '@config/facultyBoard';
-import {
-  YEAR_OPTIONS,
-  FIRST_YEAR_SECTION_OPTIONS,
-  DEPARTMENT_OPTIONS,
-  HIGHER_YEAR_SECTION_OPTIONS,
-  getSectionTemplate,
-} from '@config/sectionTemplates';
+
 
 type RouteParams = RouteProp<StaffStackParamList, 'WeeklyProgress'>;
 
@@ -165,36 +158,7 @@ export const WeeklyProgressScreen = () => {
 
   const isLagging = completedOnPlan === 'NO' || periodsDeficit > 0;
 
-  // Available Section Options based on Year & Dept
-  const availableSectionOptions = useMemo(() => {
-    if (selectedYear === '1st Year') {
-      return FIRST_YEAR_SECTION_OPTIONS;
-    }
-    const deptSections = HIGHER_YEAR_SECTION_OPTIONS[selectedDept] || [{ label: 'Section A', value: `${selectedDept}-A` }];
-    return deptSections.map((s) => ({
-      label: `${selectedYear} ${s.label} (${selectedDept})`,
-      value: `${selectedYear} ${s.value}`,
-    }));
-  }, [selectedYear, selectedDept]);
 
-  // Suggested Subjects from template
-  const suggestedSubjects = useMemo(() => {
-    if (selectedClass.includes('1st Year') || selectedClass.includes('SEC-')) {
-      const tmpl = getSectionTemplate(selectedClass);
-      return tmpl.subjects;
-    }
-    return [];
-  }, [selectedClass]);
-
-  // Auto-fill subject name when subject code changes or suggested subject picked
-  const onPickSuggestedSubject = (sub: { subjectCode: string; subjectName: string; periodsPlannedDefault?: number }) => {
-    setValue('subjectCode', sub.subjectCode);
-    setValue('subjectName', sub.subjectName);
-    if (sub.periodsPlannedDefault) {
-      setValue('periodsPlanned', sub.periodsPlannedDefault.toString());
-      setValue('periodsHandled', sub.periodsPlannedDefault.toString());
-    }
-  };
 
   // Load syllabus topics if available for subject code
   useEffect(() => {
@@ -216,8 +180,9 @@ export const WeeklyProgressScreen = () => {
   // Pre-populate week-to-week carry-over progress from previous/current week logs
   useEffect(() => {
     const currentWeekNum = parseInt(watch('weekNumber') || '12');
-    const currentKey = `${selectedClass}_${currentWeekNum}`;
-    const prevKey = `${selectedClass}_${currentWeekNum - 1}`;
+    const activeClass = selectedClass || initialClassSection;
+    const currentKey = `${activeClass}_${currentWeekNum}`;
+    const prevKey = `${activeClass}_${currentWeekNum - 1}`;
     
     const currentLogs = subjectProgressList[currentKey];
     const prevLogs = subjectProgressList[prevKey];
