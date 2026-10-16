@@ -3,13 +3,13 @@ import {
   StyleSheet,
   View,
   Text,
-  Image,
   TouchableOpacity,
   Dimensions,
   Modal,
   TextInput,
   Alert,
   StatusBar,
+  ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -18,7 +18,7 @@ import { Feather } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ENV } from '@config/env';
-import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes } from '@theme/dayRibbon';
 
 const { width } = Dimensions.get('window');
 
@@ -28,9 +28,6 @@ export const LandingScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const [modalVisible, setModalVisible] = useState(false);
   const [serverUrl, setServerUrl] = useState('');
-
-  const logoWidth = Math.min(width * 0.5, 200);
-  const logoHeight = logoWidth * (213 / 244);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -75,71 +72,120 @@ export const LandingScreen = () => {
     }
   };
 
+  // Format today's date banner string
+  const getTodayString = () => {
+    const d = new Date();
+    const dayName = d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+    const dayNum = d.getDate();
+    const monthName = d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+    return `TODAY · ${dayName} ${dayNum} ${monthName}`;
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-      {/* Top Bar with Settings */}
-      <View style={styles.topBar}>
-        <View style={styles.institutionTag}>
-          <Text style={styles.institutionCode}>JEC ACADEMICS</Text>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+      >
+        {/* ── TOP HEADER ── */}
+        <View style={styles.topHeader}>
+          <Text style={styles.headerTag}>JEC ACADEMICS</Text>
+
+          <TouchableOpacity
+            style={styles.settingsCircleBtn}
+            onPress={() => setModalVisible(true)}
+            activeOpacity={0.7}
+            accessibilityLabel="Server settings"
+          >
+            <Feather name="settings" size={19} color={DayRibbonColors.ink} />
+          </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          style={styles.settingsButton}
-          onPress={() => setModalVisible(true)}
-          activeOpacity={0.7}
-          accessibilityLabel="Server settings"
-        >
-          <Feather name="settings" size={20} color={DayRibbonColors.ink} />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.heroSection}>
-        {/* Emblem Slot */}
-        <View style={styles.logoFrame}>
-          <Image
-            source={require('../../../assets/logo-removebg-preview.png')}
-            style={{ width: logoWidth, height: logoHeight }}
-            resizeMode="contain"
-          />
+        {/* ── TODAY PILL ── */}
+        <View style={styles.todayPillWrapper}>
+          <View style={styles.todayPill}>
+            <Text style={styles.todayPillText}>{getTodayString()}</Text>
+          </View>
         </View>
 
-        {/* Institution Title */}
-        <View style={styles.institutionInfo}>
-          <Text style={styles.collegeName}>JAYA ENGINEERING COLLEGE</Text>
-          <Text style={styles.collegeTagline}>EXCELLENCE IN EDUCATION • LEGACY IN SERVICE</Text>
+        {/* ── SLANTED "DAY RIBBON" STRIPES BANNER ── */}
+        <View style={styles.ribbonWrapper}>
+          <View style={styles.ribbonStack}>
+            {/* Band 1: Cobalt Blue */}
+            <View style={[styles.ribbonBand, styles.bandCobalt]}>
+              <Text style={styles.bandTextWhite}>
+                SYLLABUS{'     '}TOPICS{'     '}LESSONS
+              </Text>
+            </View>
+
+            {/* Band 2: Warm Amber Golden */}
+            <View style={[styles.ribbonBand, styles.bandAmber]}>
+              <Text style={styles.bandTextDark}>
+                PLANNED{'     '}TAUGHT{'     '}COVERED
+              </Text>
+            </View>
+
+            {/* Band 3: Coral Red */}
+            <View style={[styles.ribbonBand, styles.bandCoral]}>
+              <Text style={styles.bandTextDark}>
+                TRACK{'     '}REVIEW{'     '}IMPROVE
+              </Text>
+            </View>
+
+            {/* Band 4: Mint Green */}
+            <View style={[styles.ribbonBand, styles.bandMint]}>
+              <Text style={styles.bandTextDark}>
+                FACULTY{'     '}COURSES{'     '}REPORTS
+              </Text>
+            </View>
+          </View>
         </View>
 
-        {/* 1px Line Divider */}
-        <View style={styles.divider} />
+        {/* ── HERO TEXT CONTENT ── */}
+        <View style={styles.heroTextSection}>
+          <Text style={styles.collegeEyebrow}>JAYA ENGINEERING COLLEGE</Text>
 
-        {/* App Title */}
-        <View style={styles.titleBlock}>
-          <Text style={styles.titleHeadline}>Course Coverage Report</Text>
-          <Text style={styles.titleSubtitle}>
-            Continuous syllabus tracking & curriculum monitoring system
+          <View style={styles.stackedTitleBox}>
+            <Text style={styles.titleWordDark}>Course</Text>
+            <Text style={styles.titleWordCobalt}>Coverage</Text>
+            <Text style={styles.titleWordDark}>Report</Text>
+          </View>
+
+          <Text style={styles.subtitleText}>
+            Continuous syllabus tracking and curriculum monitoring, one day at a time.
           </Text>
         </View>
-      </View>
 
-      {/* Bottom CTA Block */}
-      <View style={styles.bottomBlock}>
-        <TouchableOpacity
-          style={styles.getStartedButton}
-          onPress={() => navigation.navigate('Login')}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.getStartedText}>Get Started</Text>
-          <Feather name="arrow-right" size={18} color={DayRibbonColors.white} />
-        </TouchableOpacity>
+        {/* ── BOTTOM RIBBON CTA BLOCK ── */}
+        <View style={styles.bottomBlock}>
+          <TouchableOpacity
+            style={styles.ribbonButton}
+            onPress={() => navigation.navigate('Login')}
+            activeOpacity={0.88}
+            accessibilityLabel="Get Started"
+          >
+            {/* Left Notch Triangle (cuts into button) */}
+            <View style={styles.notchLeft} />
 
-        <Text style={styles.legalMeta}>
-          Official Institutional Platform • Anna University Affiliated
-        </Text>
-      </View>
+            <View style={styles.ribbonButtonContent}>
+              <Text style={styles.ribbonButtonText}>Get Started</Text>
+              <Feather name="arrow-right" size={20} color={DayRibbonColors.ink} />
+            </View>
 
-      {/* Server Settings Modal */}
+            {/* Right Notch Triangle (cuts into button) */}
+            <View style={styles.notchRight} />
+          </TouchableOpacity>
+
+          <Text style={styles.legalMeta}>
+            Official Institutional Platform · Anna University Affiliated
+          </Text>
+        </View>
+      </ScrollView>
+
+      {/* ── SERVER SETTINGS MODAL ── */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -211,127 +257,210 @@ export const LandingScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: DayRibbonColors.bg,
-    justifyContent: 'space-between',
-    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
-    paddingTop: DayRibbonSpacing.screenTop,
-    paddingBottom: 28,
+    backgroundColor: '#FFFFFF',
   },
-  topBar: {
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'space-between',
+    paddingBottom: 20,
+    backgroundColor: '#FFFFFF',
+  },
+
+  // Top Section
+  topHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '100%',
+    paddingHorizontal: 24,
+    paddingTop: 12,
+    paddingBottom: 8,
   },
-  institutionTag: {
-    paddingVertical: 4,
-  },
-  institutionCode: {
+  headerTag: {
     fontFamily: DayRibbonFonts.body700,
-    fontSize: 11,
-    letterSpacing: 1,
+    fontSize: 13,
     color: DayRibbonColors.cobalt,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
   },
-  settingsButton: {
+  settingsCircleBtn: {
     width: 44,
     height: 44,
     borderRadius: 22,
     borderWidth: 1.5,
     borderColor: DayRibbonColors.line,
-    backgroundColor: DayRibbonColors.surface,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
-    ...DayRibbonShapes.shadow,
   },
-  heroSection: {
-    alignItems: 'flex-start',
-    width: '100%',
-  },
-  logoFrame: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
-    alignSelf: 'center',
-    backgroundColor: DayRibbonColors.surface,
-    borderRadius: DayRibbonShapes.cardRadius,
-    borderWidth: 1,
-    borderColor: DayRibbonColors.line,
-    padding: 16,
-    ...DayRibbonShapes.shadow,
-  },
-  institutionInfo: {
+
+  // Today Pill
+  todayPillWrapper: {
+    paddingHorizontal: 24,
+    marginTop: 4,
     marginBottom: 16,
-    width: '100%',
   },
-  collegeName: {
+  todayPill: {
+    alignSelf: 'flex-start',
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.ink,
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    backgroundColor: '#FFFFFF',
+  },
+  todayPillText: {
     fontFamily: DayRibbonFonts.body700,
-    fontSize: 15,
-    letterSpacing: 0.5,
-    color: DayRibbonColors.ink,
-    marginBottom: 4,
-  },
-  collegeTagline: {
-    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 0.5,
-    color: DayRibbonColors.muted,
+    color: DayRibbonColors.ink,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
   },
-  divider: {
+
+  // Ribbon Banner
+  ribbonWrapper: {
     width: '100%',
-    height: 1,
-    backgroundColor: DayRibbonColors.line,
-    marginBottom: 20,
+    marginVertical: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  titleBlock: {
-    width: '100%',
+  ribbonStack: {
+    width: width * 1.35,
+    transform: [{ rotate: '-8.5deg' }],
   },
-  titleHeadline: {
+  ribbonBand: {
+    height: 46,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  bandCobalt: {
+    backgroundColor: '#2B3FE0',
+  },
+  bandAmber: {
+    backgroundColor: '#FBA919',
+  },
+  bandCoral: {
+    backgroundColor: '#FF4757',
+  },
+  bandMint: {
+    backgroundColor: '#20D489',
+  },
+  bandTextWhite: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 32,
-    lineHeight: 38,
+    fontSize: 18,
+    color: '#FFFFFF',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  bandTextDark: {
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 18,
+    color: DayRibbonColors.ink,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+
+  // Hero Text
+  heroTextSection: {
+    paddingHorizontal: 24,
+    marginTop: 10,
+    marginBottom: 28,
+  },
+  collegeEyebrow: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginBottom: 10,
+  },
+  stackedTitleBox: {
+    marginBottom: 14,
+  },
+  titleWordDark: {
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 46,
+    lineHeight: 50,
     color: DayRibbonColors.ink,
     letterSpacing: -0.5,
-    marginBottom: 8,
   },
-  titleSubtitle: {
+  titleWordCobalt: {
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 46,
+    lineHeight: 50,
+    color: DayRibbonColors.cobalt,
+    letterSpacing: -0.5,
+  },
+  subtitleText: {
     fontFamily: DayRibbonFonts.body500,
     fontSize: 14,
-    lineHeight: 20,
+    lineHeight: 22,
     color: DayRibbonColors.muted,
   },
+
+  // Bottom CTA
   bottomBlock: {
-    width: '100%',
-    gap: 14,
+    paddingHorizontal: 24,
+    paddingBottom: 12,
   },
-  getStartedButton: {
-    height: 52,
+  ribbonButton: {
+    height: 54,
     width: '100%',
-    backgroundColor: DayRibbonColors.cobalt,
-    borderRadius: DayRibbonShapes.buttonRadius,
+    backgroundColor: '#FBA919',
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  notchLeft: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: 0,
+    height: 0,
+    borderTopWidth: 27,
+    borderBottomWidth: 27,
+    borderLeftWidth: 16,
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderLeftColor: '#FFFFFF',
+    zIndex: 2,
+  },
+  notchRight: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: 0,
+    height: 0,
+    borderTopWidth: 27,
+    borderBottomWidth: 27,
+    borderRightWidth: 16,
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderRightColor: '#FFFFFF',
+    zIndex: 2,
+  },
+  ribbonButtonContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-    ...DayRibbonShapes.shadow,
+    justifyContent: 'space-between',
+    paddingHorizontal: 38,
   },
-  getStartedText: {
+  ribbonButtonText: {
     fontFamily: DayRibbonFonts.body700,
-    fontSize: 15,
-    letterSpacing: 0.5,
-    color: DayRibbonColors.white,
+    fontSize: 16,
+    color: DayRibbonColors.ink,
   },
   legalMeta: {
-    fontFamily: DayRibbonFonts.body600,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 11,
-    letterSpacing: 0.5,
     color: DayRibbonColors.muted,
     textAlign: 'center',
+    marginTop: 12,
   },
 
   // Modal styles
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(14, 19, 48, 0.4)',
+    backgroundColor: 'rgba(14, 19, 48, 0.45)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
