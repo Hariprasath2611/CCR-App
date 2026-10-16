@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
-import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts } from '@theme/dayRibbon';
 
 interface NotificationAlertRowProps {
   tag: string;
@@ -25,12 +25,12 @@ export const NotificationAlertRow: React.FC<NotificationAlertRowProps> = ({
         <Text
           style={[
             styles.tag,
-            isUrgent && { color: EditorialColors.accent },
+            { color: isUrgent ? DayRibbonColors.warn : DayRibbonColors.cobalt },
           ]}
         >
           {tag.toUpperCase()}
         </Text>
-        <Text style={styles.time}>{time.toUpperCase()}</Text>
+        <Text style={styles.time}>{time}</Text>
       </View>
       <Text style={styles.body}>{body}</Text>
     </View>
@@ -38,7 +38,7 @@ export const NotificationAlertRow: React.FC<NotificationAlertRowProps> = ({
 
   if (onPress) {
     return (
-      <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+      <TouchableOpacity onPress={onPress} activeOpacity={0.75}>
         {content}
       </TouchableOpacity>
     );
@@ -49,32 +49,33 @@ export const NotificationAlertRow: React.FC<NotificationAlertRowProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
-    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: DayRibbonColors.line,
+    paddingVertical: 14,
     width: '100%',
   },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   tag: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 0.5,
   },
   time: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 11,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
   },
   body: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 14,
     lineHeight: 20,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
 });
+
+export default NotificationAlertRow;

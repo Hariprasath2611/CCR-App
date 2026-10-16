@@ -1,11 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
+import { Feather } from '@expo/vector-icons';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes } from '@theme/dayRibbon';
 
 interface EmptyStateProps {
   title: string;
   subtitle?: string;
   isLoading?: boolean;
+  icon?: keyof typeof Feather.glyphMap;
   style?: ViewStyle;
 }
 
@@ -13,6 +15,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   title,
   subtitle,
   isLoading = false,
+  icon = 'inbox',
   style,
 }) => {
   if (isLoading) {
@@ -27,10 +30,10 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
   return (
     <View style={[styles.container, style]}>
-      <View style={styles.squareIconBox}>
-        <View style={styles.innerSquare} />
+      <View style={styles.iconCircle}>
+        <Feather name={icon} size={24} color={DayRibbonColors.mutedSoft} />
       </View>
-      <Text style={styles.title}>{title.toUpperCase()}</Text>
+      <Text style={styles.title}>{title}</Text>
       {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
     </View>
   );
@@ -38,61 +41,63 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 48,
+    paddingVertical: 44,
     paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
   },
-  squareIconBox: {
-    width: 48,
-    height: 48,
-    borderWidth: EditorialRules.borderWidth,
-    borderColor: EditorialColors.ink,
-    borderRadius: 0,
+  iconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
-  },
-  innerSquare: {
-    width: 16,
-    height: 16,
-    backgroundColor: EditorialColors.ink,
+    marginBottom: 14,
+    ...DayRibbonShapes.shadow,
   },
   title: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 14,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 16,
+    color: DayRibbonColors.ink,
     textAlign: 'center',
     marginBottom: 6,
   },
   subtitle: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
     lineHeight: 18,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     textAlign: 'center',
     maxWidth: 280,
   },
   skeletonBlockLarge: {
     width: '100%',
-    height: 48,
-    backgroundColor: EditorialColors.track,
-    marginBottom: 10,
-    borderRadius: 0,
+    height: 64,
+    backgroundColor: DayRibbonColors.surface,
+    borderColor: DayRibbonColors.line,
+    borderWidth: 1,
+    marginBottom: 12,
+    borderRadius: DayRibbonShapes.cardRadius,
   },
   skeletonBlockMedium: {
-    width: '80%',
-    height: 32,
-    backgroundColor: EditorialColors.track,
-    marginBottom: 10,
-    borderRadius: 0,
+    width: '100%',
+    height: 64,
+    backgroundColor: DayRibbonColors.surface,
+    borderColor: DayRibbonColors.line,
+    borderWidth: 1,
+    marginBottom: 12,
+    borderRadius: DayRibbonShapes.cardRadius,
   },
   skeletonBlockSmall: {
     width: '60%',
     height: 24,
-    backgroundColor: EditorialColors.track,
-    borderRadius: 0,
+    backgroundColor: DayRibbonColors.line,
+    borderRadius: 8,
   },
 });
+
+export default EmptyState;

@@ -2,8 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
-import { Rule } from './Rule';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes } from '@theme/dayRibbon';
 
 interface EditorialHeaderProps {
   title: string;
@@ -54,51 +53,50 @@ export const EditorialHeader: React.FC<EditorialHeaderProps> = ({
     <View style={styles.container}>
       {/* Top Nav Row */}
       <View style={styles.header}>
-        {/* Left button: 44x44 square outlined or back link */}
+        {/* Left button: 44x44 radius 12 logo slot or circular back button */}
         {leftSlot ? (
-          <View style={styles.squareBox}>{leftSlot}</View>
+          <View style={styles.leftBox}>{leftSlot}</View>
         ) : showBack ? (
           <TouchableOpacity
-            style={styles.backButton}
+            style={styles.circleButton}
             onPress={handleBack}
             activeOpacity={0.7}
             accessibilityLabel="Go back"
           >
-            <Feather name="arrow-left" size={16} color={EditorialColors.ink} style={{ marginRight: 6 }} />
-            <Text style={styles.backButtonText}>BACK</Text>
+            <Feather name="arrow-left" size={20} color={DayRibbonColors.ink} />
           </TouchableOpacity>
         ) : (
-          <View style={styles.squareLogoBox}>
+          <View style={styles.logoSlot}>
             <Image
-              source={require('../../assets/logo.png')}
+              source={require('../../assets/logo-removebg-preview.png')}
               style={styles.logoImage}
               resizeMode="contain"
             />
           </View>
         )}
 
-        {/* Center / Right controls */}
+        {/* Center / Flexible space */}
         {!hasExpandedHeader ? (
           <View style={styles.titleContainer}>
             <Text style={styles.titleText} numberOfLines={1}>
-              {title.toUpperCase()}
+              {title}
             </Text>
           </View>
         ) : (
           <View style={{ flex: 1 }} />
         )}
 
-        {/* Right button: 44x44 square outlined bell button */}
+        {/* Right button: 44x44 circular bell button with 1.5px line-colour border */}
         {rightSlot ? (
-          <View style={styles.squareBox}>{rightSlot}</View>
+          <View style={styles.leftBox}>{rightSlot}</View>
         ) : showBell ? (
           <TouchableOpacity
-            style={styles.squareButton}
+            style={styles.circleButton}
             onPress={handleBell}
             activeOpacity={0.7}
             accessibilityLabel="Notifications"
           >
-            <Feather name="bell" size={18} color={EditorialColors.ink} />
+            <Feather name="bell" size={18} color={DayRibbonColors.ink} />
             {unreadCount > 0 ? (
               <View style={styles.unreadBadge}>
                 <Text style={styles.unreadText}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
@@ -110,16 +108,14 @@ export const EditorialHeader: React.FC<EditorialHeaderProps> = ({
         )}
       </View>
 
-      {/* Expanded Editorial Header (if eyebrow or subtitle provided) */}
+      {/* Expanded Header (if eyebrow or subtitle provided) */}
       {hasExpandedHeader && (
         <View style={styles.expandedHeaderBlock}>
           {eyebrow && <Text style={styles.eyebrowText}>{eyebrow.toUpperCase()}</Text>}
           <Text style={styles.displayTitleText}>
-            {title.toUpperCase()}
-            <Text style={styles.accentPeriod}>.</Text>
+            {title}
           </Text>
           {subtitle && <Text style={styles.subtitleText}>{subtitle}</Text>}
-          <Rule thickness={4} color={EditorialColors.ink} style={styles.headerRule} />
         </View>
       )}
     </View>
@@ -128,63 +124,47 @@ export const EditorialHeader: React.FC<EditorialHeaderProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: EditorialSpacing.md,
+    marginBottom: 16,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 8,
+    paddingVertical: 6,
     minHeight: 48,
   },
-  squareButton: {
+  logoSlot: {
     width: 44,
     height: 44,
-    borderWidth: EditorialRules.borderWidth,
-    borderColor: EditorialColors.ink,
-    borderRadius: 0,
-    backgroundColor: EditorialColors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backButton: {
-    height: 40,
-    flexDirection: 'row',
-    alignItems: 'center',
+    borderRadius: 12,
+    backgroundColor: DayRibbonColors.surface,
     borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: 10,
-    backgroundColor: EditorialColors.white,
-  },
-  backButtonText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 11,
-    color: EditorialColors.ink,
-    letterSpacing: 1,
-  },
-  squareBox: {
-    width: 44,
-    height: 44,
-    borderWidth: EditorialRules.borderWidth,
-    borderColor: EditorialColors.ink,
-    borderRadius: 0,
+    borderColor: DayRibbonColors.line,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  squareLogoBox: {
-    width: 44,
-    height: 44,
-    borderWidth: EditorialRules.borderWidth,
-    borderColor: EditorialColors.ink,
-    borderRadius: 0,
     padding: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: EditorialColors.white,
+    ...DayRibbonShapes.shadow,
   },
   logoImage: {
     width: 32,
     height: 32,
+  },
+  circleButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...DayRibbonShapes.shadow,
+  },
+  leftBox: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   placeholderBox: {
     width: 44,
@@ -196,60 +176,50 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   titleText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 16,
+    color: DayRibbonColors.ink,
     textAlign: 'center',
   },
   unreadBadge: {
     position: 'absolute',
-    top: -4,
-    right: -4,
-    backgroundColor: EditorialColors.accent,
+    top: 4,
+    right: 4,
+    backgroundColor: DayRibbonColors.warn,
     minWidth: 16,
     height: 16,
+    borderRadius: 8,
     paddingHorizontal: 3,
-    borderRadius: 0,
     alignItems: 'center',
     justifyContent: 'center',
   },
   unreadText: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 9,
-    color: EditorialColors.white,
-    letterSpacing: 0,
+    color: DayRibbonColors.white,
   },
   expandedHeaderBlock: {
-    marginTop: EditorialSpacing.md,
+    marginTop: 12,
   },
   eyebrowText: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
-    marginBottom: 6,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
+    marginBottom: 4,
   },
   displayTitleText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 32,
-    lineHeight: 38,
-    letterSpacing: -0.5,
-    color: EditorialColors.ink,
-    marginBottom: 6,
-  },
-  accentPeriod: {
-    color: EditorialColors.accent,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 28,
+    lineHeight: 34,
+    color: DayRibbonColors.ink,
+    marginBottom: 4,
   },
   subtitleText: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
     lineHeight: 18,
-    color: EditorialColors.muted,
-    marginBottom: EditorialSpacing.sm,
-  },
-  headerRule: {
-    marginTop: EditorialSpacing.sm,
+    color: DayRibbonColors.muted,
   },
 });
 

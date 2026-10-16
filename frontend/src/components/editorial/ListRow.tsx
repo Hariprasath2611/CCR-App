@@ -1,18 +1,20 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
-import { SegBar } from './SegBar';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes } from '@theme/dayRibbon';
+import { ProgressBar } from './ProgressBar';
 
-interface ListRowProps {
+export interface ListRowProps {
   indexOrCode?: string;
   name: string;
   caption?: string;
   value?: string | number;
   valueSuffix?: string;
   isLagging?: boolean;
+  isBehindPlan?: boolean;
   progress?: number;
   total?: number;
   showSegBar?: boolean;
+  showProgressBar?: boolean;
   onPress?: () => void;
   style?: ViewStyle;
   rightElement?: React.ReactNode;
@@ -25,27 +27,30 @@ export const ListRow: React.FC<ListRowProps> = ({
   value,
   valueSuffix,
   isLagging = false,
+  isBehindPlan = false,
   progress,
   total,
   showSegBar = false,
+  showProgressBar = true,
   onPress,
   style,
   rightElement,
 }) => {
-  const Content = (
-    <View style={[styles.rowContainer, style]}>
-      <View style={styles.topSection}>
-        {indexOrCode ? (
-          <Text style={styles.codeText}>{indexOrCode}</Text>
-        ) : null}
+  const isWarn = isLagging || isBehindPlan;
 
+  const content = (
+    <View style={[styles.card, style]}>
+      <View style={styles.topSection}>
         <View style={styles.nameContainer}>
+          {indexOrCode ? (
+            <Text style={styles.codeText}>{indexOrCode}</Text>
+          ) : null}
           <Text style={styles.nameText} numberOfLines={1}>
             {name}
           </Text>
           {caption ? (
             <Text style={styles.captionText} numberOfLines={1}>
-              {caption.toUpperCase()}
+              {caption}
             </Text>
           ) : null}
         </View>
@@ -57,7 +62,7 @@ export const ListRow: React.FC<ListRowProps> = ({
             <Text
               style={[
                 styles.valueText,
-                isLagging && { color: EditorialColors.accent },
+                isWarn ? styles.warnValueText : styles.normalValueText,
               ]}
             >
               {value}
@@ -65,7 +70,7 @@ export const ListRow: React.FC<ListRowProps> = ({
                 <Text
                   style={[
                     styles.valueSuffix,
-                    isLagging && { color: EditorialColors.accent },
+                    isWarn ? styles.warnValueText : styles.normalValueText,
                   ]}
                 >
                   {valueSuffix}
@@ -76,9 +81,13 @@ export const ListRow: React.FC<ListRowProps> = ({
         ) : null}
       </View>
 
-      {showSegBar && progress !== undefined ? (
-        <View style={styles.segBarWrapper}>
-          <SegBar progress={progress} total={total} isLagging={isLagging} />
+      {(showSegBar || showProgressBar) && progress !== undefined ? (
+        <View style={styles.progressWrapper}>
+          <ProgressBar
+            progress={progress}
+            isBehindPlan={isWarn}
+            height={8}
+          />
         </View>
       ) : null}
     </View>
@@ -86,49 +95,54 @@ export const ListRow: React.FC<ListRowProps> = ({
 
   if (onPress) {
     return (
-      <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-        {Content}
+      <TouchableOpacity onPress={onPress} activeOpacity={0.75}>
+        {content}
       </TouchableOpacity>
     );
   }
 
-  return Content;
+  return content;
 };
 
 const styles = StyleSheet.create({
-  rowContainer: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
-    paddingVertical: EditorialSpacing.rowPaddingVertical,
+  card: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: DayRibbonShapes.borderWidth,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
+    marginBottom: 12,
     width: '100%',
+    ...DayRibbonShapes.shadow,
   },
   topSection: {
     flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
   codeText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 13,
-    color: EditorialColors.muted,
-    marginRight: 10,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 12,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.cobalt,
+    marginBottom: 2,
   },
   nameContainer: {
     flex: 1,
     paddingRight: 12,
   },
   nameText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 17,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 16,
     lineHeight: 22,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   captionText: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
-    marginTop: 2,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
+    marginTop: 3,
   },
   rightSlot: {
     alignItems: 'flex-end',
@@ -137,19 +151,24 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   valueText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 32,
-    color: EditorialColors.ink,
-    letterSpacing: -0.5,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 26,
+    lineHeight: 30,
+  },
+  normalValueText: {
+    color: DayRibbonColors.cobalt,
+  },
+  warnValueText: {
+    color: DayRibbonColors.warn,
   },
   valueSuffix: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 18,
-    color: EditorialColors.accent,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 16,
   },
-  segBarWrapper: {
-    marginTop: 10,
+  progressWrapper: {
+    marginTop: 12,
     width: '100%',
   },
 });
+
+export default ListRow;

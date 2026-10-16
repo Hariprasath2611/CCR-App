@@ -8,9 +8,9 @@ import {
   TextStyle,
   View,
 } from 'react-native';
-import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes } from '@theme/dayRibbon';
 
-export type ButtonVariant = 'primary' | 'outline' | 'danger';
+export type ButtonVariant = 'primary' | 'highlight' | 'secondary' | 'outline' | 'danger';
 
 export interface EditorialButtonProps {
   title: string;
@@ -37,41 +37,50 @@ export const EditorialButton: React.FC<EditorialButtonProps> = ({
   icon,
   rightIcon,
 }) => {
+  const isHighlight = variant === 'highlight';
+  const isSecondary = variant === 'secondary' || variant === 'outline';
+  const isDanger = variant === 'danger';
+
   const getContainerStyle = () => {
     if (disabled) {
       return styles.disabledContainer;
     }
-    switch (variant) {
-      case 'outline':
-        return styles.outlineContainer;
-      case 'danger':
-        return styles.dangerContainer;
-      case 'primary':
-      default:
-        return styles.primaryContainer;
+    if (isHighlight) {
+      return styles.highlightContainer;
     }
+    if (isSecondary) {
+      return styles.secondaryContainer;
+    }
+    if (isDanger) {
+      return styles.dangerContainer;
+    }
+    return styles.primaryContainer;
   };
 
   const getTextStyle = () => {
     if (disabled) {
       return styles.disabledText;
     }
-    switch (variant) {
-      case 'outline':
-        return styles.outlineText;
-      case 'danger':
-        return styles.dangerText;
-      case 'primary':
-      default:
-        return styles.primaryText;
+    if (isHighlight) {
+      return styles.highlightText;
     }
+    if (isSecondary) {
+      return styles.secondaryText;
+    }
+    if (isDanger) {
+      return styles.dangerText;
+    }
+    return styles.primaryText;
   };
 
   const getSpinnerColor = () => {
-    if (variant === 'outline') {
-      return EditorialColors.ink;
+    if (isHighlight || isSecondary) {
+      return DayRibbonColors.ink;
     }
-    return EditorialColors.white;
+    if (isDanger) {
+      return DayRibbonColors.warn;
+    }
+    return DayRibbonColors.white;
   };
 
   return (
@@ -94,7 +103,7 @@ export const EditorialButton: React.FC<EditorialButtonProps> = ({
         <View style={styles.contentRow}>
           {icon ? <View style={styles.leftIconWrapper}>{icon}</View> : null}
           <Text style={[styles.baseText, getTextStyle(), textStyle]}>
-            {title.toUpperCase()}
+            {title}
           </Text>
           {rightIcon ? <View style={styles.rightIconWrapper}>{rightIcon}</View> : null}
         </View>
@@ -105,12 +114,11 @@ export const EditorialButton: React.FC<EditorialButtonProps> = ({
 
 const styles = StyleSheet.create({
   baseContainer: {
-    height: 54, // strict 54px height per prompt
-    borderRadius: 0, // strict square
+    height: 52,
+    borderRadius: DayRibbonShapes.buttonRadius,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
-    borderWidth: 0,
   },
   fullWidth: {
     width: '100%',
@@ -127,37 +135,46 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   primaryContainer: {
-    backgroundColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.cobalt,
+    ...DayRibbonShapes.shadow,
   },
-  outlineContainer: {
+  highlightContainer: {
+    backgroundColor: DayRibbonColors.lemon,
+    ...DayRibbonShapes.shadow,
+  },
+  secondaryContainer: {
     backgroundColor: 'transparent',
-    borderWidth: 2,
-    borderColor: EditorialColors.ink,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.ink,
   },
   dangerContainer: {
-    backgroundColor: EditorialColors.accent,
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.warn,
   },
   disabledContainer: {
-    backgroundColor: EditorialColors.track,
+    backgroundColor: DayRibbonColors.line,
   },
   baseText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    letterSpacing: 0.5,
     textAlign: 'center',
-    textTransform: 'uppercase',
   },
   primaryText: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.white,
   },
-  outlineText: {
-    color: EditorialColors.ink,
+  highlightText: {
+    color: DayRibbonColors.ink,
+  },
+  secondaryText: {
+    color: DayRibbonColors.ink,
   },
   dangerText: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.warn,
   },
   disabledText: {
-    color: EditorialColors.muted,
+    color: DayRibbonColors.mutedSoft,
   },
 });
 

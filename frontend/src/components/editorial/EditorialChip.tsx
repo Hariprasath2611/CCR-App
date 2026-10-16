@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes } from '@theme/dayRibbon';
 
 interface EditorialChipProps {
   label: string;
@@ -25,7 +25,7 @@ export const EditorialChip: React.FC<EditorialChipProps> = ({
         style,
       ]}
       onPress={onPress}
-      activeOpacity={0.7}
+      activeOpacity={0.75}
       accessibilityRole="checkbox"
       accessibilityState={{ checked: selected }}
     >
@@ -36,7 +36,7 @@ export const EditorialChip: React.FC<EditorialChipProps> = ({
           textStyle,
         ]}
       >
-        {label.toUpperCase()}
+        {label}
       </Text>
     </TouchableOpacity>
   );
@@ -46,29 +46,29 @@ const styles = StyleSheet.create({
   chip: {
     paddingVertical: 9,
     paddingHorizontal: 13,
-    borderRadius: 0, // square
-    borderWidth: EditorialRules.borderWidth, // 1.5px ink border
+    borderRadius: DayRibbonShapes.chipRadius, // 14
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
   },
   unselectedChip: {
     backgroundColor: 'transparent',
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
   },
   selectedChip: {
-    backgroundColor: EditorialColors.ink,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.ink,
+    borderColor: DayRibbonColors.ink,
   },
   text: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 12,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
   },
   unselectedText: {
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   selectedText: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.white,
   },
 });
+
+export default EditorialChip;

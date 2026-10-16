@@ -2,7 +2,8 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
+import { Feather } from '@expo/vector-icons';
+import { DayRibbonColors, DayRibbonFonts } from '@theme/dayRibbon';
 
 export const EditorialTabBar: React.FC<BottomTabBarProps> = ({
   state,
@@ -10,6 +11,28 @@ export const EditorialTabBar: React.FC<BottomTabBarProps> = ({
   navigation,
 }) => {
   const insets = useSafeAreaInsets();
+
+  const getTabIcon = (routeName: string): keyof typeof Feather.glyphMap => {
+    switch (routeName) {
+      case 'StaffHome':
+        return 'calendar';
+      case 'CounselorTab':
+        return 'clipboard';
+      case 'HodTab':
+      case 'HodHome':
+        return 'grid';
+      case 'Analytics':
+        return 'bar-chart-2';
+      case 'Notifications':
+        return 'bell';
+      case 'AdminHome':
+        return 'activity';
+      case 'Profile':
+        return 'user';
+      default:
+        return 'layers';
+    }
+  };
 
   return (
     <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, 6) }]}>
@@ -38,28 +61,37 @@ export const EditorialTabBar: React.FC<BottomTabBarProps> = ({
           };
 
           const labelStr = typeof label === 'string' ? label : route.name;
+          const iconName = getTabIcon(route.name);
+          const activeColor = DayRibbonColors.cobalt;
+          const inactiveColor = DayRibbonColors.mutedSoft;
 
           return (
             <TouchableOpacity
               key={route.key}
               accessibilityRole="button"
               accessibilityState={isFocused ? { selected: true } : {}}
-              accessibilityLabel={options.tabBarAccessibilityLabel}
+              accessibilityLabel={options.tabBarAccessibilityLabel || labelStr}
               onPress={onPress}
-              style={[
-                styles.tabItem,
-                isFocused ? styles.tabItemActive : styles.tabItemInactive,
-              ]}
-              activeOpacity={0.8}
+              style={styles.tabItem}
+              activeOpacity={0.7}
             >
+              <Feather
+                name={iconName}
+                size={20}
+                color={isFocused ? activeColor : inactiveColor}
+                style={{ strokeWidth: 1.8 }}
+              />
               <Text
                 style={[
                   styles.tabText,
-                  isFocused ? styles.tabTextActive : styles.tabTextInactive,
+                  {
+                    color: isFocused ? activeColor : inactiveColor,
+                    fontFamily: isFocused ? DayRibbonFonts.body700 : DayRibbonFonts.body500,
+                  },
                 ]}
                 numberOfLines={1}
               >
-                {labelStr.toUpperCase()}
+                {labelStr}
               </Text>
             </TouchableOpacity>
           );
@@ -71,42 +103,28 @@ export const EditorialTabBar: React.FC<BottomTabBarProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: EditorialColors.bg,
-    borderTopWidth: EditorialRules.hairline, // 1px ink top border
-    borderTopColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderTopWidth: 1,
+    borderTopColor: DayRibbonColors.line,
   },
   tabRow: {
-    height: 70, // 70px high
+    height: 64, // total ~74px with padding
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-around',
     paddingHorizontal: 8,
-    gap: 6,
   },
   tabItem: {
     flex: 1,
-    height: 48,
-    borderRadius: 0, // square
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 4,
-  },
-  tabItemActive: {
-    backgroundColor: EditorialColors.ink, // active tab = ink fill + white text
-  },
-  tabItemInactive: {
-    backgroundColor: 'transparent',
+    paddingVertical: 6,
+    gap: 4,
   },
   tabText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 1,
-    textAlign: 'center',
-    textTransform: 'uppercase',
-  },
-  tabTextActive: {
-    color: EditorialColors.white,
-  },
-  tabTextInactive: {
-    color: EditorialColors.muted, // inactive = muted text
+    fontSize: 11,
+    letterSpacing: 0.3,
   },
 });
+
+export default EditorialTabBar;

@@ -1,27 +1,31 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import { EditorialColors, EditorialFonts } from '@theme/editorial';
+import { Feather } from '@expo/vector-icons';
+import { DayRibbonColors, DayRibbonFonts } from '@theme/dayRibbon';
 
-interface StatusBannerProps {
+export interface StatusBannerProps {
   message: string;
-  variant?: 'ink' | 'accent';
+  variant?: 'warn' | 'info' | 'approved' | 'accent' | 'ink';
+  icon?: keyof typeof Feather.glyphMap;
   style?: ViewStyle;
 }
 
 export const StatusBanner: React.FC<StatusBannerProps> = ({
   message,
-  variant = 'ink',
+  variant = 'info',
+  icon,
   style,
 }) => {
+  const isWarn = variant === 'warn' || variant === 'accent';
+  const bgColor = isWarn ? DayRibbonColors.warnBg : DayRibbonColors.cobaltTint;
+  const textColor = isWarn ? DayRibbonColors.warn : DayRibbonColors.cobalt;
+  const defaultIcon = isWarn ? 'alert-circle' : 'info';
+  const iconName = icon || defaultIcon;
+
   return (
-    <View
-      style={[
-        styles.banner,
-        variant === 'accent' ? styles.accentBanner : styles.inkBanner,
-        style,
-      ]}
-    >
-      <Text style={styles.text}>{message.toUpperCase()}</Text>
+    <View style={[styles.banner, { backgroundColor: bgColor }, style]}>
+      <Feather name={iconName} size={16} color={textColor} style={styles.icon} />
+      <Text style={[styles.text, { color: textColor }]}>{message}</Text>
     </View>
   );
 };
@@ -31,21 +35,20 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 0,
+    borderRadius: 14,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    marginBottom: 12,
   },
-  inkBanner: {
-    backgroundColor: EditorialColors.ink,
-  },
-  accentBanner: {
-    backgroundColor: EditorialColors.accent,
+  icon: {
+    marginRight: 8,
   },
   text: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 2,
-    color: EditorialColors.white,
-    textAlign: 'center',
+    flex: 1,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 13,
+    lineHeight: 18,
   },
 });
+
+export default StatusBanner;

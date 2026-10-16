@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, View, StyleSheet, ViewStyle } from 'react-native';
-import { EditorialColors, EditorialRules } from '@theme/editorial';
+import { DayRibbonColors } from '@theme/dayRibbon';
 
 interface EditorialToggleProps {
   value: boolean;
@@ -40,35 +40,39 @@ export const EditorialToggle: React.FC<EditorialToggleProps> = ({
 
 const styles = StyleSheet.create({
   track: {
-    width: 46,
-    height: 26,
-    borderWidth: EditorialRules.borderWidth, // 1.5px ink border
-    borderColor: EditorialColors.ink,
-    borderRadius: 0, // square
-    padding: 2,
+    width: 48,
+    height: 28,
+    borderRadius: 14, // radius full
+    padding: 3,
     justifyContent: 'center',
   },
   trackOn: {
-    backgroundColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.cobalt,
   },
   trackOff: {
-    backgroundColor: 'transparent',
+    backgroundColor: DayRibbonColors.line,
   },
   trackDisabled: {
-    borderColor: EditorialColors.track,
-    backgroundColor: EditorialColors.track,
+    backgroundColor: DayRibbonColors.line,
+    opacity: 0.5,
   },
   knob: {
-    width: 18,
-    height: 18,
-    borderRadius: 0, // square knob
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: DayRibbonColors.white,
+    shadowColor: DayRibbonColors.ink,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
+    elevation: 2,
   },
   knobOn: {
-    backgroundColor: EditorialColors.white,
     alignSelf: 'flex-end',
   },
   knobOff: {
-    backgroundColor: EditorialColors.ink,
     alignSelf: 'flex-start',
   },
 });
+
+export default EditorialToggle;

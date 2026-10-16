@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import { EditorialColors, EditorialFonts } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts } from '@theme/dayRibbon';
 
 export interface BigNumberProps {
   value: string | number;
@@ -22,19 +22,20 @@ export const BigNumber: React.FC<BigNumberProps> = ({
   label,
   showPercent = false,
   size = 'big',
-  color = EditorialColors.ink,
-  suffixColor = EditorialColors.accent,
+  color = DayRibbonColors.cobalt,
+  suffixColor,
   style,
   textStyle,
 }) => {
   const finalSuffix = suffix !== undefined ? suffix : (unit !== undefined ? unit : (showPercent ? '%' : undefined));
-  
+  const finalSuffixColor = suffixColor || DayRibbonColors.ink;
+
   const getFontSize = () => {
     switch (size) {
       case 'hero':
-        return 104;
+        return 92;
       case 'section':
-        return 32;
+        return 34;
       case 'big':
       default:
         return 60;
@@ -44,12 +45,12 @@ export const BigNumber: React.FC<BigNumberProps> = ({
   const getLineHeight = () => {
     switch (size) {
       case 'hero':
-        return 104;
+        return 96;
       case 'section':
-        return 34;
+        return 38;
       case 'big':
       default:
-        return 62;
+        return 64;
     }
   };
 
@@ -76,7 +77,7 @@ export const BigNumber: React.FC<BigNumberProps> = ({
               {
                 fontSize: getFontSize() * 0.45,
                 lineHeight: getLineHeight() * 0.5,
-                color: suffixColor,
+                color: finalSuffixColor,
               },
             ]}
           >
@@ -98,22 +99,21 @@ const styles = StyleSheet.create({
   },
   numberRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'baseline',
   },
   value: {
-    fontFamily: EditorialFonts.display,
+    fontFamily: DayRibbonFonts.display,
     letterSpacing: -1,
   },
   suffix: {
-    fontFamily: EditorialFonts.display,
+    fontFamily: DayRibbonFonts.display,
     marginLeft: 2,
-    marginTop: 4,
   },
   labelText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 10,
-    letterSpacing: 1.2,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     marginTop: 4,
   },
 });
