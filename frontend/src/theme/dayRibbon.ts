@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 export const DayRibbonColors = {
   bg: '#F3F5FF',         // app background (very light blue)
   surface: '#FFFFFF',    // cards
