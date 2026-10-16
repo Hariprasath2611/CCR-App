@@ -4,16 +4,16 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
+import { Syne_800ExtraBold } from '@expo-google-fonts/syne';
 import {
-  Archivo_600SemiBold,
-  Archivo_700Bold,
-  Archivo_800ExtraBold,
-} from '@expo-google-fonts/archivo';
-import { ArchivoBlack_400Regular } from '@expo-google-fonts/archivo-black';
+  InstrumentSans_500Medium,
+  InstrumentSans_600SemiBold,
+  InstrumentSans_700Bold,
+} from '@expo-google-fonts/instrument-sans';
 import * as SplashScreen from 'expo-splash-screen';
 
 import { AppTheme } from '@theme/theme';
-import { EditorialColors } from '@theme/editorial';
+import { DayRibbonColors } from '@theme/dayRibbon';
 import { RootNavigator } from '@navigation/RootNavigator';
 import { syncEngine } from '@features/sync/syncEngine';
 
@@ -21,10 +21,10 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 
 function App(): React.JSX.Element | null {
   const [fontsLoaded] = useFonts({
-    ArchivoBlack_400Regular,
-    Archivo_600SemiBold,
-    Archivo_700Bold,
-    Archivo_800ExtraBold,
+    Syne_800ExtraBold,
+    InstrumentSans_500Medium,
+    InstrumentSans_600SemiBold,
+    InstrumentSans_700Bold,
   });
 
   useEffect(() => {
