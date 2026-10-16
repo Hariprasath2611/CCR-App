@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   StatusBar,
+  Image,
 } from 'react-native';
 import { Text } from 'react-native';
 import { useAuthStore } from '../../auth/store/useAuthStore';
@@ -17,12 +18,20 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StaffStackParamList } from '@navigation/types';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import {
+  DayRibbonColors,
+  DayRibbonFonts,
+  DayRibbonShapes,
+  DayRibbonSpacing,
+} from '@theme/dayRibbon';
 import { getCCForSection } from '@config/facultyBoard';
+import { DateHero } from '@components/editorial/DateHero';
+import { WeekStrip } from '@components/editorial/WeekStrip';
+import { PeriodBlock } from '@components/editorial/PeriodBlock';
+import { ProgressBar } from '@components/editorial/ProgressBar';
+import { ListRow } from '@components/editorial/ListRow';
 import { BigNumber } from '@components/editorial/BigNumber';
-import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
-import { SegBar } from '@components/editorial/SegBar';
+import { StatTile } from '@components/editorial/StatTile';
 
 interface SubjectInfo {
   code: string;
@@ -38,12 +47,23 @@ interface SubjectInfo {
   percent: number;
 }
 
+const PERIOD_TIMES: Record<number, string> = {
+  1: '08:30 - 09:20',
+  2: '09:20 - 10:10',
+  3: '10:25 - 11:15',
+  4: '11:15 - 12:05',
+  5: '12:45 - 01:35',
+  6: '01:35 - 02:25',
+  7: '02:35 - 03:25',
+};
+
 export const StaffDashboardScreen = () => {
   const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
   const navigation = useNavigation<NativeStackNavigationProp<StaffStackParamList>>();
 
   const [handledSubjects, setHandledSubjects] = useState<SubjectInfo[]>([]);
+  const [todaySlots, setTodaySlots] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [overallProgress, setOverallProgress] = useState(0);
@@ -61,6 +81,13 @@ export const StaffDashboardScreen = () => {
         : slots.filter((s) => matchFacultyName(s.faculty_name, user?.name));
       const filteredSlots = (userFilteredSlots.length === 0 && slots.length > 0) ? slots : userFilteredSlots;
 
+      // Extract today's timetable slots
+      const todayDayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+      const currentDaySlots = filteredSlots.filter(
+        (s) => s.day_of_week.toLowerCase() === todayDayName.toLowerCase()
+      );
+      setTodaySlots(currentDaySlots.length > 0 ? currentDaySlots : filteredSlots.slice(0, 3));
+
       const sessionMap: Record<string, {
         code: string;
         name: string;
@@ -70,7 +97,7 @@ export const StaffDashboardScreen = () => {
         color: string;
       }> = {};
 
-      const colors = ['#111111', '#111111', '#111111', '#111111', '#111111', '#111111'];
+      const colors = ['#2B3FE0', '#2B3FE0', '#2B3FE0', '#2B3FE0'];
       let colorIdx = 0;
 
       for (const slot of filteredSlots) {
@@ -82,7 +109,7 @@ export const StaffDashboardScreen = () => {
           else if (slot.class_section.includes('3rd')) yearPrefix = '3rd Year';
           else if (slot.class_section.includes('4th')) yearPrefix = '4th Year';
 
-          let shortName = slot.subject_name.split(' ').map(w => w[0]).join('').toUpperCase();
+          let shortName = slot.subject_name.split(' ').map((w) => w[0]).join('').toUpperCase();
           if (slot.subject_code === 'CS8501') shortName = 'TOC';
           if (slot.subject_code === 'CS8502') shortName = 'DBMS';
           if (slot.subject_code === 'CS8503') shortName = 'CN';
@@ -110,7 +137,7 @@ export const StaffDashboardScreen = () => {
             else if (assignment.classId.includes('3rd')) yearPrefix = '3rd Year';
             else if (assignment.classId.includes('4th')) yearPrefix = '4th Year';
 
-            let shortName = assignment.subjectName.split(' ').map(w => w[0]).join('').toUpperCase();
+            let shortName = assignment.subjectName.split(' ').map((w) => w[0]).join('').toUpperCase();
 
             sessionMap[sessionKey] = {
               code: assignment.subjectCode,
@@ -133,7 +160,7 @@ export const StaffDashboardScreen = () => {
         const item = sessionMap[key];
         const topics = await syllabusRepo.getSyllabusBySubject(item.code);
         const totalTopics = topics.length;
-        const completedTopics = topics.filter(t => t.is_completed === 1).length;
+        const completedTopics = topics.filter((t) => t.is_completed === 1).length;
         const percent = totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
 
         totalCompletedAll += completedTopics;
@@ -195,13 +222,13 @@ export const StaffDashboardScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.screenTop),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -210,137 +237,148 @@ export const StaffDashboardScreen = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={EditorialColors.ink}
-            colors={[EditorialColors.ink]}
+            tintColor={DayRibbonColors.cobalt}
+            colors={[DayRibbonColors.cobalt]}
           />
         }
       >
-        {/* Top Meta Bar */}
-        <View style={styles.topMetaRow}>
-          <View>
-            <Label text={getRoleLabel()} style={styles.roleLabel} />
+        {/* Header with Logo slot on left, user info, and circular bell button on right */}
+        <View style={styles.header}>
+          <View style={styles.logoSlot}>
+            <Image
+              source={require('../../../assets/logo-removebg-preview.png')}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
+          </View>
+
+          <View style={styles.headerMiddle}>
+            <Text style={styles.roleLabel}>{getRoleLabel()}</Text>
             <Text style={styles.facultyName} numberOfLines={1}>
               {user?.name || 'Professor'}
             </Text>
           </View>
-          <View style={styles.deptBadge}>
-            <Text style={styles.deptText}>
-              {user?.department ? user.department.toUpperCase() : 'CSE'}
-            </Text>
-          </View>
+
+          <TouchableOpacity
+            style={styles.bellButton}
+            onPress={() => (navigation as any).navigate('Notifications')}
+            activeOpacity={0.7}
+            accessibilityLabel="Notifications"
+          >
+            <Feather name="bell" size={18} color={DayRibbonColors.ink} />
+          </TouchableOpacity>
         </View>
 
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
+        {/* DateHero component */}
+        <DateHero />
 
-        {/* Hero Section: Big Number 104 with Vermilion % */}
-        <View style={styles.heroSection}>
-          <Label text="OVERALL SYLLABUS COVERAGE" />
+        {/* WeekStrip component */}
+        <WeekStrip />
+
+        {/* Today's Timetable PeriodBlocks */}
+        {todaySlots.length > 0 && (
+          <View style={styles.periodSection}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionHeaderTitle}>TODAY'S LECTURES</Text>
+              <Text style={styles.sectionHeaderMeta}>{todaySlots.length} CLASSES</Text>
+            </View>
+
+            {todaySlots.map((slot, idx) => {
+              const periodNum = slot.period || idx + 1;
+              const timeRange = PERIOD_TIMES[periodNum] || '09:00 - 09:50';
+              const isNow = idx === 0; // Highlight the current class
+
+              return (
+                <PeriodBlock
+                  key={slot.id || idx}
+                  periodNumber={periodNum}
+                  timeRange={timeRange}
+                  title={slot.subject_name || slot.subject_code}
+                  subtitle={`${slot.class_section} • ${slot.subject_code}`}
+                  room={slot.room_no || 'Hall 204'}
+                  state={isNow ? 'now' : 'upcoming'}
+                  onPressLog={() =>
+                    navigation.navigate('WeeklyProgress', {
+                      subjectCode: slot.subject_code,
+                      classSection: slot.class_section,
+                      weekNumber: 12,
+                    })
+                  }
+                />
+              );
+            })}
+          </View>
+        )}
+
+        {/* Hero Syllabus Coverage Card */}
+        <View style={styles.coverageHeroCard}>
+          <Text style={styles.cardHeaderLabel}>OVERALL SYLLABUS COVERAGE</Text>
           <View style={styles.heroNumberRow}>
-            <BigNumber value={overallProgress} size="hero" showPercent />
+            <BigNumber value={overallProgress} size="hero" showPercent color={DayRibbonColors.cobalt} />
           </View>
+          <ProgressBar progress={overallProgress} height={10} style={{ marginTop: 12 }} />
         </View>
 
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
-        {/* 3-Column Stat Row */}
-        <View style={styles.statRow}>
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{handledSubjects.length}</Text>
-            <Label text="SUBJECTS" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>
-              {new Set(handledSubjects.map((s) => s.section)).size}
-            </Text>
-            <Label text="SECTIONS" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>100%</Text>
-            <Label text="TARGET" />
-          </View>
+        {/* 3-Column Stat Grid */}
+        <View style={styles.statGrid}>
+          <StatTile
+            value={handledSubjects.length}
+            label="Subjects"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value={new Set(handledSubjects.map((s) => s.section)).size}
+            label="Sections"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value="100%"
+            label="Target"
+            style={styles.statGridItem}
+          />
         </View>
 
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
-
-        {/* Primary Action Button: Log Course Coverage */}
+        {/* Single Main Call to Action: Lemon Highlight Button */}
         <TouchableOpacity
-          style={styles.primaryActionButton}
+          style={styles.lemonActionButton}
           onPress={() => navigation.navigate('WeeklyProgress', { subjectCode: '', weekNumber: 12 })}
           activeOpacity={0.85}
         >
-          <Text style={styles.primaryActionText}>LOG COURSE COVERAGE</Text>
-          <Feather name="arrow-right" size={18} color={EditorialColors.white} />
+          <Text style={styles.lemonActionText}>Log Course Coverage</Text>
+          <Feather name="arrow-right" size={18} color={DayRibbonColors.ink} />
         </TouchableOpacity>
 
-        {/* Section Header: Subject Handling */}
+        {/* Section Header: Assigned Courses */}
         <View style={styles.sectionHeaderRow}>
           <Text style={styles.sectionHeaderTitle}>ASSIGNED COURSES</Text>
-          <Label text={`${handledSubjects.length} TOTAL`} />
+          <Text style={styles.sectionHeaderMeta}>{handledSubjects.length} TOTAL</Text>
         </View>
 
-        {/* Subject Rows */}
+        {/* Course List using Day Ribbon ListRow */}
         {loading && !refreshing ? (
           <View style={styles.skeletonContainer}>
-            <View style={styles.skeletonBlock} />
             <View style={styles.skeletonBlock} />
             <View style={styles.skeletonBlock} />
           </View>
         ) : handledSubjects.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Label text="NO ASSIGNED SUBJECTS FOUND" />
+            <Text style={styles.emptyText}>No assigned subjects found</Text>
           </View>
         ) : (
           <View style={styles.subjectList}>
-            {handledSubjects.map((subj, index) => {
-              const isLagging = subj.percent < 40;
+            {handledSubjects.map((subj) => {
+              const isBehind = subj.percent < 40;
               return (
-                <TouchableOpacity
+                <ListRow
                   key={`${subj.code}_${subj.section}`}
-                  activeOpacity={0.7}
+                  indexOrCode={subj.code}
+                  name={subj.name}
+                  caption={`${subj.yearDisplay} • CC: ${subj.ccFacultyName}`}
+                  value={`${subj.percent}%`}
+                  progress={subj.percent}
+                  isBehindPlan={isBehind}
                   onPress={() => handleSubjectPress(subj.code, subj.section)}
-                  style={styles.subjectRow}
-                >
-                  <View style={styles.rowTop}>
-                    <View style={styles.subjectInfo}>
-                      <View style={styles.codeMetaRow}>
-                        <Text style={styles.subjectCode}>{subj.code}</Text>
-                        <Text style={styles.sectionMeta}>{subj.yearDisplay}</Text>
-                      </View>
-                      <Text style={styles.subjectName} numberOfLines={1}>
-                        {subj.name}
-                      </Text>
-                      <Label
-                        text={`CC: ${subj.ccFacultyName} • ${subj.completedTopics}/${subj.totalTopics} TOPICS`}
-                        style={styles.ccMetaLabel}
-                      />
-                    </View>
-
-                    <View style={styles.rightValueBox}>
-                      <Text
-                        style={[
-                          styles.percentText,
-                          isLagging ? styles.accentPercentText : null,
-                        ]}
-                      >
-                        {subj.percent}%
-                      </Text>
-                    </View>
-                  </View>
-
-                  {/* 25-Segment Bar */}
-                  <View style={styles.segBarWrapper}>
-                    <SegBar
-                      totalSegments={25}
-                      filledSegments={Math.round((subj.percent / 100) * 25)}
-                      isLagging={isLagging}
-                    />
-                  </View>
-                </TouchableOpacity>
+                />
               );
             })}
           </View>
@@ -353,177 +391,151 @@ export const StaffDashboardScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
-  topMetaRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  roleLabel: {
-    marginBottom: 4,
-  },
-  facultyName: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 22,
-    lineHeight: 26,
-    color: EditorialColors.ink,
-  },
-  deptBadge: {
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  deptText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 10,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
-  },
-  hairlineSpacer: {
-    marginVertical: 16,
-  },
-  heroSection: {
-    marginTop: 8,
-    marginBottom: 4,
-  },
-  heroNumberRow: {
-    marginTop: 4,
-  },
-  heavySpacer: {
-    marginVertical: 18,
-  },
-  statRow: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 8,
+    marginBottom: 20,
   },
-  statCol: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statNum: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 34,
-    color: EditorialColors.ink,
-    marginBottom: 2,
-  },
-  statDivider: {
-    width: 1,
-    height: 38,
-    backgroundColor: EditorialColors.ink,
-  },
-  primaryActionButton: {
-    height: 54,
-    width: '100%',
-    backgroundColor: EditorialColors.ink,
-    flexDirection: 'row',
+  logoSlot: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
-    marginBottom: 28,
+    padding: 4,
+    ...DayRibbonShapes.shadow,
   },
-  primaryActionText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.white,
+  logoImage: {
+    width: 32,
+    height: 32,
+  },
+  headerMiddle: {
+    flex: 1,
+    marginHorizontal: 12,
+  },
+  roleLabel: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 10,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
+  },
+  facultyName: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 18,
+    lineHeight: 22,
+    color: DayRibbonColors.ink,
+  },
+  bellButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...DayRibbonShapes.shadow,
+  },
+  periodSection: {
+    marginBottom: 20,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
   },
-  subjectList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+  sectionHeaderMeta: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
-  subjectRow: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 14,
+  coverageHeroCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 20,
+    marginBottom: 14,
+    ...DayRibbonShapes.shadow,
   },
-  rowTop: {
+  cardHeaderLabel: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
+  },
+  heroNumberRow: {
+    marginTop: 4,
+  },
+  statGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 10,
+    gap: 10,
+    marginBottom: 16,
   },
-  subjectInfo: {
+  statGridItem: {
     flex: 1,
-    marginRight: 12,
   },
-  codeMetaRow: {
+  lemonActionButton: {
+    height: 52,
+    width: '100%',
+    backgroundColor: DayRibbonColors.lemon,
+    borderRadius: DayRibbonShapes.buttonRadius,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
-  },
-  subjectCode: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 12,
-    letterSpacing: 1,
-    color: EditorialColors.muted,
-  },
-  sectionMeta: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    color: EditorialColors.muted,
-  },
-  subjectName: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 17,
-    lineHeight: 22,
-    color: EditorialColors.ink,
-    marginBottom: 4,
-  },
-  ccMetaLabel: {
-    letterSpacing: 1.5,
-  },
-  rightValueBox: {
-    alignItems: 'flex-end',
     justifyContent: 'center',
+    gap: 10,
+    marginBottom: 24,
+    ...DayRibbonShapes.shadow,
   },
-  percentText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 34,
-    color: EditorialColors.ink,
+  lemonActionText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
   },
-  accentPercentText: {
-    color: EditorialColors.accent,
-  },
-  segBarWrapper: {
-    marginTop: 2,
+  subjectList: {
+    width: '100%',
   },
   skeletonContainer: {
     gap: 12,
-    paddingVertical: 16,
+    paddingVertical: 12,
   },
   skeletonBlock: {
     height: 72,
-    backgroundColor: EditorialColors.track,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
   },
   emptyContainer: {
     paddingVertical: 32,
     alignItems: 'center',
   },
+  emptyText: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 14,
+    color: DayRibbonColors.muted,
+  },
 });
+
+export default StaffDashboardScreen;
