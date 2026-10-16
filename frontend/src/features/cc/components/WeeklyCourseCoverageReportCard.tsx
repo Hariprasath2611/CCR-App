@@ -1,13 +1,10 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
-import { Text, Card, Divider, Chip } from 'react-native-paper';
-import { Palette } from '@theme/colors';
-import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
-import { Feather, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { Text, Card, Divider } from 'react-native-paper';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes } from '@theme/dayRibbon';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { ConsolidatedReport, SubjectProgress } from '../store/useReportStore';
-
 import { getSectionTemplate, filterNonAcademicSubjects } from '@config/sectionTemplates';
-
 import { ms } from '@theme/responsive';
 
 const { width } = Dimensions.get('window');
@@ -25,13 +22,9 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
 }) => {
   const { classId, weekNumber, overallCoverage, subjects, ccRemarks, status, hodRemarks, approvedAt } = report;
 
-  // Retrieve section template configuration (Sections A through G)
+  // Retrieve section template configuration
   const template = getSectionTemplate(classId);
   const displaySubjects = filterNonAcademicSubjects(subjects || []);
-
-  // Derive layout variables
-  const isApprovedHOD = status === 'APPROVED_BY_HOD' || status === 'SENT_TO_ADMIN';
-  const isApprovedAdmin = status === 'SENT_TO_ADMIN';
 
   const sectionChar = template.section;
   const displayClass = `Year: ${template.semester === 'I' ? 'I' : 'I'} / Sem: ${template.semester}`;
@@ -40,9 +33,8 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
   const loggedSubjects = displaySubjects.filter(s => s.status === 'Submitted' && s.fromDate && s.toDate);
   const firstLogged = loggedSubjects[0];
 
-  // Compute default dates based on weekNumber if faculty has not entered any date yet
   const getDates = (week: number) => {
-    const baseDate = new Date(2024, 4, 20); // 20 May 2024 (months are 0-indexed)
+    const baseDate = new Date(2024, 4, 20); // 20 May 2024
     const weeksDiff = week - 5;
     const startDate = new Date(baseDate.getTime() + weeksDiff * 7 * 24 * 60 * 60 * 1000);
     const endDate = new Date(startDate.getTime() + 5 * 24 * 60 * 60 * 1000);
@@ -61,11 +53,9 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
   };
 
   const dates = getDates(weekNumber);
-
   const fromDateVal = firstLogged?.fromDate ? firstLogged.fromDate.replace(/\//g, '.') : dates.from;
   const toDateVal = firstLogged?.toDate ? firstLogged.toDate.replace(/\//g, '.') : dates.to;
 
-  // Topics completed lookup
   const getBriefTopics = (code: string): string[] => {
     const lookup: Record<string, string[]> = {
       CS3591: ['OSI & TCP/IP Network Models', 'Data Link Layer & Framing', 'Routing Algorithms'],
@@ -79,7 +69,6 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
     return lookup[code] || ['Unit syllabus topics covered', 'Weekly planned sub-topics', 'Class presentation session'];
   };
 
-  // Calculate sum completed hours
   const totalHours = displaySubjects.reduce((sum, s) => sum + (s.completedTopicsCount * 1.5), 0);
 
   return (
@@ -88,21 +77,22 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
         {/* ── Section Title Header ── */}
         <View style={styles.docHeader}>
           <View style={styles.headerIconBox}>
-            <MaterialCommunityIcons name="file-document-outline" size={24} color="#0F52BA" />
+            <MaterialCommunityIcons name="file-document-outline" size={20} color={DayRibbonColors.cobalt} />
           </View>
-          <Text style={styles.docTitle}>WEEKLY COURSE COVERAGE REPORT</Text>
+          <View style={styles.titleWrapper}>
+            <Text style={styles.captionText}>OFFICIAL ACADEMIC AUDIT</Text>
+            <Text style={styles.docTitle}>Weekly Course Coverage Report</Text>
+          </View>
         </View>
 
         {/* ── Metadata Info Block Grid (2 Columns) ── */}
         <View style={styles.infoGrid}>
-          {/* Column 1 */}
           <View style={styles.infoColumn}>
             <InfoItem icon="office-building" label="Department" value={displayDept} />
             <InfoItem icon="account-group-outline" label="Class" value={displayClass} />
             <InfoItem icon="door" label="Section" value={sectionChar} />
           </View>
 
-          {/* Column 2 */}
           <View style={styles.infoColumn}>
             <InfoItem icon="clock-outline" label="From Date" value={fromDateVal} />
             <InfoItem icon="clock-check-outline" label="To Date" value={toDateVal} />
@@ -122,12 +112,12 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
               <Text style={[styles.cell, styles.colCode, styles.headerText]}>Course Code</Text>
               <Text style={[styles.cell, styles.colName, styles.headerText]}>Course Name</Text>
               <Text style={[styles.cell, styles.colFaculty, styles.headerText]}>Faculty Name</Text>
-              <Text style={[styles.cell, styles.colHours, styles.headerText]}>No. of Hours Completed</Text>
-              <Text style={[styles.cell, styles.colPercent, styles.headerText]}>Cumulative % Completed</Text>
+              <Text style={[styles.cell, styles.colHours, styles.headerText]}>Hours Done</Text>
+              <Text style={[styles.cell, styles.colPercent, styles.headerText]}>Cumulative %</Text>
               <Text style={[styles.cell, styles.colTopics, styles.headerText]}>Topics Covered (Brief)</Text>
-              <Text style={[styles.cell, styles.colCompleted, styles.headerText]}>Completed as per Schedule (Yes/No)</Text>
+              <Text style={[styles.cell, styles.colCompleted, styles.headerText]}>On Schedule</Text>
               <Text style={[styles.cell, styles.colReason, styles.headerText]}>If No Reason</Text>
-              <Text style={[styles.cell, styles.colExtra, styles.headerText]}>If No. of Extra Hours Required</Text>
+              <Text style={[styles.cell, styles.colExtra, styles.headerText]}>Extra Hours Req.</Text>
             </View>
 
             {/* Table Data Rows */}
@@ -155,7 +145,7 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
                   <Text style={[
                     styles.cell, 
                     styles.colCompleted, 
-                    { color: isCompleted ? '#10B981' : '#EF4444', fontWeight: 'bold' }
+                    { color: isCompleted ? DayRibbonColors.cobalt : DayRibbonColors.warn, fontFamily: DayRibbonFonts.body700 }
                   ]}>
                     {isCompleted ? 'Yes' : 'No'}
                   </Text>
@@ -190,7 +180,7 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
         {/* ── Topics for Next Week Card ── */}
         <View style={styles.remarkBox}>
           <View style={styles.remarkHeader}>
-            <MaterialCommunityIcons name="clipboard-check-outline" size={16} color="#0F52BA" />
+            <MaterialCommunityIcons name="clipboard-check-outline" size={16} color={DayRibbonColors.cobalt} />
             <Text style={styles.remarkLabel}>Topics for Next Week (All Subjects)</Text>
           </View>
           <Text style={styles.remarkContent}>Continue with remaining topics as per the lesson plan.</Text>
@@ -199,25 +189,23 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
         {/* ── Remarks Card ── */}
         <View style={[styles.remarkBox, { marginTop: ms(12) }]}>
           <View style={styles.remarkHeader}>
-            <Feather name="message-square" size={14} color="#0F52BA" />
+            <Feather name="message-square" size={14} color={DayRibbonColors.cobalt} />
             <Text style={styles.remarkLabel}>Remarks (if any)</Text>
           </View>
           <Text style={styles.remarkContent}>{ccRemarks || 'Nil'}</Text>
         </View>
 
         {hodRemarks ? (
-          <View style={[styles.remarkBox, { marginTop: ms(12), borderLeftColor: '#EF4444' }]}>
+          <View style={[styles.remarkBox, { marginTop: ms(12), borderLeftColor: DayRibbonColors.warn, backgroundColor: DayRibbonColors.warnBg }]}>
             <View style={styles.remarkHeader}>
-              <Feather name="alert-triangle" size={14} color="#EF4444" />
-              <Text style={[styles.remarkLabel, { color: '#EF4444' }]}>HOD Decision Remarks</Text>
+              <Feather name="alert-triangle" size={14} color={DayRibbonColors.warn} />
+              <Text style={[styles.remarkLabel, { color: DayRibbonColors.warn }]}>HOD Decision Remarks</Text>
             </View>
-            <Text style={[styles.remarkContent, { color: '#B91C1C', fontStyle: 'italic' }]}>
+            <Text style={[styles.remarkContent, { color: DayRibbonColors.warn, fontStyle: 'italic' }]}>
               "{hodRemarks}"
             </Text>
           </View>
         ) : null}
-
-
 
         {/* ── Action Buttons ── */}
         {showDownloadButton && (
@@ -225,12 +213,12 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
             style={styles.downloadButton}
             onPress={onDownloadPress}
             activeOpacity={0.8}
+            accessibilityLabel="Download Report PDF"
           >
-            <Feather name="download" size={18} color="#FFFFFF" />
+            <Feather name="download" size={18} color={DayRibbonColors.surface} />
             <Text style={styles.downloadText}>Download Report (PDF)</Text>
           </TouchableOpacity>
         )}
-
       </Card.Content>
     </Card>
   );
@@ -239,7 +227,7 @@ export const WeeklyCourseCoverageReportCard: React.FC<WeeklyCourseCoverageReport
 const InfoItem = ({ icon, label, value }: { icon: string; label: string; value: string }) => (
   <View style={styles.infoRow}>
     <View style={styles.infoIconBox}>
-      <MaterialCommunityIcons name={icon as any} size={15} color="#475569" />
+      <MaterialCommunityIcons name={icon as any} size={15} color={DayRibbonColors.cobalt} />
     </View>
     <View style={styles.infoTextWrapper}>
       <Text style={styles.infoLabel}>{label}</Text>
@@ -250,12 +238,11 @@ const InfoItem = ({ icon, label, value }: { icon: string; label: string; value: 
 
 const styles = StyleSheet.create({
   outerCard: {
-    backgroundColor: EditorialColors.bg,
-    borderRadius: 0,
-    borderWidth: EditorialRules.borderWidth,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.radiusCard,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     elevation: 0,
-    shadowOpacity: 0,
     width: '100%',
   },
   cardContent: {
@@ -264,29 +251,35 @@ const styles = StyleSheet.create({
   docHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: ms(20),
-    marginTop: ms(4),
+    marginBottom: ms(16),
   },
   headerIconBox: {
-    width: ms(38),
-    height: ms(38),
-    borderRadius: 0,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    backgroundColor: 'transparent',
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.bg,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: ms(12),
   },
-  docTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(14),
-    color: EditorialColors.ink,
-    letterSpacing: 1.5,
+  titleWrapper: {
+    flex: 1,
+  },
+  captionText: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(10),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
     textTransform: 'uppercase',
   },
-
-  // 2 Col Grid
+  docTitle: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(16),
+    color: DayRibbonColors.ink,
+    marginTop: ms(2),
+  },
   infoGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -297,49 +290,45 @@ const styles = StyleSheet.create({
   },
   infoRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: ms(12),
+    alignItems: 'center',
+    marginBottom: ms(10),
   },
   infoIconBox: {
-    width: ms(26),
-    height: ms(26),
-    borderRadius: ms(6),
-    backgroundColor: '#F8FAFC',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: DayRibbonColors.bg,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: ms(8),
-    borderWidth: 0.5,
-    borderColor: '#E2E8F0',
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
   },
   infoTextWrapper: {
     flex: 1,
   },
   infoLabel: {
-    fontSize: ms(9),
-    fontWeight: '700',
-    color: '#94A3B8',
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(9.5),
+    color: DayRibbonColors.muted,
     textTransform: 'uppercase',
   },
   infoValue: {
+    fontFamily: DayRibbonFonts.body700,
     fontSize: ms(12),
-    fontWeight: '700',
-    color: '#334155',
-    marginTop: ms(2),
-    lineHeight: 15,
+    color: DayRibbonColors.ink,
+    marginTop: ms(1),
   },
-
   divider: {
-    backgroundColor: '#E2E8F0',
-    marginVertical: ms(18),
+    backgroundColor: DayRibbonColors.line,
+    marginVertical: ms(16),
   },
-
-  // Table
   tableLabel: {
-    fontSize: ms(11),
-    fontWeight: '800',
-    color: '#64748B',
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(12),
+    color: DayRibbonColors.ink,
     textTransform: 'uppercase',
-    letterSpacing: 0.8,
+    letterSpacing: 0.5,
     marginBottom: ms(10),
   },
   tableScrollView: {
@@ -347,92 +336,89 @@ const styles = StyleSheet.create({
   },
   tableBlock: {
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: ms(8),
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusButton,
     overflow: 'hidden',
   },
   tableRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#CBD5E1',
-    backgroundColor: '#FFFFFF',
+    borderBottomColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
     alignItems: 'stretch',
   },
   tableRowAlt: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: DayRibbonColors.bg,
   },
   tableHeader: {
-    backgroundColor: '#EFF6FF',
-    borderBottomWidth: 2,
-    borderBottomColor: '#93C5FD',
+    backgroundColor: DayRibbonColors.bg,
+    borderBottomWidth: 1.5,
+    borderBottomColor: DayRibbonColors.line,
   },
   tableFooter: {
-    backgroundColor: '#F1F5F9',
+    backgroundColor: DayRibbonColors.bg,
     borderTopWidth: 1.5,
-    borderTopColor: '#94A3B8',
+    borderTopColor: DayRibbonColors.line,
     borderBottomWidth: 0,
   },
   cell: {
     padding: ms(10),
     fontSize: ms(12),
-    color: '#334155',
+    fontFamily: DayRibbonFonts.body500,
+    color: DayRibbonColors.ink,
     textAlign: 'center',
-    verticalAlign: 'middle',
     borderRightWidth: 1,
-    borderRightColor: '#CBD5E1',
+    borderRightColor: DayRibbonColors.line,
     justifyContent: 'center',
   },
   headerText: {
     fontSize: ms(11),
-    fontWeight: '800',
-    color: '#1E40AF',
+    fontFamily: DayRibbonFonts.body700,
+    color: DayRibbonColors.ink,
     textAlign: 'center',
   },
   footerText: {
-    fontWeight: '800',
-    color: '#475569',
+    fontFamily: DayRibbonFonts.body700,
+    color: DayRibbonColors.muted,
   },
   footerValue: {
-    fontWeight: '800',
-    color: '#0F52BA',
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(14),
+    color: DayRibbonColors.cobalt,
   },
   boldCode: {
-    fontWeight: '700',
-    color: '#0F52BA',
+    fontFamily: DayRibbonFonts.body700,
+    color: DayRibbonColors.cobalt,
   },
   bulletCell: {
     alignItems: 'flex-start',
     paddingVertical: ms(8),
   },
   bulletText: {
+    fontFamily: DayRibbonFonts.body500,
     fontSize: ms(11),
-    color: '#334155',
-    lineHeight: 16,
+    color: DayRibbonColors.ink,
+    lineHeight: ms(16),
     textAlign: 'left',
   },
-
-  // Column Widths
   colSn: { width: ms(50) },
   colCode: { width: ms(90) },
   colName: { width: ms(140) },
   colFaculty: { width: ms(130) },
-  colDate: { width: ms(95) },
   colPercent: { width: ms(140) },
   colHours: { width: ms(90) },
   colTopics: { width: ms(200) },
   colCompleted: { width: ms(100) },
   colReason: { width: ms(120) },
   colExtra: { width: ms(100) },
-
-  // Remark Blocks
   remarkBox: {
-    backgroundColor: '#FAF9F6',
+    backgroundColor: DayRibbonColors.bg,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: ms(10),
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusButton,
     padding: ms(12),
     borderLeftWidth: 3,
-    borderLeftColor: '#0F52BA',
+    borderLeftColor: DayRibbonColors.cobalt,
   },
   remarkHeader: {
     flexDirection: 'row',
@@ -440,196 +426,35 @@ const styles = StyleSheet.create({
     marginBottom: ms(4),
   },
   remarkLabel: {
-    fontSize: ms(10),
-    fontWeight: '800',
-    color: '#0F52BA',
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(11),
+    color: DayRibbonColors.cobalt,
     textTransform: 'uppercase',
-    letterSpacing: 0.8,
+    letterSpacing: 0.5,
     marginLeft: ms(6),
   },
   remarkContent: {
+    fontFamily: DayRibbonFonts.body500,
     fontSize: ms(13),
-    color: '#334155',
-    lineHeight: 18,
+    color: DayRibbonColors.ink,
+    lineHeight: ms(18),
   },
-
-  // Signatures
-  approvalHeader: {
-    fontSize: ms(11),
-    fontWeight: '800',
-    color: '#64748B',
-    textTransform: 'uppercase',
-    letterSpacing: 1.2,
-    textAlign: 'center',
-    marginBottom: ms(12),
-  },
-  signaturesRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginBottom: ms(20),
-    gap: ms(8),
-  },
-  signatureCard: {
-    flex: 1,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: ms(10),
-    padding: ms(10),
-    alignItems: 'center',
-  },
-  signatureRole: {
-    fontSize: ms(10),
-    fontWeight: '800',
-    color: '#475569',
-    textTransform: 'uppercase',
-    textAlign: 'center',
-    marginBottom: ms(10),
-  },
-  stampWrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: ms(4),
-  },
-  stampText: {
-    fontSize: ms(11),
-    fontWeight: '800',
-    color: '#10B981',
-    marginTop: ms(4),
-    textTransform: 'uppercase',
-  },
-  stampDate: {
-    fontSize: ms(9),
-    color: '#64748B',
-    marginTop: ms(2),
-  },
-  stampWrapperPending: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  pendingStampText: {
-    fontSize: ms(9),
-    color: '#94A3B8',
-    fontStyle: 'italic',
-    textAlign: 'center',
-  },
-  signatureLine: {
-    width: '80%',
-    height: ms(1),
-    backgroundColor: '#CBD5E1',
-    marginVertical: ms(10),
-  },
-  signatureDate: {
-    fontSize: ms(9),
-    color: '#94A3B8',
-  },
-
-  // Legend Reference Table
-  legendHeader: {
-    fontSize: ms(10),
-    fontWeight: '800',
-    color: '#64748B',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    textAlign: 'center',
-    marginBottom: ms(10),
-  },
-  legendTable: {
-    flexDirection: 'row',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderRadius: ms(10),
-    backgroundColor: '#F8FAFC',
-    overflow: 'hidden',
-    marginBottom: ms(24),
-  },
-  legendCol: {
-    flex: 1,
-    padding: ms(8),
-    alignItems: 'center',
-    borderRightWidth: 1,
-    borderRightColor: '#E2E8F0',
-  },
-  legendLabelText: {
-    fontSize: ms(9),
-    fontWeight: '700',
-    color: '#64748B',
-    textAlign: 'center',
-  },
-  legendArrow: {
-    fontSize: ms(12),
-    color: '#0F52BA',
-    marginVertical: ms(2),
-  },
-  legendValueText: {
-    fontSize: ms(10),
-    fontWeight: '800',
-    color: '#1E40AF',
-  },
-
-  // Download Action Button
   downloadButton: {
     flexDirection: 'row',
-    backgroundColor: '#0F52BA',
-    borderRadius: ms(12),
-    height: ms(50),
+    backgroundColor: DayRibbonColors.cobalt,
+    borderRadius: DayRibbonShapes.radiusButton,
+    height: 52,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#0F52BA',
-    shadowOffset: { width: ms(0), height: ms(4) },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 4,
-    marginTop: ms(8),
+    marginTop: ms(16),
     width: '100%',
   },
   downloadText: {
-    color: '#FFFFFF',
+    color: DayRibbonColors.surface,
     fontSize: ms(14),
-    fontWeight: '800',
+    fontFamily: DayRibbonFonts.body700,
     marginLeft: ms(8),
-    letterSpacing: 0.5,
-  },
-
-  // 6-Tier Signature Styles
-  signaturesRow6: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: ms(10),
-  },
-  sigBox6: {
-    width: ms(110),
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: ms(10),
-    padding: ms(10),
-    alignItems: 'center',
-  },
-  sigTitle6: {
-    fontSize: ms(11),
-    fontWeight: '900',
-    color: '#0F52BA',
-    textAlign: 'center',
-  },
-  sigSub6: {
-    fontSize: ms(9),
-    fontWeight: '600',
-    color: '#64748B',
-    textAlign: 'center',
-    marginTop: ms(2),
-  },
-  sigLine6: {
-    width: '80%',
-    height: 1,
-    backgroundColor: '#94A3B8',
-    marginVertical: ms(10),
-  },
-  sigStatus6: {
-    fontSize: ms(9),
-    color: '#94A3B8',
-    fontStyle: 'italic',
   },
 });
+
+export default WeeklyCourseCoverageReportCard;

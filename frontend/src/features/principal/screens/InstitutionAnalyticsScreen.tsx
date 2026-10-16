@@ -3,16 +3,13 @@ import { StyleSheet, View, ScrollView, TouchableOpacity, Text } from 'react-nati
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import {
-  EditorialColors,
-  EditorialFonts,
-  EditorialSpacing,
-} from '@theme/editorial';
-import {
-  EditorialHeader,
-  Rule,
-  Label,
-  SegBar,
-} from '@components/editorial';
+  DayRibbonColors,
+  DayRibbonFonts,
+  DayRibbonShapes,
+  DayRibbonSpacing,
+} from '@theme/dayRibbon';
+import { ProgressBar } from '@components/editorial/ProgressBar';
+import { ms } from '@theme/responsive';
 
 interface DeptMetric {
   id: string;
@@ -156,25 +153,28 @@ export const InstitutionAnalyticsScreen = () => {
   const getStatusLabel = (status: DeptMetric['status']) => {
     switch (status) {
       case 'AHEAD':
-        return 'AHEAD OF TARGET';
+        return 'Ahead of Target';
       case 'STEADY':
-        return 'ON TRACK';
+        return 'On Track';
       case 'ATTENTION':
-        return 'PACE ATTENTION';
+        return 'Pace Attention';
     }
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      <EditorialHeader
-        eyebrow="EXECUTIVE OVERSIGHT"
-        title="INSTITUTION ANALYTICS"
-        subtitle={`Anna University regulation audit · Academic ${selectedWeek}`}
-      />
+      {/* ── HEADER ── */}
+      <View style={styles.headerBox}>
+        <Text style={styles.captionText}>EXECUTIVE OVERSIGHT</Text>
+        <Text style={styles.headingText}>Institution Analytics</Text>
+        <Text style={styles.subHeadingText}>
+          Anna University regulation audit · Academic {selectedWeek}
+        </Text>
+      </View>
 
       {/* ── CENTRAL KPI OVERVIEW ── */}
       <View style={styles.kpiContainer}>
-        <Label text="INSTITUTION BENCHMARK SUMMARY" variant="dark" />
+        <Text style={styles.kpiHeaderLabel}>INSTITUTION BENCHMARK SUMMARY</Text>
         <View style={styles.kpiGrid}>
           <View style={[styles.kpiCell, styles.kpiCellBorderRight, styles.kpiCellBorderBottom]}>
             <Text style={styles.kpiLabel}>AVG INSTITUTE PACE</Text>
@@ -193,7 +193,7 @@ export const InstitutionAnalyticsScreen = () => {
 
           <View style={styles.kpiCell}>
             <Text style={styles.kpiLabel}>COMPLIANCE INDEX</Text>
-            <Text style={styles.kpiNumber}>96.4%</Text>
+            <Text style={[styles.kpiNumber, { color: DayRibbonColors.cobalt }]}>96.4%</Text>
           </View>
         </View>
       </View>
@@ -203,10 +203,10 @@ export const InstitutionAnalyticsScreen = () => {
         <Text style={styles.filterTitle}>DISCIPLINE FILTER</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll}>
           {[
-            { id: 'ALL', label: 'ALL DEPARTMENTS (10)' },
-            { id: 'CIRCUIT', label: 'CIRCUIT BRANCHES (6)' },
-            { id: 'CORE', label: 'CORE ENGINEERING (2)' },
-            { id: 'ALLIED', label: 'ALLIED SCIENCES (2)' },
+            { id: 'ALL', label: 'All Departments (10)' },
+            { id: 'CIRCUIT', label: 'Circuit Branches (6)' },
+            { id: 'CORE', label: 'Core Engineering (2)' },
+            { id: 'ALLIED', label: 'Allied Sciences (2)' },
           ].map((cat) => {
             const isSelected = selectedCategory === cat.id;
             return (
@@ -227,18 +227,16 @@ export const InstitutionAnalyticsScreen = () => {
 
       {/* ── DEPARTMENT RANKINGS LEADERBOARD ── */}
       <View style={styles.sectionHeaderRow}>
-        <Label text="DEPARTMENT VELOCITY LEADERBOARD" variant="dark" />
+        <Text style={styles.sectionHeading}>Department Velocity Leaderboard</Text>
         <Text style={styles.sectionCountText}>{filteredDepts.length} DEPARTMENTS</Text>
       </View>
-      <Rule thickness={4} color={EditorialColors.ink} style={{ marginBottom: EditorialSpacing.md }} />
 
       {filteredDepts.map((dept, index) => {
         const isAttention = dept.status === 'ATTENTION';
         const rank = index + 1;
-        const isTop = rank === 1;
 
         return (
-          <View key={dept.id} style={[styles.deptCard, isTop && styles.deptCardTop]}>
+          <View key={dept.id} style={styles.deptCard}>
             {/* Header Row: Rank Badge, Dept Code & Status */}
             <View style={styles.cardTopRow}>
               <View style={styles.deptMainInfo}>
@@ -248,7 +246,7 @@ export const InstitutionAnalyticsScreen = () => {
                 <View style={styles.deptNameContainer}>
                   <Text style={styles.deptCodeText}>{dept.code}</Text>
                   <Text style={styles.deptFullName} numberOfLines={1}>
-                    {dept.name.toUpperCase()}
+                    {dept.name}
                   </Text>
                 </View>
               </View>
@@ -272,39 +270,37 @@ export const InstitutionAnalyticsScreen = () => {
 
             {/* Overall Coverage Progress */}
             <View style={styles.coverageRow}>
-              <Text style={styles.coverageLabel}>CUMULATIVE COVERAGE</Text>
-              <Text style={[styles.coverageValue, isAttention && { color: EditorialColors.accent }]}>
+              <Text style={styles.coverageLabel}>Cumulative Coverage</Text>
+              <Text style={[styles.coverageValue, isAttention && { color: DayRibbonColors.warn }]}>
                 {dept.overallCoverage}%
               </Text>
             </View>
-            <View style={{ marginBottom: EditorialSpacing.md }}>
-              <SegBar
-                value={dept.overallCoverage}
-                max={100}
-                segments={10}
-                color={isAttention ? EditorialColors.accent : EditorialColors.ink}
+            <View style={{ marginBottom: ms(12) }}>
+              <ProgressBar
+                percent={dept.overallCoverage}
+                isBehind={isAttention}
               />
             </View>
 
             {/* Year 1-4 Mini Breakdown Grid */}
             <View style={styles.yearGrid}>
               <View style={styles.yearCell}>
-                <Text style={styles.yearLbl}>1ST YR</Text>
+                <Text style={styles.yearLbl}>1st Yr</Text>
                 <Text style={styles.yearVal}>{dept.yearCoverage.y1}%</Text>
               </View>
               <View style={styles.yearDivider} />
               <View style={styles.yearCell}>
-                <Text style={styles.yearLbl}>2ND YR</Text>
+                <Text style={styles.yearLbl}>2nd Yr</Text>
                 <Text style={styles.yearVal}>{dept.yearCoverage.y2}%</Text>
               </View>
               <View style={styles.yearDivider} />
               <View style={styles.yearCell}>
-                <Text style={styles.yearLbl}>3RD YR</Text>
+                <Text style={styles.yearLbl}>3rd Yr</Text>
                 <Text style={styles.yearVal}>{dept.yearCoverage.y3}%</Text>
               </View>
               <View style={styles.yearDivider} />
               <View style={styles.yearCell}>
-                <Text style={styles.yearLbl}>4TH YR</Text>
+                <Text style={styles.yearLbl}>4th Yr</Text>
                 <Text style={styles.yearVal}>{dept.yearCoverage.y4}%</Text>
               </View>
             </View>
@@ -312,7 +308,7 @@ export const InstitutionAnalyticsScreen = () => {
             {/* Footer: HOD and Audit Navigation */}
             <View style={styles.cardFooter}>
               <View style={styles.hodInfoRow}>
-                <Text style={styles.hodLabel}>HOD</Text>
+                <Text style={styles.hodLabel}>HOD:</Text>
                 <Text style={styles.hodNameText} numberOfLines={1}>
                   {dept.hodName}
                 </Text>
@@ -322,8 +318,8 @@ export const InstitutionAnalyticsScreen = () => {
                 onPress={() => navigation.navigate('DeptSummary', { departmentId: dept.id })}
                 activeOpacity={0.7}
               >
-                <Text style={styles.inspectBtnText}>AUDIT CLASSES</Text>
-                <Feather name="arrow-right" size={13} color={EditorialColors.ink} />
+                <Text style={styles.inspectBtnText}>Audit Classes</Text>
+                <Feather name="arrow-right" size={13} color={DayRibbonColors.ink} />
               </TouchableOpacity>
             </View>
           </View>
@@ -336,115 +332,153 @@ export const InstitutionAnalyticsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    padding: EditorialSpacing.lg,
-    paddingBottom: EditorialSpacing.xxxl,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
+    paddingTop: DayRibbonSpacing.screenTop,
+    paddingBottom: ms(48),
+  },
+  headerBox: {
+    marginBottom: ms(16),
+  },
+  captionText: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  headingText: {
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(26),
+    color: DayRibbonColors.ink,
+    marginTop: ms(4),
+  },
+  subHeadingText: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.muted,
+    marginTop: ms(4),
   },
   kpiContainer: {
-    backgroundColor: EditorialColors.white,
-    borderWidth: 2,
-    borderColor: EditorialColors.ink,
-    borderRadius: 0,
-    padding: EditorialSpacing.lg,
-    marginBottom: EditorialSpacing.xl,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusCard,
+    padding: ms(16),
+    marginBottom: ms(16),
+  },
+  kpiHeaderLabel: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   kpiGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: EditorialSpacing.md,
+    marginTop: ms(12),
     borderWidth: 1,
-    borderColor: EditorialColors.track,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusButton,
+    overflow: 'hidden',
   },
   kpiCell: {
     width: '50%',
-    padding: EditorialSpacing.md,
-    backgroundColor: EditorialColors.white,
+    padding: ms(12),
+    backgroundColor: DayRibbonColors.bg,
   },
   kpiCellBorderRight: {
     borderRightWidth: 1,
-    borderRightColor: EditorialColors.track,
+    borderRightColor: DayRibbonColors.line,
   },
   kpiCellBorderBottom: {
     borderBottomWidth: 1,
-    borderBottomColor: EditorialColors.track,
+    borderBottomColor: DayRibbonColors.line,
   },
   kpiNumber: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 22,
-    color: EditorialColors.ink,
-    marginTop: 2,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(22),
+    color: DayRibbonColors.ink,
+    marginTop: ms(2),
   },
   kpiLabel: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 9,
-    color: EditorialColors.muted,
-    letterSpacing: 0.8,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(9.5),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   filterSection: {
-    marginBottom: EditorialSpacing.xl,
+    marginBottom: ms(16),
   },
   filterTitle: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 10,
-    color: EditorialColors.muted,
-    letterSpacing: 0.8,
-    marginBottom: EditorialSpacing.xs,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(10),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    marginBottom: ms(8),
+    textTransform: 'uppercase',
   },
   chipsScroll: {
     flexDirection: 'row',
   },
   filterChip: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: EditorialColors.track,
-    backgroundColor: EditorialColors.white,
-    marginRight: EditorialSpacing.sm,
+    paddingVertical: ms(8),
+    paddingHorizontal: ms(14),
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.radiusChip,
+    marginRight: ms(8),
+    minHeight: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   filterChipActive: {
-    backgroundColor: EditorialColors.ink,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.ink,
+    borderColor: DayRibbonColors.ink,
   },
   filterChipText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 11,
-    color: EditorialColors.ink,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(12),
+    color: DayRibbonColors.ink,
   },
   filterChipTextActive: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.surface,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: ms(12),
+  },
+  sectionHeading: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(14),
+    color: DayRibbonColors.ink,
   },
   sectionCountText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 11,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
     letterSpacing: 0.5,
   },
   deptCard: {
-    backgroundColor: EditorialColors.white,
+    backgroundColor: DayRibbonColors.surface,
     borderWidth: 1,
-    borderColor: EditorialColors.track,
-    borderRadius: 0,
-    padding: EditorialSpacing.md,
-    marginBottom: EditorialSpacing.md,
-  },
-  deptCardTop: {
-    borderWidth: 2,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusCard,
+    padding: ms(16),
+    marginBottom: ms(12),
   },
   cardTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: EditorialSpacing.sm,
+    marginBottom: ms(10),
   },
   deptMainInfo: {
     flexDirection: 'row',
@@ -452,113 +486,116 @@ const styles = StyleSheet.create({
     flex: 0.68,
   },
   rankBadge: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingVertical: 4,
-    paddingHorizontal: 6,
-    backgroundColor: EditorialColors.bg,
-    marginRight: EditorialSpacing.sm,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.bg,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: ms(8),
   },
   rankText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 11,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(11),
+    color: DayRibbonColors.ink,
   },
   deptNameContainer: {
     flex: 1,
   },
   deptCodeText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 15,
-    color: EditorialColors.ink,
-    letterSpacing: 0.2,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(15),
+    color: DayRibbonColors.ink,
   },
   deptFullName: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 10,
-    color: EditorialColors.muted,
-    marginTop: 1,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    marginTop: ms(1),
   },
   statusBadge: {
     borderWidth: 1,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
+    borderRadius: DayRibbonShapes.radiusChip,
+    paddingHorizontal: ms(8),
+    paddingVertical: ms(3),
   },
   statusBadgeNormal: {
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.white,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.bg,
   },
   statusBadgeAttention: {
-    borderColor: EditorialColors.accent,
-    backgroundColor: EditorialColors.white,
+    borderColor: DayRibbonColors.warn,
+    backgroundColor: DayRibbonColors.warnBg,
   },
   statusBadgeText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 9,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(9.5),
     letterSpacing: 0.5,
   },
   statusBadgeTextNormal: {
-    color: EditorialColors.ink,
+    color: DayRibbonColors.muted,
   },
   statusBadgeTextAttention: {
-    color: EditorialColors.accent,
+    color: DayRibbonColors.warn,
   },
   coverageRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: ms(4),
   },
   coverageLabel: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 10,
-    color: EditorialColors.muted,
-    letterSpacing: 0.6,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
   },
   coverageValue: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 15,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(16),
+    color: DayRibbonColors.cobalt,
   },
   yearGrid: {
     flexDirection: 'row',
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
     borderWidth: 1,
-    borderColor: EditorialColors.track,
-    paddingVertical: 6,
-    paddingHorizontal: EditorialSpacing.sm,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusButton,
+    paddingVertical: ms(8),
+    paddingHorizontal: ms(10),
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: EditorialSpacing.sm,
+    marginBottom: ms(12),
   },
   yearCell: {
     alignItems: 'center',
     flex: 1,
   },
   yearLbl: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 9,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(9.5),
+    color: DayRibbonColors.muted,
     letterSpacing: 0.5,
   },
   yearVal: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 12,
-    color: EditorialColors.ink,
-    marginTop: 2,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(12),
+    color: DayRibbonColors.ink,
+    marginTop: ms(2),
   },
   yearDivider: {
     width: 1,
-    height: 16,
-    backgroundColor: EditorialColors.track,
+    height: ms(18),
+    backgroundColor: DayRibbonColors.line,
   },
   cardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: EditorialColors.track,
-    paddingTop: EditorialSpacing.sm,
+    borderTopColor: DayRibbonColors.line,
+    paddingTop: ms(10),
   },
   hodInfoRow: {
     flexDirection: 'row',
@@ -566,32 +603,31 @@ const styles = StyleSheet.create({
     flex: 0.65,
   },
   hodLabel: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 9,
-    color: EditorialColors.muted,
-    letterSpacing: 0.5,
-    marginRight: 6,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(10),
+    color: DayRibbonColors.muted,
+    marginRight: ms(4),
   },
   hodNameText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 11,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(11),
+    color: DayRibbonColors.ink,
   },
   inspectBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    backgroundColor: EditorialColors.white,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.ink,
+    borderRadius: DayRibbonShapes.radiusButton,
+    paddingVertical: ms(6),
+    paddingHorizontal: ms(10),
+    backgroundColor: DayRibbonColors.surface,
   },
   inspectBtnText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 10,
-    color: EditorialColors.ink,
-    letterSpacing: 0.5,
-    marginRight: 4,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(11),
+    color: DayRibbonColors.ink,
+    marginRight: ms(4),
   },
 });
 

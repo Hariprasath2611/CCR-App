@@ -3,10 +3,7 @@ import { StyleSheet, View, ScrollView, Alert } from 'react-native';
 import { Text, ActivityIndicator } from 'react-native-paper';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { useReportStore, ConsolidatedReport } from '../store/useReportStore';
-import { EditorialColors, EditorialFonts, EditorialSpacing } from '@theme/editorial';
-import { Rule } from '@components/editorial/Rule';
-import { Label } from '@components/editorial/Label';
-import { StatRow } from '@components/editorial/StatRow';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { AppButton } from '@components/common/AppButton';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
@@ -57,11 +54,11 @@ export const ReportExportScreen = () => {
   if (!report) {
     return (
       <View style={styles.center}>
-        <Label text="ERROR" color={EditorialColors.accent} />
-        <Text style={styles.errorTitle}>REPORT NOT FOUND.</Text>
+        <Text style={styles.errorCaption}>ERROR</Text>
+        <Text style={styles.errorTitle}>Report Not Found</Text>
         <Text style={styles.errorSub}>The requested report could not be located in local memory.</Text>
         <View style={styles.buttonSpacing}>
-          <AppButton mode="contained" title="RETURN" onPress={() => navigation.goBack()} />
+          <AppButton mode="contained" title="Return" onPress={() => navigation.goBack()} />
         </View>
       </View>
     );
@@ -102,33 +99,42 @@ export const ReportExportScreen = () => {
   const isExporting = isExportingPDF || isExportingWord;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
       {/* ── HEADER ── */}
       <View style={styles.headerBox}>
-        <Label text="DOCUMENT GENERATION" />
-        <Text style={styles.headingText}>SYLLABUS REPORT EXPORT.</Text>
+        <Text style={styles.captionText}>DOCUMENT GENERATION</Text>
+        <Text style={styles.headingText}>Syllabus Report Export</Text>
         <Text style={styles.subHeadingText}>
-          CLASS: {classId.toUpperCase()} · ACADEMIC WEEK {weekNumber}
+          {classId} · Academic Week {weekNumber}
         </Text>
       </View>
-      <Rule thick style={styles.heroRule} />
 
       {/* ── METRIC SNAPSHOT ── */}
-      <View style={styles.statBox}>
-        <StatRow
-          columns={[
-            { label: 'OVERALL COVERAGE', value: `${overallCoverage}%` },
-            { label: 'COURSES AUDITED', value: `${subjects.length}` },
-            { label: 'STATUS', value: status },
-          ]}
-        />
+      <View style={styles.statRow}>
+        <View style={styles.statCard}>
+          <Text style={styles.statNum}>{overallCoverage}%</Text>
+          <Text style={styles.statLabel}>Coverage</Text>
+        </View>
+        <View style={styles.statCard}>
+          <Text style={styles.statNum}>{subjects.length}</Text>
+          <Text style={styles.statLabel}>Courses</Text>
+        </View>
+        <View style={styles.statCard}>
+          <Text style={[styles.statNum, styles.statusVal]} numberOfLines={1}>
+            {status === 'APPROVED_BY_HOD' ? 'Approved' : 'Pending'}
+          </Text>
+          <Text style={styles.statLabel}>Status</Text>
+        </View>
       </View>
 
       {/* ── EXPORT OPTIONS BLOCK ── */}
       <View style={styles.formBlock}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionNumber}>01</Text>
-          <Text style={styles.sectionTitle}>OFFICIAL DOSSIER GENERATION</Text>
+          <Text style={styles.sectionTitle}>Official Dossier Generation</Text>
         </View>
 
         <Text style={styles.desc}>
@@ -138,7 +144,7 @@ export const ReportExportScreen = () => {
         <View style={styles.buttonSpacing}>
           <AppButton
             mode="contained"
-            title={isExportingPDF ? 'GENERATING PDF...' : 'EXPORT PDF REPORT'}
+            title={isExportingPDF ? 'Generating PDF...' : 'Export PDF Report'}
             onPress={handleExportPDF}
             loading={isExportingPDF}
             disabled={isExporting}
@@ -148,7 +154,7 @@ export const ReportExportScreen = () => {
         <View style={styles.buttonSpacing}>
           <AppButton
             mode="outlined"
-            title={isExportingWord ? 'GENERATING WORD...' : 'EXPORT WORD REPORT (.DOCX)'}
+            title={isExportingWord ? 'Generating Word...' : 'Export Word Report (.docx)'}
             onPress={handleExportWord}
             loading={isExportingWord}
             disabled={isExporting}
@@ -157,7 +163,7 @@ export const ReportExportScreen = () => {
 
         {isExporting && (
           <View style={styles.loaderBox}>
-            <ActivityIndicator size="small" color={EditorialColors.ink} />
+            <ActivityIndicator size="small" color={DayRibbonColors.cobalt} />
           </View>
         )}
       </View>
@@ -168,68 +174,91 @@ export const ReportExportScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
-    paddingTop: EditorialSpacing.topSafeArea,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
+    paddingTop: DayRibbonSpacing.screenTop,
     paddingBottom: ms(48),
   },
   headerBox: {
-    marginBottom: ms(8),
+    marginBottom: ms(16),
+  },
+  captionText: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   headingText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: ms(24),
-    lineHeight: ms(28),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(26),
+    color: DayRibbonColors.ink,
     marginTop: ms(4),
   },
   subHeadingText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: ms(11),
-    color: EditorialColors.muted,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.muted,
     marginTop: ms(4),
   },
-  heroRule: {
+  statRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: ms(10),
     marginBottom: ms(20),
   },
-  statBox: {
-    marginBottom: ms(20),
+  statCard: {
+    flex: 1,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.radiusButton,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    paddingVertical: ms(12),
+    alignItems: 'center',
+  },
+  statNum: {
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(22),
+    color: DayRibbonColors.cobalt,
+    marginBottom: ms(2),
+  },
+  statusVal: {
+    fontSize: ms(16),
+    color: DayRibbonColors.ink,
+  },
+  statLabel: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   formBlock: {
-    backgroundColor: EditorialColors.white,
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.radiusCard,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     padding: ms(16),
     marginBottom: ms(24),
   },
   sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
     borderBottomWidth: 1,
-    borderBottomColor: EditorialColors.ink,
-    paddingBottom: ms(8),
+    borderBottomColor: DayRibbonColors.line,
+    paddingBottom: ms(10),
     marginBottom: ms(12),
   },
-  sectionNumber: {
-    fontFamily: EditorialFonts.display,
-    fontSize: ms(18),
-    color: EditorialColors.accent,
-    marginRight: ms(8),
-  },
   sectionTitle: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: ms(13),
-    letterSpacing: 1,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(15),
+    color: DayRibbonColors.ink,
   },
   desc: {
-    fontFamily: EditorialFonts.regular,
-    fontSize: ms(12),
-    lineHeight: ms(18),
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    lineHeight: ms(19),
+    color: DayRibbonColors.muted,
     marginBottom: ms(16),
   },
   buttonSpacing: {
@@ -244,22 +273,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: ms(24),
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
+  },
+  errorCaption: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(11),
+    color: DayRibbonColors.warn,
+    letterSpacing: 0.5,
   },
   errorTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: ms(20),
-    color: EditorialColors.ink,
-    marginTop: ms(8),
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(22),
+    color: DayRibbonColors.ink,
+    marginTop: ms(6),
   },
   errorSub: {
-    fontFamily: EditorialFonts.regular,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: ms(13),
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     marginTop: ms(4),
     textAlign: 'center',
   },
 });
 
 export default ReportExportScreen;
-

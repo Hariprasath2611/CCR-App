@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Text, ActivityIndicator } from 'react-native-paper';
-import { EditorialColors, EditorialFonts, EditorialSpacing } from '@theme/editorial';
-import { Rule } from '@components/editorial/Rule';
-import { Label } from '@components/editorial/Label';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { AppButton } from '@components/common/AppButton';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { generateReportHTML } from '@services/api/reportPdfTemplate';
@@ -162,23 +160,21 @@ export const ReportExportScreen = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* ── HEADER ── */}
         <View style={styles.headerBox}>
-          <Label text="EXECUTIVE DOSSIER" />
-          <Text style={styles.headingText}>CENTRAL EXPORT CENTER.</Text>
+          <Text style={styles.captionText}>EXECUTIVE DOSSIER</Text>
+          <Text style={styles.headingText}>Central Export Center</Text>
           <Text style={styles.subHeadingText}>
-            ANNA UNIVERSITY REGULATION-COMPLIANT DOSSIERS FOR EXECUTIVE INSPECTION
+            Anna University regulation-compliant dossiers for executive inspection
           </Text>
         </View>
-        <Rule thick style={styles.heroRule} />
 
         {/* ── CONFIGURATION BLOCK ── */}
         <View style={styles.configBlock}>
           {/* Department Scope Selector */}
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionNumber}>01</Text>
-            <Text style={styles.sectionTitle}>DEPARTMENTAL SCOPE</Text>
+            <Text style={styles.sectionTitle}>Departmental Scope</Text>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsRow}>
             {DEPARTMENTS.map((dept) => {
@@ -187,10 +183,11 @@ export const ReportExportScreen = () => {
                 <TouchableOpacity
                   key={dept.id}
                   onPress={() => setSelectedDept(dept.id)}
-                  style={[styles.squareChip, isActive && styles.squareChipActive]}
+                  style={[styles.chip, isActive && styles.chipActive]}
+                  activeOpacity={0.7}
                 >
                   <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
-                    {dept.name.toUpperCase()}
+                    {dept.name}
                   </Text>
                 </TouchableOpacity>
               );
@@ -198,9 +195,8 @@ export const ReportExportScreen = () => {
           </ScrollView>
 
           {/* Academic Week Selector */}
-          <View style={[styles.sectionHeader, { marginTop: ms(20) }]}>
-            <Text style={styles.sectionNumber}>02</Text>
-            <Text style={styles.sectionTitle}>ACADEMIC AUDIT WEEK</Text>
+          <View style={[styles.sectionHeader, { marginTop: ms(16) }]}>
+            <Text style={styles.sectionTitle}>Academic Audit Week</Text>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsRow}>
             {WEEKS.map((w) => {
@@ -209,10 +205,11 @@ export const ReportExportScreen = () => {
                 <TouchableOpacity
                   key={w.id}
                   onPress={() => setSelectedWeek(w.id)}
-                  style={[styles.squareChip, isActive && styles.squareChipActive]}
+                  style={[styles.chip, isActive && styles.chipActive]}
+                  activeOpacity={0.7}
                 >
                   <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
-                    {w.label.toUpperCase()}
+                    {w.label}
                   </Text>
                 </TouchableOpacity>
               );
@@ -220,9 +217,8 @@ export const ReportExportScreen = () => {
           </ScrollView>
 
           {/* Format Selector */}
-          <View style={[styles.sectionHeader, { marginTop: ms(20) }]}>
-            <Text style={styles.sectionNumber}>03</Text>
-            <Text style={styles.sectionTitle}>EXPORT DOSSIER FORMAT</Text>
+          <View style={[styles.sectionHeader, { marginTop: ms(16) }]}>
+            <Text style={styles.sectionTitle}>Export Dossier Format</Text>
           </View>
           <View style={styles.formatRow}>
             <TouchableOpacity
@@ -234,7 +230,7 @@ export const ReportExportScreen = () => {
                 PDF
               </Text>
               <Text style={[styles.formatSub, exportFormat === 'PDF' && styles.formatSubActive]}>
-                OFFICIAL SIGNED
+                Official Signed
               </Text>
             </TouchableOpacity>
 
@@ -247,7 +243,7 @@ export const ReportExportScreen = () => {
                 DOCX
               </Text>
               <Text style={[styles.formatSub, exportFormat === 'DOCX' && styles.formatSubActive]}>
-                EDITABLE TABLES
+                Editable Tables
               </Text>
             </TouchableOpacity>
 
@@ -260,7 +256,7 @@ export const ReportExportScreen = () => {
                 XLSX
               </Text>
               <Text style={[styles.formatSub, exportFormat === 'EXCEL' && styles.formatSubActive]}>
-                DATA AUDIT
+                Data Audit
               </Text>
             </TouchableOpacity>
           </View>
@@ -270,7 +266,7 @@ export const ReportExportScreen = () => {
         <View style={styles.buttonSpacing}>
           <AppButton
             mode="contained"
-            title={`GENERATE ${exportFormat} DOSSIER`}
+            title={`Generate ${exportFormat} Dossier`}
             onPress={handleExport}
             loading={isExporting}
             disabled={isExporting}
@@ -279,9 +275,8 @@ export const ReportExportScreen = () => {
 
         {/* ── RECENT AUDIT EXPORTS ── */}
         <View style={styles.recentSection}>
-          <Label text="ARCHIVAL LOG" />
-          <Text style={styles.recentHeading}>RECENT GENERATED DOSSIERS</Text>
-          <Rule thickness="hairline" style={{ marginBottom: ms(12) }} />
+          <Text style={styles.captionText}>ARCHIVAL LOG</Text>
+          <Text style={styles.recentHeading}>Recent Generated Dossiers</Text>
 
           {RECENT_EXPORTS.map((item) => (
             <View key={item.id} style={styles.recentRow}>
@@ -290,13 +285,14 @@ export const ReportExportScreen = () => {
                 <Text style={styles.recentMeta}>
                   {item.scope} · {item.size}
                 </Text>
-                <Text style={styles.recentDate}>GENERATED: {item.date}</Text>
+                <Text style={styles.recentDate}>Generated: {item.date}</Text>
               </View>
               <TouchableOpacity
                 style={styles.shareBtn}
                 onPress={() => Alert.alert('Share File', `Dispatching ${item.title}...`)}
+                accessibilityLabel={`Share ${item.title}`}
               >
-                <Text style={styles.shareBtnText}>SHARE</Text>
+                <Text style={styles.shareBtnText}>Share</Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -309,139 +305,141 @@ export const ReportExportScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   scroll: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
-    paddingTop: EditorialSpacing.topSafeArea,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
+    paddingTop: DayRibbonSpacing.screenTop,
     paddingBottom: ms(48),
   },
   headerBox: {
-    marginBottom: ms(8),
+    marginBottom: ms(16),
+  },
+  captionText: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   headingText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: ms(24),
-    lineHeight: ms(28),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(26),
+    color: DayRibbonColors.ink,
     marginTop: ms(4),
   },
   subHeadingText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: ms(11),
-    color: EditorialColors.muted,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.muted,
     marginTop: ms(4),
-  },
-  heroRule: {
-    marginBottom: ms(20),
+    lineHeight: ms(18),
   },
   configBlock: {
-    backgroundColor: EditorialColors.white,
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusCard,
     padding: ms(16),
-    marginBottom: ms(20),
+    marginBottom: ms(16),
   },
   sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
     borderBottomWidth: 1,
-    borderBottomColor: EditorialColors.ink,
-    paddingBottom: ms(6),
-    marginBottom: ms(12),
-  },
-  sectionNumber: {
-    fontFamily: EditorialFonts.display,
-    fontSize: ms(18),
-    color: EditorialColors.accent,
-    marginRight: ms(8),
+    borderBottomColor: DayRibbonColors.line,
+    paddingBottom: ms(8),
+    marginBottom: ms(10),
   },
   sectionTitle: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: ms(13),
-    letterSpacing: 1,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   chipsRow: {
     flexDirection: 'row',
     marginBottom: ms(4),
   },
-  squareChip: {
-    backgroundColor: EditorialColors.white,
-    borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: ms(12),
+  chip: {
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusChip,
+    paddingHorizontal: ms(14),
     paddingVertical: ms(8),
     marginRight: ms(8),
+    minHeight: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  squareChipActive: {
-    backgroundColor: EditorialColors.ink,
+  chipActive: {
+    backgroundColor: DayRibbonColors.ink,
+    borderColor: DayRibbonColors.ink,
   },
   chipText: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: ms(11),
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   chipTextActive: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.surface,
   },
   formatRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: ms(8),
     marginTop: ms(4),
   },
   formatCard: {
-    flex: 0.31,
+    flex: 1,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.white,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusButton,
+    backgroundColor: DayRibbonColors.surface,
     paddingVertical: ms(12),
     alignItems: 'center',
   },
   formatCardActive: {
-    backgroundColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.ink,
+    borderColor: DayRibbonColors.ink,
   },
   formatTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(14),
-    color: EditorialColors.ink,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(15),
+    color: DayRibbonColors.ink,
   },
   formatTitleActive: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.surface,
   },
   formatSub: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: ms(9),
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(9.5),
+    color: DayRibbonColors.muted,
     marginTop: ms(2),
     letterSpacing: 0.5,
   },
   formatSubActive: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.surface,
   },
   buttonSpacing: {
-    marginBottom: ms(28),
+    marginBottom: ms(24),
   },
   recentSection: {
-    marginTop: ms(8),
+    marginTop: ms(4),
   },
   recentHeading: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: ms(15),
-    letterSpacing: 0.5,
-    color: EditorialColors.ink,
-    marginBottom: ms(8),
-    marginTop: ms(2),
+    color: DayRibbonColors.ink,
+    marginBottom: ms(12),
+    marginTop: ms(4),
   },
   recentRow: {
-    backgroundColor: EditorialColors.white,
+    backgroundColor: DayRibbonColors.surface,
     borderWidth: 1,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusCard,
     padding: ms(14),
     marginBottom: ms(10),
     flexDirection: 'row',
@@ -453,37 +451,37 @@ const styles = StyleSheet.create({
     marginRight: ms(12),
   },
   recentTitle: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: ms(13),
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   recentMeta: {
-    fontFamily: EditorialFonts.regular,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: ms(11),
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     marginTop: ms(2),
   },
   recentDate: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: ms(10),
-    color: EditorialColors.ink,
+    color: DayRibbonColors.muted,
     marginTop: ms(4),
-    letterSpacing: 0.5,
   },
   shareBtn: {
-    borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: ms(10),
-    paddingVertical: ms(6),
-    backgroundColor: EditorialColors.bg,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.ink,
+    borderRadius: DayRibbonShapes.radiusButton,
+    paddingHorizontal: ms(14),
+    height: 38,
+    backgroundColor: DayRibbonColors.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   shareBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(10),
-    color: EditorialColors.ink,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(11),
+    color: DayRibbonColors.ink,
   },
 });
 
 export default ReportExportScreen;
-

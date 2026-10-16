@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, Text, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
-import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
-import { SegBar } from '@components/editorial/SegBar';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
+import { ProgressBar } from '@components/editorial/ProgressBar';
+import { ms } from '@theme/responsive';
 
 interface HistoryLogItem {
   id: string;
@@ -86,13 +85,13 @@ export const ReportHistoryScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.screenTop),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -100,58 +99,48 @@ export const ReportHistoryScreen = () => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Label text="AUDIT & LOG ARCHIVE" />
-          <Text style={styles.headerTitle}>
-            REPORT HISTORY<Text style={styles.accentDot}>.</Text>
-          </Text>
+          <Text style={styles.captionText}>AUDIT & LOG ARCHIVE</Text>
+          <Text style={styles.headerTitle}>Report History</Text>
           <Text style={styles.headerSubtitle}>
             Chronological audit of verified weekly syllabus coverage and classroom periods.
           </Text>
         </View>
 
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
-        {/* 3-Column Stat Row */}
+        {/* 3-Column Stat Row in Cards */}
         <View style={styles.statRow}>
-          <View style={styles.statCol}>
+          <View style={styles.statCard}>
             <Text style={styles.statNum}>{historyLogs.length}</Text>
-            <Label text="WEEKS" />
+            <Text style={styles.statLabel}>Weeks</Text>
           </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
+          <View style={styles.statCard}>
             <Text style={styles.statNum}>
               {historyLogs.reduce((acc, h) => acc + h.periodsHandled, 0)}
             </Text>
-            <Label text="PERIODS" />
+            <Text style={styles.statLabel}>Periods</Text>
           </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>80%</Text>
-            <Label text="LATEST" />
+          <View style={styles.statCard}>
+            <Text style={[styles.statNum, { color: DayRibbonColors.cobalt }]}>80%</Text>
+            <Text style={styles.statLabel}>Latest</Text>
           </View>
         </View>
-
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
 
         {/* Section Title */}
         <View style={styles.sectionHeaderRow}>
           <Text style={styles.sectionHeaderTitle}>CHRONOLOGICAL LOGS</Text>
-          <Label text={`${historyLogs.length} SUBMISSIONS`} />
+          <Text style={styles.sectionBadge}>{historyLogs.length} SUBMISSIONS</Text>
         </View>
 
-        {/* History Rows */}
+        {/* History Rows as Day Ribbon Cards */}
         <View style={styles.logList}>
           {historyLogs.map((log) => {
-            const isLagging = log.percent < 40;
+            const isLagging = log.percent < 75;
             return (
-              <View key={log.id} style={styles.logRow}>
+              <View key={log.id} style={styles.logCard}>
                 <View style={styles.rowTop}>
-                  {/* Left Week Date Column */}
+                  {/* Left Week Number Block */}
                   <View style={styles.weekDateCol}>
                     <Text style={styles.weekNum}>{log.weekNumber}</Text>
-                    <Label text="WEEK" />
+                    <Text style={styles.weekLabel}>WEEK</Text>
                   </View>
 
                   {/* Vertical Divider */}
@@ -161,16 +150,15 @@ export const ReportHistoryScreen = () => {
                   <View style={styles.infoCol}>
                     <View style={styles.codeRow}>
                       <Text style={styles.subjectCode}>{log.subjectCode}</Text>
-                      <Text style={styles.sectionMeta}>{log.classSection} • {log.unit}</Text>
+                      <Text style={styles.sectionMeta}>• {log.classSection} • {log.unit}</Text>
                     </View>
                     <Text style={styles.subjectName}>{log.subjectName}</Text>
                     <Text style={styles.topicsText} numberOfLines={2}>
                       {log.topicsCovered}
                     </Text>
-                    <Label
-                      text={`${log.dateRange} • ${log.periodsHandled}/${log.periodsPlanned} PERIODS`}
-                      style={styles.metaLabel}
-                    />
+                    <Text style={styles.metaLabel}>
+                      {log.dateRange} • {log.periodsHandled}/{log.periodsPlanned} periods
+                    </Text>
                   </View>
 
                   {/* Right Percentage */}
@@ -178,7 +166,7 @@ export const ReportHistoryScreen = () => {
                     <Text
                       style={[
                         styles.percentText,
-                        isLagging ? styles.accentPercentText : null,
+                        isLagging ? styles.warnPercentText : null,
                       ]}
                     >
                       {log.percent}%
@@ -186,12 +174,11 @@ export const ReportHistoryScreen = () => {
                   </View>
                 </View>
 
-                {/* 25-Segment Bar */}
-                <View style={styles.segBarWrapper}>
-                  <SegBar
-                    totalSegments={25}
-                    filledSegments={Math.round((log.percent / 100) * 25)}
-                    isLagging={isLagging}
+                {/* Progress Bar */}
+                <View style={styles.progressBarWrapper}>
+                  <ProgressBar
+                    percent={log.percent}
+                    isBehind={isLagging}
                   />
                 </View>
               </View>
@@ -206,160 +193,176 @@ export const ReportHistoryScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   header: {
-    marginBottom: 4,
+    marginBottom: ms(16),
+  },
+  captionText: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   headerTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 36,
-    lineHeight: 40,
-    color: EditorialColors.ink,
-    letterSpacing: -0.5,
-    marginTop: 4,
-    marginBottom: 4,
-  },
-  accentDot: {
-    color: EditorialColors.accent,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(28),
+    color: DayRibbonColors.ink,
+    marginTop: ms(4),
+    marginBottom: ms(4),
   },
   headerSubtitle: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 13,
-    color: EditorialColors.muted,
-    lineHeight: 18,
-  },
-  heavySpacer: {
-    marginVertical: 18,
-  },
-  hairlineSpacer: {
-    marginVertical: 16,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.muted,
+    lineHeight: ms(18),
   },
   statRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 6,
+    gap: ms(10),
+    marginBottom: ms(20),
   },
-  statCol: {
+  statCard: {
     flex: 1,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.radiusButton,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    paddingVertical: ms(12),
     alignItems: 'center',
   },
   statNum: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 34,
-    color: EditorialColors.ink,
-    marginBottom: 2,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(24),
+    color: DayRibbonColors.ink,
+    marginBottom: ms(2),
   },
-  statDivider: {
-    width: 1,
-    height: 38,
-    backgroundColor: EditorialColors.ink,
+  statLabel: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: ms(12),
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(12),
+    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
+  },
+  sectionBadge: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
   },
   logList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+    gap: ms(12),
   },
-  logRow: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 14,
+  logCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.radiusCard,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: ms(16),
   },
   rowTop: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 10,
+    marginBottom: ms(12),
   },
   weekDateCol: {
-    width: 52,
+    width: 46,
     alignItems: 'center',
     justifyContent: 'center',
   },
   weekNum: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 28,
-    lineHeight: 32,
-    color: EditorialColors.ink,
-    marginBottom: 2,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(26),
+    color: DayRibbonColors.cobalt,
+    lineHeight: ms(30),
+  },
+  weekLabel: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(9.5),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    marginTop: ms(2),
   },
   vertDivider: {
     width: 1,
-    height: 52,
-    backgroundColor: EditorialColors.ink,
-    marginHorizontal: 12,
+    height: 48,
+    backgroundColor: DayRibbonColors.line,
+    marginHorizontal: ms(12),
   },
   infoCol: {
     flex: 1,
-    marginRight: 10,
+    marginRight: ms(8),
   },
   codeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 2,
+    gap: ms(4),
+    marginBottom: ms(2),
   },
   subjectCode: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 12,
-    letterSpacing: 1,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(11),
+    color: DayRibbonColors.cobalt,
   },
   sectionMeta: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
   },
   subjectName: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 16,
-    lineHeight: 20,
-    color: EditorialColors.ink,
-    marginBottom: 4,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(15),
+    color: DayRibbonColors.ink,
+    marginBottom: ms(3),
   },
   topicsText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    lineHeight: 16,
-    color: EditorialColors.muted,
-    marginBottom: 4,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(12),
+    lineHeight: ms(16),
+    color: DayRibbonColors.muted,
+    marginBottom: ms(4),
   },
   metaLabel: {
-    letterSpacing: 1.5,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
   },
   rightValueBox: {
     alignItems: 'flex-end',
     justifyContent: 'center',
   },
   percentText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 28,
-    lineHeight: 32,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(24),
+    color: DayRibbonColors.cobalt,
   },
-  accentPercentText: {
-    color: EditorialColors.accent,
+  warnPercentText: {
+    color: DayRibbonColors.warn,
   },
-  segBarWrapper: {
-    marginTop: 2,
+  progressBarWrapper: {
+    marginTop: ms(4),
   },
 });
+
+export default ReportHistoryScreen;

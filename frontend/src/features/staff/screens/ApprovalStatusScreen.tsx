@@ -3,11 +3,10 @@ import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
-import { EditorialColors, EditorialFonts, EditorialSpacing } from '@theme/editorial';
-import { Rule } from '@components/editorial/Rule';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { Label } from '@components/editorial/Label';
+import { EditorialChip } from '@components/editorial/EditorialChip';
 import { EmptyState } from '@components/editorial/EmptyState';
-import { AppButton } from '@components/common/AppButton';
 import { ms } from '@theme/responsive';
 
 interface ApprovalItem {
@@ -93,30 +92,22 @@ export const ApprovalStatusScreen = () => {
       {/* ── HEADER ── */}
       <View style={styles.headerBox}>
         <Label text="DECISION AUDIT" />
-        <Text style={styles.headingText}>APPROVAL TRACKER.</Text>
+        <Text style={styles.headingText}>Approval Tracker</Text>
         <Text style={styles.subHeadingText}>
-          TRACK HOD & ADMINISTRATIVE DECISIONS ON TEACHING PLANS, LOGS & REQUISITIONS
+          Track HOD and administrative decisions on teaching plans, logs and requisitions.
         </Text>
       </View>
-      <Rule thick style={styles.heroRule} />
 
       {/* ── FILTER CHIPS ── */}
       <View style={styles.filtersRow}>
-        {(['ALL', 'APPROVED', 'PENDING', 'RETURNED'] as const).map((f) => {
-          const isSelected = filter === f;
-          return (
-            <TouchableOpacity
-              key={f}
-              onPress={() => setFilter(f)}
-              style={[styles.filterChip, isSelected && styles.filterChipActive]}
-              activeOpacity={0.8}
-            >
-              <Text style={[styles.filterText, isSelected && styles.filterTextActive]}>
-                {f}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+        {(['ALL', 'APPROVED', 'PENDING', 'RETURNED'] as const).map((f) => (
+          <EditorialChip
+            key={f}
+            label={f}
+            selected={filter === f}
+            onPress={() => setFilter(f)}
+          />
+        ))}
       </View>
 
       {/* ── APPROVALS LIST ── */}
@@ -129,13 +120,14 @@ export const ApprovalStatusScreen = () => {
         filtered.map((item) => {
           const isReturned = item.status === 'RETURNED';
           const isApproved = item.status === 'APPROVED';
+          const isPending = item.status === 'PENDING';
 
           return (
             <View key={item.id} style={styles.card}>
               <View style={styles.cardHeader}>
                 <View style={{ flex: 1 }}>
-                  <Label text={item.type.replace('_', ' ')} />
-                  <Text style={styles.itemTitle}>{item.title.toUpperCase()}</Text>
+                  <Text style={styles.typeText}>{item.type.replace('_', ' ')}</Text>
+                  <Text style={styles.itemTitle}>{item.title}</Text>
                   <Text style={styles.subjectText}>
                     {item.subjectCode} · {item.subjectName}
                   </Text>
@@ -149,6 +141,7 @@ export const ApprovalStatusScreen = () => {
                     styles.statusTag,
                     isReturned && styles.statusTagReturned,
                     isApproved && styles.statusTagApproved,
+                    isPending && styles.statusTagPending,
                   ]}
                 >
                   <Text
@@ -156,13 +149,14 @@ export const ApprovalStatusScreen = () => {
                       styles.statusTagText,
                       isReturned && styles.statusTagTextReturned,
                       isApproved && styles.statusTagTextApproved,
+                      isPending && styles.statusTagTextPending,
                     ]}
                   >
                     {item.status === 'RETURNED'
-                      ? 'REVISION NEEDED'
+                      ? 'Revision Needed'
                       : item.status === 'APPROVED'
-                      ? 'APPROVED'
-                      : 'PENDING HOD'}
+                      ? 'Approved'
+                      : 'Pending HOD'}
                   </Text>
                 </View>
               </View>
@@ -176,14 +170,14 @@ export const ApprovalStatusScreen = () => {
                 >
                   <Label
                     text="HOD FEEDBACK:"
-                    color={isReturned ? EditorialColors.accent : EditorialColors.ink}
+                    color={isReturned ? DayRibbonColors.warn : DayRibbonColors.ink}
                   />
                   <Text style={styles.remarksText}>"{item.hodRemarks}"</Text>
                 </View>
               )}
 
               <View style={styles.cardFooter}>
-                <Text style={styles.footerDate}>SUBMITTED: {item.submittedAt}</Text>
+                <Text style={styles.footerDate}>Submitted: {item.submittedAt}</Text>
                 {isReturned && (
                   <TouchableOpacity
                     style={styles.resubmitBtn}
@@ -195,7 +189,7 @@ export const ApprovalStatusScreen = () => {
                       })
                     }
                   >
-                    <Text style={styles.resubmitBtnText}>UPDATE & RESUBMIT</Text>
+                    <Text style={styles.resubmitBtnText}>Update & Resubmit</Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -210,62 +204,41 @@ export const ApprovalStatusScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
-    paddingTop: EditorialSpacing.topSafeArea,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
+    paddingTop: DayRibbonSpacing.topSafeArea,
     paddingBottom: ms(48),
   },
   headerBox: {
-    marginBottom: ms(8),
+    marginBottom: ms(16),
   },
   headingText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: ms(24),
-    lineHeight: ms(28),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(28),
+    lineHeight: ms(34),
+    color: DayRibbonColors.ink,
     marginTop: ms(4),
   },
   subHeadingText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: ms(11),
-    color: EditorialColors.muted,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.muted,
+    lineHeight: 18,
     marginTop: ms(4),
-  },
-  heroRule: {
-    marginBottom: ms(20),
   },
   filtersRow: {
     flexDirection: 'row',
+    gap: 8,
     marginBottom: ms(16),
   },
-  filterChip: {
-    paddingVertical: ms(6),
-    paddingHorizontal: ms(12),
-    backgroundColor: EditorialColors.white,
-    borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    marginRight: ms(8),
-  },
-  filterChipActive: {
-    backgroundColor: EditorialColors.ink,
-  },
-  filterText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: ms(11),
-    letterSpacing: 0.5,
-    color: EditorialColors.ink,
-  },
-  filterTextActive: {
-    color: EditorialColors.white,
-  },
   card: {
-    backgroundColor: EditorialColors.white,
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    padding: ms(14),
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: ms(16),
     marginBottom: ms(14),
   },
   cardHeader: {
@@ -273,66 +246,72 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
   },
+  typeText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(11),
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
+    marginBottom: 2,
+  },
   itemTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(14),
-    color: EditorialColors.ink,
-    marginTop: ms(2),
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(16),
+    color: DayRibbonColors.ink,
+    marginBottom: 2,
   },
   subjectText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: ms(12),
-    color: EditorialColors.ink,
-    marginTop: ms(2),
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(13),
+    color: DayRibbonColors.ink,
+    marginBottom: 2,
   },
   classText: {
-    fontFamily: EditorialFonts.regular,
-    fontSize: ms(11),
-    color: EditorialColors.muted,
-    marginTop: ms(2),
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(12),
+    color: DayRibbonColors.muted,
   },
   statusTag: {
+    borderRadius: DayRibbonShapes.chipRadius,
     paddingHorizontal: ms(8),
-    paddingVertical: ms(4),
-    borderWidth: 1,
-    borderColor: EditorialColors.muted,
-    backgroundColor: EditorialColors.bg,
+    paddingVertical: ms(3),
+  },
+  statusTagPending: {
+    backgroundColor: DayRibbonColors.lemon,
   },
   statusTagApproved: {
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.ink,
+    backgroundColor: 'rgba(43, 63, 224, 0.08)',
   },
   statusTagReturned: {
-    borderWidth: 1.5,
-    borderColor: EditorialColors.accent,
-    backgroundColor: EditorialColors.white,
+    backgroundColor: DayRibbonColors.warnBg,
   },
   statusTagText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(9.5),
-    letterSpacing: 0.5,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(10),
+  },
+  statusTagTextPending: {
+    color: DayRibbonColors.ink,
   },
   statusTagTextApproved: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.cobalt,
   },
   statusTagTextReturned: {
-    color: EditorialColors.accent,
+    color: DayRibbonColors.warn,
   },
   remarksBox: {
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
+    borderRadius: 12,
     padding: ms(10),
     marginTop: ms(10),
     borderLeftWidth: 3,
-    borderLeftColor: EditorialColors.ink,
+    borderLeftColor: DayRibbonColors.cobalt,
   },
   remarksBoxReturned: {
-    borderLeftColor: EditorialColors.accent,
+    borderLeftColor: DayRibbonColors.warn,
   },
   remarksText: {
-    fontFamily: EditorialFonts.regular,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: ms(12),
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
     marginTop: ms(2),
   },
   cardFooter: {
@@ -340,28 +319,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: ms(12),
-    paddingTop: ms(8),
+    paddingTop: ms(10),
     borderTopWidth: 1,
-    borderTopColor: EditorialColors.track,
+    borderTopColor: DayRibbonColors.line,
   },
   footerDate: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: ms(10),
-    color: EditorialColors.muted,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
   },
   resubmitBtn: {
-    backgroundColor: EditorialColors.accent,
-    paddingHorizontal: ms(10),
+    backgroundColor: DayRibbonColors.warn,
+    borderRadius: 12,
+    paddingHorizontal: ms(12),
     paddingVertical: ms(6),
   },
   resubmitBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(10),
-    letterSpacing: 0.5,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(11),
+    color: DayRibbonColors.surface,
   },
 });
 
 export default ApprovalStatusScreen;
-

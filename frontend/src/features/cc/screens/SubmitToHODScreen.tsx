@@ -10,10 +10,9 @@ import { AppButton } from '@components/common/AppButton';
 import { useReportStore } from '../store/useReportStore';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { CCStackParamList } from '@navigation/types';
-import { EditorialColors, EditorialFonts, EditorialSpacing } from '@theme/editorial';
-import { Rule } from '@components/editorial/Rule';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { Label } from '@components/editorial/Label';
-import { StatRow } from '@components/editorial/StatRow';
+import { StatTile } from '@components/editorial/StatTile';
 import { ms } from '@theme/responsive';
 
 type RouteParams = RouteProp<CCStackParamList, 'SubmitToHOD'>;
@@ -67,21 +66,28 @@ export const SubmitToHODScreen = () => {
       {/* ── HEADER ── */}
       <View style={styles.headerBox}>
         <Label text="COORDINATOR FORWARDING" />
-        <Text style={styles.headingText}>SUBMIT TO HOD.</Text>
+        <Text style={styles.headingText}>Submit to HOD</Text>
         <Text style={styles.subHeadingText}>
-          CONSOLIDATED SYLLABUS AUDIT READY FOR EXECUTIVE DEPARTMENTAL REVIEW
+          Consolidated syllabus audit ready for executive departmental review.
         </Text>
       </View>
-      <Rule thick style={styles.heroRule} />
 
       {/* ── METRIC SNAPSHOT ── */}
-      <View style={styles.statBox}>
-        <StatRow
-          columns={[
-            { label: 'CLASS', value: classId },
-            { label: 'ACADEMIC WEEK', value: `W${weekNumber}` },
-            { label: 'REVIEWER', value: 'HOD CSE' },
-          ]}
+      <View style={styles.statGrid}>
+        <StatTile
+          label="Class"
+          value={classId}
+          style={styles.statTileItem}
+        />
+        <StatTile
+          label="Week"
+          value={`W${weekNumber}`}
+          style={styles.statTileItem}
+        />
+        <StatTile
+          label="Reviewer"
+          value="HOD CSE"
+          style={styles.statTileItem}
         />
       </View>
 
@@ -129,75 +135,78 @@ export const SubmitToHODScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
-    paddingTop: EditorialSpacing.topSafeArea,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
+    paddingTop: DayRibbonSpacing.topSafeArea,
     paddingBottom: ms(48),
   },
   headerBox: {
-    marginBottom: ms(8),
+    marginBottom: ms(16),
   },
   headingText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: ms(24),
-    lineHeight: ms(28),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(28),
+    lineHeight: ms(34),
+    color: DayRibbonColors.ink,
     marginTop: ms(4),
   },
   subHeadingText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: ms(11),
-    color: EditorialColors.muted,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.muted,
+    lineHeight: 18,
     marginTop: ms(4),
   },
-  heroRule: {
-    marginBottom: ms(20),
+  statGrid: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: ms(16),
   },
-  statBox: {
-    marginBottom: ms(20),
+  statTileItem: {
+    flex: 1,
   },
   formBlock: {
-    backgroundColor: EditorialColors.white,
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     padding: ms(16),
-    marginBottom: ms(24),
+    marginBottom: ms(20),
   },
   sectionHeader: {
     flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: EditorialColors.ink,
-    paddingBottom: ms(8),
+    borderBottomColor: DayRibbonColors.line,
+    paddingBottom: ms(10),
     marginBottom: ms(12),
   },
   sectionNumber: {
-    fontFamily: EditorialFonts.display,
+    fontFamily: DayRibbonFonts.display,
     fontSize: ms(18),
-    color: EditorialColors.accent,
+    color: DayRibbonColors.cobalt,
     marginRight: ms(8),
   },
   sectionTitle: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: ms(13),
     letterSpacing: 1,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   instructionText: {
-    fontFamily: EditorialFonts.regular,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: ms(12),
     lineHeight: ms(18),
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     marginBottom: ms(16),
   },
   textInput: {
-    marginTop: ms(8),
+    marginTop: ms(4),
   },
   buttonContainer: {
     marginTop: ms(8),
+    marginBottom: ms(24),
   },
 });
-

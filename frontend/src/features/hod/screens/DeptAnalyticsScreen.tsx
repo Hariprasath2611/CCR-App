@@ -4,18 +4,14 @@ import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import {
-  EditorialColors,
-  EditorialFonts,
-  EditorialSpacing,
-} from '@theme/editorial';
-import {
-  EditorialHeader,
-  Rule,
-  Label,
-  BigNumber,
-  SegBar,
-  EditorialButton,
-} from '@components/editorial';
+  DayRibbonColors,
+  DayRibbonFonts,
+  DayRibbonShapes,
+  DayRibbonSpacing,
+} from '@theme/dayRibbon';
+import { ProgressBar } from '@components/editorial/ProgressBar';
+import { EditorialButton } from '@components/editorial/EditorialButton';
+import { ms } from '@theme/responsive';
 
 interface SectionStat {
   section: string;
@@ -61,29 +57,31 @@ export const DeptAnalyticsScreen = () => {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      <EditorialHeader
-        eyebrow={(user?.department || 'COMPUTER SCIENCE ENGINEERING').toUpperCase()}
-        title="SYLLABUS ANALYTICS"
-        subtitle="Department coverage & performance leaderboard"
-      />
+      {/* ── HEADER ── */}
+      <View style={styles.headerBox}>
+        <Text style={styles.captionText}>
+          {(user?.department || 'COMPUTER SCIENCE ENGINEERING').toUpperCase()}
+        </Text>
+        <Text style={styles.headingText}>Syllabus Analytics</Text>
+        <Text style={styles.subHeadingText}>
+          Department coverage & performance leaderboard
+        </Text>
+      </View>
 
       {/* ── OVERVIEW METRICS BLOCK ── */}
       <View style={styles.metricsBox}>
-        <Label text="COMPLETION BENCHMARK" variant="dark" />
-        <View style={{ marginTop: EditorialSpacing.sm, marginBottom: EditorialSpacing.xs }}>
-          <BigNumber value={avgCoverage} unit="%" label="AVERAGE SYLLABUS COVERAGE" />
+        <Text style={styles.boxLabel}>COMPLETION BENCHMARK</Text>
+        <View style={styles.bigNumRow}>
+          <Text style={styles.bigNumText}>{avgCoverage}%</Text>
+          <Text style={styles.bigNumDesc}>Average Syllabus Coverage</Text>
         </View>
 
-        <View style={{ marginVertical: EditorialSpacing.md }}>
-          <SegBar
-            value={avgCoverage}
-            max={100}
-            segments={10}
-            color={avgCoverage < 75 ? EditorialColors.accent : EditorialColors.ink}
+        <View style={styles.barWrapper}>
+          <ProgressBar
+            percent={avgCoverage}
+            isBehind={avgCoverage < 75}
           />
         </View>
-
-        <Rule thickness={1} color={EditorialColors.track} />
 
         <View style={styles.statsRow}>
           <View style={styles.statCell}>
@@ -93,17 +91,19 @@ export const DeptAnalyticsScreen = () => {
           <View style={styles.vDivider} />
           <View style={styles.statCell}>
             <Text style={styles.statLabel}>ON SCHEDULE</Text>
-            <Text style={styles.statValue}>{aheadCount + onTrackCount}</Text>
+            <Text style={[styles.statValue, { color: DayRibbonColors.cobalt }]}>
+              {aheadCount + onTrackCount}
+            </Text>
           </View>
           <View style={styles.vDivider} />
           <View style={styles.statCell}>
-            <Text style={[styles.statLabel, laggingCount > 0 && { color: EditorialColors.accent }]}>
+            <Text style={[styles.statLabel, laggingCount > 0 && { color: DayRibbonColors.warn }]}>
               LAGGING
             </Text>
             <Text
               style={[
                 styles.statValue,
-                laggingCount > 0 && { color: EditorialColors.accent },
+                laggingCount > 0 && { color: DayRibbonColors.warn },
               ]}
             >
               {laggingCount}
@@ -124,7 +124,7 @@ export const DeptAnalyticsScreen = () => {
               activeOpacity={0.7}
             >
               <Text style={[styles.filterText, isSelected && styles.filterTextActive]}>
-                {yr.toUpperCase()}
+                {yr}
               </Text>
             </TouchableOpacity>
           );
@@ -133,10 +133,9 @@ export const DeptAnalyticsScreen = () => {
 
       {/* ── SECTION LEADERBOARD ── */}
       <View style={styles.sectionHeaderRow}>
-        <Label text="PERFORMANCE LEADERBOARD" variant="dark" />
+        <Text style={styles.sectionTitle}>Performance Leaderboard</Text>
         <Text style={styles.countText}>{filtered.length} SECTIONS</Text>
       </View>
-      <Rule thickness={4} color={EditorialColors.ink} style={{ marginBottom: EditorialSpacing.md }} />
 
       {filtered
         .sort((a, b) => b.coverage - a.coverage)
@@ -145,20 +144,20 @@ export const DeptAnalyticsScreen = () => {
           return (
             <View
               key={`${item.year}_${item.section}`}
-              style={[styles.card, idx === 0 && styles.topCard]}
+              style={styles.card}
             >
               <View style={styles.cardHeader}>
                 <View style={styles.rankBox}>
                   <Text style={styles.rankText}>#{String(idx + 1).padStart(2, '0')}</Text>
                 </View>
-                <View style={{ flex: 1, marginLeft: EditorialSpacing.sm }}>
-                  <Text style={styles.sectionTitle}>
-                    {item.year.toUpperCase()} · {item.section}
+                <View style={styles.classInfo}>
+                  <Text style={styles.classTitle}>
+                    {item.year} · {item.section}
                   </Text>
                   <Text style={styles.ccText}>CC: {item.cc}</Text>
                 </View>
                 <View style={styles.coverageBox}>
-                  <Text style={[styles.coverageNum, isLagging && { color: EditorialColors.accent }]}>
+                  <Text style={[styles.coverageNum, isLagging && { color: DayRibbonColors.warn }]}>
                     {item.coverage}%
                   </Text>
                   <View
@@ -179,12 +178,10 @@ export const DeptAnalyticsScreen = () => {
                 </View>
               </View>
 
-              <View style={{ marginTop: EditorialSpacing.sm }}>
-                <SegBar
-                  value={item.coverage}
-                  max={100}
-                  segments={8}
-                  color={isLagging ? EditorialColors.accent : EditorialColors.ink}
+              <View style={styles.cardBarWrapper}>
+                <ProgressBar
+                  percent={item.coverage}
+                  isBehind={isLagging}
                 />
               </View>
             </View>
@@ -192,13 +189,13 @@ export const DeptAnalyticsScreen = () => {
         })}
 
       {/* ── AUDIT ACTION ── */}
-      <View style={{ marginTop: EditorialSpacing.xl }}>
+      <View style={styles.actionContainer}>
         <EditorialButton
-          title="OPEN HOD APPROVAL QUEUE"
-          variant="primary"
+          title="Open HOD Approval Queue"
+          variant="highlight"
           fullWidth
           onPress={() => navigation.navigate('ApprovalScreen')}
-          rightIcon={<Feather name="arrow-right" size={16} color={EditorialColors.white} />}
+          rightIcon={<Feather name="arrow-right" size={16} color={DayRibbonColors.ink} />}
         />
       </View>
     </ScrollView>
@@ -208,24 +205,75 @@ export const DeptAnalyticsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    padding: EditorialSpacing.lg,
-    paddingBottom: EditorialSpacing.xxxl,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
+    paddingTop: DayRibbonSpacing.screenTop,
+    paddingBottom: ms(48),
+  },
+  headerBox: {
+    marginBottom: ms(16),
+  },
+  captionText: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  headingText: {
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(26),
+    color: DayRibbonColors.ink,
+    marginTop: ms(4),
+  },
+  subHeadingText: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.muted,
+    marginTop: ms(4),
   },
   metricsBox: {
-    backgroundColor: EditorialColors.white,
-    borderWidth: 2,
-    borderColor: EditorialColors.ink,
-    borderRadius: 0,
-    padding: EditorialSpacing.lg,
-    marginBottom: EditorialSpacing.lg,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusCard,
+    padding: ms(16),
+    marginBottom: ms(16),
+  },
+  boxLabel: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  bigNumRow: {
+    marginTop: ms(8),
+    marginBottom: ms(10),
+  },
+  bigNumText: {
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(40),
+    color: DayRibbonColors.cobalt,
+    lineHeight: ms(46),
+  },
+  bigNumDesc: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(12),
+    color: DayRibbonColors.muted,
+    marginTop: ms(2),
+  },
+  barWrapper: {
+    marginVertical: ms(10),
   },
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop: EditorialSpacing.md,
+    paddingTop: ms(12),
+    borderTopWidth: 1,
+    borderTopColor: DayRibbonColors.line,
   },
   statCell: {
     flex: 1,
@@ -233,129 +281,146 @@ const styles = StyleSheet.create({
   },
   vDivider: {
     width: 1,
-    backgroundColor: EditorialColors.track,
+    backgroundColor: DayRibbonColors.line,
   },
   statLabel: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 9,
-    color: EditorialColors.muted,
-    letterSpacing: 0.8,
-    marginBottom: 4,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(10),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    marginBottom: ms(2),
   },
   statValue: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 18,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(18),
+    color: DayRibbonColors.ink,
   },
   filterRow: {
     flexDirection: 'row',
-    marginBottom: EditorialSpacing.xl,
+    marginBottom: ms(16),
+    gap: ms(8),
   },
   filterChip: {
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderWidth: 1,
-    borderColor: EditorialColors.track,
-    backgroundColor: EditorialColors.white,
-    marginRight: EditorialSpacing.sm,
+    paddingVertical: ms(8),
+    paddingHorizontal: ms(14),
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.radiusChip,
+    minHeight: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   filterChipActive: {
-    backgroundColor: EditorialColors.ink,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.ink,
+    borderColor: DayRibbonColors.ink,
   },
   filterText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 11,
-    color: EditorialColors.ink,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(12),
+    color: DayRibbonColors.ink,
   },
   filterTextActive: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.surface,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: ms(12),
+  },
+  sectionTitle: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(14),
+    color: DayRibbonColors.ink,
   },
   countText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 11,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
     letterSpacing: 0.5,
   },
   card: {
-    backgroundColor: EditorialColors.white,
+    backgroundColor: DayRibbonColors.surface,
     borderWidth: 1,
-    borderColor: EditorialColors.track,
-    borderRadius: 0,
-    padding: EditorialSpacing.md,
-    marginBottom: EditorialSpacing.md,
-  },
-  topCard: {
-    borderWidth: 2,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusCard,
+    padding: ms(16),
+    marginBottom: ms(12),
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   rankBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingVertical: 4,
-    paddingHorizontal: 6,
-    backgroundColor: EditorialColors.bg,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.bg,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   rankText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 11,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(11),
+    color: DayRibbonColors.ink,
   },
-  sectionTitle: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 13,
-    color: EditorialColors.ink,
-    letterSpacing: 0.2,
+  classInfo: {
+    flex: 1,
+    marginLeft: ms(10),
+  },
+  classTitle: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(14),
+    color: DayRibbonColors.ink,
   },
   ccText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 11,
-    color: EditorialColors.muted,
-    marginTop: 2,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    marginTop: ms(2),
   },
   coverageBox: {
     alignItems: 'flex-end',
   },
   coverageNum: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 16,
-    color: EditorialColors.ink,
-    marginBottom: 3,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(18),
+    color: DayRibbonColors.cobalt,
+    marginBottom: ms(2),
   },
   statusBadge: {
     borderWidth: 1,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    borderRadius: DayRibbonShapes.radiusChip,
+    paddingHorizontal: ms(8),
+    paddingVertical: ms(2),
   },
   statusBadgeNormal: {
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.white,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.bg,
   },
   statusBadgeLagging: {
-    borderColor: EditorialColors.accent,
-    backgroundColor: EditorialColors.white,
+    borderColor: DayRibbonColors.warn,
+    backgroundColor: DayRibbonColors.warnBg,
   },
   statusBadgeText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 9,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(9.5),
     letterSpacing: 0.5,
   },
   statusBadgeTextNormal: {
-    color: EditorialColors.ink,
+    color: DayRibbonColors.muted,
   },
   statusBadgeTextLagging: {
-    color: EditorialColors.accent,
+    color: DayRibbonColors.warn,
+  },
+  cardBarWrapper: {
+    marginTop: ms(10),
+  },
+  actionContainer: {
+    marginTop: ms(16),
   },
 });
 

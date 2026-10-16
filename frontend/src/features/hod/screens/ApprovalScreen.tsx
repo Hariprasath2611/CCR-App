@@ -4,12 +4,9 @@ import { Text, Portal, Dialog } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { useReportStore } from '@features/cc/store/useReportStore';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
-import { EditorialColors, EditorialFonts, EditorialSpacing } from '@theme/editorial';
-import { Rule } from '@components/editorial/Rule';
-import { Label } from '@components/editorial/Label';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { EmptyState } from '@components/editorial/EmptyState';
 import { AppTextInput } from '@components/common/AppTextInput';
-import { AppButton } from '@components/common/AppButton';
 import { ms } from '@theme/responsive';
 
 export const ApprovalScreen = () => {
@@ -100,13 +97,12 @@ export const ApprovalScreen = () => {
     >
       {/* ── HEADER ── */}
       <View style={styles.headerBox}>
-        <Label text="EXECUTIVE AUDIT" />
-        <Text style={styles.headingText}>HOD DECISION QUEUE.</Text>
+        <Text style={styles.captionText}>EXECUTIVE AUDIT</Text>
+        <Text style={styles.headingText}>HOD Decision Queue</Text>
         <Text style={styles.subHeadingText}>
-          AUDIT & APPROVE WEEKLY CLASS COVERAGE REPORTS AND EXTRA HOUR REQUISITIONS
+          Audit & approve weekly class coverage reports and extra hour requisitions
         </Text>
       </View>
-      <Rule thick style={styles.heroRule} />
 
       {/* ── TABS ── */}
       <View style={styles.tabRow}>
@@ -116,7 +112,7 @@ export const ApprovalScreen = () => {
           activeOpacity={0.8}
         >
           <Text style={[styles.tabText, activeTab === 'REPORTS' && styles.tabTextActive]}>
-            CLASS REPORTS ({pendingReports.length})
+            Class Reports ({pendingReports.length})
           </Text>
         </TouchableOpacity>
 
@@ -126,7 +122,7 @@ export const ApprovalScreen = () => {
           activeOpacity={0.8}
         >
           <Text style={[styles.tabText, activeTab === 'EXTRA_HOURS' && styles.tabTextActive]}>
-            EXTRA HOURS ({extraHoursList.filter((e) => e.status === 'PENDING').length})
+            Extra Hours ({extraHoursList.filter((e) => e.status === 'PENDING').length})
           </Text>
         </TouchableOpacity>
       </View>
@@ -135,34 +131,34 @@ export const ApprovalScreen = () => {
       {activeTab === 'REPORTS' ? (
         pendingReports.length === 0 ? (
           <EmptyState
-            title="QUEUE CLEAR"
+            title="Queue Clear"
             subtitle="No pending weekly reports waiting for HOD review. All submissions are processed."
           />
         ) : (
           pendingReports.map((report) => (
             <View key={report.id} style={styles.card}>
               <View style={styles.cardHeader}>
-                <View style={styles.squareTag}>
-                  <Text style={styles.squareTagText}>{report.classId}</Text>
+                <View style={styles.chipTag}>
+                  <Text style={styles.chipTagText}>{report.classId}</Text>
                 </View>
                 <View style={styles.weekTag}>
-                  <Text style={styles.weekTagText}>WEEK {report.weekNumber}</Text>
+                  <Text style={styles.weekTagText}>Week {report.weekNumber}</Text>
                 </View>
               </View>
 
-              <Text style={styles.cardTitle}>CONSOLIDATED SYLLABUS SUBMISSION</Text>
+              <Text style={styles.cardTitle}>Consolidated Syllabus Submission</Text>
               <Text style={styles.coordinatorText}>
-                SUBMITTED BY: {report.submittedBy.toUpperCase()}
+                Submitted by: {report.submittedBy}
               </Text>
 
               <View style={styles.metricRow}>
-                <Text style={styles.metricLabel}>AVERAGE CLASS COVERAGE:</Text>
+                <Text style={styles.metricLabel}>Average Class Coverage</Text>
                 <Text style={styles.metricVal}>{report.overallCoverage}%</Text>
               </View>
 
               {report.ccRemarks ? (
                 <View style={styles.remarksBox}>
-                  <Label text="CC REMARKS:" />
+                  <Text style={styles.remarksLabel}>CC Remarks</Text>
                   <Text style={styles.remarksText}>"{report.ccRemarks}"</Text>
                 </View>
               ) : null}
@@ -177,23 +173,21 @@ export const ApprovalScreen = () => {
                     })
                   }
                 >
-                  <Text style={styles.outlineActionText}>INSPECT</Text>
+                  <Text style={styles.outlineActionText}>Inspect</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[styles.outlineActionBtn, { borderColor: EditorialColors.accent }]}
+                  style={styles.returnActionBtn}
                   onPress={() => handleOpenReturn(report.id)}
                 >
-                  <Text style={[styles.outlineActionText, { color: EditorialColors.accent }]}>
-                    RETURN
-                  </Text>
+                  <Text style={styles.returnActionText}>Return</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   style={styles.fillActionBtn}
                   onPress={() => handleApproveReport(report.id)}
                 >
-                  <Text style={styles.fillActionText}>APPROVE</Text>
+                  <Text style={styles.fillActionText}>Approve</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -203,7 +197,7 @@ export const ApprovalScreen = () => {
         /* ── TAB 2: EXTRA HOURS ── */
         extraHoursList.filter((e) => e.status === 'PENDING').length === 0 ? (
           <EmptyState
-            title="NO EXTRA HOUR REQUISITIONS"
+            title="No Extra Hour Requisitions"
             subtitle="There are currently no pending compensatory teaching hour requests in your department."
           />
         ) : (
@@ -212,40 +206,38 @@ export const ApprovalScreen = () => {
             .map((item) => (
               <View key={item.id} style={styles.card}>
                 <View style={styles.cardHeader}>
-                  <Text style={styles.cardTitle}>{item.subject.toUpperCase()}</Text>
+                  <Text style={styles.cardTitle}>{item.subject}</Text>
                   <View style={styles.pendingTag}>
                     <Text style={styles.pendingTagText}>PENDING</Text>
                   </View>
                 </View>
 
                 <Text style={styles.facultySub}>
-                  FACULTY: {item.faculty.toUpperCase()} ({item.classId})
+                  Faculty: {item.faculty} ({item.classId})
                 </Text>
 
                 <Text style={styles.detailText}>
-                  SLOT: {item.date} · {item.period.toUpperCase()}
+                  Slot: {item.date} · {item.period}
                 </Text>
 
                 <View style={styles.reasonBox}>
-                  <Label text="JUSTIFICATION:" />
+                  <Text style={styles.remarksLabel}>Justification</Text>
                   <Text style={styles.reasonText}>{item.reason}</Text>
                 </View>
 
                 <View style={styles.actionsRow}>
                   <TouchableOpacity
-                    style={[styles.outlineActionBtn, { borderColor: EditorialColors.accent }]}
+                    style={styles.returnActionBtn}
                     onPress={() => handleRejectExtraHour(item.id)}
                   >
-                    <Text style={[styles.outlineActionText, { color: EditorialColors.accent }]}>
-                      DECLINE
-                    </Text>
+                    <Text style={styles.returnActionText}>Decline</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     style={styles.fillActionBtn}
                     onPress={() => handleApproveExtraHour(item.id)}
                   >
-                    <Text style={styles.fillActionText}>SANCTION SLOT</Text>
+                    <Text style={styles.fillActionText}>Sanction Slot</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -260,7 +252,7 @@ export const ApprovalScreen = () => {
           onDismiss={() => setReturnDialogVisible(false)}
           style={styles.dialog}
         >
-          <Dialog.Title style={styles.dialogTitle}>RETURN REPORT FOR REVISION</Dialog.Title>
+          <Dialog.Title style={styles.dialogTitle}>Return Report for Revision</Dialog.Title>
           <Dialog.Content>
             <Text style={styles.dialogSub}>
               Please describe what adjustments are required before this weekly report can be endorsed.
@@ -281,13 +273,13 @@ export const ApprovalScreen = () => {
               style={styles.dialogCancelBtn}
               onPress={() => setReturnDialogVisible(false)}
             >
-              <Text style={styles.dialogCancelText}>CANCEL</Text>
+              <Text style={styles.dialogCancelText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.dialogConfirmBtn}
               onPress={handleConfirmReturn}
             >
-              <Text style={styles.dialogConfirmText}>RETURN REPORT</Text>
+              <Text style={styles.dialogConfirmText}>Return Report</Text>
             </TouchableOpacity>
           </Dialog.Actions>
         </Dialog>
@@ -299,253 +291,293 @@ export const ApprovalScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
-    paddingTop: EditorialSpacing.topSafeArea,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
+    paddingTop: DayRibbonSpacing.screenTop,
     paddingBottom: ms(48),
   },
   headerBox: {
-    marginBottom: ms(8),
+    marginBottom: ms(16),
+  },
+  captionText: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   headingText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: ms(24),
-    lineHeight: ms(28),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(26),
+    color: DayRibbonColors.ink,
     marginTop: ms(4),
   },
   subHeadingText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: ms(11),
-    color: EditorialColors.muted,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.muted,
     marginTop: ms(4),
-  },
-  heroRule: {
-    marginBottom: ms(20),
+    lineHeight: ms(18),
   },
   tabRow: {
     flexDirection: 'row',
     marginBottom: ms(16),
+    gap: ms(8),
   },
   tabBtn: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: ms(12),
-    backgroundColor: EditorialColors.white,
+    paddingVertical: ms(10),
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.radiusChip,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    marginRight: ms(8),
+    borderColor: DayRibbonColors.line,
+    minHeight: 44,
   },
   tabBtnActive: {
-    backgroundColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.ink,
+    borderColor: DayRibbonColors.ink,
   },
   tabText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: ms(11),
-    letterSpacing: 0.5,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(12),
+    color: DayRibbonColors.muted,
   },
   tabTextActive: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.surface,
   },
   card: {
-    backgroundColor: EditorialColors.white,
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    padding: ms(14),
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.radiusCard,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: ms(16),
     marginBottom: ms(14),
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: ms(8),
+    marginBottom: ms(10),
   },
-  squareTag: {
+  chipTag: {
     borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: ms(8),
-    paddingVertical: ms(3),
-    backgroundColor: EditorialColors.bg,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusChip,
+    paddingHorizontal: ms(10),
+    paddingVertical: ms(4),
+    backgroundColor: DayRibbonColors.bg,
   },
-  squareTagText: {
-    fontFamily: EditorialFonts.heavy,
+  chipTagText: {
+    fontFamily: DayRibbonFonts.body700,
     fontSize: ms(11),
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   weekTag: {
     borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: ms(8),
-    paddingVertical: ms(3),
-    backgroundColor: EditorialColors.white,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusChip,
+    paddingHorizontal: ms(10),
+    paddingVertical: ms(4),
+    backgroundColor: DayRibbonColors.surface,
   },
   weekTagText: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: ms(11),
-    color: EditorialColors.ink,
+    color: DayRibbonColors.cobalt,
   },
   cardTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(14),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(15),
+    color: DayRibbonColors.ink,
   },
   coordinatorText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: ms(11),
-    color: EditorialColors.muted,
-    marginTop: ms(2),
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(12),
+    color: DayRibbonColors.muted,
+    marginTop: ms(3),
   },
   metricRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
+    borderRadius: DayRibbonShapes.radiusButton,
     borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    padding: ms(10),
-    marginTop: ms(10),
+    borderColor: DayRibbonColors.line,
+    paddingHorizontal: ms(14),
+    paddingVertical: ms(10),
+    marginTop: ms(12),
   },
   metricLabel: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(11),
-    color: EditorialColors.ink,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(12),
+    color: DayRibbonColors.ink,
   },
   metricVal: {
-    fontFamily: EditorialFonts.display,
-    fontSize: ms(16),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(18),
+    color: DayRibbonColors.cobalt,
   },
   remarksBox: {
-    backgroundColor: EditorialColors.bg,
-    padding: ms(10),
+    backgroundColor: DayRibbonColors.bg,
+    padding: ms(12),
     marginTop: ms(10),
-    borderLeftWidth: 3,
-    borderLeftColor: EditorialColors.ink,
+    borderRadius: DayRibbonShapes.radiusButton,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+  },
+  remarksLabel: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   remarksText: {
-    fontFamily: EditorialFonts.regular,
-    fontSize: ms(12),
-    color: EditorialColors.ink,
-    marginTop: ms(2),
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.ink,
+    marginTop: ms(4),
+    lineHeight: ms(18),
   },
   actionsRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    alignItems: 'center',
     marginTop: ms(14),
+    gap: ms(8),
   },
   outlineActionBtn: {
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: ms(12),
-    paddingVertical: ms(8),
-    marginRight: ms(8),
+    borderColor: DayRibbonColors.ink,
+    borderRadius: DayRibbonShapes.radiusButton,
+    paddingHorizontal: ms(14),
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   outlineActionText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(11),
-    letterSpacing: 0.5,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(12),
+    color: DayRibbonColors.ink,
+  },
+  returnActionBtn: {
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.warn,
+    borderRadius: DayRibbonShapes.radiusButton,
+    paddingHorizontal: ms(14),
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  returnActionText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(12),
+    color: DayRibbonColors.warn,
   },
   fillActionBtn: {
-    backgroundColor: EditorialColors.ink,
-    paddingHorizontal: ms(14),
-    paddingVertical: ms(8),
+    backgroundColor: DayRibbonColors.cobalt,
+    borderRadius: DayRibbonShapes.radiusButton,
+    paddingHorizontal: ms(16),
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   fillActionText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(11),
-    letterSpacing: 0.5,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(12),
+    color: DayRibbonColors.surface,
   },
   pendingTag: {
     borderWidth: 1,
-    borderColor: EditorialColors.muted,
-    paddingHorizontal: ms(6),
-    paddingVertical: ms(2),
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusChip,
+    backgroundColor: DayRibbonColors.bg,
+    paddingHorizontal: ms(8),
+    paddingVertical: ms(3),
   },
   pendingTagText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(9.5),
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(10),
+    color: DayRibbonColors.muted,
     letterSpacing: 0.5,
   },
   facultySub: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: ms(11),
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(12),
+    color: DayRibbonColors.muted,
     marginTop: ms(2),
   },
   detailText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: ms(11),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(12),
+    color: DayRibbonColors.ink,
     marginTop: ms(6),
   },
   reasonBox: {
-    backgroundColor: EditorialColors.bg,
-    padding: ms(10),
+    backgroundColor: DayRibbonColors.bg,
+    padding: ms(12),
     marginTop: ms(10),
-    borderLeftWidth: 3,
-    borderLeftColor: EditorialColors.ink,
+    borderRadius: DayRibbonShapes.radiusButton,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
   },
   reasonText: {
-    fontFamily: EditorialFonts.regular,
-    fontSize: ms(12),
-    color: EditorialColors.ink,
-    marginTop: ms(2),
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.ink,
+    marginTop: ms(4),
   },
   dialog: {
-    backgroundColor: EditorialColors.white,
-    borderRadius: 0,
-    borderWidth: 2,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.radiusCard,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
   },
   dialogTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(15),
-    letterSpacing: 0.5,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(17),
+    color: DayRibbonColors.ink,
   },
   dialogSub: {
-    fontFamily: EditorialFonts.regular,
-    fontSize: ms(12),
-    lineHeight: ms(16),
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    lineHeight: ms(18),
+    color: DayRibbonColors.muted,
   },
   dialogActions: {
     paddingHorizontal: ms(16),
     paddingBottom: ms(16),
+    gap: ms(8),
   },
   dialogCancelBtn: {
-    paddingHorizontal: ms(12),
-    paddingVertical: ms(8),
-    marginRight: ms(8),
+    paddingHorizontal: ms(14),
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   dialogCancelText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(11),
-    letterSpacing: 0.5,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(13),
+    color: DayRibbonColors.muted,
   },
   dialogConfirmBtn: {
-    backgroundColor: EditorialColors.accent,
-    paddingHorizontal: ms(14),
-    paddingVertical: ms(8),
+    backgroundColor: DayRibbonColors.warn,
+    borderRadius: DayRibbonShapes.radiusButton,
+    paddingHorizontal: ms(16),
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   dialogConfirmText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(11),
-    letterSpacing: 0.5,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(13),
+    color: DayRibbonColors.surface,
   },
 });
 
 export default ApprovalScreen;
-

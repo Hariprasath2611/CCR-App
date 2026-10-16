@@ -2,16 +2,13 @@ import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity, RefreshControl, TextInput as RNTextInput, Text } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import {
-  EditorialColors,
-  EditorialFonts,
-  EditorialSpacing,
-} from '@theme/editorial';
-import {
-  EditorialHeader,
-  Rule,
-  Label,
-  SegBar,
-} from '@components/editorial';
+  DayRibbonColors,
+  DayRibbonFonts,
+  DayRibbonShapes,
+  DayRibbonSpacing,
+} from '@theme/dayRibbon';
+import { ProgressBar } from '@components/editorial/ProgressBar';
+import { ms } from '@theme/responsive';
 
 interface FacultyMetric {
   id: string;
@@ -20,7 +17,7 @@ interface FacultyMetric {
   designation: string;
   assignedSubjects: { code: string; name: string; section: string; coverage: number }[];
   avgCoverage: number;
-  punctualityScore: number; // percentage
+  punctualityScore: number;
   onTimeSubmissions: number;
   totalSubmissions: number;
   extraHoursTaken: number;
@@ -164,11 +161,11 @@ export const FacultyAnalyticsScreen = () => {
   const getStatusLabel = (status: FacultyMetric['status']) => {
     switch (status) {
       case 'EXEMPLARY':
-        return 'EXEMPLARY';
+        return 'Exemplary';
       case 'ON_TRACK':
-        return 'ON SCHEDULE';
+        return 'On Schedule';
       case 'ATTENTION':
-        return 'PACE DELAY';
+        return 'Pace Delay';
     }
   };
 
@@ -177,52 +174,56 @@ export const FacultyAnalyticsScreen = () => {
       <ScrollView
         style={styles.scrollList}
         contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={EditorialColors.ink}
-            colors={[EditorialColors.ink]}
+            tintColor={DayRibbonColors.cobalt}
+            colors={[DayRibbonColors.cobalt]}
           />
         }
       >
-        <EditorialHeader
-          eyebrow="FACULTY PERFORMANCE"
-          title="FACULTY AUDIT"
-          subtitle="Punctuality, logging velocity & syllabus delivery"
-        />
+        {/* ── HEADER ── */}
+        <View style={styles.headerBox}>
+          <Text style={styles.captionText}>FACULTY PERFORMANCE</Text>
+          <Text style={styles.headingText}>Faculty Audit</Text>
+          <Text style={styles.subHeadingText}>
+            Punctuality, logging velocity & syllabus delivery
+          </Text>
+        </View>
 
         {/* ── KPI ROW ── */}
         <View style={styles.kpiBox}>
           <View style={styles.kpiCell}>
-            <Text style={styles.kpiLbl}>AUDITED</Text>
             <Text style={styles.kpiNum}>{FACULTY_DATA.length}</Text>
+            <Text style={styles.kpiLbl}>Audited</Text>
           </View>
           <View style={styles.kpiDivider} />
           <View style={styles.kpiCell}>
-            <Text style={styles.kpiLbl}>AVG PUNCTUALITY</Text>
-            <Text style={styles.kpiNum}>94.2%</Text>
+            <Text style={[styles.kpiNum, { color: DayRibbonColors.cobalt }]}>94.2%</Text>
+            <Text style={styles.kpiLbl}>Avg Punctuality</Text>
           </View>
           <View style={styles.kpiDivider} />
           <View style={styles.kpiCell}>
-            <Text style={styles.kpiLbl}>AVG COMPLETION</Text>
             <Text style={styles.kpiNum}>85%</Text>
+            <Text style={styles.kpiLbl}>Avg Completion</Text>
           </View>
         </View>
 
         {/* ── SEARCH BAR ── */}
         <View style={styles.searchBar}>
-          <Feather name="search" size={16} color={EditorialColors.ink} />
+          <Feather name="search" size={16} color={DayRibbonColors.muted} />
           <RNTextInput
             style={styles.searchInput}
             placeholder="Search faculty name, course or dept..."
-            placeholderTextColor={EditorialColors.muted}
+            placeholderTextColor={DayRibbonColors.mutedSoft}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
           {searchQuery ? (
-            <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Feather name="x" size={16} color={EditorialColors.ink} />
+            <TouchableOpacity onPress={() => setSearchQuery('')} accessibilityLabel="Clear search">
+              <Feather name="x" size={16} color={DayRibbonColors.muted} />
             </TouchableOpacity>
           ) : null}
         </View>
@@ -231,10 +232,10 @@ export const FacultyAnalyticsScreen = () => {
         <View style={styles.filterSection}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll}>
             {[
-              { id: 'ALL', label: `ALL (${FACULTY_DATA.length})` },
-              { id: 'EXEMPLARY', label: 'EXEMPLARY' },
-              { id: 'ON_TRACK', label: 'ON SCHEDULE' },
-              { id: 'ATTENTION', label: 'REQUIRES ATTENTION' },
+              { id: 'ALL', label: `All (${FACULTY_DATA.length})` },
+              { id: 'EXEMPLARY', label: 'Exemplary' },
+              { id: 'ON_TRACK', label: 'On Schedule' },
+              { id: 'ATTENTION', label: 'Requires Attention' },
             ].map((item) => {
               const isSelected = statusFilter === item.id;
               return (
@@ -255,10 +256,9 @@ export const FacultyAnalyticsScreen = () => {
 
         {/* ── SECTION HEADER ── */}
         <View style={styles.sectionHeaderRow}>
-          <Label text="FACULTY DOSSIERS" variant="dark" />
+          <Text style={styles.sectionHeading}>Faculty Dossiers</Text>
           <Text style={styles.sectionCountText}>{filteredFaculty.length} INSTRUCTORS</Text>
         </View>
-        <Rule thickness={4} color={EditorialColors.ink} style={{ marginBottom: EditorialSpacing.md }} />
 
         {/* ── FACULTY CARDS ── */}
         {filteredFaculty.map((fac) => {
@@ -275,13 +275,13 @@ export const FacultyAnalyticsScreen = () => {
               {/* Header: Avatar, Name, Designation & Status */}
               <View style={styles.cardHeader}>
                 <View style={styles.profileRow}>
-                  <View style={styles.avatarSquare}>
+                  <View style={styles.avatarCircle}>
                     <Text style={styles.avatarText}>{initials}</Text>
                   </View>
                   <View style={styles.profileText}>
                     <Text style={styles.facultyName}>{fac.name}</Text>
                     <Text style={styles.designationText}>
-                      {fac.designation.toUpperCase()} · {fac.department.toUpperCase()}
+                      {fac.designation} · {fac.department}
                     </Text>
                   </View>
                 </View>
@@ -304,17 +304,15 @@ export const FacultyAnalyticsScreen = () => {
 
               {/* Performance Progress */}
               <View style={styles.coverageRow}>
-                <Text style={styles.coverageLabel}>AVERAGE SYLLABUS PACE</Text>
-                <Text style={[styles.coveragePercent, isAttention && { color: EditorialColors.accent }]}>
+                <Text style={styles.coverageLabel}>Average Syllabus Pace</Text>
+                <Text style={[styles.coveragePercent, isAttention && { color: DayRibbonColors.warn }]}>
                   {fac.avgCoverage}%
                 </Text>
               </View>
-              <View style={{ marginBottom: EditorialSpacing.md }}>
-                <SegBar
-                  value={fac.avgCoverage}
-                  max={100}
-                  segments={8}
-                  color={isAttention ? EditorialColors.accent : EditorialColors.ink}
+              <View style={{ marginBottom: ms(12) }}>
+                <ProgressBar
+                  percent={fac.avgCoverage}
+                  isBehind={isAttention}
                 />
               </View>
 
@@ -322,25 +320,25 @@ export const FacultyAnalyticsScreen = () => {
               <View style={styles.metricsGrid}>
                 <View style={styles.metricItem}>
                   <Text style={styles.metricItemVal}>{fac.punctualityScore}%</Text>
-                  <Text style={styles.metricItemLbl}>PUNCTUALITY</Text>
+                  <Text style={styles.metricItemLbl}>Punctuality</Text>
                 </View>
                 <View style={styles.metricDivider} />
                 <View style={styles.metricItem}>
                   <Text style={styles.metricItemVal}>
                     {fac.onTimeSubmissions}/{fac.totalSubmissions}
                   </Text>
-                  <Text style={styles.metricItemLbl}>ON-TIME LOGS</Text>
+                  <Text style={styles.metricItemLbl}>On-Time Logs</Text>
                 </View>
                 <View style={styles.metricDivider} />
                 <View style={styles.metricItem}>
-                  <Text style={styles.metricItemVal}>{fac.extraHoursTaken} HRS</Text>
-                  <Text style={styles.metricItemLbl}>EXTRA SLOTS</Text>
+                  <Text style={styles.metricItemVal}>{fac.extraHoursTaken} hrs</Text>
+                  <Text style={styles.metricItemLbl}>Extra Slots</Text>
                 </View>
               </View>
 
               {/* Handled Subjects */}
               <View style={styles.subjectsContainer}>
-                <Text style={styles.subjectsTitle}>ASSIGNED SUBJECTS & PACE</Text>
+                <Text style={styles.subjectsTitle}>Assigned Subjects & Pace</Text>
                 {fac.assignedSubjects.map((subj, idx) => (
                   <View key={idx} style={styles.subjectRow}>
                     <View style={styles.subjCodeBadge}>
@@ -352,7 +350,7 @@ export const FacultyAnalyticsScreen = () => {
                       </Text>
                       <Text style={styles.subjSection}>{subj.section}</Text>
                     </View>
-                    <Text style={[styles.subjCoverageText, subj.coverage < 75 && { color: EditorialColors.accent }]}>
+                    <Text style={[styles.subjCoverageText, subj.coverage < 75 && { color: DayRibbonColors.warn }]}>
                       {subj.coverage}%
                     </Text>
                   </View>
@@ -369,24 +367,47 @@ export const FacultyAnalyticsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   scrollList: {
     flex: 1,
   },
   scrollContent: {
-    padding: EditorialSpacing.lg,
-    paddingBottom: EditorialSpacing.xxxl,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
+    paddingTop: DayRibbonSpacing.screenTop,
+    paddingBottom: ms(48),
+  },
+  headerBox: {
+    marginBottom: ms(16),
+  },
+  captionText: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  headingText: {
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(26),
+    color: DayRibbonColors.ink,
+    marginTop: ms(4),
+  },
+  subHeadingText: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.muted,
+    marginTop: ms(4),
   },
   kpiBox: {
     flexDirection: 'row',
-    backgroundColor: EditorialColors.white,
-    borderWidth: 2,
-    borderColor: EditorialColors.ink,
-    borderRadius: 0,
-    paddingVertical: EditorialSpacing.md,
-    paddingHorizontal: EditorialSpacing.md,
-    marginBottom: EditorialSpacing.lg,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusCard,
+    paddingVertical: ms(12),
+    paddingHorizontal: ms(14),
+    marginBottom: ms(16),
   },
   kpiCell: {
     flex: 1,
@@ -394,245 +415,256 @@ const styles = StyleSheet.create({
   },
   kpiDivider: {
     width: 1,
-    backgroundColor: EditorialColors.track,
+    backgroundColor: DayRibbonColors.line,
   },
   kpiLbl: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 9,
-    color: EditorialColors.muted,
-    letterSpacing: 0.8,
-    marginBottom: 4,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(10),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    marginTop: ms(2),
   },
   kpiNum: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 18,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(20),
+    color: DayRibbonColors.ink,
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: EditorialColors.white,
-    borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: EditorialSpacing.md,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusButton,
+    paddingHorizontal: ms(14),
     height: 48,
-    marginBottom: EditorialSpacing.md,
+    marginBottom: ms(14),
   },
   searchInput: {
     flex: 1,
-    marginLeft: EditorialSpacing.sm,
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 13,
-    color: EditorialColors.ink,
+    marginLeft: ms(8),
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(13),
+    color: DayRibbonColors.ink,
   },
   filterSection: {
-    marginBottom: EditorialSpacing.xl,
+    marginBottom: ms(16),
   },
   chipsScroll: {
     flexDirection: 'row',
   },
   filterChip: {
-    paddingVertical: 7,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: EditorialColors.track,
-    backgroundColor: EditorialColors.white,
-    marginRight: EditorialSpacing.sm,
+    paddingVertical: ms(8),
+    paddingHorizontal: ms(14),
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.radiusChip,
+    marginRight: ms(8),
+    minHeight: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   filterChipActive: {
-    backgroundColor: EditorialColors.ink,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.ink,
+    borderColor: DayRibbonColors.ink,
   },
   filterChipText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 10,
-    color: EditorialColors.ink,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(11),
+    color: DayRibbonColors.ink,
   },
   filterChipTextActive: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.surface,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: ms(12),
+  },
+  sectionHeading: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(14),
+    color: DayRibbonColors.ink,
   },
   sectionCountText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 11,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
     letterSpacing: 0.5,
   },
   card: {
-    backgroundColor: EditorialColors.white,
+    backgroundColor: DayRibbonColors.surface,
     borderWidth: 1,
-    borderColor: EditorialColors.track,
-    borderRadius: 0,
-    padding: EditorialSpacing.md,
-    marginBottom: EditorialSpacing.md,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusCard,
+    padding: ms(16),
+    marginBottom: ms(12),
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: EditorialSpacing.sm,
+    marginBottom: ms(10),
   },
   profileRow: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 0.72,
   },
-  avatarSquare: {
+  avatarCircle: {
     width: 40,
     height: 40,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.bg,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.bg,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: EditorialSpacing.sm,
+    marginRight: ms(10),
   },
   avatarText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 14,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(13),
+    color: DayRibbonColors.cobalt,
   },
   profileText: {
     flex: 1,
   },
   facultyName: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 14,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(14),
+    color: DayRibbonColors.ink,
   },
   designationText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 10,
-    color: EditorialColors.muted,
-    marginTop: 2,
-    letterSpacing: 0.4,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    marginTop: ms(1),
   },
   statusBadge: {
     borderWidth: 1,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
+    borderRadius: DayRibbonShapes.radiusChip,
+    paddingHorizontal: ms(8),
+    paddingVertical: ms(3),
   },
   statusBadgeNormal: {
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.white,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.bg,
   },
   statusBadgeAttention: {
-    borderColor: EditorialColors.accent,
-    backgroundColor: EditorialColors.white,
+    borderColor: DayRibbonColors.warn,
+    backgroundColor: DayRibbonColors.warnBg,
   },
   statusBadgeText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 9,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(9.5),
     letterSpacing: 0.5,
   },
   statusBadgeTextNormal: {
-    color: EditorialColors.ink,
+    color: DayRibbonColors.muted,
   },
   statusBadgeTextAttention: {
-    color: EditorialColors.accent,
+    color: DayRibbonColors.warn,
   },
   coverageRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: ms(4),
   },
   coverageLabel: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 10,
-    color: EditorialColors.muted,
-    letterSpacing: 0.6,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
   },
   coveragePercent: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 14,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(16),
+    color: DayRibbonColors.cobalt,
   },
   metricsGrid: {
     flexDirection: 'row',
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
     borderWidth: 1,
-    borderColor: EditorialColors.track,
-    paddingVertical: 6,
-    paddingHorizontal: EditorialSpacing.sm,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusButton,
+    paddingVertical: ms(8),
+    paddingHorizontal: ms(10),
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: EditorialSpacing.md,
+    marginBottom: ms(12),
   },
   metricItem: {
     alignItems: 'center',
     flex: 1,
   },
   metricItemVal: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 12,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(13),
+    color: DayRibbonColors.ink,
   },
   metricItemLbl: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 8,
-    color: EditorialColors.muted,
-    letterSpacing: 0.5,
-    marginTop: 2,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(9),
+    color: DayRibbonColors.muted,
+    marginTop: ms(2),
   },
   metricDivider: {
     width: 1,
-    height: 18,
-    backgroundColor: EditorialColors.track,
+    height: ms(18),
+    backgroundColor: DayRibbonColors.line,
   },
   subjectsContainer: {
     borderTopWidth: 1,
-    borderTopColor: EditorialColors.track,
-    paddingTop: EditorialSpacing.sm,
+    borderTopColor: DayRibbonColors.line,
+    paddingTop: ms(10),
   },
   subjectsTitle: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 9,
-    color: EditorialColors.muted,
-    letterSpacing: 0.8,
-    marginBottom: EditorialSpacing.xs,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(10),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    marginBottom: ms(6),
   },
   subjectRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 4,
+    paddingVertical: ms(4),
   },
   subjCodeBadge: {
     borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: 4,
-    paddingVertical: 1,
-    backgroundColor: EditorialColors.white,
-    marginRight: 6,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusChip,
+    paddingHorizontal: ms(6),
+    paddingVertical: ms(2),
+    backgroundColor: DayRibbonColors.bg,
+    marginRight: ms(8),
   },
   subjCodeText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 9,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(10),
+    color: DayRibbonColors.cobalt,
   },
   subjInfo: {
     flex: 1,
   },
   subjName: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 11,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(12),
+    color: DayRibbonColors.ink,
   },
   subjSection: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 9,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(10),
+    color: DayRibbonColors.muted,
   },
   subjCoverageText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(13),
+    color: DayRibbonColors.cobalt,
   },
 });
 

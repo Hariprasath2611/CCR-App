@@ -5,9 +5,7 @@ import { useRoute, useNavigation, RouteProp, useIsFocused } from '@react-navigat
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useReportStore, ConsolidatedReport } from '../store/useReportStore';
 import { CCStackParamList } from '@navigation/types';
-import { EditorialColors, EditorialFonts, EditorialSpacing } from '@theme/editorial';
-import { Rule } from '@components/editorial/Rule';
-import { Label } from '@components/editorial/Label';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { AppButton } from '@components/common/AppButton';
 import { WeeklyCourseCoverageReportCard } from '../components/WeeklyCourseCoverageReportCard';
 import { ms } from '@theme/responsive';
@@ -53,16 +51,19 @@ export const ConsolidatedReportScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
       {/* ── HEADER ── */}
       <View style={styles.headerBox}>
-        <Label text="CONSOLIDATED REVIEW" />
-        <Text style={styles.headingText}>CLASS COVERAGE AUDIT.</Text>
+        <Text style={styles.captionText}>CONSOLIDATED REVIEW</Text>
+        <Text style={styles.headingText}>Class Coverage Audit</Text>
         <Text style={styles.subHeadingText}>
-          CLASS: {classId.toUpperCase()} · ACADEMIC WEEK {weekNumber}
+          {classId} · Academic Week {weekNumber}
         </Text>
       </View>
-      <Rule thick style={styles.heroRule} />
 
       {/* ── REPORT CARD PREVIEW ── */}
       <WeeklyCourseCoverageReportCard report={draftReport} showDownloadButton={false} />
@@ -71,7 +72,7 @@ export const ConsolidatedReportScreen = () => {
       <View style={styles.buttonContainer}>
         <AppButton
           mode="contained"
-          title="PROCEED TO SUBMIT TO HOD"
+          title="Proceed to Submit to HOD"
           onPress={() => navigation.navigate('SubmitToHOD', { reportId: `${classId}_W${weekNumber}` })}
           disabled={totalSubjects === 0}
         />
@@ -83,35 +84,38 @@ export const ConsolidatedReportScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
-    paddingTop: EditorialSpacing.topSafeArea,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
+    paddingTop: DayRibbonSpacing.screenTop,
     paddingBottom: ms(48),
   },
   headerBox: {
-    marginBottom: ms(8),
+    marginBottom: ms(16),
+  },
+  captionText: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   headingText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: ms(24),
-    lineHeight: ms(28),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(26),
+    color: DayRibbonColors.ink,
     marginTop: ms(4),
   },
   subHeadingText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: ms(11),
-    color: EditorialColors.muted,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.muted,
     marginTop: ms(4),
   },
-  heroRule: {
-    marginBottom: ms(20),
-  },
   buttonContainer: {
-    marginTop: ms(24),
+    marginTop: ms(20),
   },
 });
 
+export default ConsolidatedReportScreen;

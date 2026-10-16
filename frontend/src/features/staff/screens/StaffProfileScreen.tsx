@@ -5,17 +5,16 @@ import { useAuthStore } from '../../auth/store/useAuthStore';
 import { Feather } from '@expo/vector-icons';
 import { apiClient } from '@services/api/apiClient';
 import {
-  EditorialColors,
-  EditorialFonts,
-  EditorialSpacing,
-} from '@theme/editorial';
+  DayRibbonColors,
+  DayRibbonFonts,
+  DayRibbonShapes,
+  DayRibbonSpacing,
+} from '@theme/dayRibbon';
 import {
-  EditorialHeader,
-  Rule,
-  Label,
   EditorialButton,
   EditorialTextField,
 } from '@components/editorial';
+import { ms } from '@theme/responsive';
 
 export const StaffProfileScreen = () => {
   const { user, logout } = useAuthStore();
@@ -91,36 +90,42 @@ export const StaffProfileScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <EditorialHeader
-        eyebrow="PERSONNEL DOSSIER"
-        title="FACULTY PROFILE"
-        subtitle="Institutional credentials & access privileges"
-      />
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* ── HEADER ── */}
+      <View style={styles.headerBox}>
+        <Text style={styles.captionText}>PERSONNEL DOSSIER</Text>
+        <Text style={styles.headingText}>Faculty Profile</Text>
+        <Text style={styles.subHeadingText}>
+          Institutional credentials & access privileges
+        </Text>
+      </View>
 
       {/* ── PROFILE IDENTIFICATION CARD ── */}
       <View style={styles.profileBox}>
         <View style={styles.avatarRow}>
-          <View style={styles.avatarSquare}>
+          <View style={styles.avatarCircle}>
             <Text style={styles.avatarInitials}>{getInitials(user?.name)}</Text>
           </View>
           <View style={styles.avatarInfo}>
             <Text style={styles.facultyName}>{user?.name || 'Faculty Member'}</Text>
             <View style={styles.badgeWrapper}>
               <View style={styles.designationBadge}>
-                <Text style={styles.designationBadgeText}>{getDesignation().toUpperCase()}</Text>
+                <Text style={styles.designationBadgeText}>{getDesignation()}</Text>
               </View>
             </View>
-            <Text style={styles.collegeText}>JAYA ENGINEERING COLLEGE</Text>
+            <Text style={styles.collegeText}>Jaya Engineering College</Text>
           </View>
         </View>
       </View>
 
       {/* ── SECTION 1: INSTITUTIONAL RECORD ── */}
       <View style={styles.sectionHeader}>
-        <Label text="INSTITUTIONAL RECORD" variant="dark" />
+        <Text style={styles.sectionTitle}>Institutional Record</Text>
       </View>
-      <Rule thickness={4} color={EditorialColors.ink} style={{ marginBottom: EditorialSpacing.md }} />
 
       <View style={styles.detailCard}>
         <View style={styles.detailRow}>
@@ -130,7 +135,7 @@ export const StaffProfileScreen = () => {
           </View>
         </View>
 
-        <Rule thickness={1} color={EditorialColors.track} />
+        <View style={styles.divider} />
 
         <View style={styles.detailRow}>
           <View style={styles.detailLeft}>
@@ -139,7 +144,7 @@ export const StaffProfileScreen = () => {
           </View>
         </View>
 
-        <Rule thickness={1} color={EditorialColors.track} />
+        <View style={styles.divider} />
 
         <View style={styles.detailRow}>
           <View style={styles.detailLeft}>
@@ -150,7 +155,7 @@ export const StaffProfileScreen = () => {
 
         {user?.isClassCoordinator && (
           <>
-            <Rule thickness={1} color={EditorialColors.track} />
+            <View style={styles.divider} />
             <View style={styles.detailRow}>
               <View style={styles.detailLeft}>
                 <Text style={styles.detailLabel}>CLASS COORDINATION</Text>
@@ -162,10 +167,9 @@ export const StaffProfileScreen = () => {
       </View>
 
       {/* ── SECTION 2: SECURITY & CREDENTIALS ── */}
-      <View style={[styles.sectionHeader, { marginTop: EditorialSpacing.xl }]}>
-        <Label text="SECURITY & CREDENTIALS" variant="dark" />
+      <View style={[styles.sectionHeader, { marginTop: ms(20) }]}>
+        <Text style={styles.sectionTitle}>Security & Credentials</Text>
       </View>
-      <Rule thickness={4} color={EditorialColors.ink} style={{ marginBottom: EditorialSpacing.md }} />
 
       <View style={styles.detailCard}>
         <View style={styles.detailRow}>
@@ -175,7 +179,7 @@ export const StaffProfileScreen = () => {
           </View>
         </View>
 
-        <Rule thickness={1} color={EditorialColors.track} />
+        <View style={styles.divider} />
 
         <View style={styles.detailRow}>
           <View style={styles.detailLeft}>
@@ -184,16 +188,16 @@ export const StaffProfileScreen = () => {
           </View>
         </View>
 
-        <Rule thickness={1} color={EditorialColors.track} />
+        <View style={styles.divider} />
 
         <View style={styles.detailRow}>
           <View style={styles.detailLeft}>
             <Text style={styles.detailLabel}>SESSION STATUS</Text>
-            <Text style={styles.detailValue}>ACTIVE (DEVICE VERIFIED)</Text>
+            <Text style={styles.detailValue}>Active (Device Verified)</Text>
           </View>
         </View>
 
-        <Rule thickness={1} color={EditorialColors.track} />
+        <View style={styles.divider} />
 
         <TouchableOpacity
           style={styles.detailRowClickable}
@@ -204,18 +208,18 @@ export const StaffProfileScreen = () => {
             <Text style={styles.detailLabel}>PASSWORD ACCESS</Text>
             <Text style={styles.detailValue}>Update Account Password</Text>
           </View>
-          <Feather name="arrow-right" size={18} color={EditorialColors.ink} />
+          <Feather name="arrow-right" size={18} color={DayRibbonColors.ink} />
         </TouchableOpacity>
       </View>
 
       {/* ── SIGN OUT ACTION ── */}
-      <View style={{ marginTop: EditorialSpacing.xl }}>
+      <View style={styles.signOutBox}>
         <EditorialButton
-          title="SIGN OUT OF SESSION"
-          variant="outline"
+          title="Sign Out of Session"
+          variant="danger"
           fullWidth
           onPress={logout}
-          rightIcon={<Feather name="log-out" size={16} color={EditorialColors.ink} />}
+          rightIcon={<Feather name="log-out" size={16} color={DayRibbonColors.warn} />}
         />
       </View>
 
@@ -232,38 +236,39 @@ export const StaffProfileScreen = () => {
           contentContainerStyle={styles.modalContainer}
         >
           <View style={styles.modalCard}>
-            <Label text="CREDENTIAL UPDATE" variant="dark" />
-            <Text style={styles.modalTitle}>CHANGE PASSWORD</Text>
-            <Rule thickness={2} color={EditorialColors.ink} style={{ marginBottom: EditorialSpacing.lg }} />
+            <Text style={styles.captionText}>CREDENTIAL UPDATE</Text>
+            <Text style={styles.modalTitle}>Change Password</Text>
 
-            <EditorialTextField
-              label="CURRENT PASSWORD"
-              value={currentPassword}
-              onChangeText={setCurrentPassword}
-              secureTextEntry
-              containerStyle={{ marginBottom: EditorialSpacing.md }}
-            />
+            <View style={{ marginTop: ms(12) }}>
+              <EditorialTextField
+                label="Current Password"
+                value={currentPassword}
+                onChangeText={setCurrentPassword}
+                secureTextEntry
+                containerStyle={{ marginBottom: ms(12) }}
+              />
 
-            <EditorialTextField
-              label="NEW PASSWORD"
-              value={newPassword}
-              onChangeText={setNewPassword}
-              secureTextEntry
-              containerStyle={{ marginBottom: EditorialSpacing.md }}
-            />
+              <EditorialTextField
+                label="New Password"
+                value={newPassword}
+                onChangeText={setNewPassword}
+                secureTextEntry
+                containerStyle={{ marginBottom: ms(12) }}
+              />
 
-            <EditorialTextField
-              label="CONFIRM NEW PASSWORD"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-              containerStyle={{ marginBottom: EditorialSpacing.xl }}
-            />
+              <EditorialTextField
+                label="Confirm New Password"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+                containerStyle={{ marginBottom: ms(20) }}
+              />
+            </View>
 
             <View style={styles.modalActions}>
-              <View style={{ flex: 1, marginRight: EditorialSpacing.sm }}>
+              <View style={{ flex: 1 }}>
                 <EditorialButton
-                  title="CANCEL"
+                  title="Cancel"
                   variant="outline"
                   onPress={() => {
                     setChangePasswordVisible(false);
@@ -273,9 +278,9 @@ export const StaffProfileScreen = () => {
                   }}
                 />
               </View>
-              <View style={{ flex: 1, marginLeft: EditorialSpacing.sm }}>
+              <View style={{ flex: 1 }}>
                 <EditorialButton
-                  title="UPDATE"
+                  title="Update"
                   variant="primary"
                   loading={submitting}
                   disabled={submitting}
@@ -293,138 +298,170 @@ export const StaffProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    padding: EditorialSpacing.lg,
-    paddingBottom: EditorialSpacing.xxxl,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
+    paddingTop: DayRibbonSpacing.screenTop,
+    paddingBottom: ms(48),
+  },
+  headerBox: {
+    marginBottom: ms(16),
+  },
+  captionText: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  headingText: {
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(26),
+    color: DayRibbonColors.ink,
+    marginTop: ms(4),
+  },
+  subHeadingText: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.muted,
+    marginTop: ms(4),
   },
   profileBox: {
-    backgroundColor: EditorialColors.white,
-    borderWidth: 2,
-    borderColor: EditorialColors.ink,
-    borderRadius: 0,
-    padding: EditorialSpacing.lg,
-    marginBottom: EditorialSpacing.xl,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusCard,
+    padding: ms(16),
+    marginBottom: ms(16),
   },
   avatarRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  avatarSquare: {
-    width: 72,
-    height: 72,
-    borderWidth: 2,
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.bg,
+  avatarCircle: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.bg,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: EditorialSpacing.md,
+    marginRight: ms(14),
   },
   avatarInitials: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 26,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(22),
+    color: DayRibbonColors.cobalt,
   },
   avatarInfo: {
     flex: 1,
   },
   facultyName: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 18,
-    color: EditorialColors.ink,
-    letterSpacing: -0.3,
-    marginBottom: 4,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(19),
+    color: DayRibbonColors.ink,
+    marginBottom: ms(4),
   },
   badgeWrapper: {
     flexDirection: 'row',
-    marginBottom: 4,
+    marginBottom: ms(4),
   },
   designationBadge: {
     borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.white,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusChip,
+    backgroundColor: DayRibbonColors.bg,
+    paddingHorizontal: ms(8),
+    paddingVertical: ms(3),
   },
   designationBadgeText: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 10,
-    color: EditorialColors.ink,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(10),
+    color: DayRibbonColors.cobalt,
   },
   collegeText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 11,
-    color: EditorialColors.muted,
-    letterSpacing: 0.6,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: ms(10),
+  },
+  sectionTitle: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(13),
+    color: DayRibbonColors.ink,
   },
   detailCard: {
-    backgroundColor: EditorialColors.white,
+    backgroundColor: DayRibbonColors.surface,
     borderWidth: 1,
-    borderColor: EditorialColors.track,
-    borderRadius: 0,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusCard,
+    overflow: 'hidden',
   },
   detailRow: {
-    paddingHorizontal: EditorialSpacing.md,
-    paddingVertical: EditorialSpacing.md,
+    paddingHorizontal: ms(16),
+    paddingVertical: ms(14),
   },
   detailRowClickable: {
-    paddingHorizontal: EditorialSpacing.md,
-    paddingVertical: EditorialSpacing.md,
+    paddingHorizontal: ms(16),
+    paddingVertical: ms(14),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: EditorialColors.white,
+    backgroundColor: DayRibbonColors.surface,
   },
   detailLeft: {
     flex: 1,
   },
   detailLabel: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 10,
-    color: EditorialColors.muted,
-    letterSpacing: 0.8,
-    marginBottom: 3,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(10),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    marginBottom: ms(2),
   },
   detailValue: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 14,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(14),
+    color: DayRibbonColors.ink,
   },
   detailValueMono: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 14,
-    color: EditorialColors.ink,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(14),
+    color: DayRibbonColors.cobalt,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: DayRibbonColors.line,
+  },
+  signOutBox: {
+    marginTop: ms(24),
   },
   modalContainer: {
-    padding: EditorialSpacing.lg,
+    padding: ms(20),
   },
   modalCard: {
-    backgroundColor: EditorialColors.white,
-    borderWidth: 2,
-    borderColor: EditorialColors.ink,
-    borderRadius: 0,
-    padding: EditorialSpacing.xl,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusCard,
+    padding: ms(20),
   },
   modalTitle: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 18,
-    color: EditorialColors.ink,
-    marginTop: 6,
-    marginBottom: 8,
-    letterSpacing: -0.3,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(20),
+    color: DayRibbonColors.ink,
+    marginTop: ms(4),
+    marginBottom: ms(4),
   },
   modalActions: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: ms(10),
   },
 });
 

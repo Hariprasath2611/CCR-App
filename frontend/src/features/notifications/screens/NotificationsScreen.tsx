@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
-import { EditorialColors, EditorialFonts, EditorialSpacing } from '@theme/editorial';
-import { Rule } from '@components/editorial/Rule';
-import { Label } from '@components/editorial/Label';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { NotificationAlertRow } from '@components/editorial/NotificationAlertRow';
 import { EmptyState } from '@components/editorial/EmptyState';
 import { ms } from '@theme/responsive';
@@ -24,7 +22,7 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     type: 'APPROVAL',
     title: 'Weekly Syllabus Plan Approved',
     message: 'Dr. Suresh Babu (HOD) approved your Week 12 Teaching Plan for Computer Networks (CS3591).',
-    timestamp: '10 MINS AGO',
+    timestamp: '10 mins ago',
     read: false,
   },
   {
@@ -32,7 +30,7 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     type: 'EXTRA_HOURS',
     title: 'Extra Hour Request Confirmed',
     message: 'Your compensatory teaching slot request for 20/07/2026 (Period 3) has been granted.',
-    timestamp: '2 HOURS AGO',
+    timestamp: '2 hours ago',
     read: false,
   },
   {
@@ -40,7 +38,7 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     type: 'SUBMISSION',
     title: 'Class CC Report Forwarded',
     message: 'Consolidated Course Coverage Report for 1st Year SEC-B has been forwarded to Principal for audit.',
-    timestamp: 'YESTERDAY',
+    timestamp: 'Yesterday',
     read: true,
   },
   {
@@ -48,7 +46,7 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     type: 'ALERT',
     title: 'Syllabus Lag Reminder',
     message: 'Week 13 deadline is approaching. Ensure Unit 4 syllabus logs are recorded before Friday 4:00 PM.',
-    timestamp: '2 DAYS AGO',
+    timestamp: '2 days ago',
     read: true,
   },
 ];
@@ -86,27 +84,30 @@ export const NotificationsScreen = () => {
       {/* ── HEADER ── */}
       <View style={styles.headerBox}>
         <View style={styles.topRow}>
-          <Label text="COMMUNICATION LOG" />
+          <Text style={styles.captionText}>COMMUNICATION LOG</Text>
           {unreadCount > 0 && (
-            <TouchableOpacity onPress={markAllAsRead} style={styles.markAllBtn}>
-              <Text style={styles.markAllText}>MARK ALL READ</Text>
+            <TouchableOpacity
+              onPress={markAllAsRead}
+              style={styles.markAllBtn}
+              accessibilityLabel="Mark all notifications as read"
+            >
+              <Text style={styles.markAllText}>Mark all read</Text>
             </TouchableOpacity>
           )}
         </View>
-        <Text style={styles.headingText}>NOTIFICATIONS.</Text>
+        <Text style={styles.headingText}>Notifications</Text>
         <Text style={styles.subHeadingText}>
           {unreadCount > 0
-            ? `${unreadCount} UNREAD NOTIFICATION${unreadCount > 1 ? 'S' : ''} IN SYSTEM AUDIT LOG`
-            : 'ALL CAUGHT UP · ZERO UNREAD SYSTEM NOTIFICATIONS'}
+            ? `${unreadCount} unread notification${unreadCount > 1 ? 's' : ''} in system audit log`
+            : 'All caught up · Zero unread system notifications'}
         </Text>
       </View>
-      <Rule thick style={styles.heroRule} />
 
       {/* ── FILTER TABS ── */}
       <View style={styles.tabsRow}>
         {(['ALL', 'APPROVAL', 'ALERTS'] as const).map((tab) => {
           const isSelected = activeTab === tab;
-          const label = tab === 'ALL' ? 'ALL UPDATES' : tab === 'APPROVAL' ? 'APPROVALS' : 'ALERTS & LOGS';
+          const label = tab === 'ALL' ? 'All Updates' : tab === 'APPROVAL' ? 'Approvals' : 'Alerts & Logs';
           return (
             <TouchableOpacity
               key={tab}
@@ -125,7 +126,7 @@ export const NotificationsScreen = () => {
       {/* ── NOTIFICATIONS FEED ── */}
       {filtered.length === 0 ? (
         <EmptyState
-          title="NO NOTIFICATIONS"
+          title="No Notifications"
           subtitle="There are currently no updates in this audit category."
         />
       ) : (
@@ -140,7 +141,6 @@ export const NotificationsScreen = () => {
               onPress={() => toggleItemRead(item.id)}
             />
           ))}
-          <Rule thickness="hairline" />
         </View>
       )}
     </ScrollView>
@@ -150,83 +150,89 @@ export const NotificationsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
-    paddingTop: EditorialSpacing.topSafeArea,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
+    paddingTop: DayRibbonSpacing.screenTop,
     paddingBottom: ms(48),
   },
   headerBox: {
-    marginBottom: ms(8),
+    marginBottom: ms(16),
   },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  captionText: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: ms(11),
+    color: DayRibbonColors.muted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
   headingText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: ms(24),
-    lineHeight: ms(28),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(26),
+    color: DayRibbonColors.ink,
     marginTop: ms(4),
   },
   subHeadingText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: ms(11),
-    color: EditorialColors.muted,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.muted,
     marginTop: ms(4),
   },
   markAllBtn: {
-    borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: ms(8),
-    paddingVertical: ms(4),
-    backgroundColor: EditorialColors.white,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusChip,
+    paddingHorizontal: ms(12),
+    paddingVertical: ms(6),
+    backgroundColor: DayRibbonColors.surface,
   },
   markAllText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: ms(9.5),
-    color: EditorialColors.ink,
-    letterSpacing: 0.5,
-  },
-  heroRule: {
-    marginBottom: ms(20),
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: ms(11),
+    color: DayRibbonColors.cobalt,
   },
   tabsRow: {
     flexDirection: 'row',
     marginBottom: ms(16),
+    gap: ms(8),
   },
   tabChip: {
-    paddingVertical: ms(6),
-    paddingHorizontal: ms(12),
-    backgroundColor: EditorialColors.white,
-    borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    marginRight: ms(8),
+    paddingVertical: ms(8),
+    paddingHorizontal: ms(14),
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    borderRadius: DayRibbonShapes.radiusChip,
+    minHeight: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   tabChipActive: {
-    backgroundColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.ink,
+    borderColor: DayRibbonColors.ink,
   },
   tabChipText: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: ms(11),
-    letterSpacing: 0.5,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   tabChipTextActive: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.surface,
   },
   listBlock: {
-    backgroundColor: EditorialColors.white,
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.radiusCard,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     paddingHorizontal: ms(16),
     paddingBottom: ms(8),
   },
 });
 
 export default NotificationsScreen;
-
