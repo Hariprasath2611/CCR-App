@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, View, StyleSheet, ViewStyle } from 'react-native';
+import { TouchableOpacity, View, StyleSheet, ViewStyle, Platform } from 'react-native';
 import { DayRibbonColors } from '@theme/dayRibbon';
 
 interface EditorialToggleProps {
@@ -61,11 +61,18 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 11,
     backgroundColor: DayRibbonColors.white,
-    shadowColor: DayRibbonColors.ink,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.15,
-    shadowRadius: 2,
-    elevation: 2,
+    ...Platform.select({
+      web: {
+        boxShadow: '0 1px 2px rgba(14, 19, 48, 0.15)',
+      },
+      default: {
+        shadowColor: DayRibbonColors.ink,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.15,
+        shadowRadius: 2,
+        elevation: 2,
+      },
+    }),
   },
   knobOn: {
     alignSelf: 'flex-end',

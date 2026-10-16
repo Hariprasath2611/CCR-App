@@ -86,13 +86,18 @@ export const DayRibbonShapes = {
   radiusAvatar: 22,
   borderWidth: 1,
   dashedBorderWidth: 2,
-  shadow: {
-    shadowColor: DayRibbonColors.ink,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 2,
-  },
+  shadow: Platform.select({
+    web: {
+      boxShadow: '0 4px 12px rgba(14, 19, 48, 0.06)',
+    },
+    default: {
+      shadowColor: DayRibbonColors.ink,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.06,
+      shadowRadius: 12,
+      elevation: 2,
+    },
+  }) as any,
 } as const;
 
 export const DayRibbonSpacing = {
