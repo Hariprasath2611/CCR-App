@@ -3,8 +3,11 @@ import { View, StyleSheet, ViewStyle } from 'react-native';
 import { DayRibbonColors } from '@theme/dayRibbon';
 
 export interface ProgressBarProps {
-  progress: number; // 0 to 100 or 0 to 1
+  progress?: number; // 0 to 100 or 0 to 1
+  percent?: number;  // alias
+  value?: number;    // alias
   isBehindPlan?: boolean;
+  isBehind?: boolean; // alias
   isLagging?: boolean;
   height?: number;
   style?: ViewStyle;
@@ -12,14 +15,18 @@ export interface ProgressBarProps {
 
 export const ProgressBar: React.FC<ProgressBarProps> = ({
   progress,
+  percent,
+  value,
   isBehindPlan = false,
+  isBehind = false,
   isLagging = false,
   height = 8,
   style,
 }) => {
+  const actualVal = progress !== undefined ? progress : (percent !== undefined ? percent : (value || 0));
   // Normalize progress to 0-100
-  const normalized = progress <= 1 && progress > 0 ? progress * 100 : Math.max(0, Math.min(100, progress || 0));
-  const isWarn = isBehindPlan || isLagging;
+  const normalized = actualVal <= 1 && actualVal > 0 ? actualVal * 100 : Math.max(0, Math.min(100, actualVal || 0));
+  const isWarn = isBehindPlan || isLagging || isBehind;
   const fillColor = isWarn ? DayRibbonColors.warn : DayRibbonColors.cobalt;
 
   return (

@@ -79,7 +79,6 @@ export const EditorialTabBar: React.FC<BottomTabBarProps> = ({
                 name={iconName}
                 size={20}
                 color={isFocused ? activeColor : inactiveColor}
-                style={{ strokeWidth: 1.8 }}
               />
               <Text
                 style={[

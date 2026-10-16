@@ -75,9 +75,13 @@ export const DayRibbonType = {
 
 export const DayRibbonShapes = {
   cardRadius: 22,
+  radiusCard: 22,
   buttonRadius: 14,
+  radiusButton: 14,
   chipRadius: 14,
+  radiusChip: 14,
   avatarRadius: 22, // circular
+  radiusAvatar: 22,
   borderWidth: 1,
   dashedBorderWidth: 2,
   shadow: {
@@ -99,6 +103,7 @@ export const DayRibbonSpacing = {
   xxxl: 32,
   screenHorizontal: 20,
   screenTop: 28,
+  topSafeArea: 28,
   blockGap: 14,
   cardPadding: 16,
 } as const;
