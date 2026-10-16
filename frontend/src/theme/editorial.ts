@@ -1,107 +1,132 @@
+import {
+  DayRibbonColors,
+  DayRibbonFonts,
+  DayRibbonType,
+  DayRibbonShapes,
+  DayRibbonSpacing,
+} from './dayRibbon';
+
+export {
+  DayRibbonColors,
+  DayRibbonFonts,
+  DayRibbonType,
+  DayRibbonShapes,
+  DayRibbonSpacing,
+};
+
+// Aliases for compatibility during and after migration
 export const EditorialColors = {
-  bg: '#F7F7F4',      // app background (off-white)
-  ink: '#111111',     // text, borders, primary buttons, active states
-  accent: '#E8452C',  // vermilion: lagging/behind/error/destructive/key numbers
-  muted: '#777777',   // secondary text, captions, inactive tab text
-  track: '#DAD8D2',   // empty progress segments, disabled fills
-  white: '#FFFFFF',   // text on ink/accent backgrounds
+  bg: DayRibbonColors.bg,
+  ink: DayRibbonColors.ink,
+  accent: DayRibbonColors.warn,
+  muted: DayRibbonColors.muted,
+  track: DayRibbonColors.line,
+  white: DayRibbonColors.white,
+  surface: DayRibbonColors.surface,
+  cobalt: DayRibbonColors.cobalt,
+  lemon: DayRibbonColors.lemon,
+  line: DayRibbonColors.line,
+  mutedSoft: DayRibbonColors.mutedSoft,
+  dashed: DayRibbonColors.dashed,
+  warn: DayRibbonColors.warn,
+  warnBg: DayRibbonColors.warnBg,
 } as const;
 
 export const EditorialFonts = {
-  display: 'ArchivoBlack_400Regular',
-  semibold: 'Archivo_600SemiBold',
-  bold: 'Archivo_700Bold',
-  heavy: 'Archivo_800ExtraBold',
-  regular: 'Archivo_600SemiBold', // Fallback for standard weight
+  display: DayRibbonFonts.display,
+  semibold: DayRibbonFonts.body600,
+  bold: DayRibbonFonts.body700,
+  heavy: DayRibbonFonts.body700,
+  regular: DayRibbonFonts.body500,
 } as const;
 
 export const EditorialType = {
   heroNumber: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 104,
-    lineHeight: 104,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 92,
+    lineHeight: 96,
+    color: DayRibbonColors.cobalt,
   },
   bigNumber: {
-    fontFamily: EditorialFonts.display,
+    fontFamily: DayRibbonFonts.display,
     fontSize: 60,
-    lineHeight: 62,
-    color: EditorialColors.ink,
+    lineHeight: 64,
+    color: DayRibbonColors.ink,
   },
   sectionNumber: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 32,
-    lineHeight: 34,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 34,
+    lineHeight: 38,
+    color: DayRibbonColors.ink,
   },
   screenTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 42,
-    lineHeight: 44,
-    color: EditorialColors.ink,
-    letterSpacing: -0.5,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 30,
+    lineHeight: 36,
+    color: DayRibbonColors.ink,
   },
   listName: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 17,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 16,
     lineHeight: 22,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   body: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 14,
     lineHeight: 20,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   bodyLarge: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 15,
     lineHeight: 22,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   caption: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     textTransform: 'uppercase' as const,
   },
   buttonText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    textTransform: 'uppercase' as const,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    letterSpacing: 0.5,
   },
   tabLabel: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 1,
-    textTransform: 'uppercase' as const,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    letterSpacing: 0.5,
   },
 } as const;
 
 export const EditorialSpacing = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
-  xxl: 24,
-  xxxl: 32,
-  hero: 28,
-  screenPaddingHorizontal: 20,
-  screenPaddingTop: 28,
-  screenHorizontal: 20,
-  topSafeArea: 28,
-  rowPaddingVertical: 12,
-  blockGap: 12,
+  xs: DayRibbonSpacing.xs,
+  sm: DayRibbonSpacing.sm,
+  md: DayRibbonSpacing.md,
+  lg: DayRibbonSpacing.lg,
+  xl: DayRibbonSpacing.xl,
+  xxl: DayRibbonSpacing.xxl,
+  xxxl: DayRibbonSpacing.xxxl,
+  hero: DayRibbonSpacing.screenTop,
+  screenPaddingHorizontal: DayRibbonSpacing.screenHorizontal,
+  screenPaddingTop: DayRibbonSpacing.screenTop,
+  screenHorizontal: DayRibbonSpacing.screenHorizontal,
+  topSafeArea: DayRibbonSpacing.screenTop,
+  rowPaddingVertical: 14,
+  blockGap: DayRibbonSpacing.blockGap,
 } as const;
 
 export const EditorialRules = {
   hairline: 1,
-  heavy: 4,
+  heavy: 2,
   divider: 1,
-  section: 4,
-  borderWidth: 1.5,
-  borderRadius: 0, // strict 0 everywhere
+  section: 2,
+  borderWidth: 1,
+  borderRadius: DayRibbonShapes.cardRadius,
+  cardRadius: DayRibbonShapes.cardRadius,
+  buttonRadius: DayRibbonShapes.buttonRadius,
+  chipRadius: DayRibbonShapes.chipRadius,
 } as const;
