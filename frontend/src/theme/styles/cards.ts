@@ -1,26 +1,25 @@
 import { StyleSheet } from 'react-native';
-import { EditorialColors, EditorialFonts, EditorialRules } from '../editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes } from '../dayRibbon';
 
 export const cardStyles = StyleSheet.create({
   dashboardCard: {
-    backgroundColor: EditorialColors.bg,
-    borderRadius: 0,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
     padding: 16,
-    marginBottom: 12,
-    borderWidth: EditorialRules.borderWidth,
-    borderColor: EditorialColors.ink,
-    elevation: 0,
-    shadowOpacity: 0,
+    marginBottom: 14,
+    borderWidth: DayRibbonShapes.borderWidth,
+    borderColor: DayRibbonColors.line,
+    ...DayRibbonShapes.shadow,
   },
   cardTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 16,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
     marginBottom: 4,
   },
   cardSubtitle: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    color: DayRibbonColors.muted,
   },
 });

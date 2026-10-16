@@ -1,9 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
-import { EditorialColors } from '@theme/editorial';
+import { DayRibbonColors } from '@theme/dayRibbon';
 
 export interface SegBarProps {
-  /** Percentage (0-100) or completed count */
   progress?: number;
   value?: number;
   total?: number;
@@ -40,7 +39,7 @@ export const SegBar: React.FC<SegBarProps> = ({
     filledCount = Math.round(ratio * TOTAL_SEGMENTS);
   }
 
-  const fillColor = color || (isLagging ? EditorialColors.accent : EditorialColors.ink);
+  const fillColor = color || (isLagging ? DayRibbonColors.warn : DayRibbonColors.cobalt);
 
   return (
     <View style={[styles.container, style]}>
@@ -52,7 +51,7 @@ export const SegBar: React.FC<SegBarProps> = ({
             style={[
               styles.block,
               {
-                backgroundColor: isFilled ? fillColor : EditorialColors.track,
+                backgroundColor: isFilled ? fillColor : DayRibbonColors.line,
               },
             ]}
           />
@@ -72,7 +71,7 @@ const styles = StyleSheet.create({
   block: {
     flex: 1,
     height: 8,
-    borderRadius: 0,
+    borderRadius: 4,
   },
 });
 

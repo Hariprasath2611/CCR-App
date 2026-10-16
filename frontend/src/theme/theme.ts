@@ -1,28 +1,29 @@
 import { MD3LightTheme, configureFonts } from 'react-native-paper';
-import { EditorialColors, EditorialFonts } from './editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes } from './dayRibbon';
 
 const fontConfig = {
-  fontFamily: EditorialFonts.semibold,
+  fontFamily: DayRibbonFonts.body500,
 };
 
 export const AppTheme = {
   ...MD3LightTheme,
-  roundness: 0,
+  roundness: DayRibbonShapes.cardRadius,
   colors: {
     ...MD3LightTheme.colors,
-    primary: EditorialColors.ink,
-    primaryContainer: EditorialColors.track,
-    secondary: EditorialColors.ink,
-    secondaryContainer: EditorialColors.track,
-    background: EditorialColors.bg,
-    surface: EditorialColors.bg,
-    surfaceVariant: EditorialColors.bg,
-    error: EditorialColors.accent,
-    outline: EditorialColors.ink,
-    outlineVariant: EditorialColors.track,
-    onPrimary: EditorialColors.white,
-    onSurface: EditorialColors.ink,
-    onBackground: EditorialColors.ink,
+    primary: DayRibbonColors.cobalt,
+    primaryContainer: DayRibbonColors.cobaltTint,
+    secondary: DayRibbonColors.ink,
+    secondaryContainer: DayRibbonColors.line,
+    background: DayRibbonColors.bg,
+    surface: DayRibbonColors.surface,
+    surfaceVariant: DayRibbonColors.bg,
+    error: DayRibbonColors.warn,
+    errorContainer: DayRibbonColors.warnBg,
+    outline: DayRibbonColors.line,
+    outlineVariant: DayRibbonColors.dashed,
+    onPrimary: DayRibbonColors.white,
+    onSurface: DayRibbonColors.ink,
+    onBackground: DayRibbonColors.ink,
   },
   fonts: configureFonts({ config: fontConfig }),
 };
