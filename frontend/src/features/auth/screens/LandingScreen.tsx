@@ -10,8 +10,9 @@ import {
   Alert,
   StatusBar,
   ScrollView,
+  AppState,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@navigation/types';
 import { Feather } from '@expo/vector-icons';
@@ -72,14 +73,46 @@ export const LandingScreen = () => {
     }
   };
 
-  // Format today's date banner string
-  const getTodayString = () => {
-    const d = new Date();
+  const formatToday = (d: Date) => {
     const dayName = d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
     const dayNum = d.getDate();
     const monthName = d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
     return `TODAY · ${dayName} ${dayNum} ${monthName}`;
   };
+
+  const [todayString, setTodayString] = useState(() => formatToday(new Date()));
+  const isFocused = useIsFocused();
+
+  // Keep date updated dynamically every day (never idle/stale)
+  useEffect(() => {
+    const refreshDate = () => {
+      setTodayString(formatToday(new Date()));
+    };
+
+    refreshDate();
+
+    // 1. Refresh whenever app comes to foreground from background
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        refreshDate();
+      }
+    });
+
+    // 2. Refresh periodically to catch midnight rollover live
+    const interval = setInterval(refreshDate, 30000);
+
+    return () => {
+      sub.remove();
+      clearInterval(interval);
+    };
+  }, []);
+
+  // 3. Refresh whenever screen gains navigation focus
+  useEffect(() => {
+    if (isFocused) {
+      setTodayString(formatToday(new Date()));
+    }
+  }, [isFocused]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -107,7 +140,7 @@ export const LandingScreen = () => {
         {/* ── TODAY PILL ── */}
         <View style={styles.todayPillWrapper}>
           <View style={styles.todayPill}>
-            <Text style={styles.todayPillText}>{getTodayString()}</Text>
+            <Text style={styles.todayPillText}>{todayString}</Text>
           </View>
         </View>
 
@@ -116,30 +149,38 @@ export const LandingScreen = () => {
           <View style={styles.ribbonStack}>
             {/* Band 1: Cobalt Blue */}
             <View style={[styles.ribbonBand, styles.bandCobalt]}>
-              <Text style={styles.bandTextWhite}>
-                SYLLABUS{'     '}TOPICS{'     '}LESSONS
-              </Text>
+              <View style={styles.bandTextRow}>
+                <Text numberOfLines={1} style={styles.bandTextWhite}>SYLLABUS</Text>
+                <Text numberOfLines={1} style={styles.bandTextWhite}>TOPICS</Text>
+                <Text numberOfLines={1} style={styles.bandTextWhite}>LESSONS</Text>
+              </View>
             </View>
 
             {/* Band 2: Warm Amber Golden */}
             <View style={[styles.ribbonBand, styles.bandAmber]}>
-              <Text style={styles.bandTextDark}>
-                PLANNED{'     '}TAUGHT{'     '}COVERED
-              </Text>
+              <View style={styles.bandTextRow}>
+                <Text numberOfLines={1} style={styles.bandTextDark}>PLANNED</Text>
+                <Text numberOfLines={1} style={styles.bandTextDark}>TAUGHT</Text>
+                <Text numberOfLines={1} style={styles.bandTextDark}>COVERED</Text>
+              </View>
             </View>
 
             {/* Band 3: Coral Red */}
             <View style={[styles.ribbonBand, styles.bandCoral]}>
-              <Text style={styles.bandTextDark}>
-                TRACK{'     '}REVIEW{'     '}IMPROVE
-              </Text>
+              <View style={styles.bandTextRow}>
+                <Text numberOfLines={1} style={styles.bandTextDark}>TRACK</Text>
+                <Text numberOfLines={1} style={styles.bandTextDark}>REVIEW</Text>
+                <Text numberOfLines={1} style={styles.bandTextDark}>IMPROVE</Text>
+              </View>
             </View>
 
             {/* Band 4: Mint Green */}
             <View style={[styles.ribbonBand, styles.bandMint]}>
-              <Text style={styles.bandTextDark}>
-                FACULTY{'     '}COURSES{'     '}REPORTS
-              </Text>
+              <View style={styles.bandTextRow}>
+                <Text numberOfLines={1} style={styles.bandTextDark}>FACULTY</Text>
+                <Text numberOfLines={1} style={styles.bandTextDark}>COURSES</Text>
+                <Text numberOfLines={1} style={styles.bandTextDark}>REPORTS</Text>
+              </View>
             </View>
           </View>
         </View>
@@ -149,9 +190,30 @@ export const LandingScreen = () => {
           <Text style={styles.collegeEyebrow}>JAYA ENGINEERING COLLEGE</Text>
 
           <View style={styles.stackedTitleBox}>
-            <Text style={styles.titleWordDark}>Course</Text>
-            <Text style={styles.titleWordCobalt}>Coverage</Text>
-            <Text style={styles.titleWordDark}>Report</Text>
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+              style={styles.titleWordDark}
+            >
+              Course
+            </Text>
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+              style={styles.titleWordCobalt}
+            >
+              Coverage
+            </Text>
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+              style={styles.titleWordDark}
+            >
+              Report
+            </Text>
           </View>
 
           <Text style={styles.subtitleText}>
@@ -167,7 +229,7 @@ export const LandingScreen = () => {
             activeOpacity={0.88}
             accessibilityLabel="Get Started"
           >
-            {/* Left Notch Triangle (cuts into button) */}
+            {/* Left Notch Triangle */}
             <View style={styles.notchLeft} />
 
             <View style={styles.ribbonButtonContent}>
@@ -175,7 +237,7 @@ export const LandingScreen = () => {
               <Feather name="arrow-right" size={20} color={DayRibbonColors.ink} />
             </View>
 
-            {/* Right Notch Triangle (cuts into button) */}
+            {/* Right Notch Triangle */}
             <View style={styles.notchRight} />
           </TouchableOpacity>
 
@@ -262,7 +324,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'space-between',
-    paddingBottom: 20,
+    paddingBottom: 16,
     backgroundColor: '#FFFFFF',
   },
 
@@ -273,7 +335,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 24,
     paddingTop: 12,
-    paddingBottom: 8,
+    paddingBottom: 6,
   },
   headerTag: {
     fontFamily: DayRibbonFonts.body700,
@@ -297,15 +359,15 @@ const styles = StyleSheet.create({
   todayPillWrapper: {
     paddingHorizontal: 24,
     marginTop: 4,
-    marginBottom: 16,
+    marginBottom: 14,
   },
   todayPill: {
     alignSelf: 'flex-start',
     borderWidth: 1.5,
     borderColor: DayRibbonColors.ink,
     borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 7,
+    paddingHorizontal: 15,
+    paddingVertical: 6,
     backgroundColor: '#FFFFFF',
   },
   todayPillText: {
@@ -316,22 +378,31 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
-  // Ribbon Banner
+  // Slanted Ribbon Banner
   ribbonWrapper: {
     width: '100%',
-    marginVertical: 20,
+    marginVertical: 18,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   ribbonStack: {
     width: width * 1.35,
-    transform: [{ rotate: '-8.5deg' }],
+    transform: [{ rotate: '-6.5deg' }],
+    alignItems: 'center',
   },
   ribbonBand: {
-    height: 46,
+    width: '100%',
+    height: 42,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
+  },
+  bandTextRow: {
+    width: width,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 22,
   },
   bandCobalt: {
     backgroundColor: '#2B3FE0',
@@ -347,24 +418,24 @@ const styles = StyleSheet.create({
   },
   bandTextWhite: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 18,
+    fontSize: 14,
     color: '#FFFFFF',
-    letterSpacing: 1.5,
+    letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
   bandTextDark: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 18,
+    fontSize: 14,
     color: DayRibbonColors.ink,
-    letterSpacing: 1.5,
+    letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
 
   // Hero Text
   heroTextSection: {
     paddingHorizontal: 24,
-    marginTop: 10,
-    marginBottom: 28,
+    marginTop: 6,
+    marginBottom: 24,
   },
   collegeEyebrow: {
     fontFamily: DayRibbonFonts.body700,
@@ -372,22 +443,22 @@ const styles = StyleSheet.create({
     color: DayRibbonColors.muted,
     letterSpacing: 1.2,
     textTransform: 'uppercase',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   stackedTitleBox: {
-    marginBottom: 14,
+    marginBottom: 12,
   },
   titleWordDark: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 46,
-    lineHeight: 50,
+    fontSize: 40,
+    lineHeight: 44,
     color: DayRibbonColors.ink,
     letterSpacing: -0.5,
   },
   titleWordCobalt: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 46,
-    lineHeight: 50,
+    fontSize: 40,
+    lineHeight: 44,
     color: DayRibbonColors.cobalt,
     letterSpacing: -0.5,
   },

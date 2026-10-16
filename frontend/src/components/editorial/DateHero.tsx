@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, ViewStyle } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ViewStyle, AppState } from 'react-native';
 import { DayRibbonColors, DayRibbonFonts } from '@theme/dayRibbon';
 
 export interface DateHeroProps {
@@ -14,15 +14,44 @@ export const DateHero: React.FC<DateHeroProps> = ({
   dayOfMonth,
   weekday,
   monthYear,
-  date = new Date(),
+  date: propDate,
   style,
 }) => {
+  const [currentDate, setCurrentDate] = useState(() => propDate || new Date());
+
+  useEffect(() => {
+    if (propDate) {
+      setCurrentDate(propDate);
+      return;
+    }
+
+    const refresh = () => setCurrentDate(new Date());
+    refresh();
+
+    // Auto-update when app comes to foreground from background
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        refresh();
+      }
+    });
+
+    // Auto-update periodically to catch midnight rollover live
+    const interval = setInterval(refresh, 30000);
+
+    return () => {
+      sub.remove();
+      clearInterval(interval);
+    };
+  }, [propDate]);
+
+  const activeDate = propDate || currentDate;
+
   const dayStr = dayOfMonth !== undefined
     ? String(dayOfMonth)
-    : String(date.getDate()).padStart(2, '0');
+    : String(activeDate.getDate()).padStart(2, '0');
 
-  const weekdayStr = weekday || date.toLocaleDateString('en-US', { weekday: 'long' });
-  const monthYearStr = monthYear || date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  const weekdayStr = weekday || activeDate.toLocaleDateString('en-US', { weekday: 'long' });
+  const monthYearStr = monthYear || activeDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
   return (
     <View style={[styles.container, style]}>

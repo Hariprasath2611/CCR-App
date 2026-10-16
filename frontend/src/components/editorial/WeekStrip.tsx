@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ViewStyle, AppState } from 'react-native';
 import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes } from '@theme/dayRibbon';
 
 export type DayLoggingStatus = 'all' | 'partly' | 'none';
@@ -19,21 +19,72 @@ export interface WeekStripProps {
   style?: ViewStyle;
 }
 
-const DEFAULT_DAYS: DayItem[] = [
-  { weekday: 'Mon', dayNumber: '12', status: 'all' },
-  { weekday: 'Tue', dayNumber: '13', status: 'all' },
-  { weekday: 'Wed', dayNumber: '14', status: 'partly', isToday: true },
-  { weekday: 'Thu', dayNumber: '15', status: 'none' },
-  { weekday: 'Fri', dayNumber: '16', status: 'none' },
-  { weekday: 'Sat', dayNumber: '17', status: 'none' },
-];
+export const getCurrentWeekDays = (now: Date = new Date()): DayItem[] => {
+  const currentDayIndex = now.getDay(); // 0 is Sunday, 1 is Mon, 6 is Sat
+  const dayOffsetToMon = currentDayIndex === 0 ? -6 : 1 - currentDayIndex;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + dayOffsetToMon);
+
+  const days: DayItem[] = [];
+  const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  for (let i = 0; i < 6; i++) {
+    const dayDate = new Date(monday);
+    dayDate.setDate(monday.getDate() + i);
+
+    const isToday =
+      dayDate.getDate() === now.getDate() &&
+      dayDate.getMonth() === now.getMonth() &&
+      dayDate.getFullYear() === now.getFullYear();
+
+    const isPast = dayDate.getTime() < now.setHours(0, 0, 0, 0);
+
+    days.push({
+      weekday: weekdays[i],
+      dayNumber: String(dayDate.getDate()),
+      isToday,
+      status: isToday ? 'partly' : (isPast ? 'all' : 'none'),
+    });
+  }
+
+  return days;
+};
 
 export const WeekStrip: React.FC<WeekStripProps> = ({
-  days = DEFAULT_DAYS,
+  days: propDays,
   selectedDay,
   onSelectDay,
   style,
 }) => {
+  const [currentWeekDays, setCurrentWeekDays] = useState<DayItem[]>(() => propDays || getCurrentWeekDays());
+
+  useEffect(() => {
+    if (propDays) {
+      setCurrentWeekDays(propDays);
+      return;
+    }
+
+    const refresh = () => setCurrentWeekDays(getCurrentWeekDays());
+    refresh();
+
+    // Auto-update when app comes to foreground from background
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        refresh();
+      }
+    });
+
+    // Auto-update periodically to catch midnight rollover live
+    const interval = setInterval(refresh, 30000);
+
+    return () => {
+      sub.remove();
+      clearInterval(interval);
+    };
+  }, [propDays]);
+
+  const days = propDays || currentWeekDays;
+
   return (
     <View style={[styles.container, style]}>
       {days.map((item, index) => {
