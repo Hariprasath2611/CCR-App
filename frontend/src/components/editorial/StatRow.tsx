@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes } from '@theme/dayRibbon';
 
 export interface StatItem {
   value: string | number;
   label: string;
   isLagging?: boolean;
+  isBehindPlan?: boolean;
   valueSuffix?: string;
 }
 
@@ -21,29 +22,33 @@ export const StatRow: React.FC<StatRowProps> = ({ stats, columns, style }) => {
   return (
     <View style={[styles.container, style]}>
       {items.map((item, index) => {
+        const isWarn = item.isLagging || item.isBehindPlan;
         const isLast = index === items.length - 1;
+
         return (
           <React.Fragment key={index}>
             <View style={styles.column}>
-              <Text
-                style={[
-                  styles.valueText,
-                  item.isLagging && { color: EditorialColors.accent },
-                ]}
-                numberOfLines={1}
-              >
-                {item.value}
+              <View style={styles.valueRow}>
+                <Text
+                  style={[
+                    styles.valueText,
+                    { color: isWarn ? DayRibbonColors.warn : DayRibbonColors.ink },
+                  ]}
+                  numberOfLines={1}
+                >
+                  {item.value}
+                </Text>
                 {item.valueSuffix ? (
                   <Text
                     style={[
                       styles.suffixText,
-                      item.isLagging && { color: EditorialColors.accent },
+                      { color: isWarn ? DayRibbonColors.warn : DayRibbonColors.muted },
                     ]}
                   >
                     {item.valueSuffix}
                   </Text>
                 ) : null}
-              </Text>
+              </View>
               <Text style={styles.labelText} numberOfLines={1}>
                 {item.label.toUpperCase()}
               </Text>
@@ -61,38 +66,45 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: DayRibbonShapes.borderWidth,
+    borderColor: DayRibbonColors.line,
     paddingVertical: 14,
-    borderTopWidth: EditorialRules.hairline,
-    borderBottomWidth: EditorialRules.hairline,
-    borderColor: EditorialColors.ink,
+    paddingHorizontal: 8,
     marginVertical: 12,
+    ...DayRibbonShapes.shadow,
   },
   column: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  valueText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 24,
-    color: EditorialColors.ink,
+  valueRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
     marginBottom: 4,
   },
+  valueText: {
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 24,
+    lineHeight: 28,
+  },
   suffixText: {
-    fontFamily: EditorialFonts.display,
+    fontFamily: DayRibbonFonts.display,
     fontSize: 16,
-    color: EditorialColors.accent,
+    marginLeft: 2,
   },
   labelText: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 10,
-    letterSpacing: 1.5,
-    color: EditorialColors.muted,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
   },
   divider: {
-    width: EditorialRules.hairline,
+    width: 1,
     height: 32,
-    backgroundColor: EditorialColors.track,
+    backgroundColor: DayRibbonColors.line,
   },
 });
 
