@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, ViewStyle, StyleProp, RefreshControlProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialSpacing } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonSpacing } from '@theme/dayRibbon';
 
 interface ScreenProps {
   children: React.ReactNode;
@@ -10,6 +10,7 @@ interface ScreenProps {
   contentContainerStyle?: StyleProp<ViewStyle>;
   safeTop?: boolean;
   safeBottom?: boolean;
+  hasTabBar?: boolean;
   refreshControl?: React.ReactElement<RefreshControlProps>;
 }
 
@@ -20,15 +21,16 @@ export const Screen: React.FC<ScreenProps> = ({
   contentContainerStyle,
   safeTop = true,
   safeBottom = true,
+  hasTabBar = false,
   refreshControl,
 }) => {
   const insets = useSafeAreaInsets();
 
   const containerStyle: ViewStyle = {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
-    paddingTop: safeTop ? Math.max(insets.top, EditorialSpacing.screenPaddingTop) : 0,
-    paddingBottom: safeBottom ? insets.bottom : 0,
+    backgroundColor: DayRibbonColors.bg,
+    paddingTop: safeTop ? Math.max(insets.top, DayRibbonSpacing.screenTop) : 0,
+    paddingBottom: safeBottom ? (hasTabBar ? insets.bottom + 84 : insets.bottom + 16) : 0,
   };
 
   if (scrollable) {
@@ -61,17 +63,19 @@ export const Screen: React.FC<ScreenProps> = ({
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   scroll: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: EditorialSpacing.screenPaddingHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
     paddingBottom: 40,
   },
   fixedContent: {
     flex: 1,
-    paddingHorizontal: EditorialSpacing.screenPaddingHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
 });
+
+export default Screen;
