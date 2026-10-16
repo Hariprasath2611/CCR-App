@@ -47,7 +47,7 @@ function App(): React.JSX.Element | null {
       <PaperProvider theme={AppTheme}>
         <NavigationContainer>
           <StatusBar
-            backgroundColor={EditorialColors.bg}
+            backgroundColor={DayRibbonColors.bg}
             barStyle="dark-content"
           />
           <RootNavigator />
