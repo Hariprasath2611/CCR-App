@@ -83,6 +83,119 @@ export const LoginScreen = () => {
 
     // Explicit mapping for seeded users to match database exactly
 
+    if (emailLower === 'punitha@ccms.edu' || emailLower === 'punitha@ccr.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: true,
+        assignedClassId: '3rd Year CSE-A',
+        name: 'Ms. Punitha EM',
+        dept: 'Computer Science',
+        label: 'Class Coordinator (3rd Year CSE-A)',
+        icon: 'shield-star',
+        color: '#3B82F6',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'linebychandra@ccms.edu' || emailLower === 'linebychandra@ccr.edu') {
+      return {
+        role: 'HOD' as const,
+        isCC: false,
+        name: 'Mr. J Lin Eby Chandra',
+        dept: 'Computer Science',
+        label: 'Head of Department (CSE)',
+        icon: 'account-tie',
+        color: '#10B981',
+        bgColor: '#ECFDF5',
+        borderColor: '#A7F3D0',
+      };
+    }
+
+    if (emailLower === 'uvashakthi@ccms.edu' || emailLower === 'uvashakthi@ccr.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Ms. E Uva Shakthi',
+        dept: 'Computer Science',
+        label: 'Subject Teacher (CSE)',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'faizal@ccms.edu' || emailLower === 'faizal@ccr.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Mr. S Faizal Mukthar Hussain',
+        dept: 'Computer Science',
+        label: 'Subject Teacher (CSE)',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'rajalakshmi@ccms.edu' || emailLower === 'rajalakshmi@ccr.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Ms. R Rajalakshmi',
+        dept: 'Computer Science',
+        label: 'Subject Teacher (CSE)',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'divya@ccms.edu' || emailLower === 'divya@ccr.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Ms. P Divya',
+        dept: 'Computer Science',
+        label: 'Subject Teacher (CSE)',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'arunkamala@ccms.edu' || emailLower === 'arunkamala@ccr.edu') {
+      return {
+        role: 'STAFF' as const,
+        isCC: false,
+        name: 'Ms. Arun Kamala',
+        dept: 'Computer Science',
+        label: 'Subject Teacher (CSE)',
+        icon: 'book-open-variant',
+        color: '#0F52BA',
+        bgColor: '#EFF6FF',
+        borderColor: '#BFDBFE',
+      };
+    }
+
+    if (emailLower === 'principal@ccms.edu' || emailLower === 'principal@ccr.edu' || emailLower === 'principal@jec.ac.in') {
+      return {
+        role: 'ADMIN' as const,
+        isCC: false,
+        name: 'Dr. Ramesh',
+        dept: 'Administration',
+        label: 'Principal / Administration',
+        icon: 'shield-account',
+        color: '#8B5CF6',
+        bgColor: '#F5F3FF',
+        borderColor: '#DDD6FE',
+      };
+    }
+
     if (emailLower === 'drkaruppaiya@ccr.edu') {
       return {
         role: 'STAFF' as const,
@@ -735,25 +848,49 @@ export const LoginScreen = () => {
 
     setIsLoading(true);
     try {
+      let cleanEmail = email.toLowerCase().trim();
+
       if (rememberMe) {
-        await AsyncStorage.setItem('ccr_remembered_email', email.trim());
+        await AsyncStorage.setItem('ccr_remembered_email', cleanEmail);
         await AsyncStorage.setItem('ccr_remember_me_preference', 'true');
       } else {
         await AsyncStorage.removeItem('ccr_remembered_email');
         await AsyncStorage.setItem('ccr_remember_me_preference', 'false');
       }
 
-      const response = await apiClient.post('/auth/login', {
-        email: email.toLowerCase().trim(),
-        password,
-      });
+      let response;
+      try {
+        response = await apiClient.post('/auth/login', {
+          email: cleanEmail,
+          password,
+        });
+      } catch (authErr: any) {
+        // Fallback domain swap if user entered @ccr.edu instead of @ccms.edu or vice versa
+        let fallbackEmail = '';
+        if (cleanEmail.endsWith('@ccr.edu')) {
+          fallbackEmail = cleanEmail.replace('@ccr.edu', '@ccms.edu');
+        } else if (cleanEmail.endsWith('@ccms.edu')) {
+          fallbackEmail = cleanEmail.replace('@ccms.edu', '@ccr.edu');
+        }
+
+        if (fallbackEmail) {
+          response = await apiClient.post('/auth/login', {
+            email: fallbackEmail,
+            password,
+          });
+          cleanEmail = fallbackEmail;
+        } else {
+          throw authErr;
+        }
+      }
 
       const { user: userSession, accessToken, refreshToken } = response.data;
       if (userSession) {
-        if (!userSession.assignedClassId && currentRoleInfo.assignedClassId) {
-          userSession.assignedClassId = currentRoleInfo.assignedClassId;
+        const detected = detectRole(cleanEmail);
+        if (!userSession.assignedClassId && detected.assignedClassId) {
+          userSession.assignedClassId = detected.assignedClassId;
         }
-        if (currentRoleInfo.isCC) {
+        if (detected.isCC) {
           userSession.isClassCoordinator = true;
         }
       }
@@ -807,7 +944,7 @@ export const LoginScreen = () => {
               <TextInput
                 ref={emailRef}
                 style={styles.input}
-                placeholder="faculty@jec.ac.in"
+                placeholder="punitha@ccms.edu"
                 placeholderTextColor={DayRibbonColors.mutedSoft}
                 value={email}
                 onChangeText={setEmail}
@@ -905,10 +1042,12 @@ export const LoginScreen = () => {
             <Text style={styles.presetsLabel}>TEST CREDENTIAL PRESETS</Text>
             <View style={styles.presetsGrid}>
               {[
-                { label: 'Staff (Revathi)', email: 'revathi@gmail.com', pass: 'revathi123' },
-                { label: 'CC (Karuppaiya)', email: 'karuppaiya@gmail.com', pass: 'karuppaiya123' },
-                { label: 'HOD (Selva Lakshmi)', email: 'selvalakshmi@jec.ac.in', pass: 'selva123' },
-                { label: 'Principal', email: 'principal@jec.ac.in', pass: 'admin123' },
+                { label: 'Staff (CSE)', email: 'uvashakthi@ccms.edu', pass: 'password123' },
+                { label: 'CC (Punitha)', email: 'punitha@ccms.edu', pass: 'password123' },
+                { label: 'HOD (CSE)', email: 'linebychandra@ccms.edu', pass: 'password123' },
+                { label: 'Principal', email: 'principal@ccms.edu', pass: 'password123' },
+                { label: 'CC (1st Yr)', email: 'drkaruppaiya@ccr.edu', pass: 'password123' },
+                { label: 'HOD (1st Yr)', email: 'drsaravanan@ccr.edu', pass: 'password123' },
               ].map((p, i) => (
                 <TouchableOpacity
                   key={i}
