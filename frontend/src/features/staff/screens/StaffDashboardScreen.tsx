@@ -27,7 +27,6 @@ import {
 import { getCCForSection } from '@config/facultyBoard';
 import { DateHero } from '@components/editorial/DateHero';
 import { WeekStrip } from '@components/editorial/WeekStrip';
-import { PeriodBlock } from '@components/editorial/PeriodBlock';
 import { ProgressBar } from '@components/editorial/ProgressBar';
 import { ListRow } from '@components/editorial/ListRow';
 import { BigNumber } from '@components/editorial/BigNumber';
@@ -275,40 +274,6 @@ export const StaffDashboardScreen = () => {
         {/* WeekStrip component */}
         <WeekStrip />
 
-        {/* Today's Timetable PeriodBlocks */}
-        {todaySlots.length > 0 && (
-          <View style={styles.periodSection}>
-            <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionHeaderTitle}>TODAY'S LECTURES</Text>
-              <Text style={styles.sectionHeaderMeta}>{todaySlots.length} CLASSES</Text>
-            </View>
-
-            {todaySlots.map((slot, idx) => {
-              const periodNum = slot.period || idx + 1;
-              const timeRange = PERIOD_TIMES[periodNum] || '09:00 - 09:50';
-              const isNow = idx === 0; // Highlight the current class
-
-              return (
-                <PeriodBlock
-                  key={slot.id || idx}
-                  periodNumber={periodNum}
-                  timeRange={timeRange}
-                  title={slot.subject_name || slot.subject_code}
-                  subtitle={`${slot.class_section} • ${slot.subject_code}`}
-                  room={slot.room_no || 'Hall 204'}
-                  state={isNow ? 'now' : 'upcoming'}
-                  onPressLog={() =>
-                    navigation.navigate('WeeklyProgress', {
-                      subjectCode: slot.subject_code,
-                      classSection: slot.class_section,
-                      weekNumber: 12,
-                    })
-                  }
-                />
-              );
-            })}
-          </View>
-        )}
 
         {/* Hero Syllabus Coverage Card */}
         <View style={styles.coverageHeroCard}>
