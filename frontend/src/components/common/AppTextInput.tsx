@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, ViewStyle, TextStyle } from 'react-native';
-import { EditorialColors, EditorialFonts } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts } from '@theme/dayRibbon';
 
 interface AppTextInputProps {
   label: string;
@@ -31,6 +31,7 @@ export const AppTextInput: React.FC<AppTextInputProps> = ({
   numberOfLines = 1,
   placeholder,
 }) => {
+  const [isFocused, setIsFocused] = useState(false);
   const hasError = !!error;
 
   return (
@@ -40,28 +41,37 @@ export const AppTextInput: React.FC<AppTextInputProps> = ({
           {label.toUpperCase()}
         </Text>
       ) : null}
-      <View style={[styles.inputRow, hasError ? styles.inputRowError : styles.inputRowNormal]}>
+      <View
+        style={[
+          styles.inputContainer,
+          isFocused && styles.inputFocused,
+          hasError && styles.inputError,
+          multiline && { minHeight: 24 * (numberOfLines || 3), alignItems: 'flex-start' },
+        ]}
+      >
         <TextInput
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor={EditorialColors.muted}
+          placeholderTextColor={DayRibbonColors.mutedSoft}
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize}
           multiline={multiline}
           numberOfLines={numberOfLines}
-          selectionColor={EditorialColors.ink}
+          selectionColor={DayRibbonColors.cobalt}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           style={[
             styles.input,
-            multiline && { height: 24 * (numberOfLines || 3), textAlignVertical: 'top' },
+            multiline && { textAlignVertical: 'top' },
             inputStyle,
           ]}
         />
       </View>
       {hasError ? (
         <Text style={styles.errorText}>
-          {error.toUpperCase()}
+          {error}
         </Text>
       ) : null}
     </View>
@@ -71,44 +81,47 @@ export const AppTextInput: React.FC<AppTextInputProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginBottom: 18,
+    marginBottom: 16,
   },
   label: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
-    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     marginBottom: 6,
   },
   labelError: {
-    color: EditorialColors.accent,
+    color: DayRibbonColors.warn,
   },
-  inputRow: {
-    borderBottomWidth: 2,
-    paddingBottom: 6,
-    paddingTop: 4,
-    backgroundColor: 'transparent',
+  inputContainer: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    paddingHorizontal: 14,
+    minHeight: 50,
+    justifyContent: 'center',
   },
-  inputRowNormal: {
-    borderBottomColor: EditorialColors.ink,
+  inputFocused: {
+    borderColor: DayRibbonColors.cobalt,
   },
-  inputRowError: {
-    borderBottomColor: EditorialColors.accent,
+  inputError: {
+    borderColor: DayRibbonColors.warn,
   },
   input: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 16,
-    color: EditorialColors.ink,
-    paddingVertical: 0,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 15,
+    color: DayRibbonColors.ink,
+    paddingVertical: 10,
     paddingHorizontal: 0,
   },
   errorText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1,
-    color: EditorialColors.accent,
-    textTransform: 'uppercase',
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 12,
+    color: DayRibbonColors.warn,
     marginTop: 4,
+    marginLeft: 2,
   },
 });
+
+export default AppTextInput;

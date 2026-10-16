@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Text, ActivityIndicator, ViewStyle, TextStyle, StyleProp } from 'react-native';
-import { EditorialColors, EditorialFonts, EditorialRules } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes } from '@theme/dayRibbon';
 
 interface AppButtonProps {
   title: string;
@@ -36,12 +36,12 @@ export const AppButton: React.FC<AppButtonProps> = ({
     : styles.textMode;
 
   const fontColor = disabled
-    ? EditorialColors.muted
+    ? DayRibbonColors.mutedSoft
     : textColor
     ? textColor
     : isContained
-    ? EditorialColors.white
-    : EditorialColors.ink;
+    ? DayRibbonColors.white
+    : DayRibbonColors.ink;
 
   return (
     <TouchableOpacity
@@ -55,7 +55,7 @@ export const AppButton: React.FC<AppButtonProps> = ({
         <ActivityIndicator size="small" color={fontColor} />
       ) : (
         <Text style={[styles.label, { color: fontColor }, labelStyle]}>
-          {title.toUpperCase()}
+          {title}
         </Text>
       )}
     </TouchableOpacity>
@@ -64,32 +64,34 @@ export const AppButton: React.FC<AppButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    height: 54,
-    borderRadius: 0,
+    height: 52,
+    borderRadius: DayRibbonShapes.buttonRadius, // 14
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     marginVertical: 6,
     width: '100%',
   },
   contained: {
-    backgroundColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.cobalt,
+    ...DayRibbonShapes.shadow,
   },
   outlined: {
     backgroundColor: 'transparent',
-    borderWidth: EditorialRules.borderWidth,
-    borderColor: EditorialColors.ink,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.ink,
   },
   textMode: {
     backgroundColor: 'transparent',
   },
   disabled: {
-    backgroundColor: EditorialColors.track,
+    backgroundColor: DayRibbonColors.line,
   },
   label: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    textTransform: 'uppercase',
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    letterSpacing: 0.5,
   },
 });
+
+export default AppButton;
