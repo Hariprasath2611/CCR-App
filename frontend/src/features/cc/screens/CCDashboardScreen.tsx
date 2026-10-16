@@ -1,20 +1,21 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity, StatusBar } from 'react-native';
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, StatusBar, Image } from 'react-native';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { useReportStore, ConsolidatedReport } from '../store/useReportStore';
-import { CCStackParamList } from '@navigation/types';
 import { WeeklyCourseCoverageReportCard } from '../components/WeeklyCourseCoverageReportCard';
 import { getCCForSection, getHODForYear, FIRST_YEAR_CC_BOARD, CSE_3RD_YEAR_CC_BOARD } from '@config/facultyBoard';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import {
+  DayRibbonColors,
+  DayRibbonFonts,
+  DayRibbonShapes,
+  DayRibbonSpacing,
+} from '@theme/dayRibbon';
 import { BigNumber } from '@components/editorial/BigNumber';
-import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
+import { ProgressBar } from '@components/editorial/ProgressBar';
+import { StatTile } from '@components/editorial/StatTile';
 import { Feather } from '@expo/vector-icons';
-
-type CCNav = NativeStackNavigationProp<CCStackParamList>;
 
 export const CCDashboardScreen = () => {
   const insets = useSafeAreaInsets();
@@ -22,12 +23,11 @@ export const CCDashboardScreen = () => {
   const navigation = useNavigation<any>();
   const isFocused = useIsFocused();
 
-  const reports = useReportStore((state) => state.reports);
   const subjectProgressList = useReportStore((state) => state.subjectProgressList);
   const fetchWeeklyProgress = useReportStore((state) => state.fetchWeeklyProgress);
 
-  const userCC = FIRST_YEAR_CC_BOARD.find(cc => cc.email.toLowerCase() === user?.email?.toLowerCase())
-    || CSE_3RD_YEAR_CC_BOARD.find(cc => cc.email.toLowerCase() === user?.email?.toLowerCase());
+  const userCC = FIRST_YEAR_CC_BOARD.find((cc) => cc.email.toLowerCase() === user?.email?.toLowerCase())
+    || CSE_3RD_YEAR_CC_BOARD.find((cc) => cc.email.toLowerCase() === user?.email?.toLowerCase());
 
   const classId = user?.assignedClassId || userCC?.classId || '1st Year SEC-A';
   const selectedWeek = '12';
@@ -60,103 +60,94 @@ export const CCDashboardScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.screenTop),
             paddingBottom: insets.bottom + 80,
           },
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Top Meta Bar */}
-        <View style={styles.topMetaRow}>
-          <View>
-            <Label text="CLASS COUNSELOR DASHBOARD" />
+        {/* Top Header */}
+        <View style={styles.header}>
+          <View style={styles.logoSlot}>
+            <Image
+              source={require('../../../assets/logo-removebg-preview.png')}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
+          </View>
+
+          <View style={styles.headerMiddle}>
+            <Text style={styles.roleLabel}>CLASS COORDINATOR</Text>
             <Text style={styles.screenHeadline}>{classId}</Text>
           </View>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>WEEK {selectedWeek}</Text>
+
+          <View style={styles.weekBadge}>
+            <Text style={styles.weekBadgeText}>WEEK {selectedWeek}</Text>
           </View>
         </View>
 
         <Text style={styles.metaSubtext}>
-          COUNSELOR: {user?.name || ccInfo?.facultyName || 'FACULTY MEMBER'} • HOD: {hodInfo.hodName.toUpperCase()}
+          Counselor: {user?.name || ccInfo?.facultyName || 'Faculty Member'} • HOD: {hodInfo.hodName}
         </Text>
 
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
-
         {/* Hero Section: Average Class Coverage */}
-        <View style={styles.heroSection}>
-          <Label text="AVERAGE CLASS COVERAGE" />
+        <View style={styles.coverageHeroCard}>
+          <Text style={styles.cardHeaderLabel}>AVERAGE CLASS COVERAGE</Text>
           <View style={styles.heroRow}>
-            <BigNumber value={averageCoverage} size="hero" showPercent />
+            <BigNumber value={averageCoverage} size="hero" showPercent color={DayRibbonColors.cobalt} />
           </View>
+          <ProgressBar progress={averageCoverage} height={10} style={{ marginTop: 12 }} />
         </View>
 
-        {/* 4px Heavy Ink Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
-        {/* 3-Column Stat Row */}
-        <View style={styles.statRow}>
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{currentProgress.length || 6}</Text>
-            <Label text="COURSES" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>W-{selectedWeek}</Text>
-            <Label text="PERIOD" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>100%</Text>
-            <Label text="TARGET" />
-          </View>
+        {/* 3-Column Stat Grid */}
+        <View style={styles.statGrid}>
+          <StatTile
+            value={currentProgress.length || 6}
+            label="Courses"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value={`W-${selectedWeek}`}
+            label="Period"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value="100%"
+            label="Target"
+            style={styles.statGridItem}
+          />
         </View>
 
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
-
-        {/* Quick Action: Allocate Faculty */}
+        {/* Main Action: Submit to HOD as Lemon Button */}
         <TouchableOpacity
-          style={styles.outlineBtn}
-          onPress={() => navigation.navigate('FacultyAllocation')}
-          activeOpacity={0.7}
+          style={styles.lemonBtn}
+          onPress={() =>
+            navigation.navigate('StaffHome', {
+              screen: 'SubmitToHOD',
+              params: { reportId: `${classId}_W${selectedWeek}` },
+            })
+          }
+          activeOpacity={0.85}
         >
-          <Text style={styles.outlineBtnText}>MANAGE & ALLOCATE FACULTY</Text>
-          <Feather name="users" size={16} color={EditorialColors.ink} />
+          <Text style={styles.lemonBtnText}>Submit to HOD</Text>
+          <Feather name="send" size={16} color={DayRibbonColors.ink} />
         </TouchableOpacity>
 
-        {/* Section Title */}
-        <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionHeaderTitle}>WEEK {selectedWeek} CONSOLIDATED SPREADSHEET</Text>
-          <Label text="ACADEMIC LOG" />
-        </View>
-
-        {/* Consolidated Report Card */}
-        <View style={styles.reportCardWrapper}>
-          <WeeklyCourseCoverageReportCard report={draftReport} showDownloadButton={false} />
-        </View>
-
-        {/* Action Buttons */}
-        <View style={styles.actionBlock}>
+        {/* Secondary Actions Row */}
+        <View style={styles.secondaryActionsRow}>
           <TouchableOpacity
-            style={styles.primaryBtn}
-            onPress={() =>
-              navigation.navigate('StaffHome', {
-                screen: 'SubmitToHOD',
-                params: { reportId: `${classId}_W${selectedWeek}` },
-              })
-            }
-            activeOpacity={0.85}
+            style={styles.outlineBtn}
+            onPress={() => navigation.navigate('FacultyAllocation')}
+            activeOpacity={0.7}
           >
-            <Text style={styles.primaryBtnText}>SUBMIT TO HOD</Text>
-            <Feather name="send" size={16} color={EditorialColors.white} />
+            <Feather name="users" size={16} color={DayRibbonColors.ink} />
+            <Text style={styles.outlineBtnText}>Allocate Faculty</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -169,9 +160,22 @@ export const CCDashboardScreen = () => {
             }
             activeOpacity={0.7}
           >
-            <Text style={styles.outlineBtnText}>EXPORT REPORT PDF</Text>
-            <Feather name="download" size={16} color={EditorialColors.ink} />
+            <Feather name="download" size={16} color={DayRibbonColors.ink} />
+            <Text style={styles.outlineBtnText}>Export PDF</Text>
           </TouchableOpacity>
+        </View>
+
+        {/* Section Title */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeaderTitle}>
+            WEEK {selectedWeek} CONSOLIDATED REPORT
+          </Text>
+          <Text style={styles.sectionHeaderMeta}>ACADEMIC LOG</Text>
+        </View>
+
+        {/* Consolidated Report Card */}
+        <View style={styles.reportCardWrapper}>
+          <WeeklyCourseCoverageReportCard report={draftReport} showDownloadButton={false} />
         </View>
       </ScrollView>
     </View>
@@ -181,131 +185,156 @@ export const CCDashboardScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
-  topMetaRow: {
+  header: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 4,
+    marginBottom: 8,
+  },
+  logoSlot: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 4,
+    ...DayRibbonShapes.shadow,
+  },
+  logoImage: {
+    width: 32,
+    height: 32,
+  },
+  headerMiddle: {
+    flex: 1,
+    marginHorizontal: 12,
+  },
+  roleLabel: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 10,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
   },
   screenHeadline: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 24,
-    lineHeight: 28,
-    color: EditorialColors.ink,
-    marginTop: 2,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 18,
+    color: DayRibbonColors.ink,
+  },
+  weekBadge: {
+    backgroundColor: DayRibbonColors.cobaltTint,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+  },
+  weekBadgeText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.cobalt,
   },
   metaSubtext: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 10,
-    letterSpacing: 1.5,
-    color: EditorialColors.muted,
-    marginTop: 4,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
+    marginBottom: 16,
   },
-  badge: {
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+  coverageHeroCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 20,
+    marginBottom: 14,
+    ...DayRibbonShapes.shadow,
   },
-  badgeText: {
-    fontFamily: EditorialFonts.heavy,
+  cardHeaderLabel: {
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
-  },
-  hairlineSpacer: {
-    marginVertical: 16,
-  },
-  heroSection: {
-    marginTop: 4,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
   },
   heroRow: {
     marginTop: 4,
   },
-  heavySpacer: {
-    marginVertical: 18,
+  statGrid: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 16,
   },
-  statRow: {
+  statGridItem: {
+    flex: 1,
+  },
+  lemonBtn: {
+    height: 52,
+    backgroundColor: DayRibbonColors.lemon,
+    borderRadius: DayRibbonShapes.buttonRadius,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 6,
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 12,
+    ...DayRibbonShapes.shadow,
   },
-  statCol: {
+  lemonBtnText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
+  },
+  secondaryActionsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 24,
+  },
+  outlineBtn: {
     flex: 1,
+    height: 48,
+    borderRadius: DayRibbonShapes.buttonRadius,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
   },
-  statNum: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 34,
-    color: EditorialColors.ink,
-    marginBottom: 2,
-  },
-  statDivider: {
-    width: 1,
-    height: 38,
-    backgroundColor: EditorialColors.ink,
+  outlineBtnText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 13,
+    color: DayRibbonColors.ink,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 13,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
+  },
+  sectionHeaderMeta: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   reportCardWrapper: {
-    marginBottom: 24,
-  },
-  actionBlock: {
-    gap: 12,
-    marginTop: 4,
-  },
-  primaryBtn: {
-    height: 54,
-    width: '100%',
-    backgroundColor: EditorialColors.ink,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-  },
-  primaryBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.white,
-  },
-  outlineBtn: {
-    height: 54,
-    width: '100%',
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    backgroundColor: 'transparent',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-  },
-  outlineBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    marginBottom: 20,
   },
 });
+
+export default CCDashboardScreen;

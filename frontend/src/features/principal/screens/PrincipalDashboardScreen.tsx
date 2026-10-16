@@ -1,15 +1,20 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Text, StatusBar } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Text, StatusBar, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../../auth/store/useAuthStore';
 import { useReportStore } from '@features/cc/store/useReportStore';
 import { Feather } from '@expo/vector-icons';
 import { DEPARTMENTS } from './DeptSummaryScreen';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import {
+  DayRibbonColors,
+  DayRibbonFonts,
+  DayRibbonShapes,
+  DayRibbonSpacing,
+} from '@theme/dayRibbon';
 import { BigNumber } from '@components/editorial/BigNumber';
-import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
+import { StatTile } from '@components/editorial/StatTile';
+import { ProgressBar } from '@components/editorial/ProgressBar';
 
 export const PrincipalDashboardScreen = () => {
   const insets = useSafeAreaInsets();
@@ -23,7 +28,7 @@ export const PrincipalDashboardScreen = () => {
   }, [fetchReports]);
 
   const totalDepartments = DEPARTMENTS.length;
-  const totalClasses = reports.length > 0 ? new Set(reports.map(r => r.classId)).size : 13;
+  const totalClasses = reports.length > 0 ? new Set(reports.map((r) => r.classId)).size : 13;
   const reportsSubmitted = reports.length;
   const pendingApproval = reports.filter((r) => r.status === 'SUBMITTED_TO_HOD').length;
   const approvedReports = reports.filter((r) => r.status === 'SENT_TO_ADMIN').length;
@@ -33,52 +38,65 @@ export const PrincipalDashboardScreen = () => {
 
   const quickActions = [
     {
-      title: 'DEPARTMENT ACADEMIC DIRECTORY',
+      title: 'Department Academic Directory',
       subtitle: `${totalDepartments} departments • Status & performance`,
       target: 'DeptSummary',
+      icon: 'folder',
     },
     {
-      title: 'FACULTY METRICS & AUDIT',
+      title: 'Faculty Metrics & Audit',
       subtitle: 'Faculty progress, coverage rates & extra hours',
       target: 'FacultyAnalytics',
+      icon: 'users',
     },
     {
-      title: 'CENTRAL INSTITUTION REPORTS',
+      title: 'Central Institution Reports',
       subtitle: 'Weekly consolidated syllabus submissions',
       target: 'WeeklyReports',
+      icon: 'file-text',
     },
     {
-      title: 'INSTITUTIONAL SYLLABUS ANALYTICS',
+      title: 'Institutional Syllabus Analytics',
       subtitle: 'Campus-wide coverage curves & trends',
       target: 'InstitutionAnalytics',
+      icon: 'bar-chart-2',
     },
     {
-      title: 'DATA EXPORT SUITE',
+      title: 'Data Export Suite',
       subtitle: 'PDF & Excel academic compliance archives',
       target: 'ReportExport',
+      icon: 'download',
     },
   ];
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.screenTop),
             paddingBottom: insets.bottom + 80,
           },
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Top Header Row with Notifications Bell */}
-        <View style={styles.topHeaderRow}>
-          <View>
-            <Label text="CCR CENTRAL ADMINISTRATION" />
+        {/* Header with Logo slot, role info, and bell button */}
+        <View style={styles.header}>
+          <View style={styles.logoSlot}>
+            <Image
+              source={require('../../../assets/logo-removebg-preview.png')}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
+          </View>
+
+          <View style={styles.headerMiddle}>
+            <Text style={styles.roleLabel}>EXECUTIVE ADMINISTRATION</Text>
             <Text style={styles.principalName} numberOfLines={1}>
-              {user?.name || 'Dr. Ramesh'}
+              {user?.name || 'Dr. Ramesh (Principal)'}
             </Text>
           </View>
 
@@ -88,101 +106,88 @@ export const PrincipalDashboardScreen = () => {
             activeOpacity={0.7}
             accessibilityLabel="Notifications"
           >
-            <Feather name="bell" size={20} color={EditorialColors.ink} />
+            <Feather name="bell" size={18} color={DayRibbonColors.ink} />
             {pendingApproval > 0 && <View style={styles.unreadDot} />}
           </TouchableOpacity>
         </View>
 
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
-
         {/* Hero Section: Central Metric */}
-        <View style={styles.heroSection}>
-          <Label text="TOTAL SUBMITTED REPORTS" />
+        <View style={styles.heroCard}>
+          <Text style={styles.cardHeaderLabel}>TOTAL SUBMITTED REPORTS</Text>
           <View style={styles.heroRow}>
-            <BigNumber value={reportsSubmitted || 14} size="hero" />
+            <BigNumber value={reportsSubmitted || 14} size="hero" color={DayRibbonColors.cobalt} />
           </View>
+          <ProgressBar progress={86} height={10} style={{ marginTop: 12 }} />
         </View>
 
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
-        {/* 3-Column Primary Stat Row */}
-        <View style={styles.statRow}>
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{totalDepartments}</Text>
-            <Label text="DEPTS" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{totalClasses}</Text>
-            <Label text="CLASSES" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text
-              style={[
-                styles.statNum,
-                pendingApproval > 0 ? styles.accentStatNum : null,
-              ]}
-            >
-              {pendingApproval}
-            </Text>
-            <Label text="PENDING" />
-          </View>
+        {/* Primary Stat Grid */}
+        <View style={styles.statGrid}>
+          <StatTile
+            value={totalDepartments}
+            label="Depts"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value={totalClasses}
+            label="Classes"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value={pendingApproval}
+            label="Pending"
+            isBehindPlan={pendingApproval > 0}
+            style={styles.statGridItem}
+          />
         </View>
 
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
-
-        {/* 3-Column Secondary Stat Row */}
-        <View style={styles.statRow}>
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{approvedReports}</Text>
-            <Label text="APPROVED" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text
-              style={[
-                styles.statNum,
-                rejectedReports > 0 ? styles.accentStatNum : null,
-              ]}
-            >
-              {rejectedReports}
-            </Text>
-            <Label text="RETURNED" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>86%</Text>
-            <Label text="AVG COVERAGE" />
-          </View>
+        {/* Secondary Stat Grid */}
+        <View style={styles.statGrid}>
+          <StatTile
+            value={approvedReports}
+            label="Approved"
+            bgVariant="tint"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value={rejectedReports}
+            label="Returned"
+            isBehindPlan={rejectedReports > 0}
+            bgVariant="tint"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value="86%"
+            label="Avg Coverage"
+            bgVariant="tint"
+            style={styles.statGridItem}
+          />
         </View>
 
-        {/* 4px Heavy Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
-        {/* Quick Actions Header */}
+        {/* Section Header: Portals */}
         <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionHeaderTitle}>EXECUTIVE CONTROLS</Text>
-          <Label text="QUICK ACTIONS" />
+          <Text style={styles.sectionHeaderTitle}>INSTITUTIONAL DIRECTORY</Text>
+          <Text style={styles.sectionHeaderMeta}>CORE MODULES</Text>
         </View>
 
-        {/* Action Rows */}
-        <View style={styles.actionList}>
+        {/* Quick Action Cards */}
+        <View style={styles.actionsList}>
           {quickActions.map((action, index) => (
             <TouchableOpacity
-              key={action.target}
-              style={styles.actionRow}
+              key={index}
+              style={styles.actionCard}
               onPress={() => navigation.navigate(action.target)}
-              activeOpacity={0.7}
+              activeOpacity={0.75}
             >
-              <View style={styles.actionInfo}>
+              <View style={styles.actionIconBox}>
+                <Feather name={action.icon as any} size={20} color={DayRibbonColors.cobalt} />
+              </View>
+
+              <View style={styles.actionTextBox}>
                 <Text style={styles.actionTitle}>{action.title}</Text>
                 <Text style={styles.actionSubtitle}>{action.subtitle}</Text>
               </View>
-              <Feather name="chevron-right" size={20} color={EditorialColors.ink} />
+
+              <Feather name="chevron-right" size={18} color={DayRibbonColors.muted} />
             </TouchableOpacity>
           ))}
         </View>
@@ -194,120 +199,154 @@ export const PrincipalDashboardScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
-  topHeaderRow: {
+  header: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 4,
+    marginBottom: 20,
+  },
+  logoSlot: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 4,
+    ...DayRibbonShapes.shadow,
+  },
+  logoImage: {
+    width: 32,
+    height: 32,
+  },
+  headerMiddle: {
+    flex: 1,
+    marginHorizontal: 12,
+  },
+  roleLabel: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 10,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
   },
   principalName: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 24,
-    lineHeight: 28,
-    color: EditorialColors.ink,
-    marginTop: 2,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 18,
+    lineHeight: 22,
+    color: DayRibbonColors.ink,
   },
   bellButton: {
     width: 44,
     height: 44,
+    borderRadius: 22,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative',
+    ...DayRibbonShapes.shadow,
   },
   unreadDot: {
     position: 'absolute',
-    top: 8,
-    right: 8,
+    top: 10,
+    right: 10,
     width: 8,
     height: 8,
-    backgroundColor: EditorialColors.accent,
+    borderRadius: 4,
+    backgroundColor: DayRibbonColors.warn,
   },
-  hairlineSpacer: {
-    marginVertical: 16,
+  heroCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 20,
+    marginBottom: 14,
+    ...DayRibbonShapes.shadow,
   },
-  heroSection: {
-    marginTop: 4,
+  cardHeaderLabel: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
   },
   heroRow: {
     marginTop: 4,
   },
-  heavySpacer: {
-    marginVertical: 18,
-  },
-  statRow: {
+  statGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 6,
+    gap: 10,
+    marginBottom: 12,
   },
-  statCol: {
+  statGridItem: {
     flex: 1,
-    alignItems: 'center',
-  },
-  statNum: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 34,
-    color: EditorialColors.ink,
-    marginBottom: 2,
-  },
-  accentStatNum: {
-    color: EditorialColors.accent,
-  },
-  statDivider: {
-    width: 1,
-    height: 38,
-    backgroundColor: EditorialColors.ink,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: 10,
     marginBottom: 14,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
   },
-  actionList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+  sectionHeaderMeta: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
-  actionRow: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 16,
+  actionsList: {
+    width: '100%',
+  },
+  actionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
+    marginBottom: 12,
+    ...DayRibbonShapes.shadow,
   },
-  actionInfo: {
+  actionIconBox: {
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: DayRibbonColors.cobaltTint,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  actionTextBox: {
     flex: 1,
-    marginRight: 16,
   },
   actionTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 14,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
-    marginBottom: 4,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 15,
+    color: DayRibbonColors.ink,
+    marginBottom: 2,
   },
   actionSubtitle: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 12,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
   },
 });
+
+export default PrincipalDashboardScreen;

@@ -10,10 +10,14 @@ import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getCCForSection } from '@config/facultyBoard';
 import { matchFacultyName } from '../../../utils/facultyMatcher';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
-import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
-import { SegBar } from '@components/editorial/SegBar';
+import {
+  DayRibbonColors,
+  DayRibbonFonts,
+  DayRibbonShapes,
+  DayRibbonSpacing,
+} from '@theme/dayRibbon';
+import { StatTile } from '@components/editorial/StatTile';
+import { ProgressBar } from '@components/editorial/ProgressBar';
 
 interface SubjectInfo {
   code: string;
@@ -46,7 +50,7 @@ export const AssignedSubjectsScreen = () => {
         : slots.filter((s) => matchFacultyName(s.faculty_name, user?.name));
       const filteredSlots = (userFilteredSlots.length === 0 && slots.length > 0) ? slots : userFilteredSlots;
       const sessionMap: Record<string, SubjectInfo> = {};
-      const colors = ['#111111', '#111111', '#111111', '#111111', '#111111', '#111111'];
+      const colors = ['#2B3FE0', '#2B3FE0', '#2B3FE0', '#2B3FE0'];
       let colorIdx = 0;
 
       for (const slot of filteredSlots) {
@@ -134,13 +138,13 @@ export const AssignedSubjectsScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.screenTop),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -148,51 +152,47 @@ export const AssignedSubjectsScreen = () => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Label text="ACADEMIC CURRICULUM" />
-          <Text style={styles.headerTitle}>
-            ASSIGNED COURSES<Text style={styles.accentDot}>.</Text>
-          </Text>
+          <Text style={styles.captionTag}>ACADEMIC CURRICULUM</Text>
+          <Text style={styles.headerTitle}>Assigned Courses</Text>
           <Text style={styles.headerSubtitle}>
             Monitor syllabus logs, teaching targets and section coverage.
           </Text>
         </View>
 
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
-        {/* Stat Summary Row */}
-        <View style={styles.statRow}>
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{subjects.length}</Text>
-            <Label text="COURSES" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>
-              {new Set(subjects.map((s) => s.section)).size}
-            </Text>
-            <Label text="SECTIONS" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>100%</Text>
-            <Label text="TARGET" />
-          </View>
+        {/* Stat Summary Grid */}
+        <View style={styles.statGrid}>
+          <StatTile
+            value={subjects.length}
+            label="Courses"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value={new Set(subjects.map((s) => s.section)).size}
+            label="Sections"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value="100%"
+            label="Target"
+            style={styles.statGridItem}
+          />
         </View>
 
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
+        {/* Section Header */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeaderTitle}>COURSE LIST</Text>
+          <Text style={styles.sectionHeaderMeta}>{subjects.length} TOTAL</Text>
+        </View>
 
-        {/* Subject Rows */}
+        {/* Subject Cards */}
         {loading ? (
           <View style={styles.skeletonContainer}>
-            <View style={styles.skeletonBlock} />
             <View style={styles.skeletonBlock} />
             <View style={styles.skeletonBlock} />
           </View>
         ) : subjects.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Label text="NO ASSIGNED COURSES" />
+            <Text style={styles.emptyText}>No assigned courses</Text>
           </View>
         ) : (
           <View style={styles.subjectList}>
@@ -200,28 +200,27 @@ export const AssignedSubjectsScreen = () => {
               const progKey = `${subj.code}_${subj.section}`;
               const prog = syllabusProgress[progKey] || { completed: 0, total: 5, percent: 0 };
               const percentLabel = Math.round(prog.percent * 100);
-              const isLagging = percentLabel < 40;
+              const isBehind = percentLabel < 40;
 
               return (
-                <View key={progKey} style={styles.subjectRow}>
-                  <View style={styles.rowTop}>
+                <View key={progKey} style={styles.subjectCard}>
+                  <View style={styles.cardTop}>
                     <View style={styles.subjectInfo}>
                       <View style={styles.codeMetaRow}>
                         <Text style={styles.subjectCode}>{subj.code}</Text>
                         <Text style={styles.sectionMeta}>{subj.year}</Text>
                       </View>
                       <Text style={styles.subjectName}>{subj.name}</Text>
-                      <Label
-                        text={`CC: ${subj.ccFacultyName} • ${prog.completed}/${prog.total} TOPICS`}
-                        style={styles.ccMetaLabel}
-                      />
+                      <Text style={styles.ccMetaLabel}>
+                        CC: {subj.ccFacultyName} • {prog.completed}/{prog.total} Topics
+                      </Text>
                     </View>
 
                     <View style={styles.rightValueBox}>
                       <Text
                         style={[
                           styles.percentText,
-                          isLagging ? styles.accentPercentText : null,
+                          isBehind ? styles.warnPercentText : styles.cobaltPercentText,
                         ]}
                       >
                         {percentLabel}%
@@ -229,32 +228,31 @@ export const AssignedSubjectsScreen = () => {
                     </View>
                   </View>
 
-                  {/* 25-Segment Bar */}
-                  <View style={styles.segBarWrapper}>
-                    <SegBar
-                      totalSegments={25}
-                      filledSegments={Math.round((percentLabel / 100) * 25)}
-                      isLagging={isLagging}
-                    />
-                  </View>
+                  {/* Progress Bar */}
+                  <ProgressBar
+                    progress={percentLabel}
+                    isBehindPlan={isBehind}
+                    height={8}
+                    style={styles.progressBar}
+                  />
 
-                  {/* Row Action Buttons */}
-                  <View style={styles.rowActions}>
+                  {/* Row Actions */}
+                  <View style={styles.cardActions}>
                     <TouchableOpacity
-                      style={styles.actionOutlineBtn}
+                      style={styles.outlineActionBtn}
                       onPress={() => navigation.navigate('WeeklyPlanForm')}
                       activeOpacity={0.7}
                     >
-                      <Text style={styles.actionOutlineBtnText}>SET TARGETS</Text>
+                      <Text style={styles.outlineActionBtnText}>Set Targets</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                      style={styles.actionPrimaryBtn}
+                      style={styles.primaryActionBtn}
                       onPress={() => handleUpdateProgress(subj.code, subj.section)}
-                      activeOpacity={0.85}
+                      activeOpacity={0.8}
                     >
-                      <Text style={styles.actionPrimaryBtnText}>LOG PROGRESS</Text>
-                      <Feather name="arrow-right" size={14} color={EditorialColors.white} />
+                      <Text style={styles.primaryActionBtnText}>Update Log</Text>
+                      <Feather name="arrow-right" size={14} color={DayRibbonColors.white} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -270,78 +268,80 @@ export const AssignedSubjectsScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   header: {
+    marginBottom: 16,
+  },
+  captionTag: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     marginBottom: 4,
   },
   headerTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 36,
-    lineHeight: 40,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 28,
+    lineHeight: 34,
+    color: DayRibbonColors.ink,
     letterSpacing: -0.5,
-    marginTop: 4,
     marginBottom: 4,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
   headerSubtitle: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
   },
-  heavySpacer: {
-    marginVertical: 18,
-  },
-  hairlineSpacer: {
-    marginVertical: 16,
-  },
-  statRow: {
+  statGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 6,
+    gap: 10,
+    marginBottom: 20,
   },
-  statCol: {
+  statGridItem: {
     flex: 1,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 12,
   },
-  statNum: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 34,
-    color: EditorialColors.ink,
-    marginBottom: 2,
+  sectionHeaderTitle: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 13,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
   },
-  statDivider: {
-    width: 1,
-    height: 38,
-    backgroundColor: EditorialColors.ink,
+  sectionHeaderMeta: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   subjectList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+    width: '100%',
   },
-  subjectRow: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 16,
+  subjectCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
+    marginBottom: 14,
+    ...DayRibbonShapes.shadow,
   },
-  rowTop: {
+  cardTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 10,
   },
   subjectInfo: {
     flex: 1,
@@ -354,76 +354,77 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   subjectCode: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 12,
-    letterSpacing: 1,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.cobalt,
   },
   sectionMeta: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 12,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
   },
   subjectName: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 17,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 16,
     lineHeight: 22,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
     marginBottom: 4,
   },
   ccMetaLabel: {
-    letterSpacing: 1.5,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   rightValueBox: {
     alignItems: 'flex-end',
-    justifyContent: 'center',
   },
   percentText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 34,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 26,
+    lineHeight: 30,
   },
-  accentPercentText: {
-    color: EditorialColors.accent,
+  cobaltPercentText: {
+    color: DayRibbonColors.cobalt,
   },
-  segBarWrapper: {
-    marginTop: 2,
+  warnPercentText: {
+    color: DayRibbonColors.warn,
+  },
+  progressBar: {
+    marginTop: 12,
     marginBottom: 14,
   },
-  rowActions: {
+  cardActions: {
     flexDirection: 'row',
     gap: 10,
-    justifyContent: 'flex-end',
   },
-  actionOutlineBtn: {
+  outlineActionBtn: {
+    flex: 1,
     height: 40,
-    paddingHorizontal: 14,
+    borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionOutlineBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
+  outlineActionBtnText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 12,
+    color: DayRibbonColors.ink,
   },
-  actionPrimaryBtn: {
+  primaryActionBtn: {
+    flex: 1,
     height: 40,
-    paddingHorizontal: 16,
-    backgroundColor: EditorialColors.ink,
+    borderRadius: 12,
+    backgroundColor: DayRibbonColors.cobalt,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: 6,
   },
-  actionPrimaryBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.white,
+  primaryActionBtnText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 12,
+    color: DayRibbonColors.white,
   },
   skeletonContainer: {
     gap: 12,
@@ -431,10 +432,20 @@ const styles = StyleSheet.create({
   },
   skeletonBlock: {
     height: 90,
-    backgroundColor: EditorialColors.track,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
   },
   emptyContainer: {
     paddingVertical: 32,
     alignItems: 'center',
   },
+  emptyText: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 14,
+    color: DayRibbonColors.muted,
+  },
 });
+
+export default AssignedSubjectsScreen;

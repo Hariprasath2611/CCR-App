@@ -1,20 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity, Text, StatusBar } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, StatusBar } from 'react-native';
 import { TimetableRepository } from '@database/repositories/TimetableRepository';
 import { SQLiteTimetableItem } from '@database/types';
 import { useAuthStore } from '../../auth/store/useAuthStore';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StaffStackParamList } from '@navigation/types';
-import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { matchFacultyName } from '../../../utils/facultyMatcher';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
-import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
+import {
+  DayRibbonColors,
+  DayRibbonFonts,
+  DayRibbonShapes,
+  DayRibbonSpacing,
+} from '@theme/dayRibbon';
 import { EditorialChip } from '@components/editorial/EditorialChip';
+import { PeriodBlock } from '@components/editorial/PeriodBlock';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+const PERIOD_TIMES: Record<number, string> = {
+  1: '08:30 - 09:20',
+  2: '09:20 - 10:10',
+  3: '10:25 - 11:15',
+  4: '11:15 - 12:05',
+  5: '12:45 - 01:35',
+  6: '01:35 - 02:25',
+  7: '02:35 - 03:25',
+};
 
 export const WeeklyTimetableScreen = () => {
   const insets = useSafeAreaInsets();
@@ -46,7 +59,9 @@ export const WeeklyTimetableScreen = () => {
     loadTimetable();
   }, []);
 
-  const filteredSlots = slots.filter((slot) => slot.day_of_week.toLowerCase() === selectedDay.toLowerCase());
+  const filteredSlots = slots.filter(
+    (slot) => slot.day_of_week.toLowerCase() === selectedDay.toLowerCase()
+  );
 
   const handleLogProgress = (subjectCode: string) => {
     navigation.navigate('WeeklyProgress', { subjectCode, weekNumber: 12 });
@@ -54,38 +69,33 @@ export const WeeklyTimetableScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.screenTop),
             paddingBottom: insets.bottom + 80,
           },
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+        {/* Header Title Block */}
         <View style={styles.header}>
-          <Label text="TIMETABLE & LECTURES" />
-          <Text style={styles.headerTitle}>
-            WEEKLY SCHEDULE<Text style={styles.accentDot}>.</Text>
-          </Text>
+          <Text style={styles.captionTag}>TIMETABLE & LECTURES</Text>
+          <Text style={styles.headerTitle}>Weekly Schedule</Text>
           <Text style={styles.headerSubtitle}>
             Allocated class periods, rooms, and subject teaching slots.
           </Text>
         </View>
-
-        {/* 4px Heavy Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
 
         {/* Day Filter Chips */}
         <View style={styles.chipRow}>
           {DAYS.map((day) => (
             <EditorialChip
               key={day}
-              label={day.toUpperCase()}
+              label={day}
               selected={selectedDay === day}
               onPress={() => setSelectedDay(day)}
             />
@@ -97,10 +107,10 @@ export const WeeklyTimetableScreen = () => {
           <Text style={styles.sectionHeaderTitle}>
             {selectedDay.toUpperCase()} SESSIONS
           </Text>
-          <Label text={`${filteredSlots.length} PERIODS`} />
+          <Text style={styles.sectionHeaderMeta}>{filteredSlots.length} PERIODS</Text>
         </View>
 
-        {/* Schedule List */}
+        {/* Schedule List with PeriodBlocks */}
         {loading ? (
           <View style={styles.skeletonContainer}>
             <View style={styles.skeletonBlock} />
@@ -109,46 +119,30 @@ export const WeeklyTimetableScreen = () => {
           </View>
         ) : filteredSlots.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Label text={`NO LECTURES SCHEDULED FOR ${selectedDay.toUpperCase()}`} />
+            <Text style={styles.emptyText}>
+              No lectures scheduled for {selectedDay}
+            </Text>
           </View>
         ) : (
           <View style={styles.slotList}>
-            {filteredSlots.map((item) => (
-              <View key={item.id} style={styles.slotRow}>
-                {/* Period Column */}
-                <View style={styles.periodCol}>
-                  <Text style={styles.periodNum}>{item.period}</Text>
-                  <Label text="PERIOD" />
-                </View>
+            {filteredSlots.map((item, index) => {
+              const periodNum = item.period || index + 1;
+              const timeRange = PERIOD_TIMES[periodNum] || '09:00 - 09:50';
+              const isNow = index === 0;
 
-                {/* Vertical Divider */}
-                <View style={styles.vertDivider} />
-
-                {/* Class Details */}
-                <View style={styles.infoCol}>
-                  <View style={styles.metaRow}>
-                    <Text style={styles.subjectCode}>{item.subject_code}</Text>
-                    <View style={styles.sectionBadge}>
-                      <Text style={styles.sectionBadgeText}>{item.class_section}</Text>
-                    </View>
-                  </View>
-                  <Text style={styles.subjectName} numberOfLines={1}>
-                    {item.subject_name}
-                  </Text>
-                  <Label text={`HALL: ${item.room_no || 'TBA'}`} style={styles.roomMeta} />
-                </View>
-
-                {/* Action Button */}
-                <TouchableOpacity
-                  style={styles.logButton}
-                  onPress={() => handleLogProgress(item.subject_code)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.logButtonText}>LOG</Text>
-                  <Feather name="chevron-right" size={14} color={EditorialColors.ink} />
-                </TouchableOpacity>
-              </View>
-            ))}
+              return (
+                <PeriodBlock
+                  key={item.id}
+                  periodNumber={periodNum}
+                  timeRange={timeRange}
+                  title={item.subject_name}
+                  subtitle={`${item.class_section} • ${item.subject_code}`}
+                  room={item.room_no || 'TBA'}
+                  state={isNow ? 'now' : 'upcoming'}
+                  onPressLog={() => handleLogProgress(item.subject_code)}
+                />
+              );
+            })}
           </View>
         )}
       </ScrollView>
@@ -159,38 +153,38 @@ export const WeeklyTimetableScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   header: {
+    marginBottom: 16,
+  },
+  captionTag: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     marginBottom: 4,
   },
   headerTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 36,
-    lineHeight: 40,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 28,
+    lineHeight: 34,
+    color: DayRibbonColors.ink,
     letterSpacing: -0.5,
-    marginTop: 4,
     marginBottom: 4,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
   headerSubtitle: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
-  },
-  heavySpacer: {
-    marginVertical: 18,
   },
   chipRow: {
     flexDirection: 'row',
@@ -205,92 +199,18 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
+  },
+  sectionHeaderMeta: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   slotList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
-  },
-  slotRow: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  periodCol: {
-    width: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  periodNum: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 28,
-    lineHeight: 32,
-    color: EditorialColors.ink,
-    marginBottom: 2,
-  },
-  vertDivider: {
-    width: 1,
-    height: 48,
-    backgroundColor: EditorialColors.ink,
-    marginHorizontal: 12,
-  },
-  infoCol: {
-    flex: 1,
-    marginRight: 10,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
-  },
-  subjectCode: {
-    fontFamily: EditorialFonts.bold,
-    fontSize: 12,
-    letterSpacing: 1,
-    color: EditorialColors.muted,
-  },
-  sectionBadge: {
-    borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
-  },
-  sectionBadgeText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 10,
-    color: EditorialColors.ink,
-  },
-  subjectName: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 15,
-    lineHeight: 20,
-    color: EditorialColors.ink,
-    marginBottom: 4,
-  },
-  roomMeta: {
-    letterSpacing: 1.5,
-  },
-  logButton: {
-    height: 38,
-    paddingHorizontal: 12,
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-  },
-  logButtonText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
+    width: '100%',
   },
   skeletonContainer: {
     gap: 12,
@@ -298,10 +218,20 @@ const styles = StyleSheet.create({
   },
   skeletonBlock: {
     height: 72,
-    backgroundColor: EditorialColors.track,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
   },
   emptyContainer: {
     paddingVertical: 36,
     alignItems: 'center',
   },
+  emptyText: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 14,
+    color: DayRibbonColors.muted,
+  },
 });
+
+export default WeeklyTimetableScreen;
