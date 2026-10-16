@@ -4,13 +4,16 @@ import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CCStackParamList } from '@navigation/types';
 import { useReportStore, SubjectProgress } from '../store/useReportStore';
-import { getSectionTemplate } from '@config/sectionTemplates';
 import { getCCForSection } from '@config/facultyBoard';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
-import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
-import { SegBar } from '@components/editorial/SegBar';
+import {
+  DayRibbonColors,
+  DayRibbonFonts,
+  DayRibbonShapes,
+  DayRibbonSpacing,
+} from '@theme/dayRibbon';
+import { StatTile } from '@components/editorial/StatTile';
+import { ProgressBar } from '@components/editorial/ProgressBar';
 import { Feather } from '@expo/vector-icons';
 
 type RouteParams = RouteProp<CCStackParamList, 'ClassProgress'>;
@@ -30,7 +33,6 @@ export const ClassProgressScreen = () => {
     fetchWeeklyProgress(classId, selectedWeek);
   }, [classId, selectedWeek]);
 
-  const tmpl = getSectionTemplate(classId);
   const ccInfo = getCCForSection(classId);
   const subjects: SubjectProgress[] = subjectProgressList[`${classId}_${selectedWeek}`] || [];
 
@@ -42,13 +44,13 @@ export const ClassProgressScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.screenTop),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -56,46 +58,32 @@ export const ClassProgressScreen = () => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Label text={`SECTION CURRICULUM • WEEK ${selectedWeek}`} />
-          <Text style={styles.headerTitle}>
-            {classId.toUpperCase()}
-            <Text style={styles.accentDot}>.</Text>
-          </Text>
+          <Text style={styles.captionTag}>SECTION CURRICULUM • WEEK {selectedWeek}</Text>
+          <Text style={styles.headerTitle}>{classId}</Text>
           <Text style={styles.headerSubtitle}>
-            COORDINATOR: {ccInfo?.facultyName?.toUpperCase() || 'DESIGNATED CC'} • {avgCoverage}% AVERAGE COVERAGE
+            Coordinator: {ccInfo?.facultyName || 'Designated CC'} • {avgCoverage}% Average Coverage
           </Text>
         </View>
 
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
-        {/* 3-Column Stat Row */}
-        <View style={styles.statRow}>
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{subjects.length}</Text>
-            <Label text="SUBJECTS" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{completedCount}</Text>
-            <Label text="LOGGED" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text
-              style={[
-                styles.statNum,
-                subjects.length - completedCount > 0 ? styles.accentStatNum : null,
-              ]}
-            >
-              {subjects.length - completedCount}
-            </Text>
-            <Label text="PENDING" />
-          </View>
+        {/* 3-Column Stat Grid */}
+        <View style={styles.statGrid}>
+          <StatTile
+            value={subjects.length}
+            label="Subjects"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value={completedCount}
+            label="Logged"
+            style={styles.statGridItem}
+          />
+          <StatTile
+            value={subjects.length - completedCount}
+            label="Pending"
+            isBehindPlan={subjects.length - completedCount > 0}
+            style={styles.statGridItem}
+          />
         </View>
-
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
 
         {/* Quick Action Buttons */}
         <View style={styles.quickActionRow}>
@@ -104,8 +92,8 @@ export const ClassProgressScreen = () => {
             onPress={() => navigation.navigate('FacultyAllocation')}
             activeOpacity={0.7}
           >
-            <Text style={styles.quickOutlineBtnText}>ALLOCATE TEACHERS</Text>
-            <Feather name="users" size={14} color={EditorialColors.ink} />
+            <Feather name="users" size={14} color={DayRibbonColors.ink} />
+            <Text style={styles.quickOutlineBtnText}>Allocate Teachers</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -113,40 +101,46 @@ export const ClassProgressScreen = () => {
             onPress={() => navigation.navigate('PendingSubmissions', { classId })}
             activeOpacity={0.7}
           >
-            <Text style={styles.quickOutlineBtnText}>PENDING LIST</Text>
-            <Feather name="clock" size={14} color={EditorialColors.ink} />
+            <Feather name="clock" size={14} color={DayRibbonColors.ink} />
+            <Text style={styles.quickOutlineBtnText}>Pending List</Text>
           </TouchableOpacity>
         </View>
 
         {/* Section Header */}
         <View style={styles.sectionHeaderRow}>
           <Text style={styles.sectionHeaderTitle}>CURRICULUM ROSTER</Text>
-          <Label text="WEEK 12 LOGS" />
+          <Text style={styles.sectionHeaderMeta}>WEEK {selectedWeek} LOGS</Text>
         </View>
 
         {/* Subjects Roster */}
         <View style={styles.subjectList}>
           {subjects.map((sub) => {
             const isLogged = sub.status === 'Submitted';
-            const isLagging = sub.coverage < 70;
+            const isBehind = sub.coverage < 70;
+
             return (
               <TouchableOpacity
                 key={sub.code}
                 onPress={() =>
                   navigation.navigate('SubjectProgressDetail', { progressId: `${classId}_${sub.code}` })
                 }
-                style={styles.subjectRow}
-                activeOpacity={0.7}
+                style={styles.subjectCard}
+                activeOpacity={0.75}
               >
-                <View style={styles.rowTop}>
+                <View style={styles.cardTop}>
                   <View style={styles.subjectInfo}>
                     <View style={styles.codeRow}>
                       <Text style={styles.subjectCode}>{sub.code}</Text>
-                      <View style={styles.statusBadge}>
+                      <View
+                        style={[
+                          styles.statusBadge,
+                          isLogged ? styles.loggedBadge : styles.pendingBadge,
+                        ]}
+                      >
                         <Text
                           style={[
                             styles.statusText,
-                            !isLogged ? styles.accentStatusText : null,
+                            isLogged ? styles.loggedStatusText : styles.pendingStatusText,
                           ]}
                         >
                           {isLogged ? 'LOGGED' : 'PENDING'}
@@ -154,17 +148,16 @@ export const ClassProgressScreen = () => {
                       </View>
                     </View>
                     <Text style={styles.subjectName}>{sub.name}</Text>
-                    <Label
-                      text={`FACULTY: ${(sub.faculty || 'STAFF').toUpperCase()} • ${sub.periodsHandled || 0}/${sub.periodsPlanned || 4} PERIODS`}
-                      style={styles.facultyMeta}
-                    />
+                    <Text style={styles.facultyMeta}>
+                      Faculty: {sub.faculty || 'Staff'} • {sub.periodsHandled || 0}/{sub.periodsPlanned || 4} Periods
+                    </Text>
                   </View>
 
                   <View style={styles.rightValueBox}>
                     <Text
                       style={[
                         styles.percentText,
-                        isLagging ? styles.accentPercentText : null,
+                        isBehind ? styles.warnPercentText : styles.cobaltPercentText,
                       ]}
                     >
                       {sub.coverage}%
@@ -172,14 +165,13 @@ export const ClassProgressScreen = () => {
                   </View>
                 </View>
 
-                {/* 25-Segment Bar */}
-                <View style={styles.segBarWrapper}>
-                  <SegBar
-                    totalSegments={25}
-                    filledSegments={Math.round((sub.coverage / 100) * 25)}
-                    isLagging={isLagging}
-                  />
-                </View>
+                {/* Progress Bar */}
+                <ProgressBar
+                  progress={sub.coverage}
+                  isBehindPlan={isBehind}
+                  height={8}
+                  style={styles.progressBar}
+                />
               </TouchableOpacity>
             );
           })}
@@ -192,66 +184,46 @@ export const ClassProgressScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   header: {
+    marginBottom: 16,
+  },
+  captionTag: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
     marginBottom: 4,
   },
   headerTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 36,
-    lineHeight: 40,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 28,
+    lineHeight: 34,
+    color: DayRibbonColors.ink,
     letterSpacing: -0.5,
-    marginTop: 4,
     marginBottom: 4,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
   headerSubtitle: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
   },
-  heavySpacer: {
-    marginVertical: 18,
-  },
-  hairlineSpacer: {
-    marginVertical: 16,
-  },
-  statRow: {
+  statGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 6,
+    gap: 10,
+    marginBottom: 16,
   },
-  statCol: {
+  statGridItem: {
     flex: 1,
-    alignItems: 'center',
-  },
-  statNum: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 34,
-    color: EditorialColors.ink,
-    marginBottom: 2,
-  },
-  accentStatNum: {
-    color: EditorialColors.accent,
-  },
-  statDivider: {
-    width: 1,
-    height: 38,
-    backgroundColor: EditorialColors.ink,
   },
   quickActionRow: {
     flexDirection: 'row',
@@ -261,45 +233,54 @@ const styles = StyleSheet.create({
   quickOutlineBtn: {
     flex: 1,
     height: 44,
+    borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: 6,
+    ...DayRibbonShapes.shadow,
   },
   quickOutlineBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 12,
+    color: DayRibbonColors.ink,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
+  },
+  sectionHeaderMeta: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   subjectList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+    width: '100%',
   },
-  subjectRow: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 14,
+  subjectCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
+    marginBottom: 12,
+    ...DayRibbonShapes.shadow,
   },
-  rowTop: {
+  cardTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 10,
   },
   subjectInfo: {
     flex: 1,
@@ -312,50 +293,61 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   subjectCode: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 12,
-    letterSpacing: 1,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.cobalt,
   },
   statusBadge: {
-    borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  loggedBadge: {
+    backgroundColor: DayRibbonColors.cobaltTint,
+  },
+  pendingBadge: {
+    backgroundColor: DayRibbonColors.warnBg,
   },
   statusText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 9,
-    letterSpacing: 1,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 10,
+    letterSpacing: 0.5,
   },
-  accentStatusText: {
-    color: EditorialColors.accent,
+  loggedStatusText: {
+    color: DayRibbonColors.cobalt,
+  },
+  pendingStatusText: {
+    color: DayRibbonColors.warn,
   },
   subjectName: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 16,
-    lineHeight: 20,
-    color: EditorialColors.ink,
+    lineHeight: 22,
+    color: DayRibbonColors.ink,
     marginBottom: 4,
   },
   facultyMeta: {
-    letterSpacing: 1.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
   },
   rightValueBox: {
     alignItems: 'flex-end',
-    justifyContent: 'center',
   },
   percentText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 28,
-    lineHeight: 32,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 26,
+    lineHeight: 30,
   },
-  accentPercentText: {
-    color: EditorialColors.accent,
+  cobaltPercentText: {
+    color: DayRibbonColors.cobalt,
   },
-  segBarWrapper: {
-    marginTop: 2,
+  warnPercentText: {
+    color: DayRibbonColors.warn,
+  },
+  progressBar: {
+    marginTop: 12,
   },
 });
+
+export default ClassProgressScreen;
