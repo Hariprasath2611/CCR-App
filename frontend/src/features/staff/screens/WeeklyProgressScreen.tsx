@@ -15,7 +15,7 @@ import { SyncQueueRepository } from '@database/repositories/SyncQueueRepository'
 import { SQLiteSyllabusNode } from '@database/types';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { useReportStore } from '@features/cc/store/useReportStore';
-import { EditorialColors, EditorialFonts, EditorialSpacing } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { Rule } from '@components/editorial/Rule';
 import { Label } from '@components/editorial/Label';
 import { syncEngine } from '@features/sync/syncEngine';
@@ -357,12 +357,11 @@ export const WeeklyProgressScreen = () => {
       {/* ── HEADER ── */}
       <View style={styles.headerBox}>
         <Label text="ACADEMIC PROGRESS ENTRY" />
-        <Text style={styles.headingText}>WEEKLY COURSE COVERAGE.</Text>
+        <Text style={styles.headingText}>Weekly Coverage</Text>
         <Text style={styles.subHeadingText}>
-          MANUAL SELECTION · LESSON PLAN VERIFICATION · SYLLABUS PACE AUDIT
+          Lesson plan verification and syllabus pace audit.
         </Text>
       </View>
-      <Rule thick style={styles.heroRule} />
 
       {/* ── SECTION 1: ACADEMIC HIERARCHY SELECTOR ── */}
       <View style={styles.sectionBlock}>
@@ -542,7 +541,7 @@ export const WeeklyProgressScreen = () => {
               name="fromDate"
               render={({ field: { onChange, value } }) => (
                 <DatePickerField
-                  label="From Date (DD/MM/YYYY)"
+                  label="From Date"
                   value={value}
                   onChange={onChange}
                   error={errors.fromDate?.message}
@@ -556,7 +555,7 @@ export const WeeklyProgressScreen = () => {
               name="toDate"
               render={({ field: { onChange, value } }) => (
                 <DatePickerField
-                  label="To Date (DD/MM/YYYY)"
+                  label="To Date"
                   value={value}
                   onChange={onChange}
                   error={errors.toDate?.message}
@@ -621,7 +620,7 @@ export const WeeklyProgressScreen = () => {
             name="topicsCovered"
             render={({ field: { onChange, value } }) => (
               <CreatableTopicSelect
-                label="Topics Covered (Type topics covered)"
+                label="Topics Covered"
                 unit={unit}
                 syllabusNodes={syllabusNodes}
                 value={value || ''}
@@ -677,8 +676,8 @@ export const WeeklyProgressScreen = () => {
         {/* Algorithm 1 Real-Time Analytics Badge */}
         <View style={[styles.paceBadge, isLagging && styles.paceBadgeWarning]}>
           <View style={{ flex: 1 }}>
-            <Label text="ALGORITHM 1 PACE AUDIT" color={isLagging ? EditorialColors.accent : EditorialColors.muted} />
-            <Text style={[styles.paceBadgeTitle, isLagging && { color: EditorialColors.accent }]}>
+            <Label text="ALGORITHM 1 PACE AUDIT" color={isLagging ? DayRibbonColors.warn : DayRibbonColors.muted} />
+            <Text style={[styles.paceBadgeTitle, isLagging && { color: DayRibbonColors.warn }]}>
               PACE RATIO: {paceRatio} · {isLagging ? 'BEHIND SCHEDULE' : 'ON TRACK'}
             </Text>
             {periodsDeficit > 0 && (
@@ -718,7 +717,7 @@ export const WeeklyProgressScreen = () => {
         {/* Reasons for Pending if Deficit or NO */}
         {isLagging && (
           <View style={styles.deviationBlock}>
-            <Label text="EXPLANATION FOR DEFICIT *" color={EditorialColors.accent} />
+            <Label text="EXPLANATION FOR DEFICIT *" color={DayRibbonColors.warn} />
             <Controller
               control={control}
               name="reasonsForPending"
@@ -770,102 +769,102 @@ export const WeeklyProgressScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
-    paddingTop: EditorialSpacing.topSafeArea,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
+    paddingTop: DayRibbonSpacing.topSafeArea,
     paddingBottom: ms(48),
   },
   headerBox: {
-    marginBottom: ms(8),
+    marginBottom: ms(16),
   },
   headingText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: ms(24),
-    lineHeight: ms(28),
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: ms(28),
+    lineHeight: ms(34),
+    color: DayRibbonColors.ink,
     marginTop: ms(4),
   },
   subHeadingText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: ms(11),
-    color: EditorialColors.muted,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(13),
+    color: DayRibbonColors.muted,
+    lineHeight: 18,
     marginTop: ms(4),
   },
-  heroRule: {
-    marginBottom: ms(24),
-  },
   sectionBlock: {
-    backgroundColor: EditorialColors.white,
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     padding: ms(16),
-    marginBottom: ms(20),
+    marginBottom: ms(16),
   },
   sectionHeader: {
     flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: EditorialColors.ink,
-    paddingBottom: ms(8),
+    borderBottomColor: DayRibbonColors.line,
+    paddingBottom: ms(10),
     marginBottom: ms(16),
   },
   sectionNumber: {
-    fontFamily: EditorialFonts.display,
+    fontFamily: DayRibbonFonts.display,
     fontSize: ms(18),
-    color: EditorialColors.accent,
+    color: DayRibbonColors.cobalt,
     marginRight: ms(8),
   },
   sectionTitle: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: ms(13),
     letterSpacing: 1,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   fieldSpacing: {
-    marginTop: ms(16),
+    marginTop: ms(14),
   },
   ccBanner: {
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
     padding: ms(12),
-    marginTop: ms(16),
+    marginTop: ms(14),
   },
   ccBannerText: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: ms(14),
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
     marginTop: ms(4),
   },
   chipsSection: {
-    marginBottom: ms(16),
+    marginBottom: ms(14),
   },
   chipsScroll: {
     flexDirection: 'row',
     marginTop: ms(8),
   },
   subjectChip: {
-    backgroundColor: EditorialColors.white,
+    backgroundColor: DayRibbonColors.surface,
     paddingHorizontal: ms(12),
     paddingVertical: ms(8),
-    borderWidth: 1,
-    borderColor: EditorialColors.ink,
+    borderRadius: DayRibbonShapes.chipRadius,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
     marginRight: ms(8),
   },
   subjectChipActive: {
-    backgroundColor: EditorialColors.ink,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.ink,
+    borderColor: DayRibbonColors.ink,
   },
   subjectChipText: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: ms(12),
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   subjectChipTextActive: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.surface,
   },
   periodsRow: {
     flexDirection: 'row',
@@ -875,27 +874,27 @@ const styles = StyleSheet.create({
     flex: 0.48,
   },
   paceBadge: {
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.bg,
-    padding: ms(12),
-    marginTop: ms(16),
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.bg,
+    padding: ms(14),
+    marginTop: ms(14),
   },
   paceBadgeWarning: {
-    borderColor: EditorialColors.accent,
-    borderWidth: 2,
+    borderColor: DayRibbonColors.warn,
+    backgroundColor: DayRibbonColors.warnBg,
   },
   paceBadgeTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: ms(13),
-    color: EditorialColors.ink,
-    letterSpacing: 0.5,
+    color: DayRibbonColors.ink,
     marginTop: ms(4),
   },
   paceBadgeSub: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: ms(11),
-    color: EditorialColors.accent,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: ms(12),
+    color: DayRibbonColors.warn,
     marginTop: ms(4),
   },
   radioBlock: {
@@ -908,41 +907,44 @@ const styles = StyleSheet.create({
   },
   radioCard: {
     flex: 0.48,
-    height: ms(46),
+    height: 48,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.white,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
   },
   radioCardSelected: {
-    backgroundColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.cobalt,
+    borderColor: DayRibbonColors.cobalt,
   },
   radioCardSelectedNo: {
-    backgroundColor: EditorialColors.accent,
-    borderColor: EditorialColors.accent,
+    backgroundColor: DayRibbonColors.warn,
+    borderColor: DayRibbonColors.warn,
   },
   radioLabel: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: ms(14),
     letterSpacing: 1,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   radioLabelSelected: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.surface,
   },
   radioLabelSelectedNo: {
-    color: EditorialColors.white,
+    color: DayRibbonColors.surface,
   },
   deviationBlock: {
-    marginTop: ms(16),
+    marginTop: ms(14),
     borderLeftWidth: 3,
-    borderLeftColor: EditorialColors.accent,
+    borderLeftColor: DayRibbonColors.warn,
     paddingLeft: ms(12),
     paddingVertical: ms(6),
   },
   buttonContainer: {
-    marginTop: ms(12),
+    marginTop: ms(16),
+    marginBottom: ms(24),
   },
 });
 

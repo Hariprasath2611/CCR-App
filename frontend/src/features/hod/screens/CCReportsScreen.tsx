@@ -4,10 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 import { useReportStore } from '@features/cc/store/useReportStore';
 import { getCCForSection } from '@config/facultyBoard';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
-import { SegBar } from '@components/editorial/SegBar';
+import { ProgressBar } from '@components/editorial/ProgressBar';
 import { EditorialChip } from '@components/editorial/EditorialChip';
 import { Feather } from '@expo/vector-icons';
 
@@ -24,13 +23,13 @@ export const CCReportsScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.topSafeArea),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -39,16 +38,11 @@ export const CCReportsScreen = () => {
         {/* Header */}
         <View style={styles.header}>
           <Label text="COORDINATOR SUBMISSIONS" />
-          <Text style={styles.headerTitle}>
-            CC REPORTS<Text style={styles.accentDot}>.</Text>
-          </Text>
+          <Text style={styles.headerTitle}>CC Reports</Text>
           <Text style={styles.headerSubtitle}>
             Weekly consolidated course coverage spreadsheets submitted by section coordinators.
           </Text>
         </View>
-
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
 
         {/* Year Filter Chips */}
         <View style={styles.chipRow}>
@@ -67,13 +61,18 @@ export const CCReportsScreen = () => {
           <Text style={styles.sectionHeaderTitle}>
             {selectedYear.toUpperCase()} SUBMISSIONS
           </Text>
-          <Label text={`${yearReports.length} REPORTS`} />
+          <View style={styles.countBadge}>
+            <Text style={styles.countBadgeText}>{yearReports.length} REPORTS</Text>
+          </View>
         </View>
 
         {/* Reports List */}
         {yearReports.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyTitle}>NO SUBMISSIONS FOR {selectedYear.toUpperCase()}</Text>
+            <View style={styles.emptyIconCircle}>
+              <Feather name="file-text" size={24} color={DayRibbonColors.muted} />
+            </View>
+            <Text style={styles.emptyTitle}>No Submissions for {selectedYear}</Text>
             <Text style={styles.emptySub}>
               Coordinators have not submitted weekly reports for this academic year yet.
             </Text>
@@ -87,7 +86,7 @@ export const CCReportsScreen = () => {
               const isPending = rep.status === 'SUBMITTED_TO_HOD';
 
               return (
-                <View key={rep.id} style={styles.reportRow}>
+                <View key={rep.id} style={styles.reportCard}>
                   <View style={styles.rowTop}>
                     <View style={styles.infoCol}>
                       <View style={styles.badgeRow}>
@@ -97,16 +96,16 @@ export const CCReportsScreen = () => {
                         <View
                           style={[
                             styles.statusBadge,
-                            isPending ? styles.accentStatusBadge : null,
+                            isPending ? styles.lemonStatusBadge : styles.cobaltStatusBadge,
                           ]}
                         >
                           <Text
                             style={[
                               styles.statusText,
-                              isPending ? styles.accentStatusText : null,
+                              isPending ? styles.lemonStatusText : styles.cobaltStatusText,
                             ]}
                           >
-                            {isApproved ? 'APPROVED' : isPending ? 'PENDING AUDIT' : 'DRAFT'}
+                            {isApproved ? 'Approved' : isPending ? 'Pending Audit' : 'Draft'}
                           </Text>
                         </View>
                       </View>
@@ -114,10 +113,9 @@ export const CCReportsScreen = () => {
                       <Text style={styles.reportTitle}>
                         Week {rep.weekNumber} Consolidated Report
                       </Text>
-                      <Label
-                        text={`COORDINATOR: ${(rep.submittedBy || ccInfo?.facultyName || 'CC').toUpperCase()} • SUBMITTED: ${rep.submittedAt}`}
-                        style={styles.ccMetaLabel}
-                      />
+                      <Text style={styles.ccMetaLabel}>
+                        Coordinator: {rep.submittedBy || ccInfo?.facultyName || 'CC'} • Submitted: {rep.submittedAt}
+                      </Text>
                     </View>
 
                     <View style={styles.rightValueBox}>
@@ -132,14 +130,12 @@ export const CCReportsScreen = () => {
                     </View>
                   </View>
 
-                  {/* 25-Segment Bar */}
-                  <View style={styles.segBarWrapper}>
-                    <SegBar
-                      totalSegments={25}
-                      filledSegments={Math.round((rep.overallCoverage / 100) * 25)}
-                      isLagging={isLagging}
-                    />
-                  </View>
+                  {/* Progress Bar */}
+                  <ProgressBar
+                    progress={rep.overallCoverage / 100}
+                    isLagging={isLagging}
+                    style={styles.progressSpacing}
+                  />
 
                   {/* Row Action Button */}
                   <View style={styles.rowActions}>
@@ -153,8 +149,8 @@ export const CCReportsScreen = () => {
                       }
                       activeOpacity={0.85}
                     >
-                      <Text style={styles.viewBtnText}>VIEW REPORT</Text>
-                      <Feather name="arrow-right" size={14} color={EditorialColors.white} />
+                      <Text style={styles.viewBtnText}>View Report</Text>
+                      <Feather name="arrow-right" size={14} color={DayRibbonColors.surface} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -170,71 +166,78 @@ export const CCReportsScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   header: {
-    marginBottom: 4,
+    marginBottom: 16,
   },
   headerTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 36,
-    lineHeight: 40,
-    color: EditorialColors.ink,
-    letterSpacing: -0.5,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 32,
+    lineHeight: 38,
+    color: DayRibbonColors.ink,
     marginTop: 4,
     marginBottom: 4,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
   headerSubtitle: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
-  },
-  heavySpacer: {
-    marginVertical: 18,
   },
   chipRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 1.2,
+    color: DayRibbonColors.ink,
+  },
+  countBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: DayRibbonShapes.chipRadius,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+  },
+  countBadgeText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   reportList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+    gap: 12,
   },
-  reportRow: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 16,
+  reportCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
   },
   rowTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   infoCol: {
     flex: 1,
@@ -247,98 +250,116 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   classBadge: {
+    backgroundColor: DayRibbonColors.bg,
+    borderRadius: DayRibbonShapes.chipRadius,
     borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
+    borderColor: DayRibbonColors.line,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
   },
   classBadgeText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 10,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.ink,
   },
   statusBadge: {
-    borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
+    borderRadius: DayRibbonShapes.chipRadius,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
   },
-  accentStatusBadge: {
-    borderColor: EditorialColors.accent,
+  lemonStatusBadge: {
+    backgroundColor: DayRibbonColors.lemon,
+  },
+  cobaltStatusBadge: {
+    backgroundColor: 'rgba(43, 63, 224, 0.08)',
   },
   statusText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 9,
-    letterSpacing: 1,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 10,
   },
-  accentStatusText: {
-    color: EditorialColors.accent,
+  lemonStatusText: {
+    color: DayRibbonColors.ink,
+  },
+  cobaltStatusText: {
+    color: DayRibbonColors.cobalt,
   },
   reportTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 16,
-    lineHeight: 20,
-    color: EditorialColors.ink,
-    marginBottom: 4,
+    lineHeight: 22,
+    color: DayRibbonColors.ink,
+    marginBottom: 2,
   },
   ccMetaLabel: {
-    letterSpacing: 1.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
   },
   rightValueBox: {
     alignItems: 'flex-end',
     justifyContent: 'center',
   },
   percentText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 28,
-    lineHeight: 32,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 26,
+    lineHeight: 30,
+    color: DayRibbonColors.cobalt,
   },
   accentPercentText: {
-    color: EditorialColors.accent,
+    color: DayRibbonColors.warn,
   },
-  segBarWrapper: {
-    marginTop: 2,
-    marginBottom: 12,
+  progressSpacing: {
+    marginTop: 4,
+    marginBottom: 10,
   },
   rowActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    marginTop: 6,
   },
   viewBtn: {
     height: 40,
     paddingHorizontal: 16,
-    backgroundColor: EditorialColors.ink,
+    borderRadius: 14,
+    backgroundColor: DayRibbonColors.cobalt,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
   },
   viewBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 12,
+    color: DayRibbonColors.surface,
   },
   emptyContainer: {
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     padding: 24,
     alignItems: 'center',
     marginTop: 8,
   },
+  emptyIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: DayRibbonColors.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
   emptyTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 14,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 18,
+    color: DayRibbonColors.ink,
     marginBottom: 6,
   },
   emptySub: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    color: DayRibbonColors.muted,
     textAlign: 'center',
     lineHeight: 18,
   },

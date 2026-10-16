@@ -5,11 +5,12 @@ import { CCStackParamList } from '@navigation/types';
 import { useReportStore } from '../store/useReportStore';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { BigNumber } from '@components/editorial/BigNumber';
 import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
-import { SegBar } from '@components/editorial/SegBar';
+import { StatTile } from '@components/editorial/StatTile';
+import { ProgressBar } from '@components/editorial/ProgressBar';
+import { StatusBanner } from '@components/editorial/StatusBanner';
 
 type RouteParams = RouteProp<CCStackParamList, 'SubjectProgressDetail'>;
 
@@ -50,13 +51,13 @@ export const SubjectProgressDetailScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.topSafeArea),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -70,67 +71,54 @@ export const SubjectProgressDetailScreen = () => {
             activeOpacity={0.7}
             accessibilityLabel="Go back"
           >
-            <Feather name="arrow-left" size={20} color={EditorialColors.ink} />
+            <Feather name="arrow-left" size={20} color={DayRibbonColors.ink} />
           </TouchableOpacity>
-          <Label text={`WEEK ${selectedWeek} • ${classId.toUpperCase()}`} />
-        </View>
-
-        {/* Title heavy 24 */}
-        <Text style={styles.subjectTitle}>{subjectData.name}</Text>
-        <Text style={styles.subjectSubtitle}>
-          CODE: {subjectData.code} • TEACHER: {subjectData.faculty.toUpperCase()}
-        </Text>
-
-        {/* Big Number Section */}
-        <View style={styles.heroSection}>
-          <Label text="SYLLABUS COVERAGE" />
-          <View style={styles.heroRow}>
-            <BigNumber value={subjectData.coverage} size="big" showPercent />
+          <View style={styles.headerTagChip}>
+            <Text style={styles.headerTagText}>Week {selectedWeek} • {classId}</Text>
           </View>
         </View>
 
-        {/* 25-Segment Bar */}
-        <View style={styles.segBarWrapper}>
-          <SegBar
-            totalSegments={25}
-            filledSegments={Math.round((subjectData.coverage / 100) * 25)}
+        {/* Title */}
+        <Text style={styles.subjectTitle}>{subjectData.name}</Text>
+        <Text style={styles.subjectSubtitle}>
+          {subjectData.code} • Teacher: {subjectData.faculty}
+        </Text>
+
+        {/* Big Number Section Card */}
+        <View style={styles.heroCard}>
+          <Label text="SYLLABUS COVERAGE" />
+          <View style={styles.heroRow}>
+            <BigNumber value={subjectData.coverage} size="big" showPercent color={DayRibbonColors.cobalt} />
+          </View>
+          <ProgressBar
+            progress={subjectData.coverage / 100}
             isLagging={isLagging}
+            style={styles.heroProgress}
           />
         </View>
 
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
-        {/* 3-Column Period Stat Row */}
-        <View style={styles.statRow}>
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{subjectData.periodsPlanned || 4}</Text>
-            <Label text="PLANNED" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{subjectData.periodsHandled || 4}</Text>
-            <Label text="HANDLED" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text
-              style={[
-                styles.statNum,
-                isLagging ? styles.accentStatNum : null,
-              ]}
-            >
-              {paceRatio}x
-            </Text>
-            <Label text="PACE RATIO" />
-          </View>
+        {/* 3-Column Period Stat Tiles */}
+        <View style={styles.statGrid}>
+          <StatTile
+            label="Planned"
+            value={subjectData.periodsPlanned || 4}
+            style={styles.statTileItem}
+          />
+          <StatTile
+            label="Handled"
+            value={subjectData.periodsHandled || 4}
+            style={styles.statTileItem}
+          />
+          <StatTile
+            label="Pace Ratio"
+            value={`${paceRatio}x`}
+            isLagging={isLagging}
+            style={styles.statTileItem}
+          />
         </View>
 
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
-
-        {/* Duration Meta */}
-        <View style={styles.metaRow}>
+        {/* Duration Meta Card */}
+        <View style={styles.metaCard}>
           <Text style={styles.metaLabel}>LOGGED DURATION</Text>
           <Text style={styles.metaValue}>
             {subjectData.fromDate || '15/07/2026'} — {subjectData.toDate || '20/07/2026'}
@@ -140,10 +128,12 @@ export const SubjectProgressDetailScreen = () => {
         {/* Topics Covered Box */}
         <View style={styles.sectionHeaderRow}>
           <Text style={styles.sectionHeaderTitle}>COVERED TOPICS</Text>
-          <Label text={subjectData.cumulativePercent || `${subjectData.coverage}%`} />
+          <View style={styles.countBadge}>
+            <Text style={styles.countBadgeText}>{subjectData.cumulativePercent || `${subjectData.coverage}%`}</Text>
+          </View>
         </View>
 
-        <View style={styles.topicsBlock}>
+        <View style={styles.topicsCard}>
           <Text style={styles.topicsText}>
             {subjectData.topicsCoveredText || 'Regular syllabus topics executed as scheduled.'}
           </Text>
@@ -151,19 +141,19 @@ export const SubjectProgressDetailScreen = () => {
 
         {/* Extra Hours or Lag Banner */}
         {isLagging ? (
-          <View style={styles.lagBanner}>
-            <Text style={styles.lagBannerTitle}>BEHIND SYLLABUS PACE</Text>
-            <Text style={styles.lagBannerSub}>
-              Teaching pace is behind scheduled academic delivery. Extra revision period requested.
-            </Text>
-          </View>
+          <StatusBanner
+            type="warn"
+            title="Behind Syllabus Pace"
+            subtitle="Teaching pace is behind scheduled academic delivery. Extra revision period requested."
+            style={styles.bannerSpacing}
+          />
         ) : (
-          <View style={styles.okBanner}>
-            <Text style={styles.okBannerTitle}>ON TRACK WITH ACADEMIC SCHEDULE</Text>
-            <Text style={styles.okBannerSub}>
-              All planned lectures successfully delivered within allotted weekly hours.
-            </Text>
-          </View>
+          <StatusBanner
+            type="cobalt"
+            title="On Track with Schedule"
+            subtitle="All planned lectures successfully delivered within allotted weekly hours."
+            style={styles.bannerSpacing}
+          />
         )}
 
         {/* Back Button */}
@@ -172,7 +162,8 @@ export const SubjectProgressDetailScreen = () => {
           onPress={() => navigation.goBack()}
           activeOpacity={0.85}
         >
-          <Text style={styles.primaryActionText}>RETURN TO CLASS PROGRESS</Text>
+          <Text style={styles.primaryActionText}>Return to Class Progress</Text>
+          <Feather name="arrow-right" size={16} color={DayRibbonColors.surface} />
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -182,14 +173,14 @@ export const SubjectProgressDetailScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   topHeader: {
     flexDirection: 'row',
@@ -200,84 +191,82 @@ const styles = StyleSheet.create({
   backButton: {
     width: 44,
     height: 44,
+    borderRadius: 22,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.bg,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  headerTagChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: DayRibbonShapes.chipRadius,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+  },
+  headerTagText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
+  },
   subjectTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 24,
-    lineHeight: 28,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 28,
+    lineHeight: 34,
+    color: DayRibbonColors.ink,
     marginBottom: 4,
   },
   subjectSubtitle: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
-    marginBottom: 12,
+    marginBottom: 16,
   },
-  heroSection: {
-    marginTop: 8,
+  heroCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 20,
+    marginBottom: 16,
   },
   heroRow: {
-    marginTop: 4,
-    marginBottom: 8,
-  },
-  segBarWrapper: {
+    marginTop: 6,
     marginBottom: 12,
   },
-  heavySpacer: {
-    marginVertical: 18,
+  heroProgress: {
+    marginTop: 4,
   },
-  hairlineSpacer: {
-    marginVertical: 16,
-  },
-  statRow: {
+  statGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 6,
+    gap: 10,
+    marginBottom: 16,
   },
-  statCol: {
+  statTileItem: {
     flex: 1,
-    alignItems: 'center',
   },
-  statNum: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 34,
-    color: EditorialColors.ink,
-    marginBottom: 2,
-  },
-  accentStatNum: {
-    color: EditorialColors.accent,
-  },
-  statDivider: {
-    width: 1,
-    height: 38,
-    backgroundColor: EditorialColors.ink,
-  },
-  metaRow: {
-    paddingVertical: 10,
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    marginBottom: 18,
+  metaCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 14,
+    marginBottom: 16,
   },
   metaLabel: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 1,
+    color: DayRibbonColors.muted,
     marginBottom: 4,
   },
   metaValue: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 14,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
@@ -286,75 +275,54 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 1.2,
+    color: DayRibbonColors.ink,
   },
-  topicsBlock: {
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    padding: 14,
-    marginBottom: 20,
-    backgroundColor: EditorialColors.bg,
+  countBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: DayRibbonShapes.chipRadius,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+  },
+  countBadgeText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.cobalt,
+  },
+  topicsCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
+    marginBottom: 16,
   },
   topicsText: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 13,
-    lineHeight: 18,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 14,
+    lineHeight: 20,
+    color: DayRibbonColors.ink,
   },
-  lagBanner: {
-    borderWidth: 1.5,
-    borderColor: EditorialColors.accent,
-    padding: 16,
-    marginBottom: 24,
-    backgroundColor: EditorialColors.bg,
-  },
-  lagBannerTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 1.5,
-    color: EditorialColors.accent,
-    marginBottom: 4,
-  },
-  lagBannerSub: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    lineHeight: 16,
-    color: EditorialColors.ink,
-  },
-  okBanner: {
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    padding: 16,
-    marginBottom: 24,
-    backgroundColor: EditorialColors.bg,
-  },
-  okBannerTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
-    marginBottom: 4,
-  },
-  okBannerSub: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    lineHeight: 16,
-    color: EditorialColors.muted,
+  bannerSpacing: {
+    marginBottom: 20,
   },
   primaryActionButton: {
-    height: 54,
+    height: 52,
     width: '100%',
-    backgroundColor: EditorialColors.ink,
+    borderRadius: DayRibbonShapes.buttonRadius,
+    backgroundColor: DayRibbonColors.cobalt,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 8,
   },
   primaryActionText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    color: DayRibbonColors.surface,
   },
 });

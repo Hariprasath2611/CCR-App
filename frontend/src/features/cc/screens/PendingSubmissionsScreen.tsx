@@ -4,9 +4,9 @@ import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { CCStackParamList } from '@navigation/types';
 import { useReportStore, SubjectProgress } from '../store/useReportStore';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
+import { StatTile } from '@components/editorial/StatTile';
 import { Feather } from '@expo/vector-icons';
 
 type RouteParams = RouteProp<CCStackParamList, 'PendingSubmissions'>;
@@ -46,13 +46,13 @@ export const PendingSubmissionsScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.topSafeArea),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -61,67 +61,59 @@ export const PendingSubmissionsScreen = () => {
         {/* Header */}
         <View style={styles.header}>
           <Label text={`AUDIT QUEUE • ${classId.toUpperCase()}`} />
-          <Text style={styles.headerTitle}>
-            PENDING QUEUE<Text style={styles.accentDot}>.</Text>
-          </Text>
+          <Text style={styles.headerTitle}>Pending Queue</Text>
           <Text style={styles.headerSubtitle}>
             Faculty teachers who have not yet submitted syllabus logs for Week {selectedWeek}.
           </Text>
         </View>
 
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
-        {/* Stat Row */}
-        <View style={styles.statRow}>
-          <View style={styles.statCol}>
-            <Text
-              style={[
-                styles.statNum,
-                pendingSubjects.length > 0 ? styles.accentStatNum : null,
-              ]}
-            >
-              {pendingSubjects.length}
-            </Text>
-            <Label text="AWAITING" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>W-{selectedWeek}</Text>
-            <Label text="CURRENT" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{subjects.length - pendingSubjects.length}</Text>
-            <Label text="SUBMITTED" />
-          </View>
+        {/* Stat Tiles */}
+        <View style={styles.statGrid}>
+          <StatTile
+            label="Awaiting"
+            value={pendingSubjects.length}
+            isLagging={pendingSubjects.length > 0}
+            style={styles.statTileItem}
+          />
+          <StatTile
+            label="Current"
+            value={`W-${selectedWeek}`}
+            style={styles.statTileItem}
+          />
+          <StatTile
+            label="Submitted"
+            value={subjects.length - pendingSubjects.length}
+            style={styles.statTileItem}
+          />
         </View>
-
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
 
         {/* Bulk Remind Button if pending */}
         {pendingSubjects.length > 0 && (
           <TouchableOpacity
-            style={styles.primaryActionButton}
+            style={styles.lemonActionButton}
             onPress={handleSendAllReminders}
             activeOpacity={0.85}
           >
-            <Text style={styles.primaryActionText}>REMIND ALL FACULTY</Text>
-            <Feather name="bell" size={16} color={EditorialColors.white} />
+            <Text style={styles.lemonActionText}>Remind All Faculty</Text>
+            <Feather name="bell" size={18} color={DayRibbonColors.ink} />
           </TouchableOpacity>
         )}
 
         {/* Section Header */}
         <View style={styles.sectionHeaderRow}>
           <Text style={styles.sectionHeaderTitle}>FACULTY QUEUE</Text>
-          <Label text={`${pendingSubjects.length} PENDING`} />
+          <View style={styles.countBadge}>
+            <Text style={styles.countBadgeText}>{pendingSubjects.length} PENDING</Text>
+          </View>
         </View>
 
         {/* Pending Items List */}
         {pendingSubjects.length === 0 ? (
-          <View style={styles.allDoneBox}>
-            <Text style={styles.allDoneTitle}>ALL LOGGED ON TIME</Text>
+          <View style={styles.allDoneCard}>
+            <View style={styles.allDoneIconCircle}>
+              <Feather name="check" size={24} color={DayRibbonColors.cobalt} />
+            </View>
+            <Text style={styles.allDoneTitle}>All Logged On Time</Text>
             <Text style={styles.allDoneSub}>
               All assigned subject teachers for {classId} have successfully submitted their Week {selectedWeek} progress logs.
             </Text>
@@ -130,7 +122,8 @@ export const PendingSubmissionsScreen = () => {
               onPress={() => navigation.navigate('ConsolidatedReport', { classId, weekNumber: selectedWeek })}
               activeOpacity={0.85}
             >
-              <Text style={styles.allDoneBtnText}>OPEN CONSOLIDATED SPREADSHEET</Text>
+              <Text style={styles.allDoneBtnText}>Open Consolidated Spreadsheet</Text>
+              <Feather name="arrow-right" size={16} color={DayRibbonColors.surface} />
             </TouchableOpacity>
           </View>
         ) : (
@@ -138,7 +131,7 @@ export const PendingSubmissionsScreen = () => {
             {pendingSubjects.map((sub) => {
               const isReminded = remindedMap[sub.code];
               return (
-                <View key={sub.code} style={styles.pendingRow}>
+                <View key={sub.code} style={styles.pendingCard}>
                   <View style={styles.rowTop}>
                     <View style={styles.infoCol}>
                       <View style={styles.codeRow}>
@@ -148,10 +141,9 @@ export const PendingSubmissionsScreen = () => {
                         </View>
                       </View>
                       <Text style={styles.subjectName}>{sub.name}</Text>
-                      <Label
-                        text={`FACULTY: ${sub.faculty?.toUpperCase()} • LAST: ${sub.coverage}%`}
-                        style={styles.facultyMeta}
-                      />
+                      <Text style={styles.facultyMeta}>
+                        Faculty: {sub.faculty} • Last: {sub.coverage}%
+                      </Text>
                     </View>
 
                     <TouchableOpacity
@@ -162,6 +154,7 @@ export const PendingSubmissionsScreen = () => {
                       disabled={isReminded}
                       onPress={() => handleSendReminder(sub)}
                       activeOpacity={0.7}
+                      accessibilityLabel={`Send reminder to ${sub.faculty}`}
                     >
                       <Text
                         style={[
@@ -169,7 +162,7 @@ export const PendingSubmissionsScreen = () => {
                           isReminded ? styles.remindBtnTextDisabled : null,
                         ]}
                       >
-                        {isReminded ? 'NOTIFIED' : 'REMIND'}
+                        {isReminded ? 'Notified' : 'Remind'}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -186,103 +179,87 @@ export const PendingSubmissionsScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   header: {
-    marginBottom: 4,
+    marginBottom: 16,
   },
   headerTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 36,
-    lineHeight: 40,
-    color: EditorialColors.ink,
-    letterSpacing: -0.5,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 32,
+    lineHeight: 38,
+    color: DayRibbonColors.ink,
     marginTop: 4,
     marginBottom: 4,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
   headerSubtitle: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
   },
-  heavySpacer: {
-    marginVertical: 18,
-  },
-  hairlineSpacer: {
-    marginVertical: 16,
-  },
-  statRow: {
+  statGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 6,
+    gap: 10,
+    marginBottom: 16,
   },
-  statCol: {
+  statTileItem: {
     flex: 1,
-    alignItems: 'center',
   },
-  statNum: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 34,
-    color: EditorialColors.ink,
-    marginBottom: 2,
-  },
-  accentStatNum: {
-    color: EditorialColors.accent,
-  },
-  statDivider: {
-    width: 1,
-    height: 38,
-    backgroundColor: EditorialColors.ink,
-  },
-  primaryActionButton: {
-    height: 54,
-    width: '100%',
-    backgroundColor: EditorialColors.ink,
+  lemonActionButton: {
+    height: 52,
+    borderRadius: DayRibbonShapes.buttonRadius,
+    backgroundColor: DayRibbonColors.lemon,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 10,
     marginBottom: 20,
   },
-  primaryActionText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.white,
+  lemonActionText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    color: DayRibbonColors.ink,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 1.2,
+    color: DayRibbonColors.ink,
+  },
+  countBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: DayRibbonShapes.chipRadius,
+    backgroundColor: DayRibbonColors.warnBg,
+  },
+  countBadgeText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.warn,
   },
   pendingList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+    gap: 12,
   },
-  pendingRow: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 14,
+  pendingCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
   },
   rowTop: {
     flexDirection: 'row',
@@ -300,88 +277,99 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   subjectCode: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 12,
-    letterSpacing: 1,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
   },
   dueBadge: {
-    borderWidth: 1,
-    borderColor: EditorialColors.accent,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
+    backgroundColor: DayRibbonColors.warnBg,
+    borderRadius: DayRibbonShapes.chipRadius,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
   },
   dueBadgeText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 9,
-    letterSpacing: 1,
-    color: EditorialColors.accent,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 10,
+    color: DayRibbonColors.warn,
   },
   subjectName: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 16,
-    lineHeight: 20,
-    color: EditorialColors.ink,
+    lineHeight: 22,
+    color: DayRibbonColors.ink,
     marginBottom: 4,
   },
   facultyMeta: {
-    letterSpacing: 1.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    color: DayRibbonColors.muted,
   },
   remindBtn: {
     height: 40,
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
+    borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.ink,
     backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
   },
   remindBtnDisabled: {
-    borderColor: EditorialColors.track,
-    backgroundColor: EditorialColors.track,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.line,
   },
   remindBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 12,
+    color: DayRibbonColors.ink,
   },
   remindBtnTextDisabled: {
-    color: EditorialColors.muted,
+    color: DayRibbonColors.mutedSoft,
   },
-  allDoneBox: {
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    padding: 20,
+  allDoneCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 24,
     alignItems: 'center',
-    backgroundColor: EditorialColors.bg,
+  },
+  allDoneIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: DayRibbonColors.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
   },
   allDoneTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 15,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 20,
+    color: DayRibbonColors.ink,
     marginBottom: 6,
   },
   allDoneSub: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     textAlign: 'center',
     lineHeight: 18,
-    marginBottom: 16,
+    marginBottom: 20,
   },
   allDoneBtn: {
-    height: 48,
+    height: 52,
     paddingHorizontal: 20,
-    backgroundColor: EditorialColors.ink,
+    borderRadius: DayRibbonShapes.buttonRadius,
+    backgroundColor: DayRibbonColors.cobalt,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 8,
   },
   allDoneBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 2,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    color: DayRibbonColors.surface,
   },
 });

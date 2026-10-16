@@ -11,9 +11,8 @@ import { SQLiteSyllabusNode } from '@database/types';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { syncEngine } from '@features/sync/syncEngine';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
 import { Feather } from '@expo/vector-icons';
 
 const planSchema = z.object({
@@ -127,13 +126,13 @@ export const WeeklyPlanFormScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.topSafeArea),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -142,16 +141,11 @@ export const WeeklyPlanFormScreen = () => {
         {/* Header */}
         <View style={styles.header}>
           <Label text="ACADEMIC TARGETING" />
-          <Text style={styles.headerTitle}>
-            WEEKLY PLAN<Text style={styles.accentDot}>.</Text>
-          </Text>
+          <Text style={styles.headerTitle}>Weekly Plan</Text>
           <Text style={styles.headerSubtitle}>
             Configure weekly syllabus targets and teaching topic coverage milestones.
           </Text>
         </View>
-
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
 
         {/* Form Inputs */}
         <View style={styles.formSection}>
@@ -163,18 +157,18 @@ export const WeeklyPlanFormScreen = () => {
                 <Text style={styles.inputLabel}>ACADEMIC WEEK NUMBER</Text>
                 <TextInput
                   style={[
-                    styles.underlineInput,
+                    styles.textInput,
                     errors.weekNo ? styles.errorBorder : null,
                   ]}
                   value={value}
                   onChangeText={onChange}
                   placeholder="e.g. 12"
-                  placeholderTextColor={EditorialColors.muted}
+                  placeholderTextColor={DayRibbonColors.mutedSoft}
                   keyboardType="numeric"
                 />
                 {errors.weekNo && (
                   <Text style={styles.errorText}>
-                    {errors.weekNo.message?.toUpperCase()}
+                    {errors.weekNo.message}
                   </Text>
                 )}
               </View>
@@ -205,7 +199,11 @@ export const WeeklyPlanFormScreen = () => {
             <View style={styles.syllabusBlock}>
               <View style={styles.sectionHeaderRow}>
                 <Text style={styles.sectionHeaderTitle}>SYLLABUS TARGETS</Text>
-                <Label text={`${selectedTopics.length}/${syllabusNodes.length} SELECTED`} />
+                <View style={styles.countBadge}>
+                  <Text style={styles.countBadgeText}>
+                    {selectedTopics.length}/{syllabusNodes.length} SELECTED
+                  </Text>
+                </View>
               </View>
 
               <View style={styles.topicList}>
@@ -214,24 +212,24 @@ export const WeeklyPlanFormScreen = () => {
                   return (
                     <TouchableOpacity
                       key={node.topic_id}
-                      style={styles.topicRow}
+                      style={styles.topicCard}
                       onPress={() => handleTopicToggle(node.topic_id)}
                       activeOpacity={0.7}
                     >
                       <View
                         style={[
-                          styles.checkboxSquare,
-                          checked ? styles.checkboxSquareChecked : null,
+                          styles.checkboxCircle,
+                          checked ? styles.checkboxCircleChecked : null,
                         ]}
                       >
                         {checked && (
-                          <Feather name="check" size={14} color={EditorialColors.white} />
+                          <Feather name="check" size={14} color={DayRibbonColors.surface} />
                         )}
                       </View>
 
                       <View style={styles.topicInfo}>
                         <Text style={styles.topicText}>{node.topic_title}</Text>
-                        <Label text={node.unit} />
+                        <Text style={styles.topicUnit}>{node.unit}</Text>
                       </View>
                     </TouchableOpacity>
                   );
@@ -247,7 +245,7 @@ export const WeeklyPlanFormScreen = () => {
               onPress={handleSaveDraft}
               activeOpacity={0.7}
             >
-              <Text style={styles.outlineActionBtnText}>SAVE DRAFT (OFFLINE)</Text>
+              <Text style={styles.outlineActionBtnText}>Save Draft (Offline)</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -257,9 +255,9 @@ export const WeeklyPlanFormScreen = () => {
               activeOpacity={0.85}
             >
               <Text style={styles.primaryActionBtnText}>
-                {isSubmitting ? 'SUBMITTING...' : 'SUBMIT PLAN'}
+                {isSubmitting ? 'Submitting...' : 'Submit Plan'}
               </Text>
-              <Feather name="arrow-right" size={16} color={EditorialColors.white} />
+              <Feather name="arrow-right" size={16} color={DayRibbonColors.surface} />
             </TouchableOpacity>
           </View>
         </View>
@@ -271,156 +269,171 @@ export const WeeklyPlanFormScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   header: {
-    marginBottom: 4,
+    marginBottom: 16,
   },
   headerTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 36,
-    lineHeight: 40,
-    color: EditorialColors.ink,
-    letterSpacing: -0.5,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 32,
+    lineHeight: 38,
+    color: DayRibbonColors.ink,
     marginTop: 4,
     marginBottom: 4,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
   headerSubtitle: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
-  },
-  heavySpacer: {
-    marginVertical: 18,
   },
   formSection: {
     marginBottom: 20,
   },
   inputBlock: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   dropdownBlock: {
-    marginBottom: 10,
+    marginBottom: 16,
   },
   inputLabel: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 1,
+    color: DayRibbonColors.muted,
     marginBottom: 6,
   },
-  underlineInput: {
-    height: 48,
-    borderBottomWidth: 2,
-    borderBottomColor: EditorialColors.ink,
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 16,
-    color: EditorialColors.ink,
-    paddingVertical: 8,
+  textInput: {
+    height: 52,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 15,
+    color: DayRibbonColors.ink,
+    paddingHorizontal: 16,
   },
   errorBorder: {
-    borderBottomColor: EditorialColors.accent,
+    borderColor: DayRibbonColors.warn,
   },
   errorText: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.accent,
-    marginTop: 6,
+    color: DayRibbonColors.warn,
+    marginTop: 4,
   },
   syllabusBlock: {
-    marginTop: 16,
-    marginBottom: 24,
+    marginTop: 8,
+    marginBottom: 20,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 1.2,
+    color: DayRibbonColors.ink,
+  },
+  countBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: DayRibbonShapes.chipRadius,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+  },
+  countBadgeText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   topicList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+    gap: 8,
   },
-  topicRow: {
+  topicCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.track,
     gap: 12,
   },
-  checkboxSquare: {
-    width: 22,
-    height: 22,
+  checkboxCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
     backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  checkboxSquareChecked: {
-    backgroundColor: EditorialColors.ink,
+  checkboxCircleChecked: {
+    backgroundColor: DayRibbonColors.cobalt,
+    borderColor: DayRibbonColors.cobalt,
   },
   topicInfo: {
     flex: 1,
   },
   topicText: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 14,
     lineHeight: 20,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
     marginBottom: 2,
+  },
+  topicUnit: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
   },
   actionButtonGroup: {
     gap: 12,
     marginTop: 10,
   },
   outlineActionBtn: {
-    height: 54,
+    height: 52,
     width: '100%',
+    borderRadius: DayRibbonShapes.buttonRadius,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.ink,
     backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
   },
   outlineActionBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    color: DayRibbonColors.ink,
   },
   primaryActionBtn: {
-    height: 54,
+    height: 52,
     width: '100%',
-    backgroundColor: EditorialColors.ink,
+    borderRadius: DayRibbonShapes.buttonRadius,
+    backgroundColor: DayRibbonColors.cobalt,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 10,
   },
   primaryActionBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    color: DayRibbonColors.surface,
   },
 });

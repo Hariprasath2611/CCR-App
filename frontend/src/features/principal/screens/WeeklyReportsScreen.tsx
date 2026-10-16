@@ -8,10 +8,9 @@ import * as Sharing from 'expo-sharing';
 import { generateReportHTML } from '@services/api/reportPdfTemplate';
 import { generateReportWord } from '@services/api/reportWordTemplate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
-import { SegBar } from '@components/editorial/SegBar';
+import { ProgressBar } from '@components/editorial/ProgressBar';
 
 export const WeeklyReportsScreen = () => {
   const insets = useSafeAreaInsets();
@@ -57,15 +56,15 @@ export const WeeklyReportsScreen = () => {
   if (selectedReport) {
     return (
       <View style={styles.screenWrapper}>
-        <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
-        <View style={[styles.topHeader, { paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea) }]}>
+        <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
+        <View style={[styles.topHeader, { paddingTop: Math.max(insets.top, DayRibbonSpacing.topSafeArea) }]}>
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => setSelectedReport(null)}
             activeOpacity={0.7}
             accessibilityLabel="Back to queue"
           >
-            <Feather name="arrow-left" size={20} color={EditorialColors.ink} />
+            <Feather name="arrow-left" size={20} color={DayRibbonColors.ink} />
           </TouchableOpacity>
           <Text style={styles.topHeaderTag}>AUDIT REPORT</Text>
         </View>
@@ -90,8 +89,8 @@ export const WeeklyReportsScreen = () => {
               onPress={() => handleExportPDF(selectedReport)}
               activeOpacity={0.85}
             >
-              <Text style={styles.primaryActionBtnText}>EXPORT PDF</Text>
-              <Feather name="download" size={16} color={EditorialColors.white} />
+              <Text style={styles.primaryActionBtnText}>Export PDF</Text>
+              <Feather name="download" size={16} color={DayRibbonColors.surface} />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -99,8 +98,8 @@ export const WeeklyReportsScreen = () => {
               onPress={() => handleExportWord(selectedReport)}
               activeOpacity={0.7}
             >
-              <Text style={styles.outlineActionBtnText}>EXPORT WORD</Text>
-              <Feather name="file-text" size={16} color={EditorialColors.ink} />
+              <Text style={styles.outlineActionBtnText}>Export Word</Text>
+              <Feather name="file-text" size={16} color={DayRibbonColors.ink} />
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -110,13 +109,13 @@ export const WeeklyReportsScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.topSafeArea),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -125,27 +124,27 @@ export const WeeklyReportsScreen = () => {
         {/* Header */}
         <View style={styles.header}>
           <Label text="CENTRAL ADMINISTRATION" />
-          <Text style={styles.headerTitle}>
-            EXECUTIVE AUDIT<Text style={styles.accentDot}>.</Text>
-          </Text>
+          <Text style={styles.headerTitle}>Executive Audit</Text>
           <Text style={styles.headerSubtitle}>
             Consolidated weekly syllabus reports approved by HODs and ready for Principal signature.
           </Text>
         </View>
 
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
         {/* Section Header */}
         <View style={styles.sectionHeaderRow}>
           <Text style={styles.sectionHeaderTitle}>FORWARDED SUBMISSIONS</Text>
-          <Label text={`${adminReports.length} REPORTS`} />
+          <View style={styles.countBadge}>
+            <Text style={styles.countBadgeText}>{adminReports.length} REPORTS</Text>
+          </View>
         </View>
 
         {/* Reports List */}
         {adminReports.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyTitle}>AUDITING QUEUE EMPTY</Text>
+            <View style={styles.emptyIconCircle}>
+              <Feather name="inbox" size={24} color={DayRibbonColors.muted} />
+            </View>
+            <Text style={styles.emptyTitle}>Auditing Queue Empty</Text>
             <Text style={styles.emptySub}>
               No weekly course reports have been forwarded by HODs yet.
             </Text>
@@ -155,22 +154,21 @@ export const WeeklyReportsScreen = () => {
             {adminReports.map((report) => {
               const isLagging = report.overallCoverage < 75;
               return (
-                <View key={report.id} style={styles.reportRow}>
+                <View key={report.id} style={styles.reportCard}>
                   <View style={styles.rowTop}>
                     <View style={styles.infoCol}>
                       <View style={styles.badgeRow}>
                         <View style={styles.classBadge}>
                           <Text style={styles.classBadgeText}>{report.classId}</Text>
                         </View>
-                        <Label text={`WEEK ${report.weekNumber}`} />
+                        <Text style={styles.weekTag}>Week {report.weekNumber}</Text>
                       </View>
                       <Text style={styles.reportTitle}>
                         Week {report.weekNumber} Academic Submission
                       </Text>
-                      <Label
-                        text={`BY: ${report.submittedBy?.toUpperCase()} • APPROVED: ${report.approvedAt || 'PENDING'}`}
-                        style={styles.metaLabel}
-                      />
+                      <Text style={styles.metaLabel}>
+                        By: {report.submittedBy} • Approved: {report.approvedAt || 'Pending'}
+                      </Text>
                     </View>
 
                     <View style={styles.rightValueBox}>
@@ -185,14 +183,12 @@ export const WeeklyReportsScreen = () => {
                     </View>
                   </View>
 
-                  {/* 25-Segment Bar */}
-                  <View style={styles.segBarWrapper}>
-                    <SegBar
-                      totalSegments={25}
-                      filledSegments={Math.round((report.overallCoverage / 100) * 25)}
-                      isLagging={isLagging}
-                    />
-                  </View>
+                  {/* Progress Bar */}
+                  <ProgressBar
+                    progress={report.overallCoverage / 100}
+                    isLagging={isLagging}
+                    style={styles.progressSpacing}
+                  />
 
                   {/* HOD Remarks */}
                   {report.hodRemarks ? (
@@ -210,8 +206,8 @@ export const WeeklyReportsScreen = () => {
                       onPress={() => setSelectedReport(report)}
                       activeOpacity={0.85}
                     >
-                      <Text style={styles.auditBtnText}>AUDIT REPORT</Text>
-                      <Feather name="arrow-right" size={14} color={EditorialColors.white} />
+                      <Text style={styles.auditBtnText}>Audit Report</Text>
+                      <Feather name="arrow-right" size={14} color={DayRibbonColors.surface} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -227,81 +223,89 @@ export const WeeklyReportsScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   topHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
     paddingBottom: 16,
   },
   backButton: {
     width: 44,
     height: 44,
+    borderRadius: 22,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.bg,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   topHeaderTag: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 1.5,
+    color: DayRibbonColors.muted,
   },
   header: {
-    marginBottom: 4,
+    marginBottom: 16,
   },
   headerTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 36,
-    lineHeight: 40,
-    color: EditorialColors.ink,
-    letterSpacing: -0.5,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 32,
+    lineHeight: 38,
+    color: DayRibbonColors.ink,
     marginTop: 4,
     marginBottom: 4,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
   headerSubtitle: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
-  },
-  heavySpacer: {
-    marginVertical: 18,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 1.2,
+    color: DayRibbonColors.ink,
+  },
+  countBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: DayRibbonShapes.chipRadius,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+  },
+  countBadgeText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   reportList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+    gap: 12,
   },
-  reportRow: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 16,
+  reportCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
   },
   rowTop: {
     flexDirection: 'row',
@@ -320,129 +324,150 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   classBadge: {
+    backgroundColor: DayRibbonColors.bg,
+    borderRadius: DayRibbonShapes.chipRadius,
     borderWidth: 1,
-    borderColor: EditorialColors.ink,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
+    borderColor: DayRibbonColors.line,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
   },
   classBadgeText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 10,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.ink,
+  },
+  weekTag: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   reportTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 16,
-    lineHeight: 20,
-    color: EditorialColors.ink,
-    marginBottom: 4,
+    lineHeight: 22,
+    color: DayRibbonColors.ink,
+    marginBottom: 2,
   },
   metaLabel: {
-    letterSpacing: 1.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
   },
   rightValueBox: {
     alignItems: 'flex-end',
     justifyContent: 'center',
   },
   percentText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 28,
-    lineHeight: 32,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 26,
+    lineHeight: 30,
+    color: DayRibbonColors.cobalt,
   },
   accentPercentText: {
-    color: EditorialColors.accent,
+    color: DayRibbonColors.warn,
   },
-  segBarWrapper: {
-    marginTop: 2,
+  progressSpacing: {
+    marginTop: 4,
     marginBottom: 10,
   },
   remarksBlock: {
-    borderLeftWidth: 2,
-    borderLeftColor: EditorialColors.ink,
-    paddingLeft: 10,
+    backgroundColor: DayRibbonColors.bg,
+    borderRadius: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: DayRibbonColors.cobalt,
+    padding: 10,
     marginVertical: 8,
   },
   remarksText: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 12,
     lineHeight: 16,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.ink,
     fontStyle: 'italic',
   },
   rowActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginTop: 6,
+    marginTop: 8,
   },
   auditBtn: {
     height: 40,
     paddingHorizontal: 16,
-    backgroundColor: EditorialColors.ink,
+    borderRadius: 14,
+    backgroundColor: DayRibbonColors.cobalt,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
   },
   auditBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 12,
+    color: DayRibbonColors.surface,
   },
   detailActions: {
     gap: 12,
     marginTop: 20,
   },
   primaryActionBtn: {
-    height: 54,
+    height: 52,
     width: '100%',
-    backgroundColor: EditorialColors.ink,
+    borderRadius: DayRibbonShapes.buttonRadius,
+    backgroundColor: DayRibbonColors.cobalt,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 10,
   },
   primaryActionBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    color: DayRibbonColors.surface,
   },
   outlineActionBtn: {
-    height: 54,
+    height: 52,
     width: '100%',
+    borderRadius: DayRibbonShapes.buttonRadius,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.ink,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 10,
   },
   outlineActionBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    color: DayRibbonColors.ink,
   },
   emptyContainer: {
-    borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     padding: 24,
     alignItems: 'center',
     marginTop: 8,
   },
+  emptyIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: DayRibbonColors.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
   emptyTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 14,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 18,
+    color: DayRibbonColors.ink,
     marginBottom: 6,
   },
   emptySub: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    color: DayRibbonColors.muted,
     textAlign: 'center',
     lineHeight: 18,
   },

@@ -6,12 +6,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { HodStackParamList } from '@navigation/types';
 import { useReportStore, SubjectProgress } from '@features/cc/store/useReportStore';
-import { WeeklyCourseCoverageReportCard } from '../../cc/components/WeeklyCourseCoverageReportCard';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
-import { SegBar } from '@components/editorial/SegBar';
+import { StatTile } from '@components/editorial/StatTile';
+import { ProgressBar } from '@components/editorial/ProgressBar';
 import { Feather } from '@expo/vector-icons';
 
 type RouteParams = RouteProp<HodStackParamList, 'RequestDetails'>;
@@ -117,8 +116,8 @@ export const RequestDetailsScreen = () => {
   if (!data) {
     return (
       <View style={styles.centerContainer}>
-        <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
-        <Text style={styles.notFoundTitle}>NO REQUEST DETAILS FOUND</Text>
+        <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
+        <Text style={styles.notFoundTitle}>No Request Details Found</Text>
         <Text style={styles.notFoundSub}>
           The specified report ID may have been archived or returned.
         </Text>
@@ -127,7 +126,7 @@ export const RequestDetailsScreen = () => {
           onPress={() => navigation.goBack()}
           activeOpacity={0.85}
         >
-          <Text style={styles.primaryActionText}>RETURN TO DASHBOARD</Text>
+          <Text style={styles.primaryActionText}>Return to Dashboard</Text>
         </TouchableOpacity>
       </View>
     );
@@ -138,13 +137,13 @@ export const RequestDetailsScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.topSafeArea),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -158,26 +157,27 @@ export const RequestDetailsScreen = () => {
             activeOpacity={0.7}
             accessibilityLabel="Go back"
           >
-            <Feather name="arrow-left" size={20} color={EditorialColors.ink} />
+            <Feather name="arrow-left" size={20} color={DayRibbonColors.ink} />
           </TouchableOpacity>
-          <Label text={isExtraHour ? 'EXTRA HOURS REQUEST' : 'CONSOLIDATED REPORT'} />
+          <View style={styles.headerTagChip}>
+            <Text style={styles.headerTagText}>
+              {isExtraHour ? 'EXTRA HOURS' : 'CONSOLIDATED REPORT'}
+            </Text>
+          </View>
         </View>
 
-        {/* Title heavy 24 */}
+        {/* Title */}
         <Text style={styles.screenTitle}>
           {isExtraHour ? extra?.subject : `${report?.section} ${report?.week}`}
         </Text>
         <Text style={styles.screenSubtitle}>
           {isExtraHour
-            ? `FACULTY: ${extra?.faculty.toUpperCase()} • ${extra?.section}`
-            : `SUBMITTED BY: ${report?.submittedBy?.toUpperCase()} • ${report?.submittedAt}`}
+            ? `Faculty: ${extra?.faculty} • ${extra?.section}`
+            : `Submitted by: ${report?.submittedBy} • ${report?.submittedAt}`}
         </Text>
 
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
         {isExtraHour && extra ? (
-          <View style={styles.detailsBlock}>
+          <View style={styles.detailsCard}>
             <View style={styles.metaRow}>
               <Text style={styles.metaLabel}>ALLOTTED PERIOD</Text>
               <Text style={styles.metaValue}>{extra.period}</Text>
@@ -186,7 +186,7 @@ export const RequestDetailsScreen = () => {
               <Text style={styles.metaLabel}>REQUESTED DATE</Text>
               <Text style={styles.metaValue}>{extra.requestedDate}</Text>
             </View>
-            <View style={styles.metaRow}>
+            <View style={[styles.metaRow, { borderBottomWidth: 0 }]}>
               <Text style={styles.metaLabel}>REMARKS & JUSTIFICATION</Text>
               <Text style={styles.remarksValue}>{extra.reason}</Text>
             </View>
@@ -194,27 +194,26 @@ export const RequestDetailsScreen = () => {
         ) : (
           <>
             {/* Stat Row */}
-            <View style={styles.statRow}>
-              <View style={styles.statCol}>
-                <Text style={styles.statNum}>{report?.subjects.length}</Text>
-                <Label text="COURSES" />
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statCol}>
-                <Text style={styles.statNum}>{report?.overallCoverage}</Text>
-                <Label text="COVERAGE" />
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statCol}>
-                <Text style={styles.statNum}>100%</Text>
-                <Label text="TARGET" />
-              </View>
+            <View style={styles.statGrid}>
+              <StatTile
+                label="Courses"
+                value={report?.subjects.length}
+                style={styles.statTileItem}
+              />
+              <StatTile
+                label="Coverage"
+                value={report?.overallCoverage}
+                style={styles.statTileItem}
+              />
+              <StatTile
+                label="Target"
+                value="100%"
+                style={styles.statTileItem}
+              />
             </View>
 
-            <Rule thickness="hairline" style={styles.hairlineSpacer} />
-
             {/* CC Remarks */}
-            <View style={styles.remarksBlock}>
+            <View style={styles.remarksCard}>
               <Label text="COORDINATOR REMARKS" style={{ marginBottom: 4 }} />
               <Text style={styles.remarksText}>
                 "{report?.ccRemarks || 'All weekly syllabus logs consolidated for HOD approval.'}"
@@ -224,7 +223,9 @@ export const RequestDetailsScreen = () => {
             {/* ListRows for subjects */}
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionHeaderTitle}>SUBJECT COVERAGE ROSTER</Text>
-              <Label text={`${report?.subjects.length} COURSES`} />
+              <View style={styles.countBadge}>
+                <Text style={styles.countBadgeText}>{report?.subjects.length} COURSES</Text>
+              </View>
             </View>
 
             <View style={styles.subjectList}>
@@ -232,12 +233,12 @@ export const RequestDetailsScreen = () => {
                 const covVal = parseInt(sub.coverage);
                 const isLagging = covVal < 70;
                 return (
-                  <View key={sub.code} style={styles.subjectRow}>
+                  <View key={sub.code} style={styles.subjectCard}>
                     <View style={styles.rowTop}>
                       <View style={styles.subInfo}>
                         <Text style={styles.subCode}>{sub.code}</Text>
                         <Text style={styles.subName}>{sub.name}</Text>
-                        <Label text={`FACULTY: ${sub.faculty.toUpperCase()}`} />
+                        <Text style={styles.subFaculty}>Faculty: {sub.faculty}</Text>
                       </View>
                       <Text
                         style={[
@@ -249,13 +250,11 @@ export const RequestDetailsScreen = () => {
                       </Text>
                     </View>
 
-                    <View style={styles.segBarWrapper}>
-                      <SegBar
-                        totalSegments={25}
-                        filledSegments={Math.round((covVal / 100) * 25)}
-                        isLagging={isLagging}
-                      />
-                    </View>
+                    <ProgressBar
+                      progress={covVal / 100}
+                      isLagging={isLagging}
+                      style={styles.progressSpacing}
+                    />
                   </View>
                 );
               })}
@@ -265,9 +264,7 @@ export const RequestDetailsScreen = () => {
 
         {/* Decision Section */}
         <View style={styles.decisionSection}>
-          <Rule thickness="heavy" style={styles.heavySpacer} />
-
-          <Text style={styles.decisionHeaderTitle}>EXECUTIVE DECISION & AUDIT</Text>
+          <Text style={styles.decisionHeaderTitle}>HOD Review & Verdict</Text>
           <Text style={styles.decisionSub}>
             Enter official HOD feedback or approval notes before submitting your verdict.
           </Text>
@@ -277,22 +274,22 @@ export const RequestDetailsScreen = () => {
             name="remarks"
             render={({ field: { onChange, onBlur, value } }) => (
               <View style={styles.inputBlock}>
-                <Text style={styles.inputLabel}>HOD REMARKS & AUDIT NOTES</Text>
+                <Text style={styles.inputLabel}>REMARKS & AUDIT NOTES</Text>
                 <TextInput
                   style={[
-                    styles.underlineInput,
+                    styles.textInput,
                     errors.remarks ? styles.errorBorder : null,
                   ]}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
                   placeholder="Enter approval signature or modification notes..."
-                  placeholderTextColor={EditorialColors.muted}
+                  placeholderTextColor={DayRibbonColors.mutedSoft}
                   multiline
                 />
                 {errors.remarks && (
                   <Text style={styles.errorText}>
-                    {errors.remarks.message?.toUpperCase()}
+                    {errors.remarks.message}
                   </Text>
                 )}
               </View>
@@ -307,9 +304,9 @@ export const RequestDetailsScreen = () => {
               activeOpacity={0.85}
             >
               <Text style={styles.primaryActionText}>
-                {isSubmitting ? 'SUBMITTING...' : 'APPROVE & FORWARD'}
+                {isSubmitting ? 'Submitting...' : 'Approve & Forward'}
               </Text>
-              <Feather name="check" size={16} color={EditorialColors.white} />
+              <Feather name="check" size={16} color={DayRibbonColors.surface} />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -318,8 +315,8 @@ export const RequestDetailsScreen = () => {
               disabled={isSubmitting}
               activeOpacity={0.7}
             >
-              <Text style={styles.outlineActionText}>RETURN FOR REVISION</Text>
-              <Feather name="corner-up-left" size={16} color={EditorialColors.ink} />
+              <Text style={styles.outlineActionText}>Return for Revision</Text>
+              <Feather name="corner-up-left" size={16} color={DayRibbonColors.ink} />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -328,8 +325,8 @@ export const RequestDetailsScreen = () => {
               disabled={isSubmitting}
               activeOpacity={0.7}
             >
-              <Text style={styles.dangerActionText}>REJECT SUBMISSION</Text>
-              <Feather name="x" size={16} color={EditorialColors.accent} />
+              <Text style={styles.dangerActionText}>Reject Submission</Text>
+              <Feather name="x" size={16} color={DayRibbonColors.warn} />
             </TouchableOpacity>
           </View>
         </View>
@@ -341,33 +338,32 @@ export const RequestDetailsScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   centerContainer: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
   },
   notFoundTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 16,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 20,
+    color: DayRibbonColors.ink,
     marginBottom: 6,
   },
   notFoundSub: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -380,247 +376,267 @@ const styles = StyleSheet.create({
   backButton: {
     width: 44,
     height: 44,
+    borderRadius: 22,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
-    backgroundColor: EditorialColors.bg,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  headerTagChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: DayRibbonShapes.chipRadius,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+  },
+  headerTagText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
+  },
   screenTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 24,
-    lineHeight: 28,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 28,
+    lineHeight: 34,
+    color: DayRibbonColors.ink,
     marginBottom: 4,
   },
   screenSubtitle: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
-    marginBottom: 12,
+    marginBottom: 16,
   },
-  heavySpacer: {
-    marginVertical: 18,
-  },
-  hairlineSpacer: {
-    marginVertical: 16,
-  },
-  statRow: {
+  statGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 6,
+    gap: 10,
+    marginBottom: 16,
   },
-  statCol: {
+  statTileItem: {
     flex: 1,
-    alignItems: 'center',
   },
-  statNum: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 34,
-    color: EditorialColors.ink,
-    marginBottom: 2,
-  },
-  statDivider: {
-    width: 1,
-    height: 38,
-    backgroundColor: EditorialColors.ink,
-  },
-  remarksBlock: {
-    borderLeftWidth: 2,
-    borderLeftColor: EditorialColors.ink,
-    paddingLeft: 12,
-    marginVertical: 14,
+  remarksCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 14,
+    marginBottom: 16,
   },
   remarksText: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
     lineHeight: 18,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.ink,
     fontStyle: 'italic',
   },
-  detailsBlock: {
+  detailsCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
     marginBottom: 16,
   },
   metaRow: {
     paddingVertical: 10,
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
+    borderBottomWidth: 1,
+    borderBottomColor: DayRibbonColors.line,
   },
   metaLabel: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 1,
+    color: DayRibbonColors.muted,
     marginBottom: 4,
   },
   metaValue: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 14,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   remarksValue: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
     lineHeight: 18,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 16,
     marginBottom: 12,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 1.2,
+    color: DayRibbonColors.ink,
+  },
+  countBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: DayRibbonShapes.chipRadius,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+  },
+  countBadgeText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   subjectList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+    gap: 10,
   },
-  subjectRow: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 12,
+  subjectCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 14,
   },
   rowTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   subInfo: {
     flex: 1,
     marginRight: 12,
   },
   subCode: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 12,
-    letterSpacing: 1,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.cobalt,
     marginBottom: 2,
   },
   subName: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 15,
     lineHeight: 20,
-    color: EditorialColors.ink,
-    marginBottom: 4,
+    color: DayRibbonColors.ink,
+    marginBottom: 2,
+  },
+  subFaculty: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
   },
   subPercent: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 24,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 22,
+    color: DayRibbonColors.cobalt,
   },
   accentSubPercent: {
-    color: EditorialColors.accent,
+    color: DayRibbonColors.warn,
   },
-  segBarWrapper: {
-    marginTop: 2,
+  progressSpacing: {
+    marginTop: 4,
   },
   decisionSection: {
-    marginTop: 8,
+    marginTop: 20,
   },
   decisionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 20,
+    color: DayRibbonColors.ink,
     marginBottom: 4,
   },
   decisionSub: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    color: EditorialColors.muted,
-    lineHeight: 16,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    color: DayRibbonColors.muted,
+    lineHeight: 18,
     marginBottom: 16,
   },
   inputBlock: {
     marginBottom: 20,
   },
   inputLabel: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 1,
+    color: DayRibbonColors.muted,
     marginBottom: 6,
   },
-  underlineInput: {
-    minHeight: 52,
-    borderBottomWidth: 2,
-    borderBottomColor: EditorialColors.ink,
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 15,
-    color: EditorialColors.ink,
-    paddingVertical: 8,
+  textInput: {
+    minHeight: 80,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 14,
+    color: DayRibbonColors.ink,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    textAlignVertical: 'top',
   },
   errorBorder: {
-    borderBottomColor: EditorialColors.accent,
+    borderColor: DayRibbonColors.warn,
   },
   errorText: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.accent,
-    marginTop: 6,
+    color: DayRibbonColors.warn,
+    marginTop: 4,
   },
   actionButtonGroup: {
     gap: 12,
-    marginTop: 8,
+    marginTop: 4,
   },
   primaryActionButton: {
-    height: 54,
+    height: 52,
     width: '100%',
-    backgroundColor: EditorialColors.ink,
+    borderRadius: DayRibbonShapes.buttonRadius,
+    backgroundColor: DayRibbonColors.cobalt,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 10,
   },
   primaryActionText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    color: DayRibbonColors.surface,
   },
   outlineActionButton: {
-    height: 54,
+    height: 52,
     width: '100%',
+    borderRadius: DayRibbonShapes.buttonRadius,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.ink,
     backgroundColor: 'transparent',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 10,
   },
   outlineActionText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    color: DayRibbonColors.ink,
   },
   dangerActionButton: {
-    height: 54,
+    height: 52,
     width: '100%',
+    borderRadius: DayRibbonShapes.buttonRadius,
     borderWidth: 1.5,
-    borderColor: EditorialColors.accent,
+    borderColor: DayRibbonColors.warn,
     backgroundColor: 'transparent',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 10,
   },
   dangerActionText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.accent,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    color: DayRibbonColors.warn,
   },
 });

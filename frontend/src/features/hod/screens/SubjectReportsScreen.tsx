@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity, TextInput, Text, StatusBar } from 'react-native';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
-import { SegBar } from '@components/editorial/SegBar';
+import { StatTile } from '@components/editorial/StatTile';
+import { ProgressBar } from '@components/editorial/ProgressBar';
 import { EditorialChip } from '@components/editorial/EditorialChip';
 import { Feather } from '@expo/vector-icons';
 
@@ -172,13 +172,13 @@ export const SubjectReportsScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.topSafeArea),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -187,49 +187,50 @@ export const SubjectReportsScreen = () => {
         {/* Header */}
         <View style={styles.header}>
           <Label text="SYLLABUS COVERAGE AUDIT" />
-          <Text style={styles.headerTitle}>
-            SUBJECT AUDIT<Text style={styles.accentDot}>.</Text>
-          </Text>
+          <Text style={styles.headerTitle}>Subject Audit</Text>
           <Text style={styles.headerSubtitle}>
             Cross-section curriculum progress, period delivery and syllabus compliance.
           </Text>
         </View>
 
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
-
-        {/* 3-Column Stat Row */}
-        <View style={styles.statRow}>
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{SAMPLE_SUBJECT_REPORTS.length}</Text>
-            <Label text="SUBJECTS" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={styles.statNum}>{avgCoverage}%</Text>
-            <Label text="AVG COVERAGE" />
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCol}>
-            <Text style={[styles.statNum, styles.accentStatNum]}>2</Text>
-            <Label text="LAGGING" />
-          </View>
+        {/* 3-Column Stat Tiles */}
+        <View style={styles.statGrid}>
+          <StatTile
+            label="Subjects"
+            value={SAMPLE_SUBJECT_REPORTS.length}
+            style={styles.statTileItem}
+          />
+          <StatTile
+            label="Avg Coverage"
+            value={`${avgCoverage}%`}
+            style={styles.statTileItem}
+          />
+          <StatTile
+            label="Lagging"
+            value="2"
+            isLagging={true}
+            style={styles.statTileItem}
+          />
         </View>
 
-        {/* 1px Hairline Rule */}
-        <Rule thickness="hairline" style={styles.hairlineSpacer} />
-
-        {/* Search Underline Input */}
+        {/* Search Field */}
         <View style={styles.searchBlock}>
-          <Text style={styles.searchLabel}>FILTER BY COURSE OR CODE</Text>
-          <TextInput
-            style={styles.underlineInput}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="e.g. CS3591 or Networks"
-            placeholderTextColor={EditorialColors.muted}
-            autoCapitalize="none"
-          />
+          <View style={styles.searchInputWrapper}>
+            <Feather name="search" size={18} color={DayRibbonColors.muted} />
+            <TextInput
+              style={styles.searchInput}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="Search by course or code (e.g. CS3591)"
+              placeholderTextColor={DayRibbonColors.mutedSoft}
+              autoCapitalize="none"
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchQuery('')} accessibilityLabel="Clear search">
+                <Feather name="x" size={16} color={DayRibbonColors.muted} />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
 
         {/* Year Filter Chips */}
@@ -247,7 +248,9 @@ export const SubjectReportsScreen = () => {
         {/* Section Header */}
         <View style={styles.sectionHeaderRow}>
           <Text style={styles.sectionHeaderTitle}>CURRICULUM COURSES</Text>
-          <Label text={`${filtered.length} SUBJECTS`} />
+          <View style={styles.countBadge}>
+            <Text style={styles.countBadgeText}>{filtered.length} SUBJECTS</Text>
+          </View>
         </View>
 
         {/* Subject Items */}
@@ -265,13 +268,14 @@ export const SubjectReportsScreen = () => {
                   <View style={styles.infoCol}>
                     <View style={styles.codeRow}>
                       <Text style={styles.subjectCode}>{item.code}</Text>
-                      <Text style={styles.yearTag}>{item.year}</Text>
+                      <View style={styles.yearChip}>
+                        <Text style={styles.yearChipText}>{item.year}</Text>
+                      </View>
                     </View>
-                    <Text style={styles.subjectTitle}>{item.title}</Text>
-                    <Label
-                      text={`${item.sections.length} SECTIONS • ${item.totalActualPeriods}/${item.totalPlannedPeriods} PERIODS`}
-                      style={styles.metaLabel}
-                    />
+                    <Text style={styles.subjectName}>{item.title}</Text>
+                    <Text style={styles.metaLabel}>
+                      {item.sections.length} Sections • {item.totalActualPeriods}/{item.totalPlannedPeriods} Periods
+                    </Text>
                   </View>
 
                   <View style={styles.rightValueBox}>
@@ -286,35 +290,34 @@ export const SubjectReportsScreen = () => {
                     <Feather
                       name={isExpanded ? 'chevron-up' : 'chevron-down'}
                       size={18}
-                      color={EditorialColors.ink}
+                      color={DayRibbonColors.muted}
                       style={{ marginTop: 4 }}
                     />
                   </View>
                 </TouchableOpacity>
 
-                {/* 25-Segment Bar */}
-                <View style={styles.segBarWrapper}>
-                  <SegBar
-                    totalSegments={25}
-                    filledSegments={Math.round((item.overallCoverage / 100) * 25)}
-                    isLagging={isLagging}
-                  />
-                </View>
+                {/* Progress Bar */}
+                <ProgressBar
+                  progress={item.overallCoverage / 100}
+                  isLagging={isLagging}
+                  style={styles.progressSpacing}
+                />
 
                 {/* Expanded Sections Breakdown */}
                 {isExpanded && (
                   <View style={styles.sectionsBlock}>
-                    <Rule thickness="hairline" style={{ marginBottom: 12 }} />
-                    <Label text="SECTION-WISE AUDIT" style={{ marginBottom: 8 }} />
+                    <Text style={styles.sectionAuditHeader}>SECTION-WISE AUDIT</Text>
 
                     {item.sections.map((sec) => {
                       const isSecLagging = sec.status === 'LAGGING';
                       return (
-                        <View key={sec.section} style={styles.sectionRow}>
+                        <View key={sec.section} style={styles.sectionCard}>
                           <View style={styles.secRowTop}>
                             <View style={styles.secLeft}>
                               <Text style={styles.secName}>{sec.section}</Text>
-                              <Label text={`FACULTY: ${sec.facultyName.toUpperCase()}`} />
+                              <Text style={styles.secFaculty}>
+                                Faculty: {sec.facultyName}
+                              </Text>
                             </View>
 
                             <View style={styles.secRight}>
@@ -329,13 +332,13 @@ export const SubjectReportsScreen = () => {
                               <View
                                 style={[
                                   styles.statusBadge,
-                                  isSecLagging ? styles.accentStatusBadge : null,
+                                  isSecLagging ? styles.accentStatusBadge : styles.cobaltStatusBadge,
                                 ]}
                               >
                                 <Text
                                   style={[
                                     styles.statusBadgeText,
-                                    isSecLagging ? styles.accentStatusBadgeText : null,
+                                    isSecLagging ? styles.accentStatusBadgeText : styles.cobaltStatusBadgeText,
                                   ]}
                                 >
                                   {sec.status}
@@ -364,118 +367,106 @@ export const SubjectReportsScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   header: {
-    marginBottom: 4,
+    marginBottom: 16,
   },
   headerTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 36,
-    lineHeight: 40,
-    color: EditorialColors.ink,
-    letterSpacing: -0.5,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 32,
+    lineHeight: 38,
+    color: DayRibbonColors.ink,
     marginTop: 4,
     marginBottom: 4,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
   headerSubtitle: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
   },
-  heavySpacer: {
-    marginVertical: 18,
-  },
-  hairlineSpacer: {
-    marginVertical: 16,
-  },
-  statRow: {
+  statGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 6,
-  },
-  statCol: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statNum: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 30,
-    lineHeight: 34,
-    color: EditorialColors.ink,
-    marginBottom: 2,
-  },
-  accentStatNum: {
-    color: EditorialColors.accent,
-  },
-  statDivider: {
-    width: 1,
-    height: 38,
-    backgroundColor: EditorialColors.ink,
-  },
-  searchBlock: {
+    gap: 10,
     marginBottom: 16,
   },
-  searchLabel: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
-    marginBottom: 6,
+  statTileItem: {
+    flex: 1,
   },
-  underlineInput: {
-    height: 44,
-    borderBottomWidth: 2,
-    borderBottomColor: EditorialColors.ink,
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 15,
-    color: EditorialColors.ink,
-    paddingVertical: 6,
+  searchBlock: {
+    marginBottom: 14,
+  },
+  searchInputWrapper: {
+    height: 48,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    gap: 10,
+  },
+  searchInput: {
+    flex: 1,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 14,
+    color: DayRibbonColors.ink,
   },
   chipRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 1.2,
+    color: DayRibbonColors.ink,
+  },
+  countBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: DayRibbonShapes.chipRadius,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+  },
+  countBadgeText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   subjectList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+    gap: 12,
   },
   subjectCard: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 14,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   infoCol: {
     flex: 1,
@@ -488,101 +479,129 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   subjectCode: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 12,
-    letterSpacing: 1,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.cobalt,
   },
-  yearTag: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    color: EditorialColors.muted,
+  yearChip: {
+    backgroundColor: DayRibbonColors.bg,
+    borderRadius: DayRibbonShapes.chipRadius,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
   },
-  subjectTitle: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 17,
+  yearChipText: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
+  },
+  subjectName: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 16,
     lineHeight: 22,
-    color: EditorialColors.ink,
-    marginBottom: 4,
+    color: DayRibbonColors.ink,
+    marginBottom: 2,
   },
   metaLabel: {
-    letterSpacing: 1.5,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
   },
   rightValueBox: {
     alignItems: 'flex-end',
     justifyContent: 'center',
   },
   percentText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 28,
-    lineHeight: 32,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 26,
+    lineHeight: 30,
+    color: DayRibbonColors.cobalt,
   },
   accentPercentText: {
-    color: EditorialColors.accent,
+    color: DayRibbonColors.warn,
   },
-  segBarWrapper: {
-    marginTop: 2,
+  progressSpacing: {
+    marginTop: 4,
   },
   sectionsBlock: {
     marginTop: 14,
-    paddingTop: 4,
-  },
-  sectionRow: {
     borderTopWidth: 1,
-    borderTopColor: EditorialColors.track,
-    paddingVertical: 10,
+    borderTopColor: DayRibbonColors.line,
+    paddingTop: 12,
+    gap: 10,
+  },
+  sectionAuditHeader: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    letterSpacing: 1,
+    color: DayRibbonColors.muted,
+    marginBottom: 2,
+  },
+  sectionCard: {
+    backgroundColor: DayRibbonColors.bg,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 12,
   },
   secRowTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   secLeft: {
     flex: 1,
     marginRight: 8,
   },
   secName: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 14,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
     marginBottom: 2,
+  },
+  secFaculty: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
   },
   secRight: {
     alignItems: 'flex-end',
   },
   secPercent: {
-    fontFamily: EditorialFonts.display,
+    fontFamily: DayRibbonFonts.display,
     fontSize: 18,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.cobalt,
     marginBottom: 2,
   },
   accentSecPercent: {
-    color: EditorialColors.accent,
+    color: DayRibbonColors.warn,
   },
   statusBadge: {
-    borderWidth: 1,
-    borderColor: EditorialColors.ink,
+    borderRadius: DayRibbonShapes.chipRadius,
     paddingHorizontal: 6,
-    paddingVertical: 1,
+    paddingVertical: 2,
+  },
+  cobaltStatusBadge: {
+    backgroundColor: 'rgba(43, 63, 224, 0.08)',
   },
   accentStatusBadge: {
-    borderColor: EditorialColors.accent,
+    backgroundColor: DayRibbonColors.warnBg,
   },
   statusBadgeText: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 9,
-    letterSpacing: 1,
-    color: EditorialColors.ink,
+    letterSpacing: 0.5,
+  },
+  cobaltStatusBadgeText: {
+    color: DayRibbonColors.cobalt,
   },
   accentStatusBadgeText: {
-    color: EditorialColors.accent,
+    color: DayRibbonColors.warn,
   },
   topicText: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 12,
     lineHeight: 16,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
   },
 });

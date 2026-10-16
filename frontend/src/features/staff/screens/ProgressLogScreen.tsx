@@ -10,9 +10,8 @@ import { SQLiteSyllabusNode } from '@database/types';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 import { syncEngine } from '@features/sync/syncEngine';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
 import { EditorialToggle } from '@components/editorial/EditorialToggle';
 import { Feather } from '@expo/vector-icons';
 
@@ -125,13 +124,13 @@ export const ProgressLogScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.topSafeArea),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -140,16 +139,11 @@ export const ProgressLogScreen = () => {
         {/* Header */}
         <View style={styles.header}>
           <Label text="SYLLABUS PROGRESS TRACKER" />
-          <Text style={styles.headerTitle}>
-            LOG PROGRESS<Text style={styles.accentDot}>.</Text>
-          </Text>
+          <Text style={styles.headerTitle}>Log Progress</Text>
           <Text style={styles.headerSubtitle}>
             Record completed curriculum topics, delivery notes and extra hour requests.
           </Text>
         </View>
-
-        {/* 4px Heavy Section Rule */}
-        <Rule thickness="heavy" style={styles.heavySpacer} />
 
         {/* Form Inputs */}
         <View style={styles.formSection}>
@@ -198,7 +192,11 @@ export const ProgressLogScreen = () => {
             <View style={styles.syllabusBlock}>
               <View style={styles.sectionHeaderRow}>
                 <Text style={styles.sectionHeaderTitle}>COMPLETED TOPICS THIS WEEK</Text>
-                <Label text={`${completedTopics.length}/${syllabusNodes.length} DONE`} />
+                <View style={styles.countBadge}>
+                  <Text style={styles.countBadgeText}>
+                    {completedTopics.length}/{syllabusNodes.length} DONE
+                  </Text>
+                </View>
               </View>
 
               <View style={styles.topicList}>
@@ -207,24 +205,24 @@ export const ProgressLogScreen = () => {
                   return (
                     <TouchableOpacity
                       key={node.topic_id}
-                      style={styles.topicRow}
+                      style={styles.topicCard}
                       onPress={() => handleTopicToggle(node.topic_id)}
                       activeOpacity={0.7}
                     >
                       <View
                         style={[
-                          styles.checkboxSquare,
-                          checked ? styles.checkboxSquareChecked : null,
+                          styles.checkboxCircle,
+                          checked ? styles.checkboxCircleChecked : null,
                         ]}
                       >
                         {checked && (
-                          <Feather name="check" size={14} color={EditorialColors.white} />
+                          <Feather name="check" size={14} color={DayRibbonColors.surface} />
                         )}
                       </View>
 
                       <View style={styles.topicInfo}>
                         <Text style={styles.topicText}>{node.topic_title}</Text>
-                        <Label text={node.unit} />
+                        <Text style={styles.topicUnit}>{node.unit}</Text>
                       </View>
                     </TouchableOpacity>
                   );
@@ -242,18 +240,18 @@ export const ProgressLogScreen = () => {
                 <Text style={styles.inputLabel}>REASONS FOR PENDING TOPICS (IF ANY)</Text>
                 <TextInput
                   style={[
-                    styles.underlineInput,
+                    styles.textInput,
                     errors.reasonsForPending ? styles.errorBorder : null,
                   ]}
                   value={value || ''}
                   onChangeText={onChange}
                   placeholder="Explain pedagogical adjustments, holidays or leave..."
-                  placeholderTextColor={EditorialColors.muted}
+                  placeholderTextColor={DayRibbonColors.mutedSoft}
                   multiline
                 />
                 {errors.reasonsForPending && (
                   <Text style={styles.errorText}>
-                    {errors.reasonsForPending.message?.toUpperCase()}
+                    {errors.reasonsForPending.message}
                   </Text>
                 )}
               </View>
@@ -265,9 +263,9 @@ export const ProgressLogScreen = () => {
             control={control}
             name="extraHoursRequested"
             render={({ field: { onChange, value } }) => (
-              <View style={styles.toggleRow}>
+              <View style={styles.toggleCard}>
                 <View style={styles.toggleTextCol}>
-                  <Text style={styles.toggleLabel}>REQUEST EXTRA TEACHING HOURS</Text>
+                  <Text style={styles.toggleLabel}>Request Extra Teaching Hours</Text>
                   <Text style={styles.toggleSub}>
                     Notify Coordinator & HOD to allocate a revision slot.
                   </Text>
@@ -288,9 +286,9 @@ export const ProgressLogScreen = () => {
             activeOpacity={0.85}
           >
             <Text style={styles.primaryActionText}>
-              {isSubmitting ? 'LOGGING...' : 'LOG WEEKLY PROGRESS'}
+              {isSubmitting ? 'Logging...' : 'Log Weekly Progress'}
             </Text>
-            <Feather name="arrow-right" size={16} color={EditorialColors.white} />
+            <Feather name="arrow-right" size={16} color={DayRibbonColors.surface} />
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -301,38 +299,31 @@ export const ProgressLogScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   header: {
-    marginBottom: 4,
+    marginBottom: 16,
   },
   headerTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 36,
-    lineHeight: 40,
-    color: EditorialColors.ink,
-    letterSpacing: -0.5,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 32,
+    lineHeight: 38,
+    color: DayRibbonColors.ink,
     marginTop: 4,
     marginBottom: 4,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
   headerSubtitle: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 13,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
-  },
-  heavySpacer: {
-    marginVertical: 18,
   },
   formSection: {
     marginBottom: 20,
@@ -341,124 +332,147 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   inputBlock: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   inputLabel: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    letterSpacing: 1,
+    color: DayRibbonColors.muted,
     marginBottom: 6,
   },
-  underlineInput: {
-    minHeight: 48,
-    borderBottomWidth: 2,
-    borderBottomColor: EditorialColors.ink,
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 15,
-    color: EditorialColors.ink,
-    paddingVertical: 8,
+  textInput: {
+    minHeight: 80,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: DayRibbonColors.surface,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 14,
+    color: DayRibbonColors.ink,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    textAlignVertical: 'top',
   },
   errorBorder: {
-    borderBottomColor: EditorialColors.accent,
+    borderColor: DayRibbonColors.warn,
   },
   errorText: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.accent,
-    marginTop: 6,
+    color: DayRibbonColors.warn,
+    marginTop: 4,
   },
   syllabusBlock: {
-    marginTop: 10,
+    marginTop: 8,
     marginBottom: 20,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 1.2,
+    color: DayRibbonColors.ink,
+  },
+  countBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: DayRibbonShapes.chipRadius,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+  },
+  countBadgeText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   topicList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+    gap: 8,
   },
-  topicRow: {
+  topicCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.track,
     gap: 12,
   },
-  checkboxSquare: {
-    width: 22,
-    height: 22,
+  checkboxCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
     backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  checkboxSquareChecked: {
-    backgroundColor: EditorialColors.ink,
+  checkboxCircleChecked: {
+    backgroundColor: DayRibbonColors.cobalt,
+    borderColor: DayRibbonColors.cobalt,
   },
   topicInfo: {
     flex: 1,
   },
   topicText: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body600,
     fontSize: 14,
     lineHeight: 20,
-    color: EditorialColors.ink,
+    color: DayRibbonColors.ink,
     marginBottom: 2,
   },
-  toggleRow: {
+  topicUnit: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
+  },
+  toggleCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    marginBottom: 24,
+    padding: 16,
+    borderRadius: DayRibbonShapes.cardRadius,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    marginBottom: 20,
   },
   toggleTextCol: {
     flex: 1,
     marginRight: 16,
   },
   toggleLabel: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    color: DayRibbonColors.ink,
     marginBottom: 2,
   },
   toggleSub: {
-    fontFamily: EditorialFonts.semibold,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 12,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
   },
   primaryActionButton: {
-    height: 54,
+    height: 52,
     width: '100%',
-    backgroundColor: EditorialColors.ink,
+    borderRadius: DayRibbonShapes.buttonRadius,
+    backgroundColor: DayRibbonColors.cobalt,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 10,
   },
   primaryActionText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    color: DayRibbonColors.surface,
   },
 });

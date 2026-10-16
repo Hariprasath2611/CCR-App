@@ -18,10 +18,9 @@ import { generateReportHTML } from '@services/api/reportPdfTemplate';
 import { generateReportWord } from '@services/api/reportWordTemplate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getCCForSection } from '@config/facultyBoard';
-import { EditorialColors, EditorialFonts, EditorialRules, EditorialSpacing } from '@theme/editorial';
+import { DayRibbonColors, DayRibbonFonts, DayRibbonShapes, DayRibbonSpacing } from '@theme/dayRibbon';
 import { Label } from '@components/editorial/Label';
-import { Rule } from '@components/editorial/Rule';
-import { SegBar } from '@components/editorial/SegBar';
+import { ProgressBar } from '@components/editorial/ProgressBar';
 import { EditorialChip } from '@components/editorial/EditorialChip';
 
 interface DeptInfo {
@@ -206,13 +205,13 @@ export const DeptSummaryScreen = () => {
 
   return (
     <View style={styles.screenWrapper}>
-      <StatusBar barStyle="dark-content" backgroundColor={EditorialColors.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, EditorialSpacing.topSafeArea),
+            paddingTop: Math.max(insets.top, DayRibbonSpacing.topSafeArea),
             paddingBottom: insets.bottom + 80,
           },
         ]}
@@ -220,21 +219,31 @@ export const DeptSummaryScreen = () => {
       >
         {/* Breadcrumb Navigation */}
         <View style={styles.breadcrumbBar}>
-          <TouchableOpacity onPress={() => handleBreadcrumbClick(1)} activeOpacity={0.7}>
-            <Text style={[styles.crumbText, step === 1 && styles.crumbActive]}>DEPTS</Text>
+          <TouchableOpacity
+            style={[styles.crumbChip, step === 1 && styles.crumbChipActive]}
+            onPress={() => handleBreadcrumbClick(1)}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.crumbText, step === 1 && styles.crumbTextActive]}>DEPTS</Text>
           </TouchableOpacity>
           {selectedDept && (
             <>
-              <Text style={styles.crumbSeparator}>/</Text>
-              <TouchableOpacity onPress={() => handleBreadcrumbClick(2)} activeOpacity={0.7}>
-                <Text style={[styles.crumbText, step === 2 && styles.crumbActive]}>{selectedDept.code}</Text>
+              <Feather name="chevron-right" size={14} color={DayRibbonColors.muted} />
+              <TouchableOpacity
+                style={[styles.crumbChip, step === 2 && styles.crumbChipActive]}
+                onPress={() => handleBreadcrumbClick(2)}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.crumbText, step === 2 && styles.crumbTextActive]}>{selectedDept.code}</Text>
               </TouchableOpacity>
             </>
           )}
           {selectedYear && (
             <>
-              <Text style={styles.crumbSeparator}>/</Text>
-              <Text style={[styles.crumbText, step === 3 && styles.crumbActive]}>{selectedYear.toUpperCase()}</Text>
+              <Feather name="chevron-right" size={14} color={DayRibbonColors.muted} />
+              <View style={[styles.crumbChip, styles.crumbChipActive]}>
+                <Text style={[styles.crumbText, styles.crumbTextActive]}>{selectedYear.toUpperCase()}</Text>
+              </View>
             </>
           )}
         </View>
@@ -244,19 +253,17 @@ export const DeptSummaryScreen = () => {
           <>
             <View style={styles.header}>
               <Label text="INSTITUTIONAL DIRECTORY" />
-              <Text style={styles.headerTitle}>
-                ALL DEPARTMENTS<Text style={styles.accentDot}>.</Text>
-              </Text>
+              <Text style={styles.headerTitle}>All Departments</Text>
               <Text style={styles.headerSubtitle}>
                 Select an engineering or postgraduate department to inspect syllabus progress.
               </Text>
             </View>
 
-            <Rule thickness="heavy" style={styles.heavySpacer} />
-
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionHeaderTitle}>ACADEMIC DEPARTMENTS</Text>
-              <Label text={`${dynamicDepartments.length} TOTAL`} />
+              <View style={styles.countBadge}>
+                <Text style={styles.countBadgeText}>{dynamicDepartments.length} TOTAL</Text>
+              </View>
             </View>
 
             <View style={styles.deptList}>
@@ -265,7 +272,7 @@ export const DeptSummaryScreen = () => {
                 return (
                   <TouchableOpacity
                     key={dept.id}
-                    style={styles.deptRow}
+                    style={styles.deptCard}
                     onPress={() => handleDeptSelect(dept)}
                     activeOpacity={0.7}
                   >
@@ -273,7 +280,7 @@ export const DeptSummaryScreen = () => {
                       <View style={styles.infoCol}>
                         <View style={styles.codeRow}>
                           <Text style={styles.deptCode}>{dept.code}</Text>
-                          <Label text={`${dept.classesCount} CLASSES`} />
+                          <Text style={styles.classesMeta}>{dept.classesCount} Classes</Text>
                         </View>
                         <Text style={styles.deptName}>{dept.name}</Text>
                       </View>
@@ -290,13 +297,11 @@ export const DeptSummaryScreen = () => {
                       </View>
                     </View>
 
-                    <View style={styles.segBarWrapper}>
-                      <SegBar
-                        totalSegments={25}
-                        filledSegments={Math.round((dept.coverage / 100) * 25)}
-                        isLagging={isLagging}
-                      />
-                    </View>
+                    <ProgressBar
+                      progress={dept.coverage / 100}
+                      isLagging={isLagging}
+                      style={styles.progressSpacing}
+                    />
                   </TouchableOpacity>
                 );
               })}
@@ -309,16 +314,11 @@ export const DeptSummaryScreen = () => {
           <>
             <View style={styles.header}>
               <Label text={`DEPARTMENT • ${selectedDept.code}`} />
-              <Text style={styles.headerTitle}>
-                {selectedDept.name.toUpperCase()}
-                <Text style={styles.accentDot}>.</Text>
-              </Text>
+              <Text style={styles.headerTitle}>{selectedDept.name}</Text>
               <Text style={styles.headerSubtitle}>
                 Select an academic year to inspect sections or view course catalog.
               </Text>
             </View>
-
-            <Rule thickness="heavy" style={styles.heavySpacer} />
 
             {/* Toggle Tab */}
             <View style={styles.tabToggleRow}>
@@ -346,7 +346,7 @@ export const DeptSummaryScreen = () => {
                   return (
                     <TouchableOpacity
                       key={yr}
-                      style={styles.deptRow}
+                      style={styles.deptCard}
                       onPress={() => handleYearSelect(yr)}
                       activeOpacity={0.7}
                     >
@@ -354,7 +354,7 @@ export const DeptSummaryScreen = () => {
                         <View style={styles.infoCol}>
                           <Text style={styles.deptCode}>YEAR 0{idx + 1}</Text>
                           <Text style={styles.deptName}>{yr}</Text>
-                          <Label text={`${yrClasses.length} SECTIONS MAPPED`} />
+                          <Text style={styles.classesMeta}>{yrClasses.length} Sections Mapped</Text>
                         </View>
 
                         <View style={styles.rightValueBox}>
@@ -369,13 +369,11 @@ export const DeptSummaryScreen = () => {
                         </View>
                       </View>
 
-                      <View style={styles.segBarWrapper}>
-                        <SegBar
-                          totalSegments={25}
-                          filledSegments={Math.round((yrAvg / 100) * 25)}
-                          isLagging={isLagging}
-                        />
-                      </View>
+                      <ProgressBar
+                        progress={yrAvg / 100}
+                        isLagging={isLagging}
+                        style={styles.progressSpacing}
+                      />
                     </TouchableOpacity>
                   );
                 })}
@@ -383,12 +381,14 @@ export const DeptSummaryScreen = () => {
             ) : (
               <View style={styles.deptList}>
                 {getAllSubjectsForDept(selectedDept.code).map((sub) => (
-                  <View key={sub.code} style={styles.deptRow}>
+                  <View key={sub.code} style={styles.deptCard}>
                     <View style={styles.rowTop}>
                       <View style={styles.infoCol}>
                         <Text style={styles.deptCode}>{sub.code}</Text>
                         <Text style={styles.deptName}>{sub.name}</Text>
-                        <Label text={`FACULTY: ${sub.faculty.toUpperCase()} • ${sub.topics} UNITS`} />
+                        <Text style={styles.classesMeta}>
+                          Faculty: {sub.faculty} • {sub.topics} Units
+                        </Text>
                       </View>
                     </View>
                   </View>
@@ -403,15 +403,11 @@ export const DeptSummaryScreen = () => {
           <>
             <View style={styles.header}>
               <Label text={`${selectedDept.code} • ${selectedYear.toUpperCase()}`} />
-              <Text style={styles.headerTitle}>
-                SECTION AUDIT<Text style={styles.accentDot}>.</Text>
-              </Text>
+              <Text style={styles.headerTitle}>Section Audit</Text>
               <Text style={styles.headerSubtitle}>
                 Class syllabus completion and verified coordinator spreadsheets.
               </Text>
             </View>
-
-            <Rule thickness="heavy" style={styles.heavySpacer} />
 
             <View style={styles.deptList}>
               {getClassesForDeptAndYear(selectedDept.code, selectedYear).map((cls) => {
@@ -419,13 +415,13 @@ export const DeptSummaryScreen = () => {
                 const ccInfo = getCCForSection(cls.classId);
 
                 return (
-                  <View key={cls.classId} style={styles.deptRow}>
+                  <View key={cls.classId} style={styles.deptCard}>
                     <View style={styles.rowTop}>
                       <View style={styles.infoCol}>
                         <Text style={styles.deptCode}>{cls.classId}</Text>
-                        <Label
-                          text={`COORDINATOR: ${ccInfo?.facultyName?.toUpperCase() || 'ASSIGNED CC'}`}
-                        />
+                        <Text style={styles.classesMeta}>
+                          Coordinator: {ccInfo?.facultyName || 'Assigned CC'}
+                        </Text>
                       </View>
 
                       <View style={styles.rightValueBox}>
@@ -440,13 +436,11 @@ export const DeptSummaryScreen = () => {
                       </View>
                     </View>
 
-                    <View style={styles.segBarWrapper}>
-                      <SegBar
-                        totalSegments={25}
-                        filledSegments={Math.round((cls.coverage / 100) * 25)}
-                        isLagging={isLagging}
-                      />
-                    </View>
+                    <ProgressBar
+                      progress={cls.coverage / 100}
+                      isLagging={isLagging}
+                      style={styles.progressSpacing}
+                    />
 
                     <View style={styles.rowActions}>
                       <TouchableOpacity
@@ -454,8 +448,8 @@ export const DeptSummaryScreen = () => {
                         onPress={() => handleClassSelect(cls)}
                         activeOpacity={0.7}
                       >
-                        <Text style={styles.actionOutlineBtnText}>SPREADSHEET</Text>
-                        <Feather name="arrow-right" size={14} color={EditorialColors.ink} />
+                        <Text style={styles.actionOutlineBtnText}>Spreadsheet</Text>
+                        <Feather name="arrow-right" size={14} color={DayRibbonColors.ink} />
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -475,19 +469,15 @@ export const DeptSummaryScreen = () => {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>
-                  CONSOLIDATED SPREADSHEET<Text style={styles.accentDot}>.</Text>
-                </Text>
+                <Text style={styles.modalTitle}>Consolidated Spreadsheet</Text>
                 <TouchableOpacity
                   onPress={() => setDetailModalVisible(false)}
                   style={styles.modalCloseButton}
                   accessibilityLabel="Close modal"
                 >
-                  <Feather name="x" size={20} color={EditorialColors.ink} />
+                  <Feather name="x" size={20} color={DayRibbonColors.ink} />
                 </TouchableOpacity>
               </View>
-
-              <Rule thickness="hairline" style={{ marginBottom: 16 }} />
 
               {selectedReport && (
                 <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 420 }}>
@@ -499,8 +489,8 @@ export const DeptSummaryScreen = () => {
                       onPress={() => handleExportPDF(selectedReport)}
                       activeOpacity={0.85}
                     >
-                      <Text style={styles.modalActionBtnText}>EXPORT PDF</Text>
-                      <Feather name="download" size={14} color={EditorialColors.white} />
+                      <Text style={styles.modalActionBtnText}>Export PDF</Text>
+                      <Feather name="download" size={16} color={DayRibbonColors.surface} />
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -508,8 +498,8 @@ export const DeptSummaryScreen = () => {
                       onPress={() => handleExportWord(selectedReport)}
                       activeOpacity={0.7}
                     >
-                      <Text style={styles.modalOutlineBtnText}>EXPORT WORD</Text>
-                      <Feather name="file-text" size={14} color={EditorialColors.ink} />
+                      <Text style={styles.modalOutlineBtnText}>Export Word</Text>
+                      <Feather name="file-text" size={16} color={DayRibbonColors.ink} />
                     </TouchableOpacity>
                   </View>
                 </ScrollView>
@@ -525,14 +515,14 @@ export const DeptSummaryScreen = () => {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   container: {
     flex: 1,
-    backgroundColor: EditorialColors.bg,
+    backgroundColor: DayRibbonColors.bg,
   },
   content: {
-    paddingHorizontal: EditorialSpacing.screenHorizontal,
+    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
   },
   breadcrumbBar: {
     flexDirection: 'row',
@@ -540,75 +530,88 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 16,
   },
+  crumbChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: DayRibbonShapes.chipRadius,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    backgroundColor: 'transparent',
+  },
+  crumbChipActive: {
+    borderColor: DayRibbonColors.ink,
+    backgroundColor: DayRibbonColors.ink,
+  },
   crumbText: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
-    letterSpacing: 2,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.muted,
   },
-  crumbActive: {
-    color: EditorialColors.ink,
-  },
-  crumbSeparator: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    color: EditorialColors.muted,
+  crumbTextActive: {
+    color: DayRibbonColors.surface,
   },
   header: {
-    marginBottom: 4,
+    marginBottom: 16,
   },
   headerTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 34,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 32,
     lineHeight: 38,
-    color: EditorialColors.ink,
-    letterSpacing: -0.5,
+    color: DayRibbonColors.ink,
     marginTop: 4,
     marginBottom: 4,
   },
-  accentDot: {
-    color: EditorialColors.accent,
-  },
   headerSubtitle: {
-    fontFamily: EditorialFonts.semibold,
-    fontSize: 12,
-    color: EditorialColors.muted,
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    color: DayRibbonColors.muted,
     lineHeight: 18,
-  },
-  heavySpacer: {
-    marginVertical: 18,
   },
   tabToggleRow: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionHeaderTitle: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 13,
-    letterSpacing: 2,
-    color: EditorialColors.ink,
+    letterSpacing: 1.2,
+    color: DayRibbonColors.ink,
+  },
+  countBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: DayRibbonShapes.chipRadius,
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+  },
+  countBadgeText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    color: DayRibbonColors.muted,
   },
   deptList: {
-    borderTopWidth: EditorialRules.hairline,
-    borderTopColor: EditorialColors.ink,
+    gap: 12,
   },
-  deptRow: {
-    borderBottomWidth: EditorialRules.hairline,
-    borderBottomColor: EditorialColors.ink,
-    paddingVertical: 14,
+  deptCard: {
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
+    padding: 16,
   },
   rowTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   infoCol: {
     flex: 1,
@@ -621,88 +624,93 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   deptCode: {
-    fontFamily: EditorialFonts.bold,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 12,
-    letterSpacing: 1,
-    color: EditorialColors.muted,
+    color: DayRibbonColors.cobalt,
+  },
+  classesMeta: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
+    color: DayRibbonColors.muted,
   },
   deptName: {
-    fontFamily: EditorialFonts.heavy,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 16,
-    lineHeight: 20,
-    color: EditorialColors.ink,
-    marginBottom: 4,
+    lineHeight: 22,
+    color: DayRibbonColors.ink,
+    marginBottom: 2,
   },
   rightValueBox: {
     alignItems: 'flex-end',
     justifyContent: 'center',
   },
   percentText: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 28,
-    lineHeight: 32,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 26,
+    lineHeight: 30,
+    color: DayRibbonColors.cobalt,
   },
   accentPercentText: {
-    color: EditorialColors.accent,
+    color: DayRibbonColors.warn,
   },
-  segBarWrapper: {
-    marginTop: 2,
+  progressSpacing: {
+    marginTop: 4,
   },
   rowActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginTop: 10,
+    marginTop: 12,
   },
   actionOutlineBtn: {
-    height: 38,
+    height: 40,
     paddingHorizontal: 14,
+    borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
   },
   actionOutlineBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 12,
+    color: DayRibbonColors.ink,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(17, 17, 17, 0.7)',
+    backgroundColor: 'rgba(14, 19, 48, 0.4)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
   modalContent: {
     width: '100%',
-    backgroundColor: EditorialColors.bg,
-    borderWidth: 2,
-    borderColor: EditorialColors.ink,
+    backgroundColor: DayRibbonColors.surface,
+    borderRadius: DayRibbonShapes.cardRadius,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
     padding: 20,
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 16,
   },
   modalTitle: {
-    fontFamily: EditorialFonts.display,
-    fontSize: 18,
-    color: EditorialColors.ink,
-    letterSpacing: 0.5,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 20,
+    color: DayRibbonColors.ink,
   },
   modalCloseButton: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.line,
   },
   modalActions: {
     flexDirection: 'row',
@@ -711,33 +719,33 @@ const styles = StyleSheet.create({
   },
   modalActionBtn: {
     flex: 1,
-    height: 48,
-    backgroundColor: EditorialColors.ink,
+    height: 52,
+    borderRadius: DayRibbonShapes.buttonRadius,
+    backgroundColor: DayRibbonColors.cobalt,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
   },
   modalActionBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 1.5,
-    color: EditorialColors.white,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 13,
+    color: DayRibbonColors.surface,
   },
   modalOutlineBtn: {
     flex: 1,
-    height: 48,
+    height: 52,
+    borderRadius: DayRibbonShapes.buttonRadius,
     borderWidth: 1.5,
-    borderColor: EditorialColors.ink,
+    borderColor: DayRibbonColors.ink,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
   },
   modalOutlineBtnText: {
-    fontFamily: EditorialFonts.heavy,
-    fontSize: 12,
-    letterSpacing: 1.5,
-    color: EditorialColors.ink,
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 13,
+    color: DayRibbonColors.ink,
   },
 });
