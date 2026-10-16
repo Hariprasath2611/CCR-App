@@ -24,7 +24,7 @@
     "axios": "^1.18.1",
     "date-fns": "^4.4.0",
     "docx": "^9.7.1",
-    "expo": "~57.0.29",
+    "expo": "~57.0.30",
     "expo-file-system": "^57.0.1",
     "expo-print": "~57.0.2",
     "expo-sharing": "~57.0.23",
