@@ -1,7 +1,6 @@
-import { NativeModules, Platform, Linking } from 'expo';
-import * as FileSystem from 'expo-file-system';
+import { NativeModules, Platform, Linking } from 'react-native';
 
-const { ApkInstaller } = NativeModules;
+const ApkInstaller = NativeModules ? NativeModules.ApkInstaller : undefined;
 
 export interface AppVersionInfo {
   versionCode: number;
