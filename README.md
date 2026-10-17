@@ -103,3 +103,14 @@ This application utilizes secure private delivery methods to protect institution
 * **Managed Google Play (Private Release):** Visible only to accounts logged in under the college's Google Workspace domain (`@jec.com`).
 * **Apple School Manager:** Customized distribution via school-managed portals.
 * **Self-Hosted Portal:** Restricts software installers to users authenticated through campus-wide network access.
+
+---
+
+## 📡 API Versioning & Backward Compatibility Rules
+
+> [!IMPORTANT]
+> **BACKWARD COMPATIBILITY CONTRACT:**
+> 1. Existing client releases communicate with `/v1/*` and canonical `/api/v1/*`.
+> 2. **Never remove or rename response fields** consumed by previously released client versions.
+> 3. Only **add** new nullable or optional fields.
+> 4. For complete release procedures, APK signing configs, and zero-downtime remote control, refer to [RELEASE.md](file:///d:/work/cc-app/RELEASE.md).
