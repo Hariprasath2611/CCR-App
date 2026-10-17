@@ -32,13 +32,14 @@ const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = Dimensions.get('window');
 
 type NavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Landing'>;
 
-// ── CONTINUOUS CYCLIC MARQUEE RIBBON (Moves right smoothly in an infinite seamless loop) ──
+// ── CONTINUOUS CYCLIC MARQUEE RIBBON (Never stops, alternating bidirectional) ──
 interface TiltedRibbonProps {
   color: string;
   word1: string;
   word2: string;
   word3: string;
   textColor: string;
+  direction?: 'left' | 'right';
   speed?: number; // duration (ms) for one unit cycle
 }
 
@@ -48,7 +49,8 @@ const TiltedRibbonStrip: React.FC<TiltedRibbonProps> = ({
   word2,
   word3,
   textColor,
-  speed = 8000,
+  direction = 'right',
+  speed = 8500,
 }) => {
   const w = 1200;
   const h = 56;
@@ -56,35 +58,22 @@ const TiltedRibbonStrip: React.FC<TiltedRibbonProps> = ({
 
   // Dynamically measure width of one 3-word unit
   const [unitWidth, setUnitWidth] = useState<number>(310);
-  const anim = useRef(new Animated.Value(-310)).current;
+  const anim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    let animLoop: Animated.CompositeAnimation | null = null;
+    anim.setValue(0);
+    const loop = Animated.loop(
+      Animated.timing(anim, {
+        toValue: 1,
+        duration: speed,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    );
+    loop.start();
 
-    AccessibilityInfo.isReduceMotionEnabled().then((reducedMotion) => {
-      if (reducedMotion) {
-        anim.setValue(0);
-        return;
-      }
-
-      anim.setValue(-unitWidth);
-      animLoop = Animated.loop(
-        Animated.timing(anim, {
-          toValue: 0,
-          duration: speed,
-          easing: Easing.linear,
-          useNativeDriver: true,
-        })
-      );
-      animLoop.start();
-    });
-
-    return () => {
-      if (animLoop) {
-        animLoop.stop();
-      }
-    };
-  }, [unitWidth, speed]);
+    return () => loop.stop();
+  }, [speed]);
 
   const onUnitLayout = (e: LayoutChangeEvent) => {
     const measured = e.nativeEvent.layout.width;
@@ -92,6 +81,11 @@ const TiltedRibbonStrip: React.FC<TiltedRibbonProps> = ({
       setUnitWidth(measured);
     }
   };
+
+  const translateX = anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: direction === 'right' ? [-unitWidth, 0] : [0, -unitWidth],
+  });
 
   const renderUnit = (key: string, onLayout?: (e: LayoutChangeEvent) => void) => (
     <View key={key} style={styles.ribbonUnit} onLayout={onLayout}>
@@ -112,7 +106,7 @@ const TiltedRibbonStrip: React.FC<TiltedRibbonProps> = ({
       <Animated.View
         style={[
           styles.ribbonTickerTrack,
-          { transform: [{ translateX: anim }] },
+          { transform: [{ translateX }] },
         ]}
         pointerEvents="none"
       >
@@ -122,6 +116,8 @@ const TiltedRibbonStrip: React.FC<TiltedRibbonProps> = ({
         {renderUnit('u3')}
         {renderUnit('u4')}
         {renderUnit('u5')}
+        {renderUnit('u6')}
+        {renderUnit('u7')}
       </Animated.View>
     </View>
   );
