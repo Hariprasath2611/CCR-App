@@ -781,7 +781,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     position: 'absolute',
-    left: -200,
+    left: -450,
     height: 56,
   },
   ribbonUnit: {
