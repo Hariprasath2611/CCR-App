@@ -1,0 +1,38 @@
+{
+  "configVersion": 1,
+  "minSupportedVersionCode": 1,
+  "maintenance": {
+    "enabled": false,
+    "title": "Scheduled Maintenance",
+    "message": "CCR system is currently undergoing scheduled maintenance. Please check back shortly.",
+    "allowedRoles": ["ADMIN", "PRINCIPAL"]
+  },
+  "featureFlags": {
+    "offlineSyncV2": true,
+    "advancedAnalytics": true,
+    "pdfExport": true,
+    "showTimetableWidget": true
+  },
+  "banners": [
+    {
+      "id": "banner-welcome-ccr",
+      "text": "Welcome to CCR v1.0. Tap here for quick tips on syllabus logging.",
+      "type": "info",
+      "startsAt": "2026-01-01T00:00:00.000Z",
+      "endsAt": "2026-12-31T23:59:59.000Z",
+      "dismissible": true
+    }
+  ],
+  "texts": {
+    "supportContact": "support@jec.ac.in",
+    "loginHelp": "Use your institutional @jec.com account to sign in.",
+    "offlineNotice": "Working in offline mode. Changes will sync automatically."
+  },
+  "theme": {
+    "blue": "#2B35E0",
+    "amber": "#FFB020",
+    "coral": "#FF5D73",
+    "mint": "#3DDBB0",
+    "ink": "#0E1030"
+  }
+}
