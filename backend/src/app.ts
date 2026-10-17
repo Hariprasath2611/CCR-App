@@ -16,6 +16,8 @@ import hodRoutes from './routes/hodRoutes';
 import principalRoutes from './routes/principalRoutes';
 import ccRoutes from './routes/ccRoutes';
 import erpRoutes from './routes/erpRoutes';
+import appReleaseRoutes from './routes/appReleaseRoutes';
+import adminReleaseRoutes from './routes/adminReleaseRoutes';
 
 const app = express();
 
@@ -42,17 +44,24 @@ app.get('/health', async (req, res) => {
   }
 });
 
-// v1 API Routes
-app.use('/v1/auth', authRoutes);
-app.use('/v1/sync', syncRoutes);
-app.use('/v1/plans', planRoutes);
-app.use('/v1/progress', progressRoutes);
-app.use('/v1/extra-hours', extraHoursRoutes);
-app.use('/v1/reports', reportRoutes);
-app.use('/v1/hod', hodRoutes);
-app.use('/v1/principal', principalRoutes);
-app.use('/v1/cc', ccRoutes);
-app.use('/v1/erp', erpRoutes);
+// Create unified v1 router
+const v1Router = express.Router();
+v1Router.use('/auth', authRoutes);
+v1Router.use('/sync', syncRoutes);
+v1Router.use('/plans', planRoutes);
+v1Router.use('/progress', progressRoutes);
+v1Router.use('/extra-hours', extraHoursRoutes);
+v1Router.use('/reports', reportRoutes);
+v1Router.use('/hod', hodRoutes);
+v1Router.use('/principal', principalRoutes);
+v1Router.use('/cc', ccRoutes);
+v1Router.use('/erp', erpRoutes);
+v1Router.use('/app', appReleaseRoutes);
+v1Router.use('/admin', adminReleaseRoutes);
+
+// Mount under canonical /api/v1 AND backward-compatible /v1 alias
+app.use('/api/v1', v1Router);
+app.use('/v1', v1Router);
 app.use('/api/erp', erpRoutes);
 
 
