@@ -162,7 +162,7 @@ const BuntingDecor: React.FC<{ width: number }> = ({ width }) => {
 interface BackgroundDecorProps {
   screenWidth: number;
   screenHeight: number;
-  dayNum: number;
+  dayNum: number | string;
   fadeAnim: Animated.Value;
 }
 
