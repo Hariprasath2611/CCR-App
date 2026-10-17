@@ -32,15 +32,14 @@ const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = Dimensions.get('window');
 
 type NavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Landing'>;
 
-// ── SWALLOWTAIL RIBBON (600x56, polygon(0 0, 100% 0, calc(100% - 18px) 50%, 100% 100%, 0 100%, 18px 50%)) ──
+// ── CONTINUOUS CYCLIC MARQUEE RIBBON (Moves right smoothly in an infinite seamless loop) ──
 interface TiltedRibbonProps {
   color: string;
   word1: string;
   word2: string;
   word3: string;
   textColor: string;
-  animatedOffset?: Animated.Value;
-  skewCompensation?: number;
+  speed?: number; // duration (ms) for one unit cycle
 }
 
 const TiltedRibbonStrip: React.FC<TiltedRibbonProps> = ({
@@ -49,14 +48,60 @@ const TiltedRibbonStrip: React.FC<TiltedRibbonProps> = ({
   word2,
   word3,
   textColor,
-  animatedOffset,
-  skewCompensation = 0,
+  speed = 8000,
 }) => {
-  const w = 600;
+  const w = 1200;
   const h = 56;
   const notch = 18;
 
-  const content = (
+  // Dynamically measure width of one 3-word unit
+  const [unitWidth, setUnitWidth] = useState<number>(310);
+  const anim = useRef(new Animated.Value(-310)).current;
+
+  useEffect(() => {
+    let animLoop: Animated.CompositeAnimation | null = null;
+
+    AccessibilityInfo.isReduceMotionEnabled().then((reducedMotion) => {
+      if (reducedMotion) {
+        anim.setValue(0);
+        return;
+      }
+
+      anim.setValue(-unitWidth);
+      animLoop = Animated.loop(
+        Animated.timing(anim, {
+          toValue: 0,
+          duration: speed,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        })
+      );
+      animLoop.start();
+    });
+
+    return () => {
+      if (animLoop) {
+        animLoop.stop();
+      }
+    };
+  }, [unitWidth, speed]);
+
+  const onUnitLayout = (e: LayoutChangeEvent) => {
+    const measured = e.nativeEvent.layout.width;
+    if (measured > 50 && Math.abs(measured - unitWidth) > 2) {
+      setUnitWidth(measured);
+    }
+  };
+
+  const renderUnit = (key: string, onLayout?: (e: LayoutChangeEvent) => void) => (
+    <View key={key} style={styles.ribbonUnit} onLayout={onLayout}>
+      <Text style={[styles.ribbonWordText, { color: textColor }]} numberOfLines={1}>{word1}</Text>
+      <Text style={[styles.ribbonWordText, { color: textColor }]} numberOfLines={1}>{word2}</Text>
+      <Text style={[styles.ribbonWordText, { color: textColor }]} numberOfLines={1}>{word3}</Text>
+    </View>
+  );
+
+  return (
     <View style={styles.ribbonItemWrapper}>
       <Svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={StyleSheet.absoluteFill}>
         <Polygon
@@ -64,29 +109,22 @@ const TiltedRibbonStrip: React.FC<TiltedRibbonProps> = ({
           fill={color}
         />
       </Svg>
-      <View
+      <Animated.View
         style={[
-          styles.ribbonContentRow,
-          skewCompensation !== 0 ? { transform: [{ translateX: skewCompensation }] } : null,
+          styles.ribbonTickerTrack,
+          { transform: [{ translateX: anim }] },
         ]}
         pointerEvents="none"
       >
-        <Text style={[styles.ribbonWordText, { color: textColor }]} numberOfLines={1}>{word1}</Text>
-        <Text style={[styles.ribbonWordText, { color: textColor }]} numberOfLines={1}>{word2}</Text>
-        <Text style={[styles.ribbonWordText, { color: textColor }]} numberOfLines={1}>{word3}</Text>
-      </View>
+        {renderUnit('u0', onUnitLayout)}
+        {renderUnit('u1')}
+        {renderUnit('u2')}
+        {renderUnit('u3')}
+        {renderUnit('u4')}
+        {renderUnit('u5')}
+      </Animated.View>
     </View>
   );
-
-  if (animatedOffset) {
-    return (
-      <Animated.View style={{ transform: [{ translateX: animatedOffset }] }}>
-        {content}
-      </Animated.View>
-    );
-  }
-
-  return content;
 };
 
 // ── THREE HANGING MINI RIBBONS (Top edge: 12px wide, 26/16/36px high, 18px apart) ──
