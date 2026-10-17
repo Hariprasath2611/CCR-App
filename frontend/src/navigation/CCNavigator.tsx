@@ -30,7 +30,7 @@ export const CCNavigator = () => {
       <Stack.Screen 
         name="CCDashboard" 
         component={CCDashboardScreen} 
-        options={{ title: 'CC DASHBOARD' }} 
+        options={{ headerShown: false }} 
       />
       <Stack.Screen 
         name="FacultyAllocation" 

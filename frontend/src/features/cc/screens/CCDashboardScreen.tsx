@@ -128,9 +128,8 @@ export const CCDashboardScreen = () => {
         <TouchableOpacity
           style={styles.lemonBtn}
           onPress={() =>
-            navigation.navigate('StaffHome', {
-              screen: 'SubmitToHOD',
-              params: { reportId: `${classId}_W${selectedWeek}` },
+            navigation.navigate('SubmitToHOD', {
+              reportId: `${classId}_W${selectedWeek}`,
             })
           }
           activeOpacity={0.85}
@@ -153,9 +152,8 @@ export const CCDashboardScreen = () => {
           <TouchableOpacity
             style={styles.outlineBtn}
             onPress={() =>
-              navigation.navigate('StaffHome', {
-                screen: 'ReportExport',
-                params: { reportId: `${classId}_W${selectedWeek}` },
+              navigation.navigate('ReportExport', {
+                reportId: `${classId}_W${selectedWeek}`,
               })
             }
             activeOpacity={0.7}

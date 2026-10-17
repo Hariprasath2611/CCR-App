@@ -19,12 +19,27 @@ export const requestInterceptor = async (config: InternalAxiosRequestConfig) => 
 export const responseErrorInterceptor = async (error: AxiosError) => {
   const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-  if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url?.includes('/auth/login')) {
+  const status = error.response?.status;
+  const errorData = error.response?.data as any;
+  const isAuthError =
+    status === 401 ||
+    (status === 403 &&
+      (errorData?.error?.toLowerCase?.().includes('token') ||
+       errorData?.message?.toLowerCase?.().includes('token') ||
+       !originalRequest._retry));
+
+  if (
+    isAuthError &&
+    !originalRequest._retry &&
+    !originalRequest.url?.includes('/auth/login') &&
+    !originalRequest.url?.includes('/auth/refresh')
+  ) {
     originalRequest._retry = true;
     try {
       const refreshToken = useAuthStore.getState().refreshToken;
       if (!refreshToken) {
-        throw new Error('No refresh token available');
+        useAuthStore.getState().logout();
+        return Promise.reject(error);
       }
 
       // Fetch dynamic API URL
