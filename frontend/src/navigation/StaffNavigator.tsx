@@ -32,6 +32,7 @@ import { DeptAnalyticsScreen } from '@features/hod/screens/DeptAnalyticsScreen';
 import { HodProfileScreen } from '@features/hod/screens/HodProfileScreen';
 
 // CC Screens
+import { CCNavigator } from './CCNavigator';
 import { CCDashboardScreen } from '@features/cc/screens/CCDashboardScreen';
 import { FacultyAllocationScreen } from '@features/cc/screens/FacultyAllocationScreen';
 import { ClassProgressScreen } from '@features/cc/screens/ClassProgressScreen';
