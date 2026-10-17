@@ -39,6 +39,7 @@ interface TiltedRibbonProps {
   word3: string;
   textColor: string;
   animatedOffset?: Animated.Value;
+  skewCompensation?: number;
 }
 
 const TiltedRibbonStrip: React.FC<TiltedRibbonProps> = ({
@@ -48,6 +49,7 @@ const TiltedRibbonStrip: React.FC<TiltedRibbonProps> = ({
   word3,
   textColor,
   animatedOffset,
+  skewCompensation = 0,
 }) => {
   const w = 600;
   const h = 56;
@@ -61,10 +63,16 @@ const TiltedRibbonStrip: React.FC<TiltedRibbonProps> = ({
           fill={color}
         />
       </Svg>
-      <View style={styles.ribbonContentRow} pointerEvents="none">
-        <Text style={[styles.ribbonWordText, { color: textColor }]}>{word1}</Text>
-        <Text style={[styles.ribbonWordText, { color: textColor }]}>{word2}</Text>
-        <Text style={[styles.ribbonWordText, { color: textColor }]}>{word3}</Text>
+      <View
+        style={[
+          styles.ribbonContentRow,
+          skewCompensation !== 0 ? { transform: [{ translateX: skewCompensation }] } : null,
+        ]}
+        pointerEvents="none"
+      >
+        <Text style={[styles.ribbonWordText, { color: textColor }]} numberOfLines={1}>{word1}</Text>
+        <Text style={[styles.ribbonWordText, { color: textColor }]} numberOfLines={1}>{word2}</Text>
+        <Text style={[styles.ribbonWordText, { color: textColor }]} numberOfLines={1}>{word3}</Text>
       </View>
     </View>
   );
@@ -506,6 +514,7 @@ export const LandingScreen = () => {
                 word3="LESSONS"
                 textColor="#FFFFFF"
                 animatedOffset={ribbonSlide1}
+                skewCompensation={18.5}
               />
               <TiltedRibbonStrip
                 color={DayRibbonColors.amber}
@@ -514,6 +523,7 @@ export const LandingScreen = () => {
                 word3="COVERED"
                 textColor={DayRibbonColors.ink}
                 animatedOffset={ribbonSlide2}
+                skewCompensation={6.2}
               />
               <TiltedRibbonStrip
                 color={DayRibbonColors.coral}
@@ -522,6 +532,7 @@ export const LandingScreen = () => {
                 word3="IMPROVE"
                 textColor={DayRibbonColors.ink}
                 animatedOffset={ribbonSlide3}
+                skewCompensation={-6.2}
               />
               <TiltedRibbonStrip
                 color={DayRibbonColors.mint}
@@ -530,6 +541,7 @@ export const LandingScreen = () => {
                 word3="REPORTS"
                 textColor={DayRibbonColors.ink}
                 animatedOffset={ribbonSlide4}
+                skewCompensation={-18.5}
               />
             </View>
           </View>
