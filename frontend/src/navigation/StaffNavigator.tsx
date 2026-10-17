@@ -235,7 +235,7 @@ export const StaffTabNavigator = () => {
       {(user?.isClassCoordinator || user?.role === 'HOD' || user?.role === 'ADMIN') && (
         <Tab.Screen
           name="CounselorTab"
-          component={CCDashboardScreen}
+          component={CCNavigator}
           options={{ title: 'CC BOARD' }}
         />
       )}
