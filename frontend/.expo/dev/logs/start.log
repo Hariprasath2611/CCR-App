@@ -5324,3 +5324,85 @@
 {"_e":"metro:client_log","_t":1792228002417,"level":"info","data":["%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools","font-weight:bold"]}
 {"_e":"metro:client_log","_t":1792228002417,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
 {"_e":"metro:client_log","_t":1792228003581,"level":"error","data":["[TypeError: Cannot destructure property 'ApkInstaller' of '_expo.NativeModules' as it is undefined.]","\n\n\u001b[1mCode: apkInstaller.ts\u001b[22m\n\u001b[0m \u001b[90m 2 |\u001b[39m \u001b[36mimport\u001b[39m \u001b[33m*\u001b[39m \u001b[36mas\u001b[39m \u001b[33mFileSystem\u001b[39m \u001b[36mfrom\u001b[39m \u001b[32m'expo-file-system'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 3 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m \u001b[36mconst\u001b[39m { \u001b[33mApkInstaller\u001b[39m } \u001b[33m=\u001b[39m \u001b[33mNativeModules\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m\n \u001b[90m 6 |\u001b[39m \u001b[36mexport\u001b[39m \u001b[36minterface\u001b[39m \u001b[33mAppVersionInfo\u001b[39m {\n \u001b[90m 7 |\u001b[39m   versionCode\u001b[33m:\u001b[39m number\u001b[33m;\u001b[39m\u001b[0m\n\u001b[1mCall Stack\u001b[22m\n\u001b[90m  <global> (src\\services\\native\\apkInstaller.ts:4:9)\u001b[39m\n\u001b[90m  <global> (src\\services\\updater\\appUpdateService.ts:5)\u001b[39m\n\u001b[90m  <global> (src\\services\\updater\\useAppUpdate.ts:2)\u001b[39m"]}
+{"_e":"root:init","_t":1792228323415,"format":"v0-jsonl","version":"57.0.31"}
+{"_e":"env:mode","_t":1792228323417,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1792228323423,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1792228324672,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1792228325480,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1792228330237,"plugins":[{"packageName":"expo-sqlite","bannerTitle":"expo-sqlite","cliBanner":false,"webpageEndpoint":"/_expo/plugins/expo-sqlite"}]}
+{"_e":"metro:instantiate","_t":1792228335298,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1792228342657,"id":"1","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1792228342657,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792228342662,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792228342762,"id":"1","progress":0.021311737439394744,"total":137,"current":20}
+{"_e":"metro:bundling:progress","_t":1792228342863,"id":"1","progress":0.06108227674247134,"total":263,"current":65}
+{"_e":"metro:bundling:progress","_t":1792228342964,"id":"1","progress":0.08138769400030661,"total":333,"current":95}
+{"_e":"metro:bundling:progress","_t":1792228343079,"id":"1","progress":0.0820227727114792,"total":419,"current":120}
+{"_e":"metro:bundling:progress","_t":1792228343179,"id":"1","progress":0.18679977018098248,"total":472,"current":204}
+{"_e":"metro:bundling:progress","_t":1792228343279,"id":"1","progress":0.29457857132986,"total":538,"current":292}
+{"_e":"metro:bundling:progress","_t":1792228343382,"id":"1","progress":0.3656501379033638,"total":597,"current":361}
+{"_e":"metro:bundling:progress","_t":1792228343482,"id":"1","progress":0.4397145486317668,"total":656,"current":435}
+{"_e":"metro:bundling:progress","_t":1792228343581,"id":"1","progress":0.5720785865460951,"total":747,"current":565}
+{"_e":"metro:bundling:progress","_t":1792228343711,"id":"1","progress":0.6261791714987901,"total":829,"current":656}
+{"_e":"metro:bundling:progress","_t":1792228343810,"id":"1","progress":0.7047256506415835,"total":922,"current":774}
+{"_e":"metro:bundling:progress","_t":1792228343913,"id":"1","progress":0.8277717760169638,"total":998,"current":908}
+{"_e":"metro:bundling:progress","_t":1792228344027,"id":"1","progress":0.8277717760169638,"total":1109,"current":990}
+{"_e":"metro:bundling:progress","_t":1792228344155,"id":"1","progress":0.9539115144030713,"total":1158,"current":1131}
+{"_e":"metro:bundling:progress","_t":1792228344257,"id":"1","progress":0.9983100974712913,"total":1183,"current":1182}
+{"_e":"metro:bundling:progress","_t":1792228345936,"id":"1","progress":0.999,"total":1183,"current":1183}
+{"_e":"metro:bundling:done","_t":1792228346616,"id":"1","total":1183,"ms":3959.3422}
+{"_e":"metro:client_log","_t":1792228347438,"level":"info","data":["%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools","font-weight:bold"]}
+{"_e":"metro:client_log","_t":1792228347438,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1792228347457,"level":"error","data":["[TypeError: Cannot destructure property 'ApkInstaller' of '_expo.NativeModules' as it is undefined.]","\n\n\u001b[1mCode: apkInstaller.ts\u001b[22m\n\u001b[0m \u001b[90m 2 |\u001b[39m \u001b[36mimport\u001b[39m \u001b[33m*\u001b[39m \u001b[36mas\u001b[39m \u001b[33mFileSystem\u001b[39m \u001b[36mfrom\u001b[39m \u001b[32m'expo-file-system'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 3 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m \u001b[36mconst\u001b[39m { \u001b[33mApkInstaller\u001b[39m } \u001b[33m=\u001b[39m \u001b[33mNativeModules\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m\n \u001b[90m 6 |\u001b[39m \u001b[36mexport\u001b[39m \u001b[36minterface\u001b[39m \u001b[33mAppVersionInfo\u001b[39m {\n \u001b[90m 7 |\u001b[39m   versionCode\u001b[33m:\u001b[39m number\u001b[33m;\u001b[39m\u001b[0m\n\u001b[1mCall Stack\u001b[22m\n\u001b[90m  <global> (src\\services\\native\\apkInstaller.ts:4:9)\u001b[39m\n\u001b[90m  <global> (src\\services\\updater\\appUpdateService.ts:5)\u001b[39m\n\u001b[90m  <global> (src\\services\\updater\\useAppUpdate.ts:2)\u001b[39m"]}
+{"_e":"metro:bundling:started","_t":1792228362770,"id":"4","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1792228362770,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1792228362834,"id":"4","total":1,"ms":63.6515}
+{"_e":"metro:client_log","_t":1792228363157,"level":"info","data":["%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools","font-weight:bold"]}
+{"_e":"metro:client_log","_t":1792228363158,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1792228363175,"level":"error","data":["[TypeError: Cannot destructure property 'ApkInstaller' of '_expo.NativeModules' as it is undefined.]","\n\n\u001b[1mCode: apkInstaller.ts\u001b[22m\n\u001b[0m \u001b[90m 2 |\u001b[39m \u001b[36mimport\u001b[39m \u001b[33m*\u001b[39m \u001b[36mas\u001b[39m \u001b[33mFileSystem\u001b[39m \u001b[36mfrom\u001b[39m \u001b[32m'expo-file-system'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 3 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m \u001b[36mconst\u001b[39m { \u001b[33mApkInstaller\u001b[39m } \u001b[33m=\u001b[39m \u001b[33mNativeModules\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m\n \u001b[90m 6 |\u001b[39m \u001b[36mexport\u001b[39m \u001b[36minterface\u001b[39m \u001b[33mAppVersionInfo\u001b[39m {\n \u001b[90m 7 |\u001b[39m   versionCode\u001b[33m:\u001b[39m number\u001b[33m;\u001b[39m\u001b[0m\n\u001b[1mCall Stack\u001b[22m\n\u001b[90m  <global> (src\\services\\native\\apkInstaller.ts:4:9)\u001b[39m\n\u001b[90m  <global> (src\\services\\updater\\appUpdateService.ts:5)\u001b[39m\n\u001b[90m  <global> (src\\services\\updater\\useAppUpdate.ts:2)\u001b[39m"]}
+{"_e":"metro:bundling:started","_t":1792228378281,"id":"8","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:started","_t":1792229964374,"id":"9","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1792229964374,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229964490,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229970210,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229970510,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229976154,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229976411,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229981919,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229982150,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229986285,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229986494,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229990928,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229991616,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229991842,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229995191,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229995339,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229998373,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792229998536,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230001023,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230001137,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230001154,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230003184,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230005323,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230006739,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230007716,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230007843,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230008882,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230009868,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230010875,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230011842,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230012860,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230013839,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230014836,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230015806,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230016757,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230017664,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230018630,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230019699,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230021604,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230021742,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230024411,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230024525,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230024629,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792230045682,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1792230046060,"id":"9","total":1,"ms":81684.3234}
