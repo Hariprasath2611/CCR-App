@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -12,8 +12,11 @@ import {
   ScrollView,
   AppState,
   LayoutChangeEvent,
+  Animated,
+  Platform,
+  AccessibilityInfo,
 } from 'react-native';
-import Svg, { Polygon, Circle } from 'react-native-svg';
+import Svg, { Polygon, Circle, Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@navigation/types';
@@ -24,110 +27,271 @@ import { ENV } from '@config/env';
 import { DayRibbonColors, DayRibbonFonts } from '@theme/dayRibbon';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = Dimensions.get('window');
 
 type NavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Landing'>;
 
-// ── Top 3 Hanging Ribbons (Blue, Amber, Coral) ──
-const TopRibbonCluster = () => {
+// ── SWALLOWTAIL RIBBON (600x56, polygon(0 0, 100% 0, calc(100% - 18px) 50%, 100% 100%, 0 100%, 18px 50%)) ──
+interface TiltedRibbonProps {
+  color: string;
+  word1: string;
+  word2: string;
+  word3: string;
+  textColor: string;
+  animatedOffset?: Animated.Value;
+}
+
+const TiltedRibbonStrip: React.FC<TiltedRibbonProps> = ({
+  color,
+  word1,
+  word2,
+  word3,
+  textColor,
+  animatedOffset,
+}) => {
+  const w = 600;
+  const h = 56;
+  const notch = 18;
+
+  const content = (
+    <View style={styles.ribbonItemWrapper}>
+      <Svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={StyleSheet.absoluteFill}>
+        <Polygon
+          points={`0,0 ${w},0 ${w - notch},${h / 2} ${w},${h} 0,${h} ${notch},${h / 2}`}
+          fill={color}
+        />
+      </Svg>
+      <View style={styles.ribbonContentRow} pointerEvents="none">
+        <Text style={[styles.ribbonWordText, { color: textColor }]}>{word1}</Text>
+        <Text style={[styles.ribbonWordText, { color: textColor }]}>{word2}</Text>
+        <Text style={[styles.ribbonWordText, { color: textColor }]}>{word3}</Text>
+      </View>
+    </View>
+  );
+
+  if (animatedOffset) {
+    return (
+      <Animated.View style={{ transform: [{ translateX: animatedOffset }] }}>
+        {content}
+      </Animated.View>
+    );
+  }
+
+  return content;
+};
+
+// ── THREE HANGING MINI RIBBONS (Top edge: 12px wide, 26/16/36px high, 18px apart) ──
+const TopThreeHangingRibbons = () => {
   return (
-    <View style={styles.topRibbonCluster} pointerEvents="none">
-      {/* Blue ribbon */}
-      <View style={{ width: 13, height: 36, marginRight: 5 }}>
-        <View style={{ width: 13, height: 28, backgroundColor: DayRibbonColors.blue }} />
-        <View style={{ width: 13, height: 8, flexDirection: 'row' }}>
-          <View style={{ width: 0, height: 0, borderStyle: 'solid', borderLeftWidth: 6.5, borderRightWidth: 0, borderBottomWidth: 8, borderLeftColor: DayRibbonColors.blue, borderBottomColor: 'transparent' }} />
-          <View style={{ width: 0, height: 0, borderStyle: 'solid', borderLeftWidth: 0, borderRightWidth: 6.5, borderBottomWidth: 8, borderRightColor: DayRibbonColors.blue, borderBottomColor: 'transparent' }} />
-        </View>
-      </View>
+    <View style={styles.topMiniRibbonsCluster} pointerEvents="none" aria-hidden={true}>
+      {/* Ribbon 1: Blue 60% opacity, 26px high */}
+      <Svg width={12} height={26} viewBox="0 0 12 26" style={{ marginRight: 18 }}>
+        <Polygon points="0,0 12,0 12,26 6,20 0,26" fill="rgba(43, 53, 224, 0.6)" />
+      </Svg>
 
-      {/* Amber ribbon */}
-      <View style={{ width: 13, height: 24, marginRight: 5 }}>
-        <View style={{ width: 13, height: 18, backgroundColor: DayRibbonColors.amber }} />
-        <View style={{ width: 13, height: 6, flexDirection: 'row' }}>
-          <View style={{ width: 0, height: 0, borderStyle: 'solid', borderLeftWidth: 6.5, borderRightWidth: 0, borderBottomWidth: 6, borderLeftColor: DayRibbonColors.amber, borderBottomColor: 'transparent' }} />
-          <View style={{ width: 0, height: 0, borderStyle: 'solid', borderLeftWidth: 0, borderRightWidth: 6.5, borderBottomWidth: 6, borderRightColor: DayRibbonColors.amber, borderBottomColor: 'transparent' }} />
-        </View>
-      </View>
+      {/* Ribbon 2: Amber 75% opacity, 16px high */}
+      <Svg width={12} height={16} viewBox="0 0 12 16" style={{ marginRight: 18 }}>
+        <Polygon points="0,0 12,0 12,16 6,10 0,16" fill="rgba(255, 176, 32, 0.75)" />
+      </Svg>
 
-      {/* Coral ribbon */}
-      <View style={{ width: 13, height: 42 }}>
-        <View style={{ width: 13, height: 34, backgroundColor: DayRibbonColors.coral }} />
-        <View style={{ width: 13, height: 8, flexDirection: 'row' }}>
-          <View style={{ width: 0, height: 0, borderStyle: 'solid', borderLeftWidth: 6.5, borderRightWidth: 0, borderBottomWidth: 8, borderLeftColor: DayRibbonColors.coral, borderBottomColor: 'transparent' }} />
-          <View style={{ width: 0, height: 0, borderStyle: 'solid', borderLeftWidth: 0, borderRightWidth: 6.5, borderBottomWidth: 8, borderRightColor: DayRibbonColors.coral, borderBottomColor: 'transparent' }} />
-        </View>
-      </View>
+      {/* Ribbon 3: Coral 65% opacity, 36px high */}
+      <Svg width={12} height={36} viewBox="0 0 12 36">
+        <Polygon points="0,0 12,0 12,36 6,30 0,36" fill="rgba(255, 93, 115, 0.65)" />
+      </Svg>
     </View>
   );
 };
 
-// ── Mini Hanging Ribbon for Garland Row ──
-const MiniGarlandRibbon = ({ color }: { color: string }) => {
-  const w = 11;
-  const h = 15;
-  const notch = 4.5;
-  const half = w / 2;
-
-  return (
-    <View style={{ width: w, height: h, alignItems: 'center' }}>
-      <View style={{ width: w, height: h - notch, backgroundColor: color }} />
-      <View style={{ width: w, height: notch, flexDirection: 'row' }}>
-        <View
-          style={{
-            width: 0,
-            height: 0,
-            borderStyle: 'solid',
-            borderLeftWidth: half,
-            borderRightWidth: 0,
-            borderBottomWidth: notch,
-            borderLeftColor: color,
-            borderBottomColor: 'transparent',
-          }}
-        />
-        <View
-          style={{
-            width: 0,
-            height: 0,
-            borderStyle: 'solid',
-            borderLeftWidth: 0,
-            borderRightWidth: half,
-            borderBottomWidth: notch,
-            borderRightColor: color,
-            borderBottomColor: 'transparent',
-          }}
-        />
-      </View>
-    </View>
-  );
-};
-
-// ── Garland Row above the CTA Button ──
-const GarlandRow = () => {
-  const colors = [
-    DayRibbonColors.blue,
-    DayRibbonColors.amber,
-    DayRibbonColors.coral,
-    DayRibbonColors.mint,
-    DayRibbonColors.blue,
-    DayRibbonColors.amber,
-    DayRibbonColors.coral,
-    DayRibbonColors.mint,
-    DayRibbonColors.blue,
+// ── BUNTING STRING & 9 PENNANTS (Above CTA: 1.5px #D5D8F5 wire + 9 12x12px pennants) ──
+const BuntingDecor: React.FC<{ width: number }> = ({ width }) => {
+  const pennantColors = [
+    'rgba(43, 53, 224, 0.6)',  // blue
+    'rgba(255, 176, 32, 0.6)', // amber
+    'rgba(255, 93, 115, 0.6)', // coral
+    'rgba(61, 219, 176, 0.6)', // mint
+    'rgba(43, 53, 224, 0.6)',  // blue
+    'rgba(255, 176, 32, 0.6)', // amber
+    'rgba(255, 93, 115, 0.6)', // coral
+    'rgba(61, 219, 176, 0.6)', // mint
+    'rgba(43, 53, 224, 0.6)',  // blue
   ];
 
+  const w = Math.max(width, 320);
+  const h = 24;
+
   return (
-    <View style={styles.garlandWrapper} pointerEvents="none">
-      <View style={styles.garlandWire} />
-      <View style={styles.garlandRibbonsRow}>
-        {colors.map((c, i) => (
-          <MiniGarlandRibbon key={i} color={c} />
-        ))}
-      </View>
+    <View style={styles.buntingContainer} pointerEvents="none" aria-hidden={true}>
+      <Svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
+        {/* Thin curved wire */}
+        <Path
+          d={`M 0,2 Q ${w / 2},12 ${w},2`}
+          stroke="#D5D8F5"
+          strokeWidth={1.5}
+          fill="none"
+        />
+
+        {/* 9 Swallowtail Pennants (12x12px) */}
+        {pennantColors.map((col, idx) => {
+          const t = (idx + 0.5) / 9;
+          const x = t * (w - 24) + 6;
+          // Curve sag: y = 2 + 10 * 4 * t * (1 - t)
+          const y = 2 + 40 * t * (1 - t);
+
+          return (
+            <Polygon
+              key={`pennant-${idx}`}
+              points={`${x},${y} ${x + 12},${y} ${x + 12},${y + 12} ${x + 6},${y + 7} ${x},${y + 12}`}
+              fill={col}
+            />
+          );
+        })}
+      </Svg>
     </View>
   );
 };
 
+// ── BACKGROUND DECORATIONS (Isolated background layer) ──
+interface BackgroundDecorProps {
+  screenWidth: number;
+  screenHeight: number;
+  dayNum: number;
+  fadeAnim: Animated.Value;
+}
+
+const BackgroundDecorations: React.FC<BackgroundDecorProps> = ({
+  screenWidth,
+  screenHeight,
+  dayNum,
+  fadeAnim,
+}) => {
+  const isSmallScreen = screenHeight < 700 || screenWidth < 340;
+
+  return (
+    <Animated.View
+      style={[StyleSheet.absoluteFill, { opacity: fadeAnim, overflow: 'hidden' }]}
+      pointerEvents="none"
+      aria-hidden={true}
+    >
+      <Svg width="100%" height="100%" style={StyleSheet.absoluteFill}>
+        <Defs>
+          {/* Top Grid Vertical Fade Mask */}
+          <LinearGradient id="topFadeMask" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#D5D8F5" stopOpacity="0.8" />
+            <Stop offset="0.7" stopColor="#D5D8F5" stopOpacity="0.3" />
+            <Stop offset="1" stopColor="#D5D8F5" stopOpacity="0" />
+          </LinearGradient>
+
+          {/* Middle Grid Vertical Fade Mask */}
+          <LinearGradient id="midFadeMask" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#D5D8F5" stopOpacity="0" />
+            <Stop offset="0.2" stopColor="#D5D8F5" stopOpacity="0.5" />
+            <Stop offset="0.8" stopColor="#D5D8F5" stopOpacity="0.5" />
+            <Stop offset="1" stopColor="#D5D8F5" stopOpacity="0" />
+          </LinearGradient>
+        </Defs>
+
+        {/* 1. Top Dot Grid (150px high, 16px spacing, ~1.4px radius) */}
+        {Array.from({ length: 9 }).map((_, row) =>
+          Array.from({ length: Math.ceil(screenWidth / 16) + 1 }).map((_, col) => {
+            const op = Math.max(0, 0.8 - row * 0.09);
+            return (
+              <Circle
+                key={`top-dot-${row}-${col}`}
+                cx={col * 16 + 8}
+                cy={row * 16 + 8}
+                r={1.4}
+                fill="#D5D8F5"
+                opacity={op}
+              />
+            );
+          })
+        )}
+
+        {/* 2. Top-Right Rings: 190px solid #D5D8F5, inside 122px dashed mint (70% opacity) */}
+        {/* Placed at top-right corner (-70px top, -70px right) */}
+        <Circle
+          cx={screenWidth + 70 - 95}
+          cy={-70 + 95}
+          r={95} // 190px diameter
+          stroke="#D5D8F5"
+          strokeWidth={1.5}
+          fill="none"
+        />
+        <Circle
+          cx={screenWidth + 70 - 95}
+          cy={-70 + 95}
+          r={61} // 122px diameter
+          stroke="rgba(61, 219, 176, 0.7)"
+          strokeWidth={1.5}
+          strokeDasharray="4 4"
+          fill="none"
+        />
+
+        {/* 3. Three Confetti Dots above tilted ribbons: amber 10px, coral 7px, mint 8px */}
+        <Circle cx={screenWidth * 0.51} cy={102} r={4} fill={DayRibbonColors.mint} />
+        <Circle cx={screenWidth * 0.59} cy={108} r={5} fill={DayRibbonColors.amber} />
+        <Circle cx={screenWidth * 0.67} cy={120} r={3.5} fill={DayRibbonColors.coral} />
+
+        {/* 4. Middle Dot Grid behind heading and sub-line (about 230px high) */}
+        {Array.from({ length: 14 }).map((_, row) =>
+          Array.from({ length: Math.ceil(screenWidth / 16) + 1 }).map((_, col) => {
+            const rowRel = row / 14;
+            const op = Math.sin(rowRel * Math.PI) * 0.5;
+            return (
+              <Circle
+                key={`mid-dot-${row}-${col}`}
+                cx={col * 16 + 8}
+                cy={screenHeight * 0.52 + row * 16}
+                r={1.4}
+                fill="#D5D8F5"
+                opacity={op}
+              />
+            );
+          })
+        )}
+
+        {/* 5. Middle Rings: 230px solid #D5D8F5, inside 154px dashed amber (55% opacity) */}
+        {!isSmallScreen && (
+          <>
+            <Circle
+              cx={screenWidth + 15}
+              cy={screenHeight * 0.65}
+              r={115} // 230px diameter
+              stroke="#D5D8F5"
+              strokeWidth={1.5}
+              fill="none"
+            />
+            <Circle
+              cx={screenWidth + 15}
+              cy={screenHeight * 0.65}
+              r={77} // 154px diameter
+              stroke="rgba(255, 176, 32, 0.55)"
+              strokeWidth={1.5}
+              strokeDasharray="4 4"
+              fill="none"
+            />
+            {/* 6. Three Confetti Dots to the right of "Course": amber 12px, coral 8px, mint 10px */}
+            <Circle cx={screenWidth * 0.85} cy={screenHeight * 0.58} r={6} fill={DayRibbonColors.amber} />
+            <Circle cx={screenWidth * 0.91} cy={screenHeight * 0.62} r={4} fill={DayRibbonColors.coral} />
+            <Circle cx={screenWidth * 0.78} cy={screenHeight * 0.66} r={5} fill={DayRibbonColors.mint} />
+          </>
+        )}
+      </Svg>
+
+      {/* Top 3 Hanging Ribbons from top edge */}
+      <TopThreeHangingRibbons />
+
+      {/* Ghost Numeral: Current Day of Month in Bricolage 800 (~210px, color #F0F1FF) */}
+      {!isSmallScreen && (
+        <View style={styles.ghostNumeralWrapper}>
+          <Text style={styles.ghostNumeralText}>{dayNum}</Text>
+        </View>
+      )}
+    </Animated.View>
+  );
+};
+
+// ── MAIN LANDING SCREEN ──
 export const LandingScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NavigationProp>();
@@ -136,7 +300,44 @@ export const LandingScreen = () => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [serverUrl, setServerUrl] = useState('');
-  const [buttonWidth, setButtonWidth] = useState(SCREEN_WIDTH - 40);
+  const [contentWidth, setContentWidth] = useState(WINDOW_WIDTH);
+  const [screenHeight, setScreenHeight] = useState(WINDOW_HEIGHT);
+
+  const [currentDate, setCurrentDate] = useState(() => new Date());
+
+  // Animation values for entrance motions
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const ribbonSlide1 = useRef(new Animated.Value(0)).current;
+  const ribbonSlide2 = useRef(new Animated.Value(0)).current;
+  const ribbonSlide3 = useRef(new Animated.Value(0)).current;
+  const ribbonSlide4 = useRef(new Animated.Value(0)).current;
+
+  // Staggered entrance animation with prefers-reduced-motion check
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then((reducedMotion) => {
+      if (!reducedMotion) {
+        fadeAnim.setValue(0);
+        ribbonSlide1.setValue(-80);
+        ribbonSlide2.setValue(80);
+        ribbonSlide3.setValue(-80);
+        ribbonSlide4.setValue(80);
+
+        Animated.parallel([
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 400,
+            useNativeDriver: true,
+          }),
+          Animated.stagger(60, [
+            Animated.timing(ribbonSlide1, { toValue: 0, duration: 350, useNativeDriver: true }),
+            Animated.timing(ribbonSlide2, { toValue: 0, duration: 350, useNativeDriver: true }),
+            Animated.timing(ribbonSlide3, { toValue: 0, duration: 350, useNativeDriver: true }),
+            Animated.timing(ribbonSlide4, { toValue: 0, duration: 350, useNativeDriver: true }),
+          ]),
+        ]).start();
+      }
+    });
+  }, []);
 
   // Auto-skip Landing screen if a valid session exists
   useEffect(() => {
@@ -188,9 +389,7 @@ export const LandingScreen = () => {
     }
   };
 
-  const [currentDate, setCurrentDate] = useState(() => new Date());
-
-  // Format real date matching Photo 2: "TODAY · FRI 16 OCT"
+  // Locale-safe real date computation: "TODAY · <WEEKDAY> <DD> <MON>"
   const formatToday = (d: Date) => {
     const dayName = d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
     const dayNum = d.getDate();
@@ -200,6 +399,7 @@ export const LandingScreen = () => {
 
   const [todayString, setTodayString] = useState(() => formatToday(currentDate));
 
+  // Keep date updated dynamically on midnight rollover and foreground wakeup
   useEffect(() => {
     const refreshDate = () => {
       const now = new Date();
@@ -231,221 +431,161 @@ export const LandingScreen = () => {
     }
   }, [isFocused]);
 
-  const handleButtonLayout = (e: LayoutChangeEvent) => {
-    const w = e.nativeEvent.layout.width;
-    if (w > 0 && Math.abs(w - buttonWidth) > 1) {
-      setButtonWidth(w);
-    }
+  const handleLayout = (e: LayoutChangeEvent) => {
+    const { width, height } = e.nativeEvent.layout;
+    if (width > 0) setContentWidth(width);
+    if (height > 0) setScreenHeight(height);
   };
 
-  const btnH = 54;
-  const notchDepth = 18;
   const dayNumber = currentDate.getDate();
+  const ctaWidth = Math.min(contentWidth - 40, 480);
+  const btnHeight = 60;
+  const notchDepth = 18;
 
   return (
-    <View style={[styles.container, { paddingTop: Math.max(insets.top, 16), paddingBottom: Math.max(insets.bottom, 12) }]}>
+    <View
+      style={styles.pageRoot}
+      onLayout={handleLayout}
+    >
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-      {/* ── BACKGROUND DECORATIONS (Dot Grid, Rings, Floating Dots, Watermark) ── */}
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <Svg width="100%" height="100%" style={StyleSheet.absoluteFill}>
-          {/* Subtle dot grid */}
-          {Array.from({ length: 14 }).map((_, row) =>
-            Array.from({ length: 9 }).map((_, col) => (
-              <Circle
-                key={`dot-${row}-${col}`}
-                cx={22 + col * 42}
-                cy={25 + row * 62}
-                r={1.2}
-                fill="#E2E7F6"
-              />
-            ))
-          )}
+      {/* ── BACKGROUND DECORATIONS (ISOLATED WRAPPER, zIndex: 0) ── */}
+      <BackgroundDecorations
+        screenWidth={contentWidth}
+        screenHeight={screenHeight}
+        dayNum={dayNumber}
+        fadeAnim={fadeAnim}
+      />
 
-          {/* Top-Right Concentric Arcs around Settings */}
-          <Circle
-            cx={SCREEN_WIDTH - 42}
-            cy={52}
-            r={44}
-            fill="none"
-            stroke="#DDE3F5"
-            strokeWidth={1}
-            strokeDasharray="3 4"
-          />
-          <Circle
-            cx={SCREEN_WIDTH - 42}
-            cy={52}
-            r={76}
-            fill="none"
-            stroke="#DDE3F5"
-            strokeWidth={1}
-            strokeDasharray="3 5"
-          />
-          <Circle
-            cx={SCREEN_WIDTH - 42}
-            cy={52}
-            r={112}
-            fill="none"
-            stroke="#E5EAF8"
-            strokeWidth={1}
-            strokeDasharray="4 6"
-          />
-
-          {/* Top scattered accent dots */}
-          <Circle cx={SCREEN_WIDTH * 0.51} cy={102} r={4.5} fill={DayRibbonColors.mint} />
-          <Circle cx={SCREEN_WIDTH * 0.59} cy={108} r={5.5} fill={DayRibbonColors.amber} />
-          <Circle cx={SCREEN_WIDTH * 0.67} cy={120} r={4} fill={DayRibbonColors.coral} />
-
-          {/* Hero Area Concentric Arcs behind Right Side */}
-          <Circle
-            cx={SCREEN_WIDTH * 0.88}
-            cy={510}
-            r={120}
-            fill="none"
-            stroke="#DCE2F8"
-            strokeWidth={1.2}
-            strokeDasharray="3 4"
-          />
-          <Circle
-            cx={SCREEN_WIDTH * 0.88}
-            cy={510}
-            r={160}
-            fill="none"
-            stroke="#E8EDFC"
-            strokeWidth={1}
-            strokeDasharray="4 5"
-          />
-
-          {/* Hero floating accent dots */}
-          <Circle cx={SCREEN_WIDTH * 0.85} cy={480} r={6} fill={DayRibbonColors.amber} />
-          <Circle cx={SCREEN_WIDTH * 0.91} cy={520} r={4.5} fill={DayRibbonColors.coral} />
-          <Circle cx={SCREEN_WIDTH * 0.78} cy={555} r={5.5} fill={DayRibbonColors.mint} />
-        </Svg>
-
-        {/* Top 3 Hanging Ribbons at top edge */}
-        <TopRibbonCluster />
-
-        {/* Giant Calendar Day Watermark (e.g. 17) */}
-        <View style={styles.watermarkContainer}>
-          <Text style={styles.watermarkText}>{dayNumber}</Text>
-        </View>
-      </View>
-
+      {/* ── CONTENT LAYER (zIndex: 1, capped at 480px, responsive padding) ── */}
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContainer,
+          {
+            paddingTop: Math.max(insets.top, 16),
+            paddingBottom: Math.max(insets.bottom + 24, 32),
+          },
+        ]}
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
-        {/* ── TOP ROW: "JEC ACADEMICS" + SETTINGS BUTTON (44x44) ── */}
-        <View style={styles.topRow}>
-          <Text style={styles.topRowBrand}>JEC ACADEMICS</Text>
+        <View style={styles.contentConstrained}>
+          {/* 1. Header row (44px high) */}
+          <View style={styles.headerRow}>
+            <Text style={styles.headerBrand}>JEC ACADEMICS</Text>
 
-          <TouchableOpacity
-            style={styles.settingsButton}
-            onPress={() => setModalVisible(true)}
-            activeOpacity={0.7}
-            accessibilityLabel="Server settings"
-            accessibilityRole="button"
+            <TouchableOpacity
+              style={styles.settingsButton}
+              onPress={() => setModalVisible(true)}
+              activeOpacity={0.8}
+              accessibilityLabel="Settings"
+              accessibilityRole="button"
+            >
+              <Feather name="settings" size={20} color={DayRibbonColors.ink} />
+            </TouchableOpacity>
+          </View>
+
+          {/* 2. Ribbon zone (about 354px high, full-bleed, overflow hidden, margin-top 6px) */}
+          <View
+            style={styles.ribbonZoneContainer}
+            aria-hidden={true}
           >
-            <Feather name="settings" size={20} color={DayRibbonColors.ink} />
-          </TouchableOpacity>
-        </View>
-
-        {/* ── DATE PILL: "TODAY · FRI 16 OCT" ── */}
-        <View style={styles.todayPillWrapper}>
-          <View style={styles.todayPill}>
-            <Text style={styles.todayPillText}>{todayString}</Text>
-          </View>
-        </View>
-
-        {/* ── FOUR TILTED RIBBONS: LARGE, BOLD, BLEEDING SIDES, NO TOP/BOTTOM CUTS ── */}
-        <View style={styles.ribbonsContainer} pointerEvents="none">
-          <View style={styles.ribbonsSlantedStack}>
-            {/* Ribbon 1: Royal Blue with SYLLABUS · TOPICS · LESSONS */}
-            <View style={[styles.ribbonStrip, { backgroundColor: DayRibbonColors.blue }]}>
-              <View style={styles.ribbonWordsRow}>
-                <Text style={styles.ribbonWordLight}>SYLLABUS</Text>
-                <Text style={styles.ribbonWordLight}>TOPICS</Text>
-                <Text style={styles.ribbonWordLight}>LESSONS</Text>
+            {/* White pill "TODAY · <WEEKDAY> <DD> <MON>" top-left inside zone */}
+            <View style={styles.todayPillWrapper}>
+              <View style={styles.todayPill}>
+                <Text style={styles.todayPillText}>{todayString}</Text>
               </View>
             </View>
 
-            {/* Ribbon 2: Amber with PLANNED · TAUGHT · COVERED */}
-            <View style={[styles.ribbonStrip, { backgroundColor: DayRibbonColors.amber }]}>
-              <View style={styles.ribbonWordsRow}>
-                <Text style={styles.ribbonWordDark}>PLANNED</Text>
-                <Text style={styles.ribbonWordDark}>TAUGHT</Text>
-                <Text style={styles.ribbonWordDark}>COVERED</Text>
-              </View>
-            </View>
-
-            {/* Ribbon 3: Coral with TRACK · REVIEW · IMPROVE */}
-            <View style={[styles.ribbonStrip, { backgroundColor: DayRibbonColors.coral }]}>
-              <View style={styles.ribbonWordsRow}>
-                <Text style={styles.ribbonWordDark}>TRACK</Text>
-                <Text style={styles.ribbonWordDark}>REVIEW</Text>
-                <Text style={styles.ribbonWordDark}>IMPROVE</Text>
-              </View>
-            </View>
-
-            {/* Ribbon 4: Mint with FACULTY · COURSES · REPORTS */}
-            <View style={[styles.ribbonStrip, { backgroundColor: DayRibbonColors.mint }]}>
-              <View style={styles.ribbonWordsRow}>
-                <Text style={styles.ribbonWordDark}>FACULTY</Text>
-                <Text style={styles.ribbonWordDark}>COURSES</Text>
-                <Text style={styles.ribbonWordDark}>REPORTS</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* ── HERO TEXT: COLLEGE EYEBROW + MASSIVE HEADLINE + SUBLINE ── */}
-        <View style={styles.heroSection}>
-          <Text style={styles.collegeEyebrow}>JAYA ENGINEERING COLLEGE</Text>
-
-          <View style={styles.headingBlock}>
-            <Text style={styles.headingLineDark}>Course</Text>
-            <Text style={styles.headingLineBlue}>Coverage</Text>
-            <Text style={styles.headingLineDark}>Report</Text>
-          </View>
-
-          <Text style={styles.sublineText}>
-            Continuous syllabus tracking and{'\n'}curriculum monitoring, one day at a time.
-          </Text>
-        </View>
-
-        {/* ── GARLAND OF MINI BOOKMARK RIBBONS ABOVE BUTTON ── */}
-        <GarlandRow />
-
-        {/* ── NOTCHED RIBBON BUTTON "GET STARTED" WITH SWALLOWTAIL ENDS ── */}
-        <View style={styles.ctaSection}>
-          <TouchableOpacity
-            style={styles.notchedButtonContainer}
-            onPress={() => navigation.navigate('Login')}
-            onLayout={handleButtonLayout}
-            activeOpacity={0.88}
-            accessibilityRole="button"
-            accessibilityLabel="Get Started"
-          >
-            {/* SVG Polygon Ribbon with Swallowtail Notches on Left and Right */}
-            <Svg width={buttonWidth} height={btnH} viewBox={`0 0 ${buttonWidth} ${btnH}`}>
-              <Polygon
-                points={`0,0 ${buttonWidth},0 ${buttonWidth - notchDepth},${btnH / 2} ${buttonWidth},${btnH} 0,${btnH} ${notchDepth},${btnH / 2}`}
-                fill={DayRibbonColors.amber}
+            {/* Four tilted ribbons: 600px wide, 56px high, rotate(-12deg), stacked 58px apart */}
+            <View style={styles.ribbonsSlantedStack} pointerEvents="none">
+              <TiltedRibbonStrip
+                color={DayRibbonColors.blue}
+                word1="SYLLABUS"
+                word2="TOPICS"
+                word3="LESSONS"
+                textColor="#FFFFFF"
+                animatedOffset={ribbonSlide1}
               />
-            </Svg>
-
-            {/* Button Content: "Get Started" on Left, Arrow on Right */}
-            <View style={styles.notchedButtonContent} pointerEvents="none">
-              <Text style={styles.notchedButtonText}>Get Started</Text>
-              <Feather name="arrow-right" size={22} color={DayRibbonColors.ink} />
+              <TiltedRibbonStrip
+                color={DayRibbonColors.amber}
+                word1="PLANNED"
+                word2="TAUGHT"
+                word3="COVERED"
+                textColor={DayRibbonColors.ink}
+                animatedOffset={ribbonSlide2}
+              />
+              <TiltedRibbonStrip
+                color={DayRibbonColors.coral}
+                word1="TRACK"
+                word2="REVIEW"
+                word3="IMPROVE"
+                textColor={DayRibbonColors.ink}
+                animatedOffset={ribbonSlide3}
+              />
+              <TiltedRibbonStrip
+                color={DayRibbonColors.mint}
+                word1="FACULTY"
+                word2="COURSES"
+                word3="REPORTS"
+                textColor={DayRibbonColors.ink}
+                animatedOffset={ribbonSlide4}
+              />
             </View>
-          </TouchableOpacity>
+          </View>
 
-          {/* Footer Text */}
-          <Text style={styles.footerText}>
-            Official Institutional Platform · Anna University Affiliated
-          </Text>
+          {/* 3. College Eyebrow: "JAYA ENGINEERING COLLEGE" */}
+          <View style={styles.heroSection}>
+            <Text style={styles.collegeEyebrow}>JAYA ENGINEERING COLLEGE</Text>
+
+            {/* 4. H1: "Course / Coverage / Report" on three lines */}
+            <View style={styles.headingBlock}>
+              <Text style={styles.headingLineDark}>Course</Text>
+              <Text style={styles.headingLineBlue}>Coverage</Text>
+              <Text style={styles.headingLineDark}>Report</Text>
+            </View>
+
+            {/* 5. Sub-line */}
+            <Text style={styles.sublineText}>
+              Continuous syllabus tracking and curriculum monitoring, one day at a time.
+            </Text>
+          </View>
+
+          {/* 6. Flexible Spacer */}
+          <View style={styles.flexibleSpacer} />
+
+          {/* Bunting pennants in gap between sub-line and CTA */}
+          <BuntingDecor width={ctaWidth} />
+
+          {/* 7. CTA Button "Get Started" + arrow icon: 60px high, amber, swallowtail ends */}
+          <View style={styles.ctaSection}>
+            <TouchableOpacity
+              style={[styles.ctaButton, { width: ctaWidth }]}
+              onPress={() => navigation.navigate('Login')}
+              activeOpacity={0.88}
+              accessibilityRole="button"
+              accessibilityLabel="Get Started"
+            >
+              {/* Swallowtail Polygon Background */}
+              <Svg width={ctaWidth} height={btnHeight} viewBox={`0 0 ${ctaWidth} ${btnHeight}`}>
+                <Polygon
+                  points={`0,0 ${ctaWidth},0 ${ctaWidth - notchDepth},${btnHeight / 2} ${ctaWidth},${btnHeight} 0,${btnHeight} ${notchDepth},${btnHeight / 2}`}
+                  fill={DayRibbonColors.amber}
+                />
+              </Svg>
+
+              {/* Label Left, Arrow Right */}
+              <View style={styles.ctaButtonContent} pointerEvents="none">
+                <Text style={styles.ctaButtonText}>Get Started</Text>
+                <Feather name="arrow-right" size={22} color={DayRibbonColors.ink} />
+              </View>
+            </TouchableOpacity>
+
+            {/* 8. Footer Line */}
+            <Text style={styles.footerText}>
+              Official Institutional Platform · Anna University Affiliated
+            </Text>
+          </View>
         </View>
       </ScrollView>
 
@@ -509,147 +649,128 @@ export const LandingScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  pageRoot: {
     flex: 1,
-    backgroundColor: DayRibbonColors.pageBg,
+    minHeight: '100%',
+    backgroundColor: DayRibbonColors.page,
     position: 'relative',
+    overflow: 'hidden',
   },
-  scrollContent: {
+  scrollContainer: {
     flexGrow: 1,
-    paddingHorizontal: 20,
     justifyContent: 'space-between',
-    paddingBottom: 16,
+    alignItems: 'center',
+  },
+  contentConstrained: {
+    width: '100%',
+    maxWidth: 480,
+    flex: 1,
+    justifyContent: 'space-between',
   },
 
-  // Top Ribbon Cluster (Blue, Amber, Coral hanging from top edge)
-  topRibbonCluster: {
-    position: 'absolute',
-    top: 0,
-    left: SCREEN_WIDTH * 0.50,
-    flexDirection: 'row',
-    zIndex: 1,
-  },
-
-  // Giant Calendar Day Number Watermark
-  watermarkContainer: {
-    position: 'absolute',
-    top: 360,
-    right: -10,
-    zIndex: 0,
-    opacity: 0.08,
-  },
-  watermarkText: {
-    fontFamily: DayRibbonFonts.display,
-    fontSize: 210,
-    lineHeight: 210,
-    color: DayRibbonColors.blue,
-  },
-
-  // Top Row: "JEC ACADEMICS" + Settings button
-  topRow: {
+  // 1. Header Row (44px high)
+  headerRow: {
+    height: 44,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 2,
-    marginBottom: 8,
-    zIndex: 2,
+    paddingHorizontal: 20,
+    zIndex: 10,
   },
-  topRowBrand: {
-    fontFamily: DayRibbonFonts.body700,
-    fontSize: 12.5,
-    letterSpacing: 1.5,
+  headerBrand: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 12,
+    letterSpacing: 1.68, // .14em of 12px
     color: DayRibbonColors.blue,
+    textTransform: 'uppercase',
   },
   settingsButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: DayRibbonColors.page,
     borderWidth: 1,
-    borderColor: '#D5D8F5',
+    borderColor: DayRibbonColors.border,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
   },
 
-  // Date Pill: "TODAY · FRI 16 OCT"
+  // 2. Ribbon Zone (354px high, full-bleed, overflow hidden, margin-top 6px)
+  ribbonZoneContainer: {
+    height: 354,
+    width: '100%',
+    marginTop: 6,
+    overflow: 'hidden',
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 5,
+  },
   todayPillWrapper: {
-    alignItems: 'flex-start',
-    marginBottom: 4,
-    zIndex: 2,
+    position: 'absolute',
+    top: 8,
+    left: 20,
+    zIndex: 20,
   },
   todayPill: {
+    height: 34,
     paddingHorizontal: 16,
-    paddingVertical: 7,
     borderRadius: 999,
-    borderWidth: 1.2,
+    borderWidth: 1.5,
     borderColor: DayRibbonColors.ink,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: DayRibbonColors.page,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   todayPillText: {
-    fontFamily: DayRibbonFonts.body700,
-    fontSize: 11.5,
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 12,
     letterSpacing: 0.8,
     color: DayRibbonColors.ink,
     textTransform: 'uppercase',
   },
 
-  // Four Tilted Ribbons: Large font, tall strips, bleeding sides
-  ribbonsContainer: {
-    height: 250,
-    overflow: 'hidden',
-    marginHorizontal: -24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 2,
-  },
+  // Tilted Ribbons: 600px wide, 56px high, rotate(-12deg), stacked 58px apart
   ribbonsSlantedStack: {
-    transform: [{ rotate: '-10.5deg' }],
-    width: SCREEN_WIDTH * 1.35,
+    width: 600,
     alignItems: 'center',
     justifyContent: 'center',
+    transform: [{ rotate: '-12deg' }],
+    marginTop: 10,
   },
-  ribbonStrip: {
-    height: 44,
-    width: '100%',
+  ribbonItemWrapper: {
+    width: 600,
+    height: 56,
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 0.5,
+    position: 'relative',
+    marginVertical: 1, // Stacks closely at ~58px center-to-center
   },
-  ribbonWordsRow: {
+  ribbonContentRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    width: SCREEN_WIDTH * 0.94,
+    justifyContent: 'center',
+    width: 600,
+    paddingHorizontal: 36,
   },
-  ribbonWordLight: {
+  ribbonWordText: {
     fontFamily: DayRibbonFonts.display,
     fontSize: 22,
-    letterSpacing: 0.8,
-    color: '#FFFFFF',
-  },
-  ribbonWordDark: {
-    fontFamily: DayRibbonFonts.display,
-    fontSize: 22,
-    letterSpacing: 0.8,
-    color: DayRibbonColors.ink,
+    letterSpacing: 1.32, // .06em of 22px
+    marginHorizontal: 12, // 24px gap between words
   },
 
-  // Hero Section
+  // 3. Hero Section
   heroSection: {
+    paddingHorizontal: 20,
     marginTop: -8,
-    marginBottom: 10,
-    zIndex: 2,
+    zIndex: 10,
   },
   collegeEyebrow: {
-    fontFamily: DayRibbonFonts.body700,
-    fontSize: 13,
-    letterSpacing: 1.2,
-    color: '#4A4E86',
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 12,
+    letterSpacing: 1.4,
+    color: DayRibbonColors.muted,
     marginBottom: 6,
     textTransform: 'uppercase',
   },
@@ -658,56 +779,55 @@ const styles = StyleSheet.create({
   },
   headingLineDark: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 58,
-    lineHeight: 58,
-    letterSpacing: -1.5,
+    fontSize: 54,
+    lineHeight: 53, // line-height .98
+    letterSpacing: -1.08, // -0.02em
     color: DayRibbonColors.ink,
   },
   headingLineBlue: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 58,
-    lineHeight: 58,
-    letterSpacing: -1.5,
+    fontSize: 54,
+    lineHeight: 53, // line-height .98
+    letterSpacing: -1.08, // -0.02em
     color: DayRibbonColors.blue,
   },
   sublineText: {
-    fontFamily: DayRibbonFonts.body500,
-    fontSize: 14.5,
-    lineHeight: 22,
-    color: '#4A4E86',
+    fontFamily: DayRibbonFonts.body400,
+    fontSize: 15,
+    lineHeight: 22.5, // 1.5 line-height
+    color: DayRibbonColors.bodyText,
+    maxWidth: 300,
   },
 
-  // Garland of Mini Bookmark Ribbons
-  garlandWrapper: {
-    width: '100%',
-    marginBottom: 10,
-    marginTop: 4,
-    zIndex: 2,
-  },
-  garlandWire: {
-    width: '100%',
-    height: 1,
-    backgroundColor: '#DDE2F5',
-  },
-  garlandRibbonsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 8,
+  // 6. Flexible Spacer
+  flexibleSpacer: {
+    flex: 1,
+    minHeight: 16,
   },
 
-  // Bottom CTA: Notched Ribbon Button with Swallowtail Ends
-  ctaSection: {
+  // Bunting
+  buntingContainer: {
     width: '100%',
-    zIndex: 2,
-  },
-  notchedButtonContainer: {
-    width: '100%',
-    height: 54,
-    position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 8,
+    zIndex: 10,
   },
-  notchedButtonContent: {
+
+  // 7. CTA Section (60px high, amber, swallowtail ends)
+  ctaSection: {
+    width: '100%',
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  ctaButton: {
+    height: 60,
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  ctaButtonContent: {
     position: 'absolute',
     left: 0,
     right: 0,
@@ -716,18 +836,43 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 36,
   },
-  notchedButtonText: {
-    fontFamily: DayRibbonFonts.body700,
-    fontSize: 17.5,
+  ctaButtonText: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 17,
     letterSpacing: 0.3,
     color: DayRibbonColors.ink,
   },
+
+  // 8. Footer Line
   footerText: {
     fontFamily: DayRibbonFonts.body500,
-    fontSize: 11.5,
-    color: '#5A5E96',
+    fontSize: 11,
+    color: DayRibbonColors.muted,
     textAlign: 'center',
     marginTop: 14,
+  },
+
+  // ── DECORATIONS STYLES ──
+  topMiniRibbonsCluster: {
+    position: 'absolute',
+    top: 0,
+    left: '52%',
+    flexDirection: 'row',
+    zIndex: 2,
+  },
+  ghostNumeralWrapper: {
+    position: 'absolute',
+    right: -15,
+    top: '46%',
+    zIndex: 1,
+    opacity: 0.9,
+  },
+  ghostNumeralText: {
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 210,
+    lineHeight: 210,
+    letterSpacing: -10.5, // -0.05em of 210
+    color: DayRibbonColors.ghost,
   },
 
   // Modal
@@ -741,7 +886,7 @@ const styles = StyleSheet.create({
   modalCard: {
     width: '100%',
     maxWidth: 380,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: DayRibbonColors.page,
     borderRadius: 20,
     padding: 22,
     shadowColor: '#000',
