@@ -25,7 +25,7 @@ async function generateUsersPdf() {
 
   console.log(`📊 Found ${users.length} users.`);
 
-  const outputPath = path.resolve(__dirname, '../../../faculty_user_directory.pdf');
+  const outputPath = path.resolve(__dirname, '../../faculty_user_directory.pdf');
   const doc = new PDFDocument({
     margin: 36,
     size: 'A4',
