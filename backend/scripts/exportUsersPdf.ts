@@ -48,11 +48,11 @@ async function generateUsersPdf() {
   doc.fillColor('#FFFFFF')
      .font('Helvetica-Bold')
      .fontSize(18)
-     .text('JEC ACADEMICS', 50, 48, { letterSpacing: 1.5 });
+     .text('JEC ACADEMICS', 50, 48);
 
   doc.font('Helvetica')
      .fontSize(11)
-     .text('COURSE COVERAGE REPORT (CCR) SYSTEM', 50, 72, { letterSpacing: 0.8 });
+     .text('COURSE COVERAGE REPORT (CCR) SYSTEM', 50, 72);
 
   doc.font('Helvetica-Oblique')
      .fontSize(9)
