@@ -18,5 +18,8 @@ module.exports = {
     '^@hooks/(.*)$': '<rootDir>/src/hooks/$1',
     '^@config/(.*)$': '<rootDir>/src/config/$1',
   },
+  globals: {
+    __DEV__: true,
+  },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };

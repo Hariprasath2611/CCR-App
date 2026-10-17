@@ -1,3 +1,16 @@
+jest.mock('react-native', () => ({
+  Platform: {
+    OS: 'android',
+    select: (obj: any) => obj.android ?? obj.default ?? obj.ios,
+  },
+  Linking: {
+    openURL: jest.fn(() => Promise.resolve()),
+    canOpenURL: jest.fn(() => Promise.resolve(true)),
+    openSettings: jest.fn(() => Promise.resolve()),
+  },
+  NativeModules: {},
+}));
+
 jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(() => Promise.resolve(null)),
   setItem: jest.fn(() => Promise.resolve()),
