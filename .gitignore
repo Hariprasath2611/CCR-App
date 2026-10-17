@@ -68,6 +68,9 @@ lib
 
 # dotenv environment variable files
 .env
+.env.*
+*.env
+render.env
 .env.development.local
 .env.local
 .env.development
