@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, AppState } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
@@ -17,8 +17,59 @@ import { AppTheme } from '@theme/theme';
 import { DayRibbonColors } from '@theme/dayRibbon';
 import { RootNavigator } from '@navigation/RootNavigator';
 import { syncEngine } from '@features/sync/syncEngine';
+import { remoteConfigService } from '@services/remoteConfig/remoteConfigService';
+import { appUpdateService } from '@services/updater/appUpdateService';
+import { useRemoteConfig } from '@services/remoteConfig/useRemoteConfig';
+import {
+  UpdatePromptModal,
+  ForcedUpdateScreen,
+  MaintenanceScreen,
+  RemoteBanner,
+} from '@components/editorial';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+
+function AppContent(): React.JSX.Element {
+  const { activeBanners, dismissBanner } = useRemoteConfig();
+
+  useEffect(() => {
+    // Initial fetch on app start (never blocks rendering)
+    remoteConfigService.fetchConfig().catch(() => {});
+    appUpdateService.checkForUpdate().catch(() => {});
+
+    // Foreground listener (throttled to 15 mins)
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState === 'active') {
+        remoteConfigService.fetchConfig().catch(() => {});
+        appUpdateService.checkForUpdate().catch(() => {});
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  return (
+    <>
+      <StatusBar
+        backgroundColor={DayRibbonColors.pageBg}
+        barStyle="dark-content"
+      />
+      {activeBanners.map((banner) => (
+        <RemoteBanner
+          key={banner.id}
+          banner={banner}
+          onDismiss={dismissBanner}
+        />
+      ))}
+      <RootNavigator />
+      <UpdatePromptModal />
+      <ForcedUpdateScreen />
+      <MaintenanceScreen />
+    </>
+  );
+}
 
 function App(): React.JSX.Element | null {
   const [fontsLoaded] = useFonts({
@@ -48,11 +99,7 @@ function App(): React.JSX.Element | null {
     <SafeAreaProvider>
       <PaperProvider theme={AppTheme}>
         <NavigationContainer>
-          <StatusBar
-            backgroundColor={DayRibbonColors.pageBg}
-            barStyle="dark-content"
-          />
-          <RootNavigator />
+          <AppContent />
         </NavigationContainer>
       </PaperProvider>
     </SafeAreaProvider>
