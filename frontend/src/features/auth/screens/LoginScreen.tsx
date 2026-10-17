@@ -1052,8 +1052,11 @@ export const LoginScreen = () => {
           {/* Logo & College Name */}
           <View style={styles.topLogoRow}>
             <View style={styles.logoFrame}>
-              <Text style={styles.crestTextTop}>JEC</Text>
-              <Text style={styles.crestTextBottom}>CREST</Text>
+              <Image
+                source={require('../../../assets/logo-removebg-preview.png')}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
             </View>
             <View style={styles.collegeNameWrap}>
               <Text style={styles.collegeNameTop}>JAYA ENGINEERING</Text>
@@ -1230,19 +1233,9 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3,
   },
-  crestTextTop: {
-    fontFamily: DayRibbonFonts.body700,
-    fontSize: 10.5,
-    letterSpacing: 0.6,
-    color: '#0E1330',
-    lineHeight: 12,
-  },
-  crestTextBottom: {
-    fontFamily: DayRibbonFonts.body700,
-    fontSize: 9,
-    letterSpacing: 0.6,
-    color: '#0E1330',
-    lineHeight: 11,
+  logoImage: {
+    width: 36,
+    height: 36,
   },
   collegeNameWrap: {
     flex: 1,
