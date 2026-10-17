@@ -1207,7 +1207,7 @@ export const LoginScreen = () => {
           </Text>
 
           {/* Test Credential Presets: Show ONLY when dev/test flag is enabled */}
-          {(__DEV__ || Boolean(ENV.ENABLE_TEST_PRESETS)) && (
+          {(__DEV__ || Boolean((ENV as any).ENABLE_TEST_PRESETS || process.env.EXPO_PUBLIC_ENABLE_TEST_PRESETS)) && (
             <View style={styles.presetsSection}>
               <Text style={styles.presetsLabel}>TEST CREDENTIAL PRESETS</Text>
               <ScrollView
