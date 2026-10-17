@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "prisma generate && tsc",
+    "build": "prisma generate && tsc && node -e \"const fs=require('fs'); fs.mkdirSync('dist/config/defaults', {recursive:true}); fs.copyFileSync('src/config/defaults/defaultRelease.json', 'dist/config/defaults/defaultRelease.json'); fs.copyFileSync('src/config/defaults/defaultConfig.json', 'dist/config/defaults/defaultConfig.json');\"",
     "test": "ts-node src/__tests__/algorithms.test.ts && ts-node src/__tests__/appRelease.test.ts",
     "release:publish": "ts-node scripts/publishRelease.ts",
     "version:bump": "ts-node scripts/bumpVersion.ts",

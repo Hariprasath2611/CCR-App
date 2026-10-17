@@ -5237,3 +5237,82 @@
 {"_e":"metro:config","_t":1792224814265,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
 {"_e":"expo:dev-tools-plugin:load","_t":1792224814494,"plugins":[{"packageName":"expo-sqlite","bannerTitle":"expo-sqlite","cliBanner":false,"webpageEndpoint":"/_expo/plugins/expo-sqlite"}]}
 {"_e":"metro:instantiate","_t":1792224817900,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1792224880698,"id":"1","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1792224880698,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792224880703,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792224880818,"id":"1","progress":0.02185255198487713,"total":115,"current":17}
+{"_e":"metro:bundling:progress","_t":1792224880917,"id":"1","progress":0.11969632308348871,"total":211,"current":73}
+{"_e":"metro:bundling:progress","_t":1792224881017,"id":"1","progress":0.13587564601204113,"total":274,"current":101}
+{"_e":"metro:bundling:progress","_t":1792224881118,"id":"1","progress":0.16888722086695437,"total":365,"current":150}
+{"_e":"metro:bundling:progress","_t":1792224881236,"id":"1","progress":0.18565376202510142,"total":434,"current":187}
+{"_e":"metro:bundling:progress","_t":1792224881336,"id":"1","progress":0.32053773509441424,"total":461,"current":261}
+{"_e":"metro:bundling:progress","_t":1792224881436,"id":"1","progress":0.419904,"total":500,"current":324}
+{"_e":"metro:bundling:progress","_t":1792224881536,"id":"1","progress":0.419904,"total":580,"current":362}
+{"_e":"metro:bundling:progress","_t":1792224881651,"id":"1","progress":0.4371645602493075,"total":608,"current":402}
+{"_e":"metro:bundling:progress","_t":1792224881750,"id":"1","progress":0.5067877193634741,"total":656,"current":467}
+{"_e":"metro:bundling:progress","_t":1792224881850,"id":"1","progress":0.586561476442429,"total":756,"current":579}
+{"_e":"metro:bundling:progress","_t":1792224881950,"id":"1","progress":0.634229931775294,"total":830,"current":661}
+{"_e":"metro:bundling:progress","_t":1792224882050,"id":"1","progress":0.756648408007414,"total":899,"current":782}
+{"_e":"metro:bundling:progress","_t":1792224882157,"id":"1","progress":0.756648408007414,"total":1015,"current":868}
+{"_e":"metro:bundling:progress","_t":1792224882257,"id":"1","progress":0.7981568173727305,"total":1060,"current":947}
+{"_e":"metro:bundling:progress","_t":1792224882357,"id":"1","progress":0.9857653061224491,"total":1120,"current":1112}
+{"_e":"metro:bundling:progress","_t":1792224882467,"id":"1","progress":0.9964819728228526,"total":1136,"current":1134}
+{"_e":"metro:bundling:progress","_t":1792224885460,"id":"1","progress":0.9982402115155723,"total":1136,"current":1135}
+{"_e":"metro:bundling:progress","_t":1792224885561,"id":"1","progress":0.9982616257088847,"total":1150,"current":1149}
+{"_e":"metro:bundling:progress","_t":1792224885908,"id":"1","progress":0.999,"total":1150,"current":1150}
+{"_e":"metro:bundling:done","_t":1792224886163,"id":"1","total":1150,"ms":5464.9756}
+{"_e":"metro:client_log","_t":1792224886669,"level":"info","data":["%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools","font-weight:bold"]}
+{"_e":"metro:client_log","_t":1792224886670,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1792224886670,"level":"log","data":["Running application \"main\" with appParams:\n","{\"hydrate\": undefined, \"rootTag\": \"#root\"}","\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF."]}
+{"_e":"metro:bundling:started","_t":1792224886753,"id":"4","platform":"web","environment":null,"entry":"node_modules\\expo-sqlite\\web\\worker.ts"}
+{"_e":"metro:bundling:progress","_t":1792224886753,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792224886780,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792224886971,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792224887234,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792224887334,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792224887434,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792224887534,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792224887668,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1792224887715,"id":"4","total":1,"ms":961.4811}
+{"_e":"metro:client_log","_t":1792224887832,"level":"warn","data":["Animated: `useNativeDriver` is not supported because the native animated module is missing. Falling back to JS-based animation. To resolve this, add `RCTAnimation` module to this app, or remove `useNativeDriver`. Make sure to run `bundle exec pod install` first. Read more about autolinking: https://github.com/react-native-community/cli/blob/master/docs/autolinking.md"]}
+{"_e":"metro:bundling:started","_t":1792224896533,"id":"g","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:started","_t":1792224900374,"id":"h","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1792224900375,"id":"h","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1792224900458,"id":"h","total":1,"ms":83.7296}
+{"_e":"metro:client_log","_t":1792224907865,"level":"info","data":["%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools","font-weight:bold"]}
+{"_e":"metro:client_log","_t":1792224907865,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1792224907865,"level":"log","data":["Running application \"main\" with appParams:\n","{\"hydrate\": undefined, \"rootTag\": \"#root\"}","\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF."]}
+{"_e":"metro:bundling:started","_t":1792224908342,"id":"p","platform":"web","environment":null,"entry":"node_modules\\expo-sqlite\\web\\worker.ts"}
+{"_e":"metro:bundling:progress","_t":1792224908342,"id":"p","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1792224908349,"id":"p","total":1,"ms":6.592}
+{"_e":"metro:client_log","_t":1792224908355,"level":"warn","data":["Animated: `useNativeDriver` is not supported because the native animated module is missing. Falling back to JS-based animation. To resolve this, add `RCTAnimation` module to this app, or remove `useNativeDriver`. Make sure to run `bundle exec pod install` first. Read more about autolinking: https://github.com/react-native-community/cli/blob/master/docs/autolinking.md"]}
+{"_e":"metro:bundling:started","_t":1792224927796,"id":"w","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:started","_t":1792225589704,"id":"z","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1792225589704,"id":"z","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1792225589793,"id":"z","total":1,"ms":89.4787}
+{"_e":"metro:bundling:started","_t":1792225590198,"id":"11","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:client_log","_t":1792225590354,"level":"info","data":["%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools","font-weight:bold"]}
+{"_e":"metro:client_log","_t":1792225590355,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1792225590355,"level":"log","data":["Running application \"main\" with appParams:\n","{\"hydrate\": undefined, \"rootTag\": \"#root\"}","\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF."]}
+{"_e":"metro:bundling:started","_t":1792225590480,"id":"13","platform":"web","environment":null,"entry":"node_modules\\expo-sqlite\\web\\worker.ts"}
+{"_e":"metro:bundling:progress","_t":1792225590480,"id":"13","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792225590481,"id":"13","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792225590609,"id":"13","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792225590664,"id":"13","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792225590764,"id":"13","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1792225590791,"id":"13","total":1,"ms":310.7096}
+{"_e":"metro:client_log","_t":1792225591480,"level":"warn","data":["Animated: `useNativeDriver` is not supported because the native animated module is missing. Falling back to JS-based animation. To resolve this, add `RCTAnimation` module to this app, or remove `useNativeDriver`. Make sure to run `bundle exec pod install` first. Read more about autolinking: https://github.com/react-native-community/cli/blob/master/docs/autolinking.md"]}
+{"_e":"metro:bundling:started","_t":1792225956029,"id":"1f","platform":"web","environment":null,"entry":"src\\components\\editorial\\NotchedRibbonButton.tsx"}
+{"_e":"metro:bundling:started","_t":1792225956031,"id":"1g","platform":"web","environment":null,"entry":"src\\components\\editorial\\RemoteBanner.tsx"}
+{"_e":"metro:bundling:started","_t":1792225956032,"id":"1h","platform":"web","environment":null,"entry":"src\\components\\editorial\\UpdatePromptModal.tsx"}
+{"_e":"metro:bundling:started","_t":1792225956033,"id":"1i","platform":"web","environment":null,"entry":"src\\services\\updater\\useAppUpdate.ts"}
+{"_e":"metro:bundling:started","_t":1792225956034,"id":"1j","platform":"web","environment":null,"entry":"src\\services\\updater\\appUpdateService.ts"}
+{"_e":"metro:bundling:started","_t":1792225956034,"id":"1k","platform":"web","environment":null,"entry":"src\\services\\native\\apkInstaller.ts"}
+{"_e":"metro:client_log","_t":1792225957015,"level":"error","data":["[TypeError: Cannot destructure property 'ApkInstaller' of '_expo.NativeModules' as it is undefined.]","\n\n\u001b[1mCode: apkInstaller.ts\u001b[22m\n\u001b[0m \u001b[90m 2 |\u001b[39m \u001b[36mimport\u001b[39m \u001b[33m*\u001b[39m \u001b[36mas\u001b[39m \u001b[33mFileSystem\u001b[39m \u001b[36mfrom\u001b[39m \u001b[32m'expo-file-system'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 3 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m \u001b[36mconst\u001b[39m { \u001b[33mApkInstaller\u001b[39m } \u001b[33m=\u001b[39m \u001b[33mNativeModules\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m\n \u001b[90m 6 |\u001b[39m \u001b[36mexport\u001b[39m \u001b[36minterface\u001b[39m \u001b[33mAppVersionInfo\u001b[39m {\n \u001b[90m 7 |\u001b[39m   versionCode\u001b[33m:\u001b[39m number\u001b[33m;\u001b[39m\u001b[0m\n\u001b[1mCall Stack\u001b[22m\n\u001b[90m  <global> (src\\services\\native\\apkInstaller.ts:4:9)\u001b[39m\n\u001b[90m  <global> (src\\services\\updater\\appUpdateService.ts:5)\u001b[39m\n\u001b[90m  <global> (src\\services\\updater\\useAppUpdate.ts:2)\u001b[39m"]}
+{"_e":"metro:bundling:started","_t":1792225957027,"id":"1m","platform":"web","environment":null,"entry":"src\\components\\editorial\\ForcedUpdateScreen.tsx"}
+{"_e":"metro:bundling:started","_t":1792225957030,"id":"1n","platform":"web","environment":null,"entry":"src\\components\\editorial\\MaintenanceScreen.tsx"}
+{"_e":"metro:bundling:started","_t":1792225957032,"id":"1o","platform":"web","environment":null,"entry":"src\\services\\remoteConfig\\useRemoteConfig.ts"}
+{"_e":"metro:bundling:started","_t":1792225957033,"id":"1p","platform":"web","environment":null,"entry":"src\\services\\remoteConfig\\remoteConfigService.ts"}
+{"_e":"metro:bundling:started","_t":1792225957034,"id":"1q","platform":"web","environment":null,"entry":"src\\components\\editorial\\index.ts"}
+{"_e":"metro:client_log","_t":1792225967551,"level":"error","data":["[TypeError: Cannot destructure property 'ApkInstaller' of '_expo.NativeModules' as it is undefined.]","\n\n\u001b[1mCode: apkInstaller.ts\u001b[22m\n\u001b[0m \u001b[90m 2 |\u001b[39m \u001b[36mimport\u001b[39m \u001b[33m*\u001b[39m \u001b[36mas\u001b[39m \u001b[33mFileSystem\u001b[39m \u001b[36mfrom\u001b[39m \u001b[32m'expo-file-system'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 3 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m \u001b[36mconst\u001b[39m { \u001b[33mApkInstaller\u001b[39m } \u001b[33m=\u001b[39m \u001b[33mNativeModules\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m\n \u001b[90m 6 |\u001b[39m \u001b[36mexport\u001b[39m \u001b[36minterface\u001b[39m \u001b[33mAppVersionInfo\u001b[39m {\n \u001b[90m 7 |\u001b[39m   versionCode\u001b[33m:\u001b[39m number\u001b[33m;\u001b[39m\u001b[0m\n\u001b[1mCall Stack\u001b[22m\n\u001b[90m  <global> (src\\services\\native\\apkInstaller.ts:4:9)\u001b[39m\n\u001b[90m  <global> (src\\services\\updater\\appUpdateService.ts:5)\u001b[39m\n\u001b[90m  <global> (src\\services\\updater\\useAppUpdate.ts:2)\u001b[39m"]}
+{"_e":"metro:bundling:started","_t":1792225967552,"id":"1s","platform":"web","environment":null,"entry":"App.tsx"}
