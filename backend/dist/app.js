@@ -18,6 +18,10 @@ const extraHoursRoutes_1 = __importDefault(require("./routes/extraHoursRoutes"))
 const reportRoutes_1 = __importDefault(require("./routes/reportRoutes"));
 const hodRoutes_1 = __importDefault(require("./routes/hodRoutes"));
 const principalRoutes_1 = __importDefault(require("./routes/principalRoutes"));
+const ccRoutes_1 = __importDefault(require("./routes/ccRoutes"));
+const erpRoutes_1 = __importDefault(require("./routes/erpRoutes"));
+const appReleaseRoutes_1 = __importDefault(require("./routes/appReleaseRoutes"));
+const adminReleaseRoutes_1 = __importDefault(require("./routes/adminReleaseRoutes"));
 const app = (0, express_1.default)();
 // Security & Standard Middlewares
 app.use((0, helmet_1.default)());
@@ -39,15 +43,24 @@ app.get('/health', async (req, res) => {
         res.status(500).json({ status: 'DEGRADED', database: 'DISCONNECTED', error: err.message });
     }
 });
-// v1 API Routes
-app.use('/v1/auth', authRoutes_1.default);
-app.use('/v1/sync', syncRoutes_1.default);
-app.use('/v1/plans', planRoutes_1.default);
-app.use('/v1/progress', progressRoutes_1.default);
-app.use('/v1/extra-hours', extraHoursRoutes_1.default);
-app.use('/v1/reports', reportRoutes_1.default);
-app.use('/v1/hod', hodRoutes_1.default);
-app.use('/v1/principal', principalRoutes_1.default);
+// Create unified v1 router
+const v1Router = express_1.default.Router();
+v1Router.use('/auth', authRoutes_1.default);
+v1Router.use('/sync', syncRoutes_1.default);
+v1Router.use('/plans', planRoutes_1.default);
+v1Router.use('/progress', progressRoutes_1.default);
+v1Router.use('/extra-hours', extraHoursRoutes_1.default);
+v1Router.use('/reports', reportRoutes_1.default);
+v1Router.use('/hod', hodRoutes_1.default);
+v1Router.use('/principal', principalRoutes_1.default);
+v1Router.use('/cc', ccRoutes_1.default);
+v1Router.use('/erp', erpRoutes_1.default);
+v1Router.use('/app', appReleaseRoutes_1.default);
+v1Router.use('/admin', adminReleaseRoutes_1.default);
+// Mount under canonical /api/v1 AND backward-compatible /v1 alias
+app.use('/api/v1', v1Router);
+app.use('/v1', v1Router);
+app.use('/api/erp', erpRoutes_1.default);
 // 404 Route handler
 app.use((req, res) => {
     res.status(404).json({ error: 'Endpoint not found' });

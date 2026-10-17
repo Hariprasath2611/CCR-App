@@ -12,4 +12,8 @@ router.use(auth_1.authenticateToken, (0, authorize_1.authorize)('HOD', 'ADMIN'))
 router.get('/classes', hod_controller_1.getDepartmentClasses);
 router.post('/decision', (0, validate_1.validateBody)(hod_schema_1.hodDecisionSchema), hod_controller_1.submitDecision);
 router.get('/extra-hours', hod_controller_1.getExtraHoursRequests);
+// Class Coordinator Management
+router.get('/coordinators', hod_controller_1.getDepartmentCoordinators);
+router.post('/coordinators', (0, validate_1.validateBody)(hod_schema_1.assignCoordinatorSchema), hod_controller_1.assignCoordinator);
+router.delete('/coordinators/:classId', hod_controller_1.deleteCoordinator);
 exports.default = router;
