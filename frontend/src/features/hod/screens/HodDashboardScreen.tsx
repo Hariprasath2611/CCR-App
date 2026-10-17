@@ -104,7 +104,12 @@ export const HodDashboardScreen = () => {
           </View>
 
           <View style={styles.headerMiddle}>
-            <Text style={styles.roleLabel}>HEAD OF DEPARTMENT</Text>
+            <View style={styles.roleTagRow}>
+              <View style={styles.roleBadgePillHOD}>
+                <Feather name="award" size={10} color="#059669" />
+                <Text style={styles.roleBadgeTextHOD}>HEAD OF DEPARTMENT (HOD)</Text>
+              </View>
+            </View>
             <Text style={styles.facultyName} numberOfLines={1}>
               {user?.name || hodBoardInfo.hodName}
             </Text>
@@ -118,6 +123,24 @@ export const HodDashboardScreen = () => {
           >
             <Feather name="bell" size={18} color={DayRibbonColors.ink} />
           </TouchableOpacity>
+        </View>
+
+        {/* Role Designation Card denoting HOD */}
+        <View style={styles.roleDesignationCardHOD}>
+          <View style={styles.roleDesignationIconCircleHOD}>
+            <Feather name="award" size={20} color="#059669" />
+          </View>
+          <View style={styles.roleDesignationTextWrap}>
+            <View style={styles.roleDesignationHeaderRow}>
+              <Text style={styles.roleDesignationRoleTitle}>Head of Department (HOD)</Text>
+              <View style={styles.roleDesignationPillHOD}>
+                <Text style={styles.roleDesignationPillTextHOD}>HOD ACCESS</Text>
+              </View>
+            </View>
+            <Text style={styles.roleDesignationSubtitle}>
+              Department Head • {user?.department || 'Computer Science Engineering'}
+            </Text>
+          </View>
         </View>
 
         {/* Hero Section: Average Coverage Card */}
@@ -261,11 +284,81 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 12,
   },
-  roleLabel: {
-    fontFamily: DayRibbonFonts.body600,
+  roleTagRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 3,
+  },
+  roleBadgePillHOD: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#ECFDF5',
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
+  },
+  roleBadgeTextHOD: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 9.5,
+    letterSpacing: 0.4,
+    color: '#059669',
+  },
+  roleDesignationCardHOD: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F0FDF4',
+    borderWidth: 1.5,
+    borderColor: '#A7F3D0',
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 16,
+    gap: 12,
+    ...DayRibbonShapes.shadow,
+  },
+  roleDesignationIconCircleHOD: {
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: '#DCFCE7',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  roleDesignationTextWrap: {
+    flex: 1,
+  },
+  roleDesignationHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 2,
+  },
+  roleDesignationRoleTitle: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 15,
+    color: DayRibbonColors.ink,
+  },
+  roleDesignationPillHOD: {
+    backgroundColor: '#D1FAE5',
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#6EE7B7',
+  },
+  roleDesignationPillTextHOD: {
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 10,
-    letterSpacing: 0.5,
+    color: '#047857',
+    letterSpacing: 0.3,
+  },
+  roleDesignationSubtitle: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
     color: DayRibbonColors.muted,
+    lineHeight: 16,
   },
   facultyName: {
     fontFamily: DayRibbonFonts.body700,
