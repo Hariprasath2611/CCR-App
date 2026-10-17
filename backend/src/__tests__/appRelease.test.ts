@@ -39,7 +39,7 @@ function test(name: string, fn: () => void) {
   // ── TEST SUITE 1: VERSION COMPARISON & UPDATE LOGIC ──
   console.log('📌 Testing Version Comparison & Forced/Optional Update Logic:');
 
-  AppReleaseService._resetForTesting();
+    await AppReleaseService._resetForTesting();
 
   await testAsync('Optional update: caller versionCode is 1, latest is 1, min is 1', async () => {
     const res = await AppReleaseService.getVersion({

@@ -214,6 +214,20 @@ export class AppReleaseService {
       }
       currentReleaseCache = { ...previousReleaseCache };
       previousReleaseCache = null;
+
+      try {
+        if ((prisma as any).appRelease) {
+          const latestDb = await (prisma as any).appRelease.findFirst({
+            orderBy: { createdAt: 'desc' },
+          });
+          if (latestDb) {
+            await (prisma as any).appRelease.delete({ where: { id: latestDb.id } });
+          }
+        }
+      } catch (err) {
+        console.warn('[AppReleaseService] Failed to rollback release in DB:', (err as any)?.message);
+      }
+
       rolledBack.release = currentReleaseCache;
     }
 
@@ -223,6 +237,20 @@ export class AppReleaseService {
       }
       currentConfigCache = { ...previousConfigCache };
       previousConfigCache = null;
+
+      try {
+        if ((prisma as any).appConfig) {
+          const latestDb = await (prisma as any).appConfig.findFirst({
+            orderBy: { createdAt: 'desc' },
+          });
+          if (latestDb) {
+            await (prisma as any).appConfig.delete({ where: { id: latestDb.id } });
+          }
+        }
+      } catch (err) {
+        console.warn('[AppReleaseService] Failed to rollback config in DB:', (err as any)?.message);
+      }
+
       rolledBack.config = currentConfigCache;
     }
 
@@ -245,10 +273,25 @@ export class AppReleaseService {
   /**
    * Helper for tests to reset state
    */
-  static _resetForTesting() {
+  static async _resetForTesting() {
     currentReleaseCache = loadCommittedRelease();
     previousReleaseCache = null;
     currentConfigCache = loadCommittedConfig();
     previousConfigCache = null;
+
+    try {
+      if ((prisma as any).appRelease) {
+        await (prisma as any).appRelease.deleteMany({
+          where: {
+            OR: [
+              { apkSha256: 'a'.repeat(64) },
+              { apkSha256: 'b'.repeat(64) },
+              { latestVersionName: '2.0.0' },
+              { latestVersionName: '1.1.0' },
+            ],
+          },
+        });
+      }
+    } catch (_) {}
   }
 }
