@@ -499,16 +499,6 @@ export const LandingScreen = () => {
           {/* 1. Header row (44px high) */}
           <View style={styles.headerRow}>
             <Text style={styles.headerBrand}>JEC ACADEMICS</Text>
-
-            <TouchableOpacity
-              style={styles.settingsButton}
-              onPress={() => setModalVisible(true)}
-              activeOpacity={0.8}
-              accessibilityLabel="Settings"
-              accessibilityRole="button"
-            >
-              <Feather name="settings" size={20} color={DayRibbonColors.ink} />
-            </TouchableOpacity>
           </View>
 
           {/* 2. Ribbon zone (about 354px high, full-bleed, overflow hidden, margin-top 6px) */}
