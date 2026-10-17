@@ -763,13 +763,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: 600,
-    paddingHorizontal: 36,
   },
   ribbonWordText: {
     fontFamily: DayRibbonFonts.display,
     fontSize: 22,
-    letterSpacing: 1.32, // .06em of 22px
-    marginHorizontal: 12, // 24px gap between words
+    letterSpacing: 0.6,
+    marginHorizontal: 8,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
 
   // 3. Hero Section
