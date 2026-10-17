@@ -142,14 +142,6 @@ export const WeeklyProgressScreen = () => {
   const periodsHandled = watch('periodsHandled');
   const unit = watch('unit');
 
-  // Algorithm 1 Dynamic calculations in UI
-  const paceRatio = useMemo(() => {
-    const planned = parseInt(periodsPlanned) || 0;
-    const handled = parseInt(periodsHandled) || 0;
-    if (planned === 0) return 1.0;
-    return Number((handled / planned).toFixed(2));
-  }, [periodsPlanned, periodsHandled]);
-
   const periodsDeficit = useMemo(() => {
     const planned = parseInt(periodsPlanned) || 0;
     const handled = parseInt(periodsHandled) || 0;
@@ -494,20 +486,6 @@ export const WeeklyProgressScreen = () => {
           </View>
         </View>
 
-        {/* Algorithm 1 Real-Time Analytics Badge */}
-        <View style={[styles.paceBadge, isLagging && styles.paceBadgeWarning]}>
-          <View style={{ flex: 1 }}>
-            <Label text="ALGORITHM 1 PACE AUDIT" color={isLagging ? DayRibbonColors.warn : DayRibbonColors.muted} />
-            <Text style={[styles.paceBadgeTitle, isLagging && { color: DayRibbonColors.warn }]}>
-              PACE RATIO: {paceRatio} · {isLagging ? 'BEHIND SCHEDULE' : 'ON TRACK'}
-            </Text>
-            {periodsDeficit > 0 && (
-              <Text style={styles.paceBadgeSub}>
-                Deficit of {periodsDeficit} period(s). Extra compensation hours recommended.
-              </Text>
-            )}
-          </View>
-        </View>
 
         {/* Completed Based on Plan Toggle */}
         <View style={styles.radioBlock}>
@@ -693,30 +671,6 @@ const styles = StyleSheet.create({
   },
   periodCol: {
     flex: 0.48,
-  },
-  paceBadge: {
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: DayRibbonColors.line,
-    backgroundColor: DayRibbonColors.bg,
-    padding: ms(14),
-    marginTop: ms(14),
-  },
-  paceBadgeWarning: {
-    borderColor: DayRibbonColors.warn,
-    backgroundColor: DayRibbonColors.warnBg,
-  },
-  paceBadgeTitle: {
-    fontFamily: DayRibbonFonts.body700,
-    fontSize: ms(13),
-    color: DayRibbonColors.ink,
-    marginTop: ms(4),
-  },
-  paceBadgeSub: {
-    fontFamily: DayRibbonFonts.body500,
-    fontSize: ms(12),
-    color: DayRibbonColors.warn,
-    marginTop: ms(4),
   },
   radioBlock: {
     marginTop: ms(16),
