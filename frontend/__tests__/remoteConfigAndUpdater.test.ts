@@ -1,3 +1,33 @@
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn(() => Promise.resolve(null)),
+  setItem: jest.fn(() => Promise.resolve()),
+  removeItem: jest.fn(() => Promise.resolve()),
+}));
+
+jest.mock('expo', () => ({
+  NativeModules: {
+    ApkInstaller: {
+      canRequestPackageInstalls: jest.fn(() => Promise.resolve(true)),
+      getAppVersion: jest.fn(() => Promise.resolve({ versionCode: 1, versionName: '1.0.0' })),
+      getApkSha256: jest.fn(() => Promise.resolve('a'.repeat(64))),
+      installApk: jest.fn(() => Promise.resolve(true)),
+    },
+  },
+  Platform: { OS: 'android', select: (obj: any) => obj.android || obj.default },
+  Linking: {
+    openURL: jest.fn(() => Promise.resolve()),
+    canOpenURL: jest.fn(() => Promise.resolve(true)),
+    openSettings: jest.fn(() => Promise.resolve()),
+  },
+}));
+
+jest.mock('expo-file-system', () => ({
+  cacheDirectory: 'file:///cache/',
+  getInfoAsync: jest.fn(() => Promise.resolve({ exists: false })),
+  deleteAsync: jest.fn(() => Promise.resolve()),
+  createDownloadResumable: jest.fn(),
+}));
+
 import { isValidHexColor, remoteConfigService } from '../src/services/remoteConfig/remoteConfigService';
 import { isAllowedApkHost } from '../src/services/updater/appUpdateService';
 
