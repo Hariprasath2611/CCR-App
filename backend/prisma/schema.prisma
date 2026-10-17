@@ -136,3 +136,34 @@ model ConsolidatedReport {
   hodRemarks      String?
   approvedAt      String?
 }
+
+model AppRelease {
+  id                      String   @id @default(uuid()) @map("_id")
+  latestVersionName       String
+  latestVersionCode       Int
+  minSupportedVersionCode Int
+  apkUrl                  String
+  apkSha256               String
+  apkSizeBytes            Int?
+  releaseNotes            String[]
+  channel                 String   @default("stable")
+  publishedAt             DateTime @default(now())
+  createdAt               DateTime @default(now())
+}
+
+model AppConfig {
+  id                      String   @id @default(uuid()) @map("_id")
+  configVersion           Int      @default(1)
+  configJson              String
+  updatedAt               DateTime @updatedAt
+  createdAt               DateTime @default(now())
+}
+
+model AdminAuditLog {
+  id                      String   @id @default(uuid()) @map("_id")
+  action                  String
+  ip                      String?
+  userAgent               String?
+  details                 String?
+  createdAt               DateTime @default(now())
+}
