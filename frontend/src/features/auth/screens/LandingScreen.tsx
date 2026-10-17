@@ -15,6 +15,7 @@ import {
   Animated,
   Platform,
   AccessibilityInfo,
+  Easing,
 } from 'react-native';
 import Svg, { Polygon, Circle, Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
