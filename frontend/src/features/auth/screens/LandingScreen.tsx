@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -11,8 +11,9 @@ import {
   StatusBar,
   ScrollView,
   AppState,
-  Image,
+  LayoutChangeEvent,
 } from 'react-native';
+import Svg, { Polygon } from 'react-native-svg';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@navigation/types';
@@ -23,7 +24,7 @@ import { ENV } from '@config/env';
 import { DayRibbonColors, DayRibbonFonts } from '@theme/dayRibbon';
 import { useAuthStore } from '@features/auth/store/useAuthStore';
 
-const { width } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type NavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Landing'>;
 
@@ -35,11 +36,12 @@ export const LandingScreen = () => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [serverUrl, setServerUrl] = useState('');
+  const [buttonWidth, setButtonWidth] = useState(SCREEN_WIDTH - 40);
 
   // Auto-skip Landing screen if a valid session exists
   useEffect(() => {
     if (accessToken && user) {
-      // The RootNavigator will automatically route to the appropriate role dashboard
+      // The RootNavigator handles rendering the role dashboard automatically
     }
   }, [accessToken, user]);
 
@@ -86,12 +88,12 @@ export const LandingScreen = () => {
     }
   };
 
-  // Compute dynamic formatted date string: "TODAY - Monday 17 Oct"
+  // Format real current date matching Photo 2: "TODAY · FRI 16 OCT"
   const formatToday = (d: Date) => {
-    const dayName = d.toLocaleDateString('en-US', { weekday: 'long' });
+    const dayName = d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
     const dayNum = d.getDate();
-    const monthName = d.toLocaleDateString('en-US', { month: 'short' });
-    return `TODAY — ${dayName} ${dayNum} ${monthName}`;
+    const monthName = d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+    return `TODAY · ${dayName} ${dayNum} ${monthName}`;
   };
 
   const [todayString, setTodayString] = useState(() => formatToday(new Date()));
@@ -123,6 +125,16 @@ export const LandingScreen = () => {
     }
   }, [isFocused]);
 
+  const handleButtonLayout = (e: LayoutChangeEvent) => {
+    const w = e.nativeEvent.layout.width;
+    if (w > 0 && Math.abs(w - buttonWidth) > 1) {
+      setButtonWidth(w);
+    }
+  };
+
+  const btnH = 54;
+  const notchDepth = 18;
+
   return (
     <View style={[styles.container, { paddingTop: Math.max(insets.top, 16), paddingBottom: Math.max(insets.bottom, 12) }]}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -132,7 +144,7 @@ export const LandingScreen = () => {
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
-        {/* Top Row: "JEC ACADEMICS" (blue, tracked) + Settings Button (44x44) */}
+        {/* ── TOP ROW: "JEC ACADEMICS" + SETTINGS BUTTON ── */}
         <View style={styles.topRow}>
           <Text style={styles.topRowBrand}>JEC ACADEMICS</Text>
 
@@ -147,17 +159,17 @@ export const LandingScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Date Pill: White outlined pill showing "TODAY — <real current weekday, date, month>" */}
+        {/* ── DATE PILL: "TODAY · FRI 16 OCT" ── */}
         <View style={styles.todayPillWrapper}>
           <View style={styles.todayPill}>
             <Text style={styles.todayPillText}>{todayString}</Text>
           </View>
         </View>
 
-        {/* Four Tilted Ribbons (-12deg, overflow hidden, bleeding off edges) */}
+        {/* ── FOUR TILTED RIBBONS (-11.5deg) WITH ALL 3 WORDS PER RIBBON VISIBLE ── */}
         <View style={styles.ribbonsContainer} pointerEvents="none">
           <View style={styles.ribbonsSlantedStack}>
-            {/* Ribbon 1: Blue */}
+            {/* Ribbon 1: Royal Blue with SYLLABUS · TOPICS · LESSONS */}
             <View style={[styles.ribbonStrip, { backgroundColor: DayRibbonColors.blue }]}>
               <View style={styles.ribbonWordsRow}>
                 <Text style={styles.ribbonWordLight}>SYLLABUS</Text>
@@ -166,7 +178,7 @@ export const LandingScreen = () => {
               </View>
             </View>
 
-            {/* Ribbon 2: Amber */}
+            {/* Ribbon 2: Amber with PLANNED · TAUGHT · COVERED */}
             <View style={[styles.ribbonStrip, { backgroundColor: DayRibbonColors.amber }]}>
               <View style={styles.ribbonWordsRow}>
                 <Text style={styles.ribbonWordDark}>PLANNED</Text>
@@ -175,7 +187,7 @@ export const LandingScreen = () => {
               </View>
             </View>
 
-            {/* Ribbon 3: Coral */}
+            {/* Ribbon 3: Coral with TRACK · REVIEW · IMPROVE */}
             <View style={[styles.ribbonStrip, { backgroundColor: DayRibbonColors.coral }]}>
               <View style={styles.ribbonWordsRow}>
                 <Text style={styles.ribbonWordDark}>TRACK</Text>
@@ -184,7 +196,7 @@ export const LandingScreen = () => {
               </View>
             </View>
 
-            {/* Ribbon 4: Mint */}
+            {/* Ribbon 4: Mint with FACULTY · COURSES · REPORTS */}
             <View style={[styles.ribbonStrip, { backgroundColor: DayRibbonColors.mint }]}>
               <View style={styles.ribbonWordsRow}>
                 <Text style={styles.ribbonWordDark}>FACULTY</Text>
@@ -195,60 +207,54 @@ export const LandingScreen = () => {
           </View>
         </View>
 
-        {/* Hero Branding: Crest + College Name + Heading + Sub-line */}
+        {/* ── HERO TEXT: COLLEGE EYEBROW + MASSIVE HEADLINE + SUBLINE ── */}
         <View style={styles.heroSection}>
-          <View style={styles.crestRow}>
-            <Image
-              source={require('../../../assets/logo-removebg-preview.png')}
-              style={styles.crestImage}
-              resizeMode="contain"
-            />
-            <View style={styles.collegeNameWrap}>
-              <Text style={styles.collegeNameText}>JAYA ENGINEERING COLLEGE</Text>
-              <Text style={styles.collegeSubText}>CHENNAI · ANNA UNIVERSITY AFFILIATED</Text>
-            </View>
-          </View>
+          <Text style={styles.collegeEyebrow}>JAYA ENGINEERING COLLEGE</Text>
 
           <View style={styles.headingBlock}>
-            <Text style={styles.headingLine}>Course</Text>
+            <Text style={styles.headingLineDark}>Course</Text>
             <Text style={styles.headingLineBlue}>Coverage</Text>
-            <Text style={styles.headingLine}>Report</Text>
+            <Text style={styles.headingLineDark}>Report</Text>
           </View>
 
           <Text style={styles.sublineText}>
-            Continuous syllabus tracking and curriculum monitoring, one day at a time.
+            Continuous syllabus tracking and{'\n'}curriculum monitoring, one day at a time.
           </Text>
         </View>
 
-        {/* Full-width Amber Notched Ribbon Button "Get Started" + Arrow */}
+        {/* ── NOTCHED RIBBON BUTTON "GET STARTED" WITH SWALLOWTAIL ENDS ── */}
         <View style={styles.ctaSection}>
           <TouchableOpacity
-            style={styles.notchedRibbonButton}
+            style={styles.notchedButtonContainer}
             onPress={() => navigation.navigate('Login')}
-            activeOpacity={0.85}
+            onLayout={handleButtonLayout}
+            activeOpacity={0.88}
             accessibilityRole="button"
             accessibilityLabel="Get Started"
           >
-            {/* Left Notch Triangle Cutout */}
-            <View style={styles.notchCutoutLeft} />
+            {/* SVG Polygon Ribbon with Swallowtail Notches on Left and Right */}
+            <Svg width={buttonWidth} height={btnH} viewBox={`0 0 ${buttonWidth} ${btnH}`}>
+              <Polygon
+                points={`0,0 ${buttonWidth},0 ${buttonWidth - notchDepth},${btnH / 2} ${buttonWidth},${btnH} 0,${btnH} ${notchDepth},${btnH / 2}`}
+                fill={DayRibbonColors.amber}
+              />
+            </Svg>
 
-            <View style={styles.buttonContentRow}>
+            {/* Centered Button Content */}
+            <View style={styles.notchedButtonContent} pointerEvents="none">
               <Text style={styles.notchedButtonText}>Get Started</Text>
-              <Feather name="arrow-right" size={20} color={DayRibbonColors.ink} />
+              <Feather name="arrow-right" size={20} color={DayRibbonColors.ink} style={{ marginLeft: 8 }} />
             </View>
-
-            {/* Right Notch Triangle Cutout */}
-            <View style={styles.notchCutoutRight} />
           </TouchableOpacity>
 
           {/* Footer Text */}
           <Text style={styles.footerText}>
-            Official Institutional Platform — Anna University Affiliated
+            Official Institutional Platform · Anna University Affiliated
           </Text>
         </View>
       </ScrollView>
 
-      {/* Server Settings Modal */}
+      {/* ── SERVER CONFIGURATION MODAL ── */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -319,7 +325,7 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
 
-  // Top Row: "JEC ACADEMICS" (blue, tracked) + settings button (44x44)
+  // Top Row: "JEC ACADEMICS" + Settings button
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -329,194 +335,150 @@ const styles = StyleSheet.create({
   },
   topRowBrand: {
     fontFamily: DayRibbonFonts.body700,
-    fontSize: 12,
-    letterSpacing: 1.5,
+    fontSize: 12.5,
+    letterSpacing: 1.4,
     color: DayRibbonColors.blue,
   },
   settingsButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
     alignItems: 'center',
     justifyContent: 'center',
   },
 
-  // Outlined Date Pill
+  // Date Pill: "TODAY · FRI 16 OCT"
   todayPillWrapper: {
     alignItems: 'flex-start',
-    marginBottom: 16,
+    marginBottom: 14,
   },
   todayPill: {
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     paddingVertical: 7,
     borderRadius: 999,
     borderWidth: 1.2,
-    borderColor: DayRibbonColors.border,
+    borderColor: DayRibbonColors.ink,
     backgroundColor: '#FFFFFF',
   },
   todayPillText: {
-    fontFamily: DayRibbonFonts.body600,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 11.5,
-    letterSpacing: 0.6,
-    color: DayRibbonColors.muted,
+    letterSpacing: 0.8,
+    color: DayRibbonColors.ink,
     textTransform: 'uppercase',
   },
 
-  // Four Tilted Ribbons (-12deg, overflow hidden, bleeding off edges)
+  // Four Tilted Ribbons (-11.5deg)
   ribbonsContainer: {
-    height: 140,
+    height: 160,
     overflow: 'hidden',
     marginHorizontal: -24,
-    marginVertical: 10,
+    marginVertical: 4,
     justifyContent: 'center',
   },
   ribbonsSlantedStack: {
-    transform: [{ rotate: '-12deg' }, { scale: 1.25 }],
-    width: '130%',
+    transform: [{ rotate: '-11.5deg' }],
+    width: SCREEN_WIDTH * 1.35,
     alignSelf: 'center',
   },
   ribbonStrip: {
-    height: 27,
+    height: 35,
     justifyContent: 'center',
-    marginVertical: 1.5,
+    alignItems: 'center',
+    marginVertical: 0.5,
   },
   ribbonWordsRow: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 28,
+    width: SCREEN_WIDTH * 0.96, // Keeps all three words fully inside the visible screen bounds!
   },
   ribbonWordLight: {
-    fontFamily: DayRibbonFonts.body700,
-    fontSize: 11,
-    letterSpacing: 1.2,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 18.5,
+    letterSpacing: 1,
     color: '#FFFFFF',
   },
   ribbonWordDark: {
-    fontFamily: DayRibbonFonts.body700,
-    fontSize: 11,
-    letterSpacing: 1.2,
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 18.5,
+    letterSpacing: 1,
     color: DayRibbonColors.ink,
   },
 
   // Hero Section
   heroSection: {
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  crestRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginTop: 8,
     marginBottom: 16,
   },
-  crestImage: {
-    width: 44,
-    height: 44,
-    marginRight: 12,
-  },
-  collegeNameWrap: {
-    flex: 1,
-  },
-  collegeNameText: {
+  collegeEyebrow: {
     fontFamily: DayRibbonFonts.body700,
-    fontSize: 13,
-    letterSpacing: 0.8,
-    color: DayRibbonColors.ink,
-  },
-  collegeSubText: {
-    fontFamily: DayRibbonFonts.body500,
-    fontSize: 11,
+    fontSize: 12.5,
+    letterSpacing: 1.2,
     color: DayRibbonColors.muted,
-    marginTop: 1,
+    marginBottom: 8,
+    textTransform: 'uppercase',
   },
   headingBlock: {
     marginBottom: 12,
   },
-  headingLine: {
+  headingLineDark: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 42,
-    lineHeight: 46,
-    letterSpacing: -0.5,
+    fontSize: 54,
+    lineHeight: 54,
+    letterSpacing: -1,
     color: DayRibbonColors.ink,
   },
   headingLineBlue: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 42,
-    lineHeight: 46,
-    letterSpacing: -0.5,
+    fontSize: 54,
+    lineHeight: 54,
+    letterSpacing: -1,
     color: DayRibbonColors.blue,
   },
   sublineText: {
     fontFamily: DayRibbonFonts.body500,
     fontSize: 14.5,
-    lineHeight: 21,
+    lineHeight: 22,
     color: DayRibbonColors.muted,
-    maxWidth: '92%',
   },
 
-  // Bottom CTA: Full-width Amber Notched Ribbon Button
+  // Bottom CTA: Notched Ribbon Button with Swallowtail Ends
   ctaSection: {
     width: '100%',
     marginTop: 8,
   },
-  notchedRibbonButton: {
+  notchedButtonContainer: {
+    width: '100%',
+    height: 54,
     position: 'relative',
-    height: 52,
-    backgroundColor: DayRibbonColors.amber, // #FFB020
-    justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 4,
-    overflow: 'hidden',
+    justifyContent: 'center',
   },
-  notchCutoutLeft: {
+  notchedButtonContent: {
     position: 'absolute',
-    left: 0,
-    top: 0,
-    width: 0,
-    height: 0,
-    borderStyle: 'solid',
-    borderTopWidth: 26,
-    borderBottomWidth: 26,
-    borderLeftWidth: 18,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderLeftColor: DayRibbonColors.pageBg, // swallowtail cutout matching page-bg
-  },
-  notchCutoutRight: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    width: 0,
-    height: 0,
-    borderStyle: 'solid',
-    borderTopWidth: 26,
-    borderBottomWidth: 26,
-    borderRightWidth: 18,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderRightColor: DayRibbonColors.pageBg, // swallowtail cutout matching page-bg
-  },
-  buttonContentRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
   },
   notchedButtonText: {
     fontFamily: DayRibbonFonts.body700,
-    fontSize: 16,
+    fontSize: 17,
     letterSpacing: 0.3,
     color: DayRibbonColors.ink,
   },
   footerText: {
     fontFamily: DayRibbonFonts.body500,
-    fontSize: 11,
+    fontSize: 11.5,
     color: DayRibbonColors.muted,
     textAlign: 'center',
     marginTop: 14,
   },
 
-  // Modal Styles
+  // Modal
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(14, 16, 48, 0.55)',
