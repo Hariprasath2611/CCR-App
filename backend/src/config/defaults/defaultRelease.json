@@ -1,0 +1,15 @@
+{
+  "latestVersionName": "1.0.0",
+  "latestVersionCode": 1,
+  "minSupportedVersionCode": 1,
+  "apkUrl": "https://github.com/Hariprasath2611/CCR-App/releases/download/v1.0.0/app-release.apk",
+  "apkSha256": "a34ff6fa45758d78de4e8f8bc27f60b6d681f07cb4fa6ea202ab1886ce8f0636",
+  "apkSizeBytes": 90535979,
+  "releaseNotes": [
+    "Initial production release of CCR Management System",
+    "Real-time syllabus tracking and offline synchronization",
+    "Consolidated report generation and PDF exports"
+  ],
+  "channel": "stable",
+  "publishedAt": "2026-10-17T12:00:00.000Z"
+}
