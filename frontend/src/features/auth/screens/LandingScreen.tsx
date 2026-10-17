@@ -88,7 +88,7 @@ export const LandingScreen = () => {
     }
   };
 
-  // Format real current date matching Photo 2: "TODAY · FRI 16 OCT"
+  // Format real date matching Photo 2: "TODAY · FRI 16 OCT"
   const formatToday = (d: Date) => {
     const dayName = d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
     const dayNum = d.getDate();
@@ -144,7 +144,7 @@ export const LandingScreen = () => {
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
-        {/* ── TOP ROW: "JEC ACADEMICS" + SETTINGS BUTTON ── */}
+        {/* ── TOP ROW: "JEC ACADEMICS" + SETTINGS BUTTON (44x44) ── */}
         <View style={styles.topRow}>
           <Text style={styles.topRowBrand}>JEC ACADEMICS</Text>
 
@@ -166,7 +166,7 @@ export const LandingScreen = () => {
           </View>
         </View>
 
-        {/* ── FOUR TILTED RIBBONS (-11.5deg) WITH ALL 3 WORDS PER RIBBON VISIBLE ── */}
+        {/* ── FOUR TILTED RIBBONS: BLEEDING SIDES, ZERO TOP/BOTTOM CLIPPING ── */}
         <View style={styles.ribbonsContainer} pointerEvents="none">
           <View style={styles.ribbonsSlantedStack}>
             {/* Ribbon 1: Royal Blue with SYLLABUS · TOPICS · LESSONS */}
@@ -240,10 +240,10 @@ export const LandingScreen = () => {
               />
             </Svg>
 
-            {/* Centered Button Content */}
+            {/* Button Content: "Get Started" on Left, Arrow on Right */}
             <View style={styles.notchedButtonContent} pointerEvents="none">
               <Text style={styles.notchedButtonText}>Get Started</Text>
-              <Feather name="arrow-right" size={20} color={DayRibbonColors.ink} style={{ marginLeft: 8 }} />
+              <Feather name="arrow-right" size={22} color={DayRibbonColors.ink} />
             </View>
           </TouchableOpacity>
 
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 20,
     justifyContent: 'space-between',
-    paddingBottom: 24,
+    paddingBottom: 20,
   },
 
   // Top Row: "JEC ACADEMICS" + Settings button
@@ -330,13 +330,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 4,
-    marginBottom: 12,
+    marginTop: 2,
+    marginBottom: 10,
   },
   topRowBrand: {
     fontFamily: DayRibbonFonts.body700,
     fontSize: 12.5,
-    letterSpacing: 1.4,
+    letterSpacing: 1.5,
     color: DayRibbonColors.blue,
   },
   settingsButton: {
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: '#D5D8F5',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
   // Date Pill: "TODAY · FRI 16 OCT"
   todayPillWrapper: {
     alignItems: 'flex-start',
-    marginBottom: 14,
+    marginBottom: 4,
   },
   todayPill: {
     paddingHorizontal: 16,
@@ -371,21 +371,23 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
-  // Four Tilted Ribbons (-11.5deg)
+  // Four Tilted Ribbons: height 230 to prevent horizontal top/bottom clipping!
   ribbonsContainer: {
-    height: 160,
+    height: 226,
     overflow: 'hidden',
     marginHorizontal: -24,
-    marginVertical: 4,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   ribbonsSlantedStack: {
-    transform: [{ rotate: '-11.5deg' }],
+    transform: [{ rotate: '-10.5deg' }],
     width: SCREEN_WIDTH * 1.35,
-    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   ribbonStrip: {
     height: 35,
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 0.5,
@@ -394,56 +396,56 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: SCREEN_WIDTH * 0.96, // Keeps all three words fully inside the visible screen bounds!
+    width: SCREEN_WIDTH * 0.90, // Exactly framed inside the phone screen margins
   },
   ribbonWordLight: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 18.5,
-    letterSpacing: 1,
+    fontSize: 17,
+    letterSpacing: 1.2,
     color: '#FFFFFF',
   },
   ribbonWordDark: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 18.5,
-    letterSpacing: 1,
+    fontSize: 17,
+    letterSpacing: 1.2,
     color: DayRibbonColors.ink,
   },
 
   // Hero Section
   heroSection: {
-    marginTop: 8,
+    marginTop: -4,
     marginBottom: 16,
   },
   collegeEyebrow: {
     fontFamily: DayRibbonFonts.body700,
-    fontSize: 12.5,
+    fontSize: 13,
     letterSpacing: 1.2,
-    color: DayRibbonColors.muted,
-    marginBottom: 8,
+    color: '#4A4E86',
+    marginBottom: 6,
     textTransform: 'uppercase',
   },
   headingBlock: {
-    marginBottom: 12,
+    marginBottom: 10,
   },
   headingLineDark: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 54,
-    lineHeight: 54,
-    letterSpacing: -1,
+    fontSize: 58,
+    lineHeight: 58,
+    letterSpacing: -1.5,
     color: DayRibbonColors.ink,
   },
   headingLineBlue: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 54,
-    lineHeight: 54,
-    letterSpacing: -1,
+    fontSize: 58,
+    lineHeight: 58,
+    letterSpacing: -1.5,
     color: DayRibbonColors.blue,
   },
   sublineText: {
     fontFamily: DayRibbonFonts.body500,
     fontSize: 14.5,
     lineHeight: 22,
-    color: DayRibbonColors.muted,
+    color: '#4A4E86',
   },
 
   // Bottom CTA: Notched Ribbon Button with Swallowtail Ends
@@ -460,20 +462,23 @@ const styles = StyleSheet.create({
   },
   notchedButtonContent: {
     position: 'absolute',
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 36, // Text on left, arrow on right inside the notches
   },
   notchedButtonText: {
     fontFamily: DayRibbonFonts.body700,
-    fontSize: 17,
+    fontSize: 17.5,
     letterSpacing: 0.3,
     color: DayRibbonColors.ink,
   },
   footerText: {
     fontFamily: DayRibbonFonts.body500,
     fontSize: 11.5,
-    color: DayRibbonColors.muted,
+    color: '#5A5E96',
     textAlign: 'center',
     marginTop: 14,
   },
