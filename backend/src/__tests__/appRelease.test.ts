@@ -211,6 +211,47 @@ function test(name: string, fn: () => void) {
     }
   });
 
+  // ── TEST SUITE 5: BACKWARD COMPATIBILITY OF ROUTE ALIASES ──
+  console.log('\n📌 Testing Route Aliases (/api/v1 and /v1):');
+
+  await testAsync('Both /api/v1/app/version and /v1/app/version respond with 200 and version data', async () => {
+    const app = (await import('../app')).default;
+    const http = await import('http');
+
+    const server = http.createServer(app);
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    const port = (server.address() as any).port;
+
+    const fetchJson = (pathStr: string): Promise<any> => {
+      return new Promise((resolve, reject) => {
+        http.get(`http://127.0.0.1:${port}${pathStr}`, (res) => {
+          let body = '';
+          res.on('data', (d) => (body += d));
+          res.on('end', () => {
+            if (res.statusCode !== 200) {
+              return reject(new Error(`Expected 200 from ${pathStr}, got ${res.statusCode}`));
+            }
+            resolve(JSON.parse(body));
+          });
+        }).on('error', reject);
+      });
+    };
+
+    try {
+      const v1Data = await fetchJson('/v1/app/version');
+      const apiV1Data = await fetchJson('/api/v1/app/version');
+
+      assert.strictEqual(v1Data.latestVersionCode, apiV1Data.latestVersionCode);
+      assert.strictEqual(v1Data.latestVersionName, apiV1Data.latestVersionName);
+
+      const v1Config = await fetchJson('/v1/app/config');
+      const apiV1Config = await fetchJson('/api/v1/app/config');
+      assert.strictEqual(v1Config.configVersion, apiV1Config.configVersion);
+    } finally {
+      server.close();
+    }
+  });
+
   console.log(`\n======================================================`);
   console.log(`📊 App Release Suite Result: ${passedTests} / ${totalTests} Passed (${Math.round((passedTests / totalTests) * 100)}%)`);
   console.log(`======================================================\n`);
