@@ -23,13 +23,14 @@ export const DayRibbonColors = {
   inactiveAccent: '#C9CCF0',
   inactiveLabel: '#5A5E96',
 
-  // Legacy aliases for backward compatibility
+  // Aliases for compatibility
   bg: '#FFFFFF',
   surface: '#FFFFFF',
   cobalt: '#2B35E0',
   lemon: '#FFB020',
   line: '#D5D8F5',
   mutedSoft: '#7B7FB5',
+  dashed: '#B9C0EE',
   white: '#FFFFFF',
   warn: '#FF5D73',
   warnBg: '#FFF0F2',
@@ -54,6 +55,10 @@ export const DayRibbonSpacing = {
   xxl: 40,
   xxxl: 48,
   screenHorizontal: 20,
+  screenTop: 16,
+  topSafeArea: 16,
+  blockGap: 16,
+  screenBottom: 24,
 } as const;
 
 export const DayRibbonRadii = {
@@ -61,6 +66,58 @@ export const DayRibbonRadii = {
   sheet: 28,
   pill: 999,
   card: 16,
+} as const;
+
+export const DayRibbonType = {
+  heroNumeral: {
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 92,
+    lineHeight: 96,
+    color: DayRibbonColors.ink,
+  },
+  pageTitle: {
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 30,
+    lineHeight: 36,
+    color: DayRibbonColors.ink,
+  },
+  periodNumber: {
+    fontFamily: DayRibbonFonts.display,
+    fontSize: 34,
+    lineHeight: 38,
+    color: DayRibbonColors.ink,
+  },
+  cardTitle: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 16,
+    lineHeight: 22,
+    color: DayRibbonColors.ink,
+  },
+  body: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 14,
+    lineHeight: 20,
+    color: DayRibbonColors.ink,
+  },
+  bodySmall: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 13,
+    lineHeight: 18,
+    color: DayRibbonColors.ink,
+  },
+  caption: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 11,
+    lineHeight: 14,
+    letterSpacing: 0.5,
+    color: DayRibbonColors.muted,
+    textTransform: 'uppercase' as const,
+  },
+  buttonText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    letterSpacing: 0.5,
+  },
 } as const;
 
 export const DayRibbonShapes = {
