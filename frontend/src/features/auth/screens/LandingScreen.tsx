@@ -698,9 +698,10 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   headerBrand: {
-    fontFamily: DayRibbonFonts.body600,
-    fontSize: 12,
-    letterSpacing: 1.68, // .14em of 12px
+    fontFamily: DayRibbonFonts.body700,
+    fontWeight: '700',
+    fontSize: 15,
+    letterSpacing: 1.8,
     color: DayRibbonColors.blue,
     textTransform: 'uppercase',
   },
