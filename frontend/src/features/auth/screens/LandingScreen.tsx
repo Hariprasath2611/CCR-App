@@ -523,7 +523,7 @@ export const LandingScreen = () => {
               </View>
             </View>
 
-            {/* Four tilted ribbons: 1200px wide, 56px high, rotate(-12deg), stacked 58px apart */}
+            {/* Four tilted ribbons: alternating directions: Row 1 RIGHT, Row 2 LEFT, Row 3 RIGHT, Row 4 LEFT */}
             <View style={styles.ribbonsSlantedStack} pointerEvents="none">
               <TiltedRibbonStrip
                 color={DayRibbonColors.blue}
@@ -531,6 +531,7 @@ export const LandingScreen = () => {
                 word2="TOPICS"
                 word3="LESSONS"
                 textColor="#FFFFFF"
+                direction="right"
                 speed={8500}
               />
               <TiltedRibbonStrip
@@ -539,7 +540,8 @@ export const LandingScreen = () => {
                 word2="TAUGHT"
                 word3="COVERED"
                 textColor={DayRibbonColors.ink}
-                speed={7800}
+                direction="left"
+                speed={8500}
               />
               <TiltedRibbonStrip
                 color={DayRibbonColors.coral}
@@ -547,7 +549,8 @@ export const LandingScreen = () => {
                 word2="REVIEW"
                 word3="IMPROVE"
                 textColor={DayRibbonColors.ink}
-                speed={9200}
+                direction="right"
+                speed={8500}
               />
               <TiltedRibbonStrip
                 color={DayRibbonColors.mint}
@@ -555,7 +558,8 @@ export const LandingScreen = () => {
                 word2="COURSES"
                 word3="REPORTS"
                 textColor={DayRibbonColors.ink}
-                speed={8200}
+                direction="left"
+                speed={8500}
               />
             </View>
           </View>
