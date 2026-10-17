@@ -173,7 +173,7 @@ function test(name: string, fn: () => void) {
   console.log('\n📌 Testing Reversibility and Rollback:');
 
   await testAsync('Release Rollback restores previous state', async () => {
-    AppReleaseService._resetForTesting();
+    await AppReleaseService._resetForTesting();
 
     // 1. Initial state is 1.0.0 (code 1)
     const initial = await AppReleaseService.getVersion({ platform: 'android', versionCode: 1, channel: 'stable' });
@@ -202,7 +202,7 @@ function test(name: string, fn: () => void) {
   });
 
   await testAsync('Rollback throws error when no previous state exists', async () => {
-    AppReleaseService._resetForTesting();
+    await AppReleaseService._resetForTesting();
     try {
       await AppReleaseService.rollback('release');
       assert.fail('Should have thrown an error');
