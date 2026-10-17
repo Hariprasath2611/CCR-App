@@ -4784,3 +4784,23 @@
 {"_e":"metro:bundling:progress","_t":1792166444277,"id":"4","progress":0.87890625,"total":16,"current":15}
 {"_e":"metro:bundling:progress","_t":1792166444692,"id":"4","progress":0.999,"total":16,"current":16}
 {"_e":"metro:bundling:done","_t":1792166444723,"id":"4","total":16,"ms":4576.503}
+{"_e":"metro:bundling:started","_t":1792166733039,"id":"d","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1792166733039,"id":"d","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1792166733154,"id":"d","total":1,"ms":115.1868}
+{"_e":"metro:bundling:started","_t":1792166734063,"id":"f","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:client_log","_t":1792166734134,"level":"log","data":["Running application \"main\" with appParams:\n","{\"hydrate\": undefined, \"rootTag\": \"#root\"}","\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF."]}
+{"_e":"metro:bundling:started","_t":1792166734203,"id":"g","platform":"web","environment":null,"entry":"node_modules\\expo-sqlite\\web\\worker.ts"}
+{"_e":"metro:bundling:progress","_t":1792166734204,"id":"g","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792166734204,"id":"g","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792166734310,"id":"g","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792166734767,"id":"g","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792166735021,"id":"g","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1792166735195,"id":"g","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1792166735237,"id":"g","total":1,"ms":1033.602}
+{"_e":"root:init","_t":1792214061268,"format":"v0-jsonl","version":"57.0.31"}
+{"_e":"env:mode","_t":1792214061270,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1792214061271,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1792214061728,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1792214062260,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1792214062722,"plugins":[{"packageName":"expo-sqlite","bannerTitle":"expo-sqlite","cliBanner":false,"webpageEndpoint":"/_expo/plugins/expo-sqlite"}]}
+{"_e":"metro:instantiate","_t":1792214066142,"atlas":false,"workers":8,"host":"::","port":8081}
