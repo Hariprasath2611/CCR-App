@@ -112,8 +112,8 @@ const RoleBookmarkRibbon = ({ color = '#10B981' }: { color?: string }) => {
 
 export const LoginScreen = () => {
   const insets = useSafeAreaInsets();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('punitha@ccms.edu');
+  const [password, setPassword] = useState('password123');
   const [secureText, setSecureText] = useState(true);
   const [rememberMe, setRememberMe] = useState(true);
   const [isEmailFocused, setIsEmailFocused] = useState(false);
@@ -133,6 +133,7 @@ export const LoginScreen = () => {
         const savedPref = await AsyncStorage.getItem('ccr_remember_me_preference');
         if (savedEmail) {
           setEmail(savedEmail);
+          setPassword('password123');
         }
         if (savedPref !== null) {
           setRememberMe(savedPref === 'true');
@@ -978,11 +979,13 @@ export const LoginScreen = () => {
         await AsyncStorage.setItem('ccr_remember_me_preference', 'false');
       }
 
+      let cleanPassword = password.trim();
+
       let response;
       try {
         response = await apiClient.post('/auth/login', {
           email: cleanEmail,
-          password,
+          password: cleanPassword,
         });
       } catch (authErr: any) {
         // Fallback domain swap if user entered @ccr.edu instead of @ccms.edu or vice versa
@@ -996,7 +999,7 @@ export const LoginScreen = () => {
         if (fallbackEmail) {
           response = await apiClient.post('/auth/login', {
             email: fallbackEmail,
-            password,
+            password: cleanPassword,
           });
           cleanEmail = fallbackEmail;
         } else {
@@ -1016,8 +1019,8 @@ export const LoginScreen = () => {
       }
       login(userSession, accessToken, refreshToken, rememberMe);
     } catch (error: any) {
-      const errMsg = error.response?.data?.error || error.message || 'Could not authenticate with the server. Please check your credentials and connection.';
-      Alert.alert('Login Failed', errMsg);
+      const errMsg = error.response?.data?.error || error.message || 'Could not authenticate with the server.';
+      Alert.alert('Login Failed', `${errMsg}\n\nNote: Default password for seeded accounts is 'password123'.`);
     } finally {
       setIsLoading(false);
     }
