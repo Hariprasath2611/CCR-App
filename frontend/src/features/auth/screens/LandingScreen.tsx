@@ -354,34 +354,17 @@ export const LandingScreen = () => {
 
   // Animation values for entrance motions
   const fadeAnim = useRef(new Animated.Value(1)).current;
-  const ribbonSlide1 = useRef(new Animated.Value(0)).current;
-  const ribbonSlide2 = useRef(new Animated.Value(0)).current;
-  const ribbonSlide3 = useRef(new Animated.Value(0)).current;
-  const ribbonSlide4 = useRef(new Animated.Value(0)).current;
 
-  // Staggered entrance animation with prefers-reduced-motion check
+  // Fade-in entrance animation with prefers-reduced-motion check
   useEffect(() => {
     AccessibilityInfo.isReduceMotionEnabled().then((reducedMotion) => {
       if (!reducedMotion) {
         fadeAnim.setValue(0);
-        ribbonSlide1.setValue(-80);
-        ribbonSlide2.setValue(80);
-        ribbonSlide3.setValue(-80);
-        ribbonSlide4.setValue(80);
-
-        Animated.parallel([
-          Animated.timing(fadeAnim, {
-            toValue: 1,
-            duration: 400,
-            useNativeDriver: true,
-          }),
-          Animated.stagger(60, [
-            Animated.timing(ribbonSlide1, { toValue: 0, duration: 350, useNativeDriver: true }),
-            Animated.timing(ribbonSlide2, { toValue: 0, duration: 350, useNativeDriver: true }),
-            Animated.timing(ribbonSlide3, { toValue: 0, duration: 350, useNativeDriver: true }),
-            Animated.timing(ribbonSlide4, { toValue: 0, duration: 350, useNativeDriver: true }),
-          ]),
-        ]).start();
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 400,
+          useNativeDriver: true,
+        }).start();
       }
     });
   }, []);
