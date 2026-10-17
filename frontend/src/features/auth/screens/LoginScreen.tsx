@@ -24,6 +24,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@navigation/types';
 import { apiClient } from '@services/api/apiClient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ms } from '@theme/responsive';
 
@@ -31,7 +32,86 @@ const { height, width } = Dimensions.get('window');
 
 type NavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 
+const HangingRibbon = ({
+  width = 26,
+  height = 140,
+  color = '#FFA51E',
+  cutout = 14,
+}: {
+  width?: number;
+  height?: number;
+  color?: string;
+  cutout?: number;
+}) => {
+  return (
+    <View style={{ width, height, marginRight: 6 }}>
+      <View style={{ width, height: height - cutout, backgroundColor: color }} />
+      <View style={{ width, height: cutout, flexDirection: 'row' }}>
+        <View
+          style={{
+            width: 0,
+            height: 0,
+            borderStyle: 'solid',
+            borderLeftWidth: width / 2,
+            borderRightWidth: 0,
+            borderBottomWidth: cutout,
+            borderLeftColor: color,
+            borderBottomColor: 'transparent',
+          }}
+        />
+        <View
+          style={{
+            width: 0,
+            height: 0,
+            borderStyle: 'solid',
+            borderLeftWidth: 0,
+            borderRightWidth: width / 2,
+            borderBottomWidth: cutout,
+            borderRightColor: color,
+            borderBottomColor: 'transparent',
+          }}
+        />
+      </View>
+    </View>
+  );
+};
+
+const RoleBookmarkRibbon = ({ color = '#10B981' }: { color?: string }) => {
+  return (
+    <View style={{ width: 14, height: 32, marginRight: 12 }}>
+      <View style={{ width: 14, height: 24, backgroundColor: color }} />
+      <View style={{ width: 14, height: 8, flexDirection: 'row' }}>
+        <View
+          style={{
+            width: 0,
+            height: 0,
+            borderStyle: 'solid',
+            borderLeftWidth: 7,
+            borderRightWidth: 0,
+            borderBottomWidth: 8,
+            borderLeftColor: color,
+            borderBottomColor: 'transparent',
+          }}
+        />
+        <View
+          style={{
+            width: 0,
+            height: 0,
+            borderStyle: 'solid',
+            borderLeftWidth: 0,
+            borderRightWidth: 7,
+            borderBottomWidth: 8,
+            borderRightColor: color,
+            borderBottomColor: 'transparent',
+          }}
+        />
+      </View>
+    </View>
+  );
+};
+
 export const LoginScreen = () => {
+  const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [secureText, setSecureText] = useState(true);
@@ -836,6 +916,46 @@ export const LoginScreen = () => {
 
   const currentRoleInfo = detectRole(email);
 
+  const getRoleBookmarkData = () => {
+    if (currentRoleInfo.isCC) {
+      return {
+        title: 'Class Coordinator',
+        subtitle: currentRoleInfo.assignedClassId
+          ? `${currentRoleInfo.assignedClassId.includes('3rd') ? '3rd Year · ' : ''}${currentRoleInfo.assignedClassId.replace('3rd Year ', '')}`
+          : '3rd Year · CSE-A',
+        color: '#10B981',
+      };
+    }
+    if (currentRoleInfo.role === 'HOD') {
+      return {
+        title: 'Head of Department',
+        subtitle: 'HOD · Computer Science Engineering',
+        color: '#059669',
+      };
+    }
+    if (currentRoleInfo.role === 'ADMIN') {
+      return {
+        title: 'Principal',
+        subtitle: 'Executive Administration',
+        color: '#FFA51E',
+      };
+    }
+    if (email.trim().length > 0) {
+      return {
+        title: 'Subject Teacher',
+        subtitle: `${currentRoleInfo.name ? currentRoleInfo.name + ' · ' : ''}CSE Department`,
+        color: '#1E38E8',
+      };
+    }
+    return {
+      title: 'Institutional Account',
+      subtitle: 'Enter institutional email to verify credentials',
+      color: '#94A3B8',
+    };
+  };
+
+  const roleBookmark = getRoleBookmarkData();
+
   const handleLogin = async () => {
     if (!email) {
       Alert.alert('Validation', 'Please enter your email ID');
@@ -908,100 +1028,93 @@ export const LoginScreen = () => {
       style={styles.keyboardContainer}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <StatusBar barStyle="dark-content" backgroundColor={DayRibbonColors.bg} />
+      <StatusBar barStyle="light-content" backgroundColor="#1E38E8" />
 
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        bounces={false}
       >
-        <View style={styles.mainContainer}>
-          {/* Top Logo slot */}
+        {/* Top Royal Blue Section */}
+        <View style={[styles.topBlueSection, { paddingTop: Math.max(insets.top + 16, 44) }]}>
+          {/* Top Hanging Ribbons */}
+          <View style={styles.ribbonsCluster} pointerEvents="none">
+            <HangingRibbon width={26} height={185} color="#FFA51E" cutout={14} />
+            <HangingRibbon width={26} height={125} color="#FF4B72" cutout={14} />
+            <HangingRibbon width={26} height={155} color="#2CD4A0" cutout={14} />
+            <HangingRibbon width={26} height={105} color="#FFFFFF" cutout={14} />
+          </View>
+
+          {/* Logo & College Name */}
           <View style={styles.topLogoRow}>
             <View style={styles.logoFrame}>
-              <Image
-                source={require('../../../assets/logo-removebg-preview.png')}
-                style={styles.logo}
-                resizeMode="contain"
-              />
+              <Text style={styles.crestTextTop}>JEC</Text>
+              <Text style={styles.crestTextBottom}>CREST</Text>
             </View>
-            <View style={styles.collegeHeaderBox}>
-              <Text style={styles.collegeLabel}>JAYA ENGINEERING COLLEGE</Text>
-              <Text style={styles.appSystemLabel}>CCR ERP • COURSE COVERAGE SYSTEM</Text>
+            <View style={styles.collegeNameWrap}>
+              <Text style={styles.collegeNameTop}>JAYA ENGINEERING</Text>
+              <Text style={styles.collegeNameBottom}>COLLEGE</Text>
             </View>
           </View>
 
-          {/* Display-font headline */}
-          <View style={styles.headlineRow}>
+          {/* System Subtitle & Headline */}
+          <View style={styles.headlineBlock}>
+            <Text style={styles.systemSubtitle}>CCR ERP · COURSE COVERAGE SYSTEM</Text>
             <Text style={styles.displayHeadline}>Sign In</Text>
             <Text style={styles.headlineSubtitle}>Enter your institutional credentials to continue</Text>
           </View>
+        </View>
 
-          {/* Labelled Email Field */}
+        {/* Bottom White Card Sheet */}
+        <View style={styles.bottomWhiteCard}>
+          {/* Email Field */}
           <View style={styles.fieldGroup}>
             <Text style={styles.fieldLabel}>INSTITUTIONAL EMAIL</Text>
-            <View style={[styles.inputBox, isEmailFocused && styles.inputFocused]}>
+            <View style={[styles.underlineInputRow, isEmailFocused && styles.underlineInputRowFocused]}>
+              <Feather name="mail" size={19} color="#1E293B" />
               <TextInput
                 ref={emailRef}
-                style={styles.input}
+                style={styles.underlineInput}
                 placeholder="punitha@ccms.edu"
-                placeholderTextColor={DayRibbonColors.mutedSoft}
+                placeholderTextColor="#94A3B8"
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
                 keyboardType="email-address"
                 autoCorrect={false}
                 autoComplete="email"
-                selectionColor={DayRibbonColors.cobalt}
+                selectionColor="#1E38E8"
                 onFocus={() => setIsEmailFocused(true)}
                 onBlur={() => setIsEmailFocused(false)}
               />
             </View>
-            {email.trim().length > 3 && (
-              <View style={styles.rolePreviewPill}>
-                <Feather
-                  name={
-                    currentRoleInfo.isCC
-                      ? 'shield'
-                      : currentRoleInfo.role === 'HOD'
-                      ? 'award'
-                      : 'book-open'
-                  }
-                  size={12}
-                  color={currentRoleInfo.isCC ? DayRibbonColors.cobalt : currentRoleInfo.role === 'HOD' ? '#059669' : '#475569'}
-                />
-                <Text
-                  style={[
-                    styles.rolePreviewText,
-                    {
-                      color: currentRoleInfo.isCC
-                        ? DayRibbonColors.cobalt
-                        : currentRoleInfo.role === 'HOD'
-                        ? '#059669'
-                        : '#475569',
-                    },
-                  ]}
-                >
-                  Role: {currentRoleInfo.label}
-                </Text>
-              </View>
-            )}
           </View>
 
-          {/* Labelled Password Field */}
-          <View style={styles.fieldGroup}>
+          {/* Detected Role Bookmark Card */}
+          <View style={styles.roleBookmarkCard}>
+            <RoleBookmarkRibbon color={roleBookmark.color} />
+            <View style={styles.roleBookmarkTextWrap}>
+              <Text style={styles.roleBookmarkTitle}>{roleBookmark.title}</Text>
+              <Text style={styles.roleBookmarkSubtitle}>{roleBookmark.subtitle}</Text>
+            </View>
+          </View>
+
+          {/* Password Field */}
+          <View style={[styles.fieldGroup, { marginTop: 20 }]}>
             <Text style={styles.fieldLabel}>PASSWORD</Text>
-            <View style={[styles.inputBox, isPasswordFocused && styles.inputFocused]}>
+            <View style={[styles.underlineInputRow, isPasswordFocused && styles.underlineInputRowFocused]}>
+              <Feather name="lock" size={19} color="#1E293B" />
               <TextInput
                 ref={passwordRef}
-                style={styles.input}
-                placeholder="Enter password"
-                placeholderTextColor={DayRibbonColors.mutedSoft}
+                style={styles.underlineInput}
+                placeholder="•••••••••"
+                placeholderTextColor="#94A3B8"
                 secureTextEntry={secureText}
                 value={password}
                 onChangeText={setPassword}
                 autoCapitalize="none"
-                selectionColor={DayRibbonColors.cobalt}
+                selectionColor="#1E38E8"
                 onFocus={() => setIsPasswordFocused(true)}
                 onBlur={() => setIsPasswordFocused(false)}
               />
@@ -1012,9 +1125,9 @@ export const LoginScreen = () => {
                 accessibilityLabel="Toggle password visibility"
               >
                 <Feather
-                  name={secureText ? 'eye-off' : 'eye'}
-                  size={18}
-                  color={DayRibbonColors.muted}
+                  name={secureText ? 'eye' : 'eye-off'}
+                  size={19}
+                  color="#1E293B"
                 />
               </TouchableOpacity>
             </View>
@@ -1030,7 +1143,7 @@ export const LoginScreen = () => {
               accessibilityState={{ checked: rememberMe }}
             >
               <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
-                {rememberMe ? <Feather name="check" size={12} color={DayRibbonColors.white} /> : null}
+                {rememberMe ? <Feather name="check" size={13} color="#FFFFFF" /> : null}
               </View>
               <Text style={styles.rememberMeLabel}>Remember me</Text>
             </TouchableOpacity>
@@ -1043,27 +1156,28 @@ export const LoginScreen = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Full-width Cobalt Button */}
+          {/* Sign In Pill Button with Golden Circular Arrow */}
           <TouchableOpacity
-            style={styles.primaryButton}
+            style={styles.signInButton}
             onPress={handleLogin}
-            activeOpacity={0.8}
+            activeOpacity={0.85}
             disabled={isLoading}
             accessibilityRole="button"
           >
             {isLoading ? (
-              <ActivityIndicator color={DayRibbonColors.white} size="small" />
+              <ActivityIndicator color="#FFFFFF" size="small" style={{ marginLeft: 24 }} />
             ) : (
-              <Text style={styles.primaryButtonText}>Sign In</Text>
+              <Text style={styles.signInButtonText}>Sign In</Text>
             )}
+            <View style={styles.arrowCircle}>
+              <Feather name="arrow-right" size={20} color="#0D1126" />
+            </View>
           </TouchableOpacity>
 
           {/* Small muted help text */}
           <Text style={styles.helpText}>
             Authorized faculty & central administration audit access only
           </Text>
-
-
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -1073,101 +1187,162 @@ export const LoginScreen = () => {
 const styles = StyleSheet.create({
   keyboardContainer: {
     flex: 1,
-    backgroundColor: DayRibbonColors.bg,
+    backgroundColor: '#1E38E8',
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingHorizontal: DayRibbonSpacing.screenHorizontal,
-    paddingTop: 48,
-    paddingBottom: 40,
+    backgroundColor: '#1E38E8',
   },
-  mainContainer: {
-    width: '100%',
+  topBlueSection: {
+    backgroundColor: '#1E38E8',
+    paddingHorizontal: 24,
+    paddingBottom: 28,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  ribbonsCluster: {
+    position: 'absolute',
+    top: 0,
+    right: 18,
+    flexDirection: 'row',
+    zIndex: 1,
   },
   topLogoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 20,
+    zIndex: 2,
   },
   logoFrame: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: DayRibbonColors.line,
-    backgroundColor: DayRibbonColors.surface,
-    padding: 4,
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
-    ...DayRibbonShapes.shadow,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 3,
   },
-  logo: {
-    width: 32,
-    height: 32,
+  crestTextTop: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 10.5,
+    letterSpacing: 0.6,
+    color: '#0E1330',
+    lineHeight: 12,
   },
-  collegeHeaderBox: {
+  crestTextBottom: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 9,
+    letterSpacing: 0.6,
+    color: '#0E1330',
+    lineHeight: 11,
+  },
+  collegeNameWrap: {
     flex: 1,
   },
-  collegeLabel: {
+  collegeNameTop: {
     fontFamily: DayRibbonFonts.body700,
-    fontSize: 12,
-    letterSpacing: 0.5,
-    color: DayRibbonColors.ink,
+    fontSize: 14,
+    letterSpacing: 0.6,
+    color: '#FFFFFF',
+    lineHeight: 18,
   },
-  appSystemLabel: {
-    fontFamily: DayRibbonFonts.body600,
-    fontSize: 10,
-    letterSpacing: 0.5,
-    color: DayRibbonColors.muted,
-    marginTop: 2,
+  collegeNameBottom: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 14,
+    letterSpacing: 0.6,
+    color: '#FFFFFF',
+    lineHeight: 18,
   },
-  headlineRow: {
-    marginBottom: 24,
+  headlineBlock: {
+    zIndex: 2,
+    marginTop: 12,
+  },
+  systemSubtitle: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 11,
+    letterSpacing: 0.8,
+    color: 'rgba(255, 255, 255, 0.78)',
   },
   displayHeadline: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 34,
-    lineHeight: 40,
-    color: DayRibbonColors.ink,
+    fontSize: 42,
+    lineHeight: 48,
+    color: '#FFFFFF',
     letterSpacing: -0.5,
+    marginTop: 4,
+    marginBottom: 6,
   },
   headlineSubtitle: {
     fontFamily: DayRibbonFonts.body500,
-    fontSize: 13,
-    color: DayRibbonColors.muted,
-    marginTop: 4,
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.88)',
+    lineHeight: 20,
+    maxWidth: '85%',
+  },
+  bottomWhiteCard: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
+    paddingHorizontal: 24,
+    paddingTop: 30,
+    paddingBottom: 40,
+    flex: 1,
+    minHeight: height * 0.6,
   },
   fieldGroup: {
-    marginBottom: 18,
     width: '100%',
   },
   fieldLabel: {
-    fontFamily: DayRibbonFonts.body600,
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 11,
-    letterSpacing: 0.5,
-    color: DayRibbonColors.muted,
-    marginBottom: 6,
+    letterSpacing: 0.8,
+    color: '#4B5565',
+    marginBottom: 4,
   },
-  inputBox: {
+  underlineInputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: DayRibbonColors.surface,
-    borderRadius: 14,
-    borderWidth: 1.5,
-    borderColor: DayRibbonColors.line,
-    paddingHorizontal: 14,
-    minHeight: 52,
+    borderBottomWidth: 1.5,
+    borderBottomColor: '#E2E8F0',
+    paddingBottom: 8,
+    paddingTop: 6,
   },
-  inputFocused: {
-    borderColor: DayRibbonColors.cobalt,
+  underlineInputRowFocused: {
+    borderBottomColor: '#1E38E8',
   },
-  input: {
+  underlineInput: {
     flex: 1,
-    fontFamily: DayRibbonFonts.body600,
+    fontFamily: DayRibbonFonts.body500,
     fontSize: 15,
-    color: DayRibbonColors.ink,
-    paddingVertical: 10,
+    color: '#0E1330',
+    marginLeft: 12,
+    paddingVertical: 4,
+  },
+  roleBookmarkCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 16,
+    marginBottom: 4,
+    paddingVertical: 2,
+  },
+  roleBookmarkTextWrap: {
+    flex: 1,
+  },
+  roleBookmarkTitle: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 16,
+    color: '#0E1330',
+  },
+  roleBookmarkSubtitle: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12.5,
+    color: '#4B5565',
+    marginTop: 2,
   },
   passwordToggle: {
     padding: 6,
@@ -1176,80 +1351,75 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
-    marginTop: 4,
+    marginTop: 22,
+    marginBottom: 4,
   },
   rememberMeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   checkbox: {
-    width: 20,
-    height: 20,
+    width: 22,
+    height: 22,
     borderWidth: 1.5,
-    borderColor: DayRibbonColors.line,
-    borderRadius: 6,
+    borderColor: '#CBD5E1',
+    borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 8,
-    backgroundColor: DayRibbonColors.surface,
+    backgroundColor: '#FFFFFF',
   },
   checkboxChecked: {
-    backgroundColor: DayRibbonColors.cobalt,
-    borderColor: DayRibbonColors.cobalt,
+    backgroundColor: '#1E38E8',
+    borderColor: '#1E38E8',
   },
   rememberMeLabel: {
     fontFamily: DayRibbonFonts.body500,
-    fontSize: 13,
-    color: DayRibbonColors.ink,
+    fontSize: 14,
+    color: '#1E293B',
+    marginLeft: 10,
   },
   forgotPasswordLink: {
-    fontFamily: DayRibbonFonts.body600,
-    fontSize: 13,
-    color: DayRibbonColors.cobalt,
-  },
-  primaryButton: {
-    height: 52,
-    width: '100%',
-    backgroundColor: DayRibbonColors.cobalt,
-    borderRadius: DayRibbonShapes.buttonRadius,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 14,
-    ...DayRibbonShapes.shadow,
-  },
-  primaryButtonText: {
     fontFamily: DayRibbonFonts.body700,
     fontSize: 14,
-    letterSpacing: 0.5,
-    color: DayRibbonColors.white,
+    color: '#1E38E8',
   },
-  helpText: {
-    fontFamily: DayRibbonFonts.body600,
-    fontSize: 11,
-    letterSpacing: 0.5,
-    color: DayRibbonColors.muted,
-    textAlign: 'center',
-    lineHeight: 16,
-    marginBottom: 24,
-  },
-  rolePreviewPill: {
+  signInButton: {
+    marginTop: 28,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#0D1126',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginTop: 6,
-    alignSelf: 'flex-start',
-    backgroundColor: DayRibbonColors.surface,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: DayRibbonColors.line,
+    justifyContent: 'space-between',
+    paddingLeft: 28,
+    paddingRight: 8,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  rolePreviewText: {
+  signInButtonText: {
     fontFamily: DayRibbonFonts.body700,
-    fontSize: 11,
+    fontSize: 17,
     letterSpacing: 0.3,
+    color: '#FFFFFF',
+  },
+  arrowCircle: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: '#FFA726',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  helpText: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 11.5,
+    color: '#4B5565',
+    textAlign: 'center',
+    marginTop: 20,
+    lineHeight: 16,
   },
 });
 
