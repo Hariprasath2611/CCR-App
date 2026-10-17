@@ -4,8 +4,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Syne_800ExtraBold } from '@expo-google-fonts/syne';
+import { BricolageGrotesque_800ExtraBold } from '@expo-google-fonts/bricolage-grotesque';
 import {
+  InstrumentSans_400Regular,
   InstrumentSans_500Medium,
   InstrumentSans_600SemiBold,
   InstrumentSans_700Bold,
@@ -21,7 +22,8 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 
 function App(): React.JSX.Element | null {
   const [fontsLoaded] = useFonts({
-    Syne_800ExtraBold,
+    BricolageGrotesque_800ExtraBold,
+    InstrumentSans_400Regular,
     InstrumentSans_500Medium,
     InstrumentSans_600SemiBold,
     InstrumentSans_700Bold,
@@ -47,7 +49,7 @@ function App(): React.JSX.Element | null {
       <PaperProvider theme={AppTheme}>
         <NavigationContainer>
           <StatusBar
-            backgroundColor={DayRibbonColors.bg}
+            backgroundColor={DayRibbonColors.pageBg}
             barStyle="dark-content"
           />
           <RootNavigator />
