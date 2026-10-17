@@ -371,9 +371,9 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
-  // Four Tilted Ribbons: height 230 to prevent horizontal top/bottom clipping!
+  // Four Tilted Ribbons
   ribbonsContainer: {
-    height: 226,
+    height: 250,
     overflow: 'hidden',
     marginHorizontal: -24,
     justifyContent: 'center',
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   ribbonStrip: {
-    height: 35,
+    height: 44,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
@@ -396,18 +396,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: SCREEN_WIDTH * 0.90, // Exactly framed inside the phone screen margins
+    width: SCREEN_WIDTH * 0.94,
   },
   ribbonWordLight: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 17,
-    letterSpacing: 1.2,
+    fontSize: 22,
+    letterSpacing: 0.8,
     color: '#FFFFFF',
   },
   ribbonWordDark: {
     fontFamily: DayRibbonFonts.display,
-    fontSize: 17,
-    letterSpacing: 1.2,
+    fontSize: 22,
+    letterSpacing: 0.8,
     color: DayRibbonColors.ink,
   },
 
