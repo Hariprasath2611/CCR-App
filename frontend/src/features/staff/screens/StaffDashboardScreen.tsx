@@ -255,11 +255,26 @@ export const StaffDashboardScreen = () => {
     navigation.navigate('WeeklyProgress', { subjectCode: code, classSection: section, weekNumber: 12 });
   };
 
-  const getRoleLabel = () => {
-    if (user?.role === 'HOD') return 'HEAD OF DEPARTMENT';
-    if (user?.isClassCoordinator) return `CLASS COORDINATOR (${user.assignedClassId || 'CSE-B'})`;
-    return 'SUBJECT FACULTY PROFESSOR';
-  };
+  const isCC = Boolean(user?.isClassCoordinator);
+  const isHOD = user?.role === 'HOD';
+
+  const roleTitle = isHOD
+    ? 'Head of Department (HOD)'
+    : isCC
+    ? 'Class Coordinator (CC)'
+    : 'Subject Teacher';
+
+  const roleBadgeLabel = isHOD
+    ? 'HEAD OF DEPARTMENT (HOD)'
+    : isCC
+    ? `CLASS COORDINATOR (CC) · ${user?.assignedClassId || 'CSE-B'}`
+    : `SUBJECT TEACHER · ${user?.department || 'CSE'}`;
+
+  const roleSubtitle = isHOD
+    ? `${user?.department || 'Computer Science'} Department`
+    : isCC
+    ? `Class In-Charge: ${user?.assignedClassId || 'CSE-B'} • Department of ${user?.department || 'Computer Science'}`
+    : `Teaching Faculty • Department of ${user?.department || 'Computer Science'}`;
 
   return (
     <View style={styles.screenWrapper}>
@@ -294,7 +309,31 @@ export const StaffDashboardScreen = () => {
           </View>
 
           <View style={styles.headerMiddle}>
-            <Text style={styles.roleLabel}>{getRoleLabel()}</Text>
+            <View style={styles.roleTagRow}>
+              <View
+                style={[
+                  styles.roleBadgePill,
+                  isCC && styles.roleBadgePillCC,
+                  isHOD && styles.roleBadgePillHOD,
+                ]}
+              >
+                <Feather
+                  name={isHOD ? 'award' : isCC ? 'shield' : 'book-open'}
+                  size={10}
+                  color={isHOD ? '#059669' : isCC ? DayRibbonColors.cobalt : '#334155'}
+                />
+                <Text
+                  style={[
+                    styles.roleBadgeText,
+                    isCC && styles.roleBadgeTextCC,
+                    isHOD && styles.roleBadgeTextHOD,
+                  ]}
+                  numberOfLines={1}
+                >
+                  {roleBadgeLabel}
+                </Text>
+              </View>
+            </View>
             <Text style={styles.facultyName} numberOfLines={1}>
               {user?.name || 'Professor'}
             </Text>
@@ -308,6 +347,52 @@ export const StaffDashboardScreen = () => {
           >
             <Feather name="bell" size={18} color={DayRibbonColors.ink} />
           </TouchableOpacity>
+        </View>
+
+        {/* Role Designation Card denoting CC, Subject Teacher, or HOD */}
+        <View
+          style={[
+            styles.roleDesignationCard,
+            isCC && styles.roleDesignationCardCC,
+            isHOD && styles.roleDesignationCardHOD,
+          ]}
+        >
+          <View
+            style={[
+              styles.roleDesignationIconCircle,
+              isCC && styles.roleDesignationIconCircleCC,
+              isHOD && styles.roleDesignationIconCircleHOD,
+            ]}
+          >
+            <Feather
+              name={isHOD ? 'award' : isCC ? 'shield' : 'book-open'}
+              size={20}
+              color={isHOD ? '#059669' : isCC ? DayRibbonColors.cobalt : '#2563EB'}
+            />
+          </View>
+          <View style={styles.roleDesignationTextWrap}>
+            <View style={styles.roleDesignationHeaderRow}>
+              <Text style={styles.roleDesignationRoleTitle}>{roleTitle}</Text>
+              <View
+                style={[
+                  styles.roleDesignationPill,
+                  isCC && styles.roleDesignationPillCC,
+                  isHOD && styles.roleDesignationPillHOD,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.roleDesignationPillText,
+                    isCC && styles.roleDesignationPillTextCC,
+                    isHOD && styles.roleDesignationPillTextHOD,
+                  ]}
+                >
+                  {isHOD ? 'HOD' : isCC ? 'CC IN-CHARGE' : 'SUBJECT TEACHER'}
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.roleDesignationSubtitle}>{roleSubtitle}</Text>
+          </View>
         </View>
 
         {/* DateHero component */}
@@ -424,11 +509,123 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 12,
   },
-  roleLabel: {
-    fontFamily: DayRibbonFonts.body600,
+  roleTagRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 3,
+  },
+  roleBadgePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#F1F5F9',
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  roleBadgePillCC: {
+    backgroundColor: '#EEF2FF',
+    borderColor: '#C7D2FE',
+  },
+  roleBadgePillHOD: {
+    backgroundColor: '#ECFDF5',
+    borderColor: '#A7F3D0',
+  },
+  roleBadgeText: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 9.5,
+    letterSpacing: 0.4,
+    color: '#475569',
+  },
+  roleBadgeTextCC: {
+    color: DayRibbonColors.cobalt,
+  },
+  roleBadgeTextHOD: {
+    color: '#059669',
+  },
+  roleDesignationCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: DayRibbonColors.surface,
+    borderWidth: 1.5,
+    borderColor: DayRibbonColors.line,
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 16,
+    gap: 12,
+    ...DayRibbonShapes.shadow,
+  },
+  roleDesignationCardCC: {
+    borderColor: '#BFDBFE',
+    backgroundColor: '#F8FAFF',
+  },
+  roleDesignationCardHOD: {
+    borderColor: '#A7F3D0',
+    backgroundColor: '#F0FDF4',
+  },
+  roleDesignationIconCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: '#F1F5F9',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  roleDesignationIconCircleCC: {
+    backgroundColor: '#EFF6FF',
+  },
+  roleDesignationIconCircleHOD: {
+    backgroundColor: '#DCFCE7',
+  },
+  roleDesignationTextWrap: {
+    flex: 1,
+  },
+  roleDesignationHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 2,
+  },
+  roleDesignationRoleTitle: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 15,
+    color: DayRibbonColors.ink,
+  },
+  roleDesignationPill: {
+    backgroundColor: '#F1F5F9',
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  roleDesignationPillCC: {
+    backgroundColor: '#DBEAFE',
+    borderColor: '#93C5FD',
+  },
+  roleDesignationPillHOD: {
+    backgroundColor: '#D1FAE5',
+    borderColor: '#6EE7B7',
+  },
+  roleDesignationPillText: {
+    fontFamily: DayRibbonFonts.body700,
     fontSize: 10,
-    letterSpacing: 0.5,
+    color: '#475569',
+    letterSpacing: 0.3,
+  },
+  roleDesignationPillTextCC: {
+    color: '#1D4ED8',
+  },
+  roleDesignationPillTextHOD: {
+    color: '#047857',
+  },
+  roleDesignationSubtitle: {
+    fontFamily: DayRibbonFonts.body500,
+    fontSize: 12,
     color: DayRibbonColors.muted,
+    lineHeight: 16,
   },
   facultyName: {
     fontFamily: DayRibbonFonts.body700,

@@ -957,6 +957,35 @@ export const LoginScreen = () => {
                 onBlur={() => setIsEmailFocused(false)}
               />
             </View>
+            {email.trim().length > 3 && (
+              <View style={styles.rolePreviewPill}>
+                <Feather
+                  name={
+                    currentRoleInfo.isCC
+                      ? 'shield'
+                      : currentRoleInfo.role === 'HOD'
+                      ? 'award'
+                      : 'book-open'
+                  }
+                  size={12}
+                  color={currentRoleInfo.isCC ? DayRibbonColors.cobalt : currentRoleInfo.role === 'HOD' ? '#059669' : '#475569'}
+                />
+                <Text
+                  style={[
+                    styles.rolePreviewText,
+                    {
+                      color: currentRoleInfo.isCC
+                        ? DayRibbonColors.cobalt
+                        : currentRoleInfo.role === 'HOD'
+                        ? '#059669'
+                        : '#475569',
+                    },
+                  ]}
+                >
+                  Role: {currentRoleInfo.label}
+                </Text>
+              </View>
+            )}
           </View>
 
           {/* Labelled Password Field */}
@@ -1034,35 +1063,7 @@ export const LoginScreen = () => {
             Authorized faculty & central administration audit access only
           </Text>
 
-          {/* Divider */}
-          <View style={styles.divider} />
 
-          {/* Quick Preset Selector */}
-          <View style={styles.presetsBlock}>
-            <Text style={styles.presetsLabel}>TEST CREDENTIAL PRESETS</Text>
-            <View style={styles.presetsGrid}>
-              {[
-                { label: 'Staff (CSE)', email: 'uvashakthi@ccms.edu', pass: 'password123' },
-                { label: 'CC (Punitha)', email: 'punitha@ccms.edu', pass: 'password123' },
-                { label: 'HOD (CSE)', email: 'linebychandra@ccms.edu', pass: 'password123' },
-                { label: 'Principal', email: 'principal@ccms.edu', pass: 'password123' },
-                { label: 'CC (1st Yr)', email: 'drkaruppaiya@ccr.edu', pass: 'password123' },
-                { label: 'HOD (1st Yr)', email: 'drsaravanan@ccr.edu', pass: 'password123' },
-              ].map((p, i) => (
-                <TouchableOpacity
-                  key={i}
-                  style={styles.presetChip}
-                  onPress={() => {
-                    setEmail(p.email);
-                    setPassword(p.pass);
-                  }}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.presetChipText}>{p.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -1232,39 +1233,23 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     marginBottom: 24,
   },
-  divider: {
-    width: '100%',
-    height: 1,
-    backgroundColor: DayRibbonColors.line,
-    marginBottom: 20,
-  },
-  presetsBlock: {
-    width: '100%',
-  },
-  presetsLabel: {
-    fontFamily: DayRibbonFonts.body600,
-    fontSize: 11,
-    letterSpacing: 0.5,
-    color: DayRibbonColors.muted,
-    marginBottom: 10,
-  },
-  presetsGrid: {
+  rolePreviewPill: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  presetChip: {
-    borderWidth: 1.5,
-    borderColor: DayRibbonColors.line,
-    borderRadius: DayRibbonShapes.chipRadius,
-    paddingVertical: 8,
-    paddingHorizontal: 13,
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 6,
+    alignSelf: 'flex-start',
     backgroundColor: DayRibbonColors.surface,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: DayRibbonColors.line,
   },
-  presetChipText: {
+  rolePreviewText: {
     fontFamily: DayRibbonFonts.body700,
-    fontSize: 12,
-    color: DayRibbonColors.ink,
+    fontSize: 11,
+    letterSpacing: 0.3,
   },
 });
 
