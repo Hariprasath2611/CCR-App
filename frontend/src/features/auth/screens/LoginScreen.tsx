@@ -1039,14 +1039,14 @@ export const LoginScreen = () => {
         keyboardShouldPersistTaps="handled"
         bounces={false}
       >
-        {/* Top Royal Blue Section */}
-        <View style={[styles.topBlueSection, { paddingTop: Math.max(insets.top + 16, 44) }]}>
-          {/* Top Hanging Ribbons */}
+        {/* Top Royal Blue Section (~300px) */}
+        <View style={[styles.topBlueSection, { paddingTop: Math.max(insets.top + 12, 40) }]}>
+          {/* Top Hanging Ribbons (amber, coral, mint, white) */}
           <View style={styles.ribbonsCluster} pointerEvents="none">
-            <HangingRibbon width={26} height={185} color="#FFA51E" cutout={14} />
-            <HangingRibbon width={26} height={125} color="#FF4B72" cutout={14} />
-            <HangingRibbon width={26} height={155} color="#2CD4A0" cutout={14} />
-            <HangingRibbon width={26} height={105} color="#FFFFFF" cutout={14} />
+            <HangingRibbon width={26} height={180} color={DayRibbonColors.amber} cutout={14} />
+            <HangingRibbon width={26} height={120} color={DayRibbonColors.coral} cutout={14} />
+            <HangingRibbon width={26} height={150} color={DayRibbonColors.mint} cutout={14} />
+            <HangingRibbon width={26} height={100} color="#FFFFFF" cutout={14} />
           </View>
 
           {/* Logo & College Name */}
@@ -1064,21 +1064,21 @@ export const LoginScreen = () => {
             </View>
           </View>
 
-          {/* System Subtitle & Headline */}
+          {/* Eyebrow & Headline */}
           <View style={styles.headlineBlock}>
-            <Text style={styles.systemSubtitle}>CCR ERP · COURSE COVERAGE SYSTEM</Text>
+            <Text style={styles.systemSubtitle}>CCR ERP — COURSE COVERAGE SYSTEM</Text>
             <Text style={styles.displayHeadline}>Sign In</Text>
             <Text style={styles.headlineSubtitle}>Enter your institutional credentials to continue</Text>
           </View>
         </View>
 
-        {/* Bottom White Card Sheet */}
+        {/* Bottom White Sheet with 28px top radius overlapping header by 28px */}
         <View style={styles.bottomWhiteCard}>
           {/* Email Field */}
           <View style={styles.fieldGroup}>
             <Text style={styles.fieldLabel}>INSTITUTIONAL EMAIL</Text>
             <View style={[styles.underlineInputRow, isEmailFocused && styles.underlineInputRowFocused]}>
-              <Feather name="mail" size={19} color="#1E293B" />
+              <Feather name="mail" size={19} color={DayRibbonColors.ink} />
               <TextInput
                 ref={emailRef}
                 style={styles.underlineInput}
@@ -1089,28 +1089,35 @@ export const LoginScreen = () => {
                 autoCapitalize="none"
                 keyboardType="email-address"
                 autoCorrect={false}
+                spellCheck={false}
                 autoComplete="email"
-                selectionColor="#1E38E8"
+                enterKeyHint="next"
+                onSubmitEditing={() => passwordRef.current?.focus()}
+                selectionColor={DayRibbonColors.blue}
                 onFocus={() => setIsEmailFocused(true)}
                 onBlur={() => setIsEmailFocused(false)}
               />
             </View>
           </View>
 
-          {/* Detected Role Bookmark Card */}
-          <View style={styles.roleBookmarkCard}>
-            <RoleBookmarkRibbon color={roleBookmark.color} />
-            <View style={styles.roleBookmarkTextWrap}>
-              <Text style={styles.roleBookmarkTitle}>{roleBookmark.title}</Text>
-              <Text style={styles.roleBookmarkSubtitle}>{roleBookmark.subtitle}</Text>
+          {/* Role Indicator: Small mint bookmark ribbon shown only after valid email resolves */}
+          {hasResolvedRole ? (
+            <View style={styles.roleBookmarkCard}>
+              <RoleBookmarkRibbon color={DayRibbonColors.mint} />
+              <View style={styles.roleBookmarkTextWrap}>
+                <Text style={styles.roleBookmarkTitle}>{roleBookmark.title}</Text>
+                <Text style={styles.roleBookmarkSubtitle}>{roleBookmark.subtitle}</Text>
+              </View>
             </View>
-          </View>
+          ) : (
+            <View style={styles.roleBookmarkPlaceholder} />
+          )}
 
           {/* Password Field */}
-          <View style={[styles.fieldGroup, { marginTop: 20 }]}>
+          <View style={[styles.fieldGroup, { marginTop: 14 }]}>
             <Text style={styles.fieldLabel}>PASSWORD</Text>
             <View style={[styles.underlineInputRow, isPasswordFocused && styles.underlineInputRowFocused]}>
-              <Feather name="lock" size={19} color="#1E293B" />
+              <Feather name="lock" size={19} color={DayRibbonColors.ink} />
               <TextInput
                 ref={passwordRef}
                 style={styles.underlineInput}
@@ -1120,7 +1127,12 @@ export const LoginScreen = () => {
                 value={password}
                 onChangeText={setPassword}
                 autoCapitalize="none"
-                selectionColor="#1E38E8"
+                autoCorrect={false}
+                spellCheck={false}
+                autoComplete="current-password"
+                enterKeyHint="go"
+                onSubmitEditing={handleLogin}
+                selectionColor={DayRibbonColors.blue}
                 onFocus={() => setIsPasswordFocused(true)}
                 onBlur={() => setIsPasswordFocused(false)}
               />
@@ -1128,12 +1140,14 @@ export const LoginScreen = () => {
                 onPress={() => setSecureText(!secureText)}
                 style={styles.passwordToggle}
                 activeOpacity={0.7}
-                accessibilityLabel="Toggle password visibility"
+                accessibilityRole="button"
+                accessibilityLabel={secureText ? 'Show password' : 'Hide password'}
+                accessibilityState={{ checked: !secureText }}
               >
                 <Feather
                   name={secureText ? 'eye' : 'eye-off'}
                   size={19}
-                  color="#1E293B"
+                  color={DayRibbonColors.ink}
                 />
               </TouchableOpacity>
             </View>
@@ -1147,6 +1161,7 @@ export const LoginScreen = () => {
               activeOpacity={0.7}
               accessibilityRole="checkbox"
               accessibilityState={{ checked: rememberMe }}
+              accessibilityLabel="Remember me"
             >
               <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
                 {rememberMe ? <Feather name="check" size={13} color="#FFFFFF" /> : null}
@@ -1157,18 +1172,21 @@ export const LoginScreen = () => {
             <TouchableOpacity
               onPress={() => navigation.navigate('ForgotPassword')}
               activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel="Forgot password"
             >
               <Text style={styles.forgotPasswordLink}>Forgot password?</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Sign In Pill Button with Golden Circular Arrow */}
+          {/* Sign In Dark Pill Button with Amber Circular Arrow */}
           <TouchableOpacity
-            style={styles.signInButton}
+            style={[styles.signInButton, isLoading && styles.signInButtonDisabled]}
             onPress={handleLogin}
-            activeOpacity={0.85}
+            activeOpacity={0.88}
             disabled={isLoading}
             accessibilityRole="button"
+            accessibilityLabel="Sign In"
           >
             {isLoading ? (
               <ActivityIndicator color="#FFFFFF" size="small" style={{ marginLeft: 24 }} />
@@ -1176,14 +1194,48 @@ export const LoginScreen = () => {
               <Text style={styles.signInButtonText}>Sign In</Text>
             )}
             <View style={styles.arrowCircle}>
-              <Feather name="arrow-right" size={20} color="#0D1126" />
+              <Feather name="arrow-right" size={20} color={DayRibbonColors.ink} />
             </View>
           </TouchableOpacity>
 
-          {/* Small muted help text */}
+          {/* Small muted authorization note */}
           <Text style={styles.helpText}>
             Authorized faculty & central administration audit access only
           </Text>
+
+          {/* Test Credential Presets: Show ONLY when dev/test flag is enabled */}
+          {(__DEV__ || Boolean(ENV.ENABLE_TEST_PRESETS)) && (
+            <View style={styles.presetsSection}>
+              <Text style={styles.presetsLabel}>TEST CREDENTIAL PRESETS</Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.presetsScroll}
+              >
+                {[
+                  { label: 'Staff', email: 'punitha@ccms.edu', color: DayRibbonColors.blue },
+                  { label: 'CC', email: 'sudha@ccms.edu', color: DayRibbonColors.mint },
+                  { label: 'HOD', email: 'hod@ccms.edu', color: DayRibbonColors.coral },
+                  { label: 'Principal', email: 'principal@ccms.edu', color: DayRibbonColors.amber },
+                ].map((p) => (
+                  <TouchableOpacity
+                    key={p.label}
+                    style={styles.presetPill}
+                    onPress={() => {
+                      setEmail(p.email);
+                      setPassword('password123');
+                    }}
+                    activeOpacity={0.7}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Test credential preset for ${p.label}`}
+                  >
+                    <View style={[styles.presetDot, { backgroundColor: p.color }]} />
+                    <Text style={styles.presetPillText}>{p.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
