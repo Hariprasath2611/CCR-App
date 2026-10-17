@@ -232,18 +232,11 @@ export const StaffTabNavigator = () => {
         component={StaffStackNavigator}
         options={{ title: 'FACULTY' }}
       />
-      {(user?.isClassCoordinator || user?.role === 'HOD' || user?.role === 'ADMIN') && (
+      {Boolean(user?.isClassCoordinator) && (
         <Tab.Screen
           name="CounselorTab"
           component={CCNavigator}
           options={{ title: 'CC BOARD' }}
-        />
-      )}
-      {user?.role === 'HOD' && (
-        <Tab.Screen
-          name="HodTab"
-          component={HodDashboardScreen}
-          options={{ title: 'HOD BOARD' }}
         />
       )}
       <Tab.Screen
