@@ -14,9 +14,12 @@ export const DayRibbonColors = {
   // Core Neutrals
   ink: '#0E1030',
   muted: '#4A4E86',
+  bodyText: '#3B3F78',
   border: '#D5D8F5',
   fieldBg: '#F6F7FF',
   pageBg: '#FFFFFF',
+  page: '#FFFFFF',
+  ghost: '#F0F1FF',
 
   // Bottom Nav Inactive Tokens
   inactiveBase: '#7B7FB5',
