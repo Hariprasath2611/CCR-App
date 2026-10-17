@@ -956,6 +956,8 @@ export const LoginScreen = () => {
   };
 
   const roleBookmark = getRoleBookmarkData();
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const hasResolvedRole = isEmailValid && Boolean(currentRoleInfo.isCC || currentRoleInfo.role || currentRoleInfo.name);
 
   const handleLogin = async () => {
     if (!email) {
@@ -1334,10 +1336,11 @@ const styles = StyleSheet.create({
   },
   bottomWhiteCard: {
     backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 34,
-    borderTopRightRadius: 34,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    marginTop: -28,
     paddingHorizontal: 24,
-    paddingTop: 30,
+    paddingTop: 28,
     paddingBottom: 40,
     flex: 1,
     minHeight: height * 0.6,
@@ -1366,10 +1369,15 @@ const styles = StyleSheet.create({
   underlineInput: {
     flex: 1,
     fontFamily: DayRibbonFonts.body500,
-    fontSize: 15,
+    fontSize: 16, // >=16px prevents iOS auto-zoom
     color: '#0E1330',
     marginLeft: 12,
     paddingVertical: 4,
+  },
+  roleBookmarkPlaceholder: {
+    height: 38,
+    marginTop: 14,
+    marginBottom: 4,
   },
   roleBookmarkCard: {
     flexDirection: 'row',
@@ -1468,6 +1476,47 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     lineHeight: 16,
+  },
+  presetsSection: {
+    marginTop: 24,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#E2E8F0',
+  },
+  presetsLabel: {
+    fontFamily: DayRibbonFonts.body700,
+    fontSize: 10.5,
+    letterSpacing: 0.8,
+    color: '#64748B',
+    marginBottom: 10,
+  },
+  presetsScroll: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  presetPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 999,
+    borderWidth: 1.2,
+    borderColor: '#CBD5E1',
+    backgroundColor: '#FFFFFF',
+    gap: 6,
+  },
+  presetDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+  },
+  presetPillText: {
+    fontFamily: DayRibbonFonts.body600,
+    fontSize: 12,
+    color: '#0E1330',
+  },
+  signInButtonDisabled: {
+    opacity: 0.7,
   },
 });
 
