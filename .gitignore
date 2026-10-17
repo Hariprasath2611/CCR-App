@@ -54,8 +54,10 @@ web_modules/
 .rts2_cache_main
 .rts2_cache_lit
 
-# Output directory of Babel
-lib
+# Output directory of Babel (root only)
+/lib
+!backend/src/lib/
+!backend/src/lib/**
 
 # REPL history
 .node_repl_history
