@@ -760,27 +760,33 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
-  // Tilted Ribbons: 600px wide, 56px high, rotate(-12deg), stacked 58px apart
+  // Tilted Ribbons: 1200px wide, 56px high, rotate(-12deg), stacked 58px apart
   ribbonsSlantedStack: {
-    width: 600,
+    width: 1200,
     alignItems: 'center',
     justifyContent: 'center',
     transform: [{ rotate: '-12deg' }],
     marginTop: 10,
   },
   ribbonItemWrapper: {
-    width: 600,
+    width: 1200,
     height: 56,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
     marginVertical: 1, // Stacks closely at ~58px center-to-center
+    overflow: 'hidden',
   },
-  ribbonContentRow: {
+  ribbonTickerTrack: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    width: 600,
+    position: 'absolute',
+    left: -200,
+    height: 56,
+  },
+  ribbonUnit: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   ribbonWordText: {
     fontFamily: DayRibbonFonts.display,
