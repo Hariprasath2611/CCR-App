@@ -25,6 +25,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@navigation/types';
 import { apiClient } from '@services/api/apiClient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ENV } from '@config/env';
 
 import { ms } from '@theme/responsive';
 
@@ -957,7 +958,7 @@ export const LoginScreen = () => {
 
   const roleBookmark = getRoleBookmarkData();
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-  const hasResolvedRole = isEmailValid && Boolean(currentRoleInfo.isCC || currentRoleInfo.role || currentRoleInfo.name);
+  const hasResolvedRole = isEmailValid && Boolean((currentRoleInfo as any)?.isCC || (currentRoleInfo as any)?.role || (currentRoleInfo as any)?.name);
 
   const handleLogin = async () => {
     if (!email) {
